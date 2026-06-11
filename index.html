@@ -46,7 +46,10 @@ h2.sec{font-family:var(--serif);font-size:clamp(28px,4vw,42px);font-weight:500;l
 .navlinks a:hover{color:var(--ink);}
 .navlinks .cta{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--accent-d);border:1px solid var(--accent);border-radius:999px;padding:7px 15px;transition:background .2s,color .2s;}
 .navlinks .cta:hover{background:var(--accent);color:#fff;}
-@media(max-width:760px){.navlinks a:not(.cta){display:none;}}
+.icobtn{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--accent-d);border:1px solid var(--line);background:var(--card2);transition:background .2s,color .2s,border-color .2s,transform .15s;}
+.icobtn:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateY(-1px);}
+.icobtn svg{display:block;}
+@media(max-width:760px){.navlinks a:not(.icobtn){display:none;}}
 
 /* hero */
 .hero{position:relative;padding:150px 0 60px;overflow:hidden;min-height:88vh;display:flex;align-items:center;}
@@ -257,9 +260,9 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 .ring .rwrap{position:relative;width:112px;height:112px;margin-bottom:10px;}
 .ring svg{width:100%;height:100%;}
 .ringbg{stroke:var(--sand);}
-.ringfg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.2,.7,.2,1) .35s;filter:drop-shadow(0 0 6px rgba(15,91,80,.35));}
+.ringfg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.2,.7,.2,1) .35s;}
 [data-reveal].seen .ringfg{stroke-dashoffset:var(--off);}
-.ring .rv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:31px;font-weight:500;letter-spacing:-.02em;}
+.ring .rv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:33px;font-weight:600;letter-spacing:-.02em;color:var(--ink);}
 .ring b{font-size:14px;font-weight:600;}
 .ring p{font-size:11.5px;color:var(--ink3);line-height:1.45;margin-top:3px;max-width:170px;}
 #radar{width:100%;max-width:340px;margin:6px auto 0;display:block;}
@@ -283,16 +286,11 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 .facet{font-family:var(--mono);font-size:10.5px;border-radius:999px;padding:5px 11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);}
 .facet b{color:var(--accent-d);font-weight:500;}
 .facet.low b{color:#9C3B2E;}
-.calib{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-@media(max-width:760px){.calib{grid-template-columns:1fr;}}
-.calib .c{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--card);position:relative;overflow:hidden;}
-.calib .cn{position:absolute;top:6px;right:14px;font-family:var(--mono);font-size:40px;color:var(--ink);opacity:.07;font-weight:500;}
-.calib h4{font-family:var(--serif);font-size:18px;font-weight:500;margin-bottom:9px;}
-.calib .lbl{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
-.calib .risk{font-size:13px;color:var(--ink2);margin-bottom:11px;line-height:1.5;}
-.calib .risk .lbl{color:#9C3B2E;}
-.calib .fix{font-size:13px;color:var(--ink);border-left:2px solid var(--accent);padding-left:12px;line-height:1.5;}
-.calib .fix .lbl{color:var(--accent-d);}
+.parttitle{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-d);margin:36px 0 0;display:flex;align-items:center;gap:14px;}
+.parttitle:after{content:"";flex:1;height:1px;background:var(--line);}
+.partnote{margin-top:14px;font-size:14px;color:var(--ink2);line-height:1.65;max-width:880px;}
+.partnote b{color:var(--accent-d);font-weight:600;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-right:4px;}
+.bottomline h3{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--accent-d);margin-bottom:10px;}
 .bottomline{margin-top:14px;border:1px solid var(--glass-brd,rgba(255,255,255,.65));border-radius:18px;padding:clamp(22px,3vw,32px) clamp(24px,3.4vw,38px);background:rgba(252,252,248,.5);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 22px -14px rgba(20,24,16,.25);}
 .bottomline p{font-family:var(--serif);font-size:clamp(16px,1.9vw,20px);line-height:1.5;max-width:900px;}
 .bottomline p em{color:var(--accent-d);}
@@ -306,7 +304,7 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 <div class="progress" id="progress"></div>
 <nav class="nav" id="nav"><div class="inner">
   <a class="brand" href="#top"><span class="dot"></span>Vito Christian Samudra</a>
-  <div class="navlinks"><a href="#work">Work</a><a href="#experience">Experience</a><a href="#photos">Photos</a><a href="#background">Background</a><a href="#dna">DNA</a><a href="cockpit.html">Cockpit</a><a class="cta" href="mailto:samudravito4@gmail.com">Get in touch</a></div>
+  <div class="navlinks"><a href="#work">Work</a><a href="#experience">Experience</a><a href="#background">Background</a><a href="#dna">Personality</a><a href="#photos">Photos</a><a href="cockpit.html">Cockpit</a><a class="icobtn" href="https://www.linkedin.com/in/vito-christian-samudra" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.77 0 5-2.24 5-5v-14c0-2.76-2.23-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.11-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z"/></svg></a><a class="icobtn" href="mailto:samudravito4@gmail.com" target="_blank" rel="noopener" aria-label="Email"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></a></div>
 </div></nav>
 
 <header class="hero" id="top">
@@ -415,13 +413,6 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
   </div>
 </section>
 
-<section id="photos">
-  <div class="sechead" data-reveal><div><span class="eyebrow">Field notes</span><h2 class="sec">The work, off the screen.</h2></div>
-  <p class="lead">Venture happens in rooms, on stages and at pond-side &mdash; sourcing, judging, mentoring and diligence across Indonesia, Singapore and beyond. Hover for the story; click to expand.</p></div>
-  <div class="gfilters" id="gfilters" data-reveal></div>
-  <div class="gallery" id="gallery" data-reveal></div>
-</section>
-
 <section id="background">
   <div class="sechead" data-reveal><div><span class="eyebrow">Background</span><h2 class="sec">Education &amp; recognition.</h2></div></div>
   <div class="cols">
@@ -448,12 +439,13 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 </section>
 
 <section id="dna">
-  <div class="sechead" data-reveal><div><span class="eyebrow">Psychological due diligence</span><h2 class="sec">How I&rsquo;m wired.</h2></div>
-  <p class="lead">Two standardized assessments taken in November 2025, published unedited &mdash; peaks, blind spots and all. For recruiters, founders and co&#8209;investors who want to know how I operate before we ever meet. Both reports are downloadable below.</p></div>
+  <div class="sechead" data-reveal><div><span class="eyebrow">My Personality</span><h2 class="sec">Get to know me better.</h2></div>
+  <p class="lead">Two standardized assessments taken in November 2025, published unedited &mdash; peaks, blind spots and all. For recruiters, founders and co&#8209;investors who want to know how I operate before we ever meet. Both full reports open below.</p></div>
 
+  <h3 class="parttitle" data-reveal>Part 01 · Entrepreneur DNA</h3>
   <div class="dnagrid" data-reveal>
     <div class="dcard">
-      <div class="dhead"><span>Part 01 · Entrepreneur DNA</span><span class="dtag">Archetype: The Achiever</span></div>
+      <div class="dhead"><span>The archetype</span><span class="dtag">Archetype: The Achiever</span></div>
       <p class="archq">&ldquo;The Achiever simply <em>refuses to lose</em> &mdash; and will work night and day to ensure they don&rsquo;t.&rdquo;</p>
       <ul class="dlist">
         <li>Thrives in high-pressure, challenging environments</li>
@@ -461,23 +453,26 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
         <li>Natural ability to motivate others</li>
         <li>Excels at calculated risks that push the boundaries of what&rsquo;s possible</li>
       </ul>
-      <div class="dmeta"><span>Taken 10 Nov 2025</span><a class="dl" href="assets/docs/entrepreneur-dna-report.pdf" download>Download report (PDF) &darr;</a></div>
+      <div class="dmeta"><span>Taken 10 Nov 2025</span><a class="dl" href="assets/docs/entrepreneur-dna-report.pdf" target="_blank" rel="noopener">Open full report (PDF) &nearr;</a></div>
     </div>
     <div class="dcard">
       <div class="dhead"><span>Strongest traits · percentile</span><span class="dtag">Very high &times;3</span></div>
       <div class="rings">
-        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:2.6" transform="rotate(-90 50 50)"/></svg><span class="rv">99</span></div><b>Achievement</b><p>Ambitious goals, and the will to go far beyond expectations.</p></div>
-        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:7.9" transform="rotate(-90 50 50)"/></svg><span class="rv">97</span></div><b>Adaptability</b><p>Re-plans without drama; thrives in ambiguous, fast-moving environments.</p></div>
-        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:18.5" transform="rotate(-90 50 50)"/></svg><span class="rv">93</span></div><b>Innovation</b><p>Unconventional solutions; comfort with experimentation and challenging the status quo.</p></div>
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:2.6" transform="rotate(-90 50 50)"/></svg><span class="rv">99</span></div><b>Achievement</b><p>Sets ambitious targets and outworks expectations, mastering new skills along the way. The watch&#8209;out is burnout &mdash; managed with milestones and deliberate recovery.</p></div>
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:7.9" transform="rotate(-90 50 50)"/></svg><span class="rv">97</span></div><b>Adaptability</b><p>Adjusts fast, folds new information into strategy, and runs parallel workstreams with ease &mdash; the contingency plan is the secret weapon. The discipline: committing long enough to finish.</p></div>
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:18.5" transform="rotate(-90 50 50)"/></svg><span class="rv">93</span></div><b>Innovation</b><p>Driven by exploration and experimentation &mdash; at ease with risk, disruptive ideas and challenging the status quo. The balance: pairing novelty with tested methods.</p></div>
       </div>
     </div>
   </div>
 
+  <p class="partnote" data-reveal><b>Why</b> Early-stage venture is ambiguity, pressure and incomplete information &mdash; this wiring is purpose-built for it. <b>So what</b> Give me a hard target in a messy market and I&rsquo;ll set the plan, re&#8209;plan when the facts change, and push it across the line.</p>
+
+  <h3 class="parttitle" data-reveal>Part 02 · Big Five Personality Test</h3>
   <div class="dnagrid" data-reveal>
     <div class="dcard">
-      <div class="dhead"><span>Part 02 · Big Five</span><span class="dtag">IPIP-NEO-120 · open source</span></div>
+      <div class="dhead"><span>Profile radar</span><span class="dtag">IPIP-NEO-120 · open source</span></div>
       <svg id="radar" viewBox="0 0 260 212" role="img" aria-label="Big Five radar chart: Openness 88, Conscientiousness 81, Extraversion 71, Agreeableness 53, Neuroticism 69 (of 120)"></svg>
-      <div class="dmeta"><span>Taken 16 Nov 2025</span><span title="Verify at bigfive-test.com">ID 6919f02b&hellip;</span><a class="dl" href="assets/docs/bigfive-results.pdf" download>Download results (PDF) &darr;</a></div>
+      <div class="dmeta"><span>Taken 16 Nov 2025</span><span title="Verify at bigfive-test.com">ID 6919f02b&hellip;</span><a class="dl" href="assets/docs/bigfive-results.pdf" target="_blank" rel="noopener">Open full results (PDF) &nearr;</a></div>
     </div>
     <div class="dcard">
       <div class="dhead"><span>Domains · score / 120</span><span class="dtag">As classified by the report</span></div>
@@ -495,23 +490,19 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
     </div>
   </div>
 
-  <div class="dcard" data-reveal style="margin-top:14px;">
-    <div class="dhead"><span>Part 03 · Known blind spots, actively managed</span><span class="dtag">Self-awareness as risk mitigation</span></div>
-    <div class="calib">
-      <div class="c"><span class="cn">28</span><h4>Trust calibration</h4>
-        <p class="risk"><span class="lbl">Baseline risk</span>A natural skepticism of others&rsquo; motives (Trust: moderately low) &mdash; the instinct to question intentions and hold work close instead of delegating.</p>
-        <p class="fix"><span class="lbl">Active practice</span>Deliberate delegation in increasing increments &mdash; handing over progressively larger pieces of work to build efficient teams instead of micromanaging.</p>
-      </div>
-      <div class="c"><span class="cn">10</span><h4>Emotional control</h4>
-        <p class="risk"><span class="lbl">Baseline risk</span>Can be sensitive to hard criticism, and may need extra time to recharge after difficult situations or rejections.</p>
-        <p class="fix"><span class="lbl">Active practice</span>Strategic pauses before responding to triggers; mindful breaks between intense conversations to keep judgment strictly objective.</p>
-      </div>
-    </div>
-  </div>
+  <p class="partnote" data-reveal><b>Why</b> High Openness and Conscientiousness with low Agreeableness is the classic diligence profile &mdash; curious enough to explore any thesis, disciplined enough to finish it, objective enough to say no. <b>So what</b> Expect direct, evidence-first communication and calm in high-stakes moments.</p>
 
   <div class="bottomline" data-reveal>
-    <p>The net of it: a <em>deeply analytical, high-output operator</em> &mdash; one who sets brutal targets (Achievement 99), re-plans without drama (Adaptability 97), and defaults to objective truth over social comfort. The blind spots are known, named, and actively managed &mdash; <em>which is exactly what due diligence should look like.</em></p>
+    <h3>Conclusion</h3>
+    <p>I am a <em>high-achievement, endlessly adaptable operator</em> &mdash; curious by default, calm under pressure, and objective to a fault. Point me at an ambitious goal in an ambiguous market and I&rsquo;ll out&#8209;work, out&#8209;learn and out&#8209;iterate until it&rsquo;s done.</p>
   </div>
+</section>
+
+<section id="photos">
+  <div class="sechead" data-reveal><div><span class="eyebrow">Field notes</span><h2 class="sec">The work, off the screen.</h2></div>
+  <p class="lead">Venture happens in rooms, on stages and at pond-side &mdash; sourcing, judging, mentoring and diligence across Indonesia, Singapore and beyond. Hover for the story; click to expand.</p></div>
+  <div class="gfilters" id="gfilters" data-reveal></div>
+  <div class="gallery" id="gallery" data-reveal></div>
 </section>
 
 <section id="contact" style="padding-bottom:40px;">
