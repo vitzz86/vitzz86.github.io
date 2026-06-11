@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Cockpit — Vito Christian Samudra</title>
+<meta name="description" content="Live intelligence dashboard — a public proof-of-work multi-agent pipeline (LangGraph + DeepSeek) compiling Vito's twice-daily operational brief.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EBECE4;--card:#F7F7F1;--card2:#FCFCF8;
+  --ink:#15170F;--ink2:#474B40;--ink3:#787C70;
+  --accent:#0F5B50;--accent-d:#0A4239;--mint:#9BD8BE;--sand:#E0DFD2;--line:#D6D6C9;
+  --up:#0F5B50;--down:#9C3B2E;
+  --serif:'Fraunces',Georgia,serif;--sans:'Inter',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --glass:rgba(252,252,248,.5);--glass-brd:rgba(255,255,255,.65);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:
+  radial-gradient(1000px 640px at 88% -8%,rgba(31,143,125,.14),transparent 62%),
+  radial-gradient(820px 560px at -12% 26%,rgba(134,199,174,.18),transparent 60%),
+  radial-gradient(760px 520px at 104% 64%,rgba(224,223,210,.65),transparent 58%),
+  var(--paper);
+  background-attachment:fixed;color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.55;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;}
+::selection{background:var(--accent);color:#fff;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:1160px;margin:0 auto;padding:0 26px;}
+
+/* glass nav */
+.nav{position:fixed;top:12px;left:0;right:0;z-index:50;padding:0 16px;pointer-events:none;}
+.nav .inner{pointer-events:auto;max-width:1120px;margin:0 auto;padding:10px 14px 10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.8);-webkit-backdrop-filter:blur(22px) saturate(1.8);border:1px solid var(--glass-brd);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 16px 38px -20px rgba(20,24,16,.35);}
+.brand{font-family:var(--mono);font-size:13px;font-weight:500;display:flex;align-items:center;gap:9px;white-space:nowrap;}
+.brand .dot{width:9px;height:9px;background:var(--accent);border-radius:50%;animation:pulse 2.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.navmeta{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--ink2);}
+.pill{border:1px solid var(--glass-brd);background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:999px;padding:6px 13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7);white-space:nowrap;}
+.pill.alert{color:#fff;background:var(--down);border-color:var(--down);}
+.pill.ok{color:var(--accent-d);}
+.back{font-family:var(--mono);font-size:12px;color:var(--ink2);transition:color .2s;white-space:nowrap;}
+.back:hover{color:var(--accent-d);}
+@media(max-width:700px){.navmeta .pill.upd{display:none;}}
+
+/* opening */
+header.open{padding:120px 0 26px;}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-d);}
+h1{font-family:var(--serif);font-weight:500;font-size:clamp(30px,4.6vw,52px);letter-spacing:-.025em;line-height:1.08;margin:12px 0 8px;max-width:880px;}
+.openmeta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;font-family:var(--mono);font-size:11.5px;color:var(--ink2);}
+.focuspill{background:var(--accent);color:#fff;border:none;}
+
+/* executive brief */
+.exec{margin:26px 0 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.exec .e{background:var(--glass);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);border:1px solid var(--glass-brd);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 22px -14px rgba(20,24,16,.25);border-radius:16px;padding:16px 18px;font-size:14px;color:var(--ink2);line-height:1.5;}
+.exec .e b{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--accent-d);margin-bottom:7px;font-weight:500;}
+@media(max-width:860px){.exec{grid-template-columns:1fr;}}
+
+/* bento grid */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin:22px 0 30px;}
+.card{border-radius:18px;border:1px solid var(--line);background:var(--card2);padding:20px 22px;position:relative;overflow:hidden;box-shadow:0 14px 30px -22px rgba(20,24,16,.3);}
+.card h2{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.card h2 .agent{margin-left:auto;font-size:9.5px;color:var(--accent-d);border:1px solid var(--line);border-radius:999px;padding:3px 9px;background:var(--card);letter-spacing:.08em;white-space:nowrap;}
+.c-env{grid-column:span 5;}
+.c-verse{grid-column:span 4;}
+.c-sound{grid-column:span 3;}
+.c-quant{grid-column:span 7;}
+.c-signals{grid-column:span 5;}
+.c-arbiter{grid-column:span 12;}
+.c-note{grid-column:span 7;}
+.c-pipe{grid-column:span 5;}
+@media(max-width:980px){.c-env{grid-column:span 6;}.c-verse{grid-column:span 6;}.c-sound{grid-column:span 12;}.c-quant{grid-column:span 12;}.c-signals{grid-column:span 12;}.c-note{grid-column:span 12;}.c-pipe{grid-column:span 12;}}
+@media(max-width:640px){.c-env,.c-verse{grid-column:span 12;}}
+
+/* env card */
+.wx{display:flex;flex-direction:column;gap:9px;}
+.wx .row{display:flex;justify-content:space-between;gap:14px;font-size:14px;border-bottom:1px dashed var(--line);padding-bottom:9px;}
+.wx .row b{font-weight:600;font-size:13.5px;}
+.wx .row span{color:var(--ink2);text-align:right;}
+.wx .insight{font-size:13.5px;color:var(--accent-d);background:rgba(15,91,80,.07);border:1px solid rgba(15,91,80,.18);border-radius:11px;padding:10px 13px;margin-top:2px;}
+
+/* verse card */
+.c-verse{display:flex;flex-direction:column;}
+.verse{font-family:var(--serif);font-style:italic;font-size:clamp(16px,1.6vw,19px);line-height:1.5;color:var(--ink);margin:auto 0;padding:6px 2px;}
+.verse .ref{display:block;font-family:var(--mono);font-style:normal;font-size:10.5px;letter-spacing:.1em;color:var(--ink3);margin-top:12px;text-transform:uppercase;}
+
+/* soundtrack card — native dark fluid */
+.c-sound{background:linear-gradient(145deg,#191b14,#23271c 60%,#1c2e26);border-color:rgba(255,255,255,.14);color:#EDEDE3;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 18px 40px -22px rgba(20,24,16,.55);}
+.c-sound h2{color:#9aa093;}
+.c-sound .tname{font-size:13.5px;color:#D8DACF;margin-bottom:12px;}
+.c-sound iframe{width:100%;height:152px;border:none;border-radius:12px;display:block;}
+
+/* quant card */
+.c-quant{font-family:var(--mono);}
+.trow{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+.trow .sym{color:var(--ink3);font-size:10.5px;width:84px;flex:0 0 auto;}
+.trow .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trow .val{font-variant-numeric:tabular-nums;}
+.delta{font-size:11px;border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums;flex:0 0 auto;}
+.delta.up{background:rgba(15,91,80,.12);color:var(--up);}
+.delta.down{background:rgba(156,59,46,.12);color:var(--down);}
+.qbullets{margin-top:14px;font-family:var(--sans);display:flex;flex-direction:column;gap:8px;}
+.qbullets p{font-size:13.5px;color:var(--ink2);padding-left:16px;position:relative;}
+.qbullets p:before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--accent);border-radius:50%;}
+
+/* signals card */
+.sig{display:flex;flex-direction:column;}
+.srow{padding:10px 0 10px 14px;border-left:3px solid var(--line);margin-bottom:9px;transition:border-color .2s,padding-left .2s;}
+.srow:hover{padding-left:18px;}
+.srow.econ{border-left-color:#0F5B50;}
+.srow.tech{border-left-color:#3D6ABF;}
+.srow.policy{border-left-color:#9C7A2E;}
+.srow .stag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:3px;}
+.srow p{font-size:13.5px;color:var(--ink2);line-height:1.5;}
+
+/* arbiter card — editorial */
+.c-arbiter{padding:clamp(24px,3.4vw,44px) clamp(22px,4.5vw,64px);}
+.c-arbiter .brief{font-family:var(--serif);font-size:clamp(17px,2vw,21px);line-height:1.55;color:var(--ink);max-width:860px;}
+.c-arbiter .brief:first-letter{font-size:2.6em;float:left;line-height:.86;padding:4px 10px 0 0;color:var(--accent-d);font-weight:500;}
+
+/* note card */
+.c-note .note{font-size:15.5px;line-height:1.65;color:var(--ink);white-space:pre-wrap;}
+.c-note .src{font-family:var(--mono);font-size:10.5px;color:var(--ink3);margin-top:14px;letter-spacing:.06em;}
+
+/* pipeline card */
+.c-pipe{font-family:var(--mono);font-size:11.5px;color:var(--ink2);background:var(--card);}
+.pstep{display:flex;align-items:center;gap:10px;padding:7px 0;}
+.pstep .n{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex:0 0 auto;}
+.pstep .arr{color:var(--ink3);margin-left:10px;}
+.pstep b{font-weight:500;color:var(--ink);}
+.pstack{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--ink3);line-height:1.7;}
+
+footer{padding:8px 0 46px;font-family:var(--mono);font-size:11px;color:var(--ink3);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+footer a{color:var(--accent-d);}
+
+/* reveal + states */
+.fade{opacity:0;transform:translateY(14px);animation:fu .7s ease forwards;}
+@keyframes fu{to{opacity:1;transform:none;}}
+.fade.d1{animation-delay:.08s;}.fade.d2{animation-delay:.16s;}.fade.d3{animation-delay:.24s;}.fade.d4{animation-delay:.32s;}
+@media (prefers-reduced-motion:reduce){.fade{animation:none;opacity:1;transform:none;}.brand .dot{animation:none;}}
+.errbar{display:none;font-family:var(--mono);font-size:12px;background:rgba(156,59,46,.1);border:1px solid rgba(156,59,46,.3);color:var(--down);border-radius:12px;padding:10px 16px;margin-top:18px;}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="inner">
+  <a class="back" href="index.html">&larr; Portfolio</a>
+  <span class="brand"><span class="dot"></span>PROJECT&nbsp;COCKPIT</span>
+  <span class="navmeta"><span class="pill upd" id="updPill">SYNCING&hellip;</span><span class="pill ok" id="statePill">LIVE</span></span>
+</div></nav>
+
+<header class="open wrap">
+  <span class="eyebrow fade">Live intelligence layer · twice-daily autonomous sync</span>
+  <h1 class="fade d1" id="greeting">Booting the boards&hellip;</h1>
+  <div class="openmeta fade d2">
+    <span class="pill focuspill" id="focusPill">&hellip;</span>
+    <span class="pill" id="datePill">&hellip;</span>
+  </div>
+  <div class="exec fade d3" id="execBrief"></div>
+  <div class="errbar" id="errbar">Live payload unreachable — showing the last cached intelligence run.</div>
+</header>
+
+<main class="wrap">
+<div class="bento fade d4">
+
+  <section class="card c-env"><h2>Environmental Baseline <span class="agent">OPEN-METEO</span></h2>
+    <div class="wx">
+      <div class="row"><b>BSD City</b><span id="wxBsd">&hellip;</span></div>
+      <div class="row"><b>Jakarta</b><span id="wxJkt">&hellip;</span></div>
+      <div class="insight" id="wxInsight">&hellip;</div>
+    </div>
+  </section>
+
+  <section class="card c-verse"><h2>Spiritual Anchor</h2>
+    <p class="verse" id="verse">&hellip;</p>
+  </section>
+
+  <section class="card c-sound"><h2>Ambient Soundtrack <span class="agent" style="color:#9BD8BE;border-color:rgba(255,255,255,.2);background:transparent;">THE CONDUCTOR</span></h2>
+    <p class="tname" id="trackName">&hellip;</p>
+    <div id="player"></div>
+  </section>
+
+  <section class="card c-quant"><h2>Market Telemetry <span class="agent">AGENT 1 · THE QUANT</span></h2>
+    <div id="ticks"></div>
+    <div class="qbullets" id="qBullets"></div>
+  </section>
+
+  <section class="card c-signals"><h2>Signals &amp; Intelligence Flow <span class="agent">AGENT 2 · OSINT HUNTER</span></h2>
+    <div class="sig" id="signals"></div>
+  </section>
+
+  <section class="card c-arbiter"><h2>Cross-Market Arbiter Matrix <span class="agent">AGENT 3 · THE MACRO STRATEGIST</span></h2>
+    <p class="brief" id="arbiter">&hellip;</p>
+  </section>
+
+  <section class="card c-note"><h2>Note of the Day <span class="agent">AGENT 4 · CHIEF OF STAFF</span></h2>
+    <p class="note" id="note">&hellip;</p>
+    <p class="src">PUSHED FROM PHONE &rarr; WEBHOOK &rarr; SANITIZED BY THE CONDUCTOR</p>
+  </section>
+
+  <section class="card c-pipe"><h2>Under the Hood</h2>
+    <div class="pstep"><span class="n">1</span><b>Quant</b> logs telemetry <span class="arr">&rarr; &Delta; &gt; 1.2% check</span></div>
+    <div class="pstep"><span class="n">2</span><b>OSINT Hunter</b> scans wires <span class="arr">&rarr; Tavily on anomaly</span></div>
+    <div class="pstep"><span class="n">3</span><b>Arbiter</b> maps US &rarr; JCI spillover</div>
+    <div class="pstep"><span class="n">4</span><b>Chief of Staff</b> compiles data.json</div>
+    <div class="pstack" id="genBy">LangGraph · DeepSeek · yfinance · feedparser · Open-Meteo · GitHub Actions (06:00 &amp; 18:00 WIB)</div>
+  </section>
+
+</div>
+</main>
+
+<footer class="wrap">
+  <span id="stamp">&hellip;</span>
+  <span>$0/month infrastructure · static payload · <a href="index.html">vito christian samudra</a></span>
+</footer>
+
+<script>
+/* always land at the top on refresh */
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+scrollTo(0,0);
+
+const $=id=>document.getElementById(id);
+
+/* Phase 1 — time-aware greeting computed at runtime (data.json as fallback) */
+function liveGreeting(){
+  const h=new Date().getHours();
+  if(h>=4&&h<11)return "Good morning, Vito. Let's process the boards.";
+  if(h>=11&&h<15)return "Good afternoon, Vito. Midday telemetry is in.";
+  if(h>=15&&h<19)return "Good evening, Vito. Closing signals are settling.";
+  return "Late session, Vito. The desks are quiet — here's the wrap.";
+}
+
+function ago(iso){
+  const ms=Date.now()-new Date(iso).getTime();
+  const m=Math.round(ms/60000);
+  if(m<60)return `UPDATED ${m}M AGO`;
+  const h=Math.round(m/60);
+  return h<48?`UPDATED ${h}H AGO`:`UPDATED ${Math.round(h/24)}D AGO`;
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function render(d){
+  /* opening */
+  $('greeting').textContent=liveGreeting()||d.opening.greeting;
+  $('focusPill').textContent=d.opening.focus_state;
+  $('datePill').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' · WIB desk';
+  $('updPill').textContent=ago(d.timestamp);
+  $('stamp').textContent='Payload compiled '+new Date(d.timestamp).toLocaleString('en-GB',{dateStyle:'medium',timeStyle:'short'})+' UTC';
+
+  /* anomaly state pill */
+  const an=d.anomaly&&d.anomaly.active;
+  const sp=$('statePill');
+  sp.textContent=an?'⚠ ANOMALY WATCH':'● NOMINAL';
+  sp.className='pill '+(an?'alert':'ok');
+  if(an)sp.title=d.anomaly.desc;
+
+  /* executive brief */
+  $('execBrief').innerHTML=(d.executive_brief||[]).slice(0,3).map((t,i)=>
+    `<div class="e"><b>BRIEF ${'0'+(i+1)}</b>${esc(t)}</div>`).join('');
+
+  /* environmental */
+  $('wxBsd').textContent=d.opening.weather.bsd;
+  $('wxJkt').textContent=d.opening.weather.jakarta;
+  $('wxInsight').textContent=d.opening.weather.insight;
+
+  /* verse */
+  const v=d.opening.verse_of_the_day, dash=v.lastIndexOf('—');
+  $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
+
+  /* soundtrack */
+  $('trackName').textContent=d.opening.ambient_soundtrack.track_name;
+  const ifr=document.createElement('iframe');
+  ifr.src=d.opening.ambient_soundtrack.embed_url;
+  ifr.loading='lazy';ifr.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+  $('player').replaceChildren(ifr);
+
+  /* quant telemetry */
+  $('ticks').innerHTML=(d.telemetry||[]).map(r=>{
+    const up=r.delta_pct>=0;
+    return `<div class="trow"><span class="sym">${esc(r.symbol)}</span><span class="lbl">${esc(r.label)}</span>`+
+      `<span class="val">${r.value.toLocaleString('en-US',{maximumFractionDigits:2})}</span>`+
+      `<span class="delta ${up?'up':'down'}">${up?'▲':'▼'} ${Math.abs(r.delta_pct).toFixed(2)}%</span></div>`;
+  }).join('')||'<div class="trow"><span class="lbl">Telemetry offline this cycle.</span></div>';
+  $('qBullets').innerHTML=(d.intelligence_quadrants.market||[]).map(t=>`<p>${esc(t)}</p>`).join('');
+
+  /* signals feed */
+  const cats=[['economic','econ','Economic · Macro & Policy'],['tech_ai','tech','Tech & AI · Ecosystems'],['political','policy','Political · Mandates & Geo']];
+  $('signals').innerHTML=cats.map(([key,cls,label])=>
+    (d.intelligence_quadrants[key]||[]).map(t=>
+      `<div class="srow ${cls}"><span class="stag">${label}</span><p>${esc(t)}</p></div>`).join('')
+  ).join('');
+
+  /* arbiter + note */
+  $('arbiter').textContent=d.arbiter_brief||(d.intelligence_quadrants.market||[]).join(' ');
+  $('note').textContent=d.note_of_the_day;
+  if(d.generated_by)$('genBy').textContent=d.generated_by+' · 06:00 & 18:00 WIB';
+}
+
+fetch('data.json',{cache:'no-store'})
+  .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+  .then(render)
+  .catch(e=>{console.error('cockpit payload fetch failed',e);$('errbar').style.display='block';
+    $('greeting').textContent=liveGreeting();
+    $('updPill').textContent='OFFLINE';});
+</script>
+</body>
+</html>

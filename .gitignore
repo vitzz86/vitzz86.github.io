@@ -1,0 +1,14 @@
+# OS / tooling
+.DS_Store
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local-only: original unoptimized photos (site uses assets/photos/)
+Photo/
+
+# Local-only: pre-redesign backup
+index.backup.html
