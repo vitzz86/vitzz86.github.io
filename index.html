@@ -236,6 +236,67 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 .contact .links a.prime{background:#fff;box-shadow:none;}
 .lb button,.snav,.fs{backdrop-filter:blur(16px) saturate(1.5);-webkit-backdrop-filter:blur(16px) saturate(1.5);}
 
+/* dna / psychological due diligence */
+.dnagrid{display:grid;grid-template-columns:5fr 7fr;gap:14px;margin-top:14px;}
+.dnagrid:first-of-type{margin-top:30px;}
+@media(max-width:880px){.dnagrid{grid-template-columns:1fr;}}
+.dcard{border-radius:18px;border:1px solid var(--line);background:var(--card2);padding:24px 26px;box-shadow:0 14px 30px -22px rgba(20,24,16,.3);position:relative;overflow:hidden;}
+.dhead{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.dhead .dtag{color:var(--accent-d);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:3px 10px;font-size:9.5px;white-space:nowrap;letter-spacing:.08em;}
+.archq{font-family:var(--serif);font-size:clamp(19px,2.1vw,25px);line-height:1.32;letter-spacing:-.015em;}
+.archq em{color:var(--accent-d);}
+.dlist{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.dlist li{position:relative;padding-left:18px;font-size:13.5px;color:var(--ink2);line-height:1.5;}
+.dlist li:before{content:"";position:absolute;left:0;top:8px;width:6px;height:6px;background:var(--accent);border-radius:50%;}
+.dmeta{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink3);display:flex;gap:14px;flex-wrap:wrap;align-items:center;letter-spacing:.03em;}
+.dl{color:var(--accent-d);border-bottom:1px dashed var(--accent);padding-bottom:1px;transition:color .2s,border-color .2s;}
+.dl:hover{color:var(--ink);border-color:var(--ink);}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;height:100%;align-content:center;}
+@media(max-width:560px){.rings{grid-template-columns:1fr;}}
+.ring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 4px;}
+.ring .rwrap{position:relative;width:112px;height:112px;margin-bottom:10px;}
+.ring svg{width:100%;height:100%;}
+.ringbg{stroke:var(--sand);}
+.ringfg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.2,.7,.2,1) .35s;filter:drop-shadow(0 0 6px rgba(15,91,80,.35));}
+[data-reveal].seen .ringfg{stroke-dashoffset:var(--off);}
+.ring .rv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:31px;font-weight:500;letter-spacing:-.02em;}
+.ring b{font-size:14px;font-weight:600;}
+.ring p{font-size:11.5px;color:var(--ink3);line-height:1.45;margin-top:3px;max-width:170px;}
+#radar{width:100%;max-width:340px;margin:6px auto 0;display:block;}
+#radar .rgrid{fill:none;stroke:var(--line);}
+#radar .raxis{stroke:var(--line);}
+#radar .rpoly{fill:rgba(15,91,80,.15);stroke:var(--accent);stroke-width:2;stroke-linejoin:round;opacity:0;transform:scale(.55);transform-origin:50% 50%;transition:opacity .9s ease .3s,transform 1s cubic-bezier(.2,.7,.2,1) .3s;}
+[data-reveal].seen #radar .rpoly{opacity:1;transform:none;}
+#radar .rdot{fill:var(--accent-d);}
+#radar .rlab{font-family:var(--mono);font-size:9.5px;fill:var(--ink2);letter-spacing:.05em;}
+.b5row{display:grid;grid-template-columns:158px 1fr 46px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line);}
+.b5row:last-of-type{border-bottom:none;}
+@media(max-width:480px){.b5row{grid-template-columns:110px 1fr 40px;}}
+.b5row .nm{font-size:13px;font-weight:600;line-height:1.3;}
+.b5row .nm span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--ink3);text-transform:uppercase;font-weight:400;margin-top:1px;}
+.b5track{height:8px;background:var(--sand);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+.b5fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),#1f8f7d);border-radius:999px;transition:width 1.2s cubic-bezier(.2,.7,.2,1) .3s;}
+[data-reveal].seen .b5fill{width:var(--w);}
+.b5row .sc{font-family:var(--mono);font-size:11.5px;color:var(--ink2);text-align:right;font-variant-numeric:tabular-nums;}
+.facets{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;}
+.flabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);width:100%;margin-top:6px;}
+.facet{font-family:var(--mono);font-size:10.5px;border-radius:999px;padding:5px 11px;border:1px solid var(--line);background:var(--card);color:var(--ink2);}
+.facet b{color:var(--accent-d);font-weight:500;}
+.facet.low b{color:#9C3B2E;}
+.calib{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:760px){.calib{grid-template-columns:1fr;}}
+.calib .c{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--card);position:relative;overflow:hidden;}
+.calib .cn{position:absolute;top:6px;right:14px;font-family:var(--mono);font-size:40px;color:var(--ink);opacity:.07;font-weight:500;}
+.calib h4{font-family:var(--serif);font-size:18px;font-weight:500;margin-bottom:9px;}
+.calib .lbl{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.calib .risk{font-size:13px;color:var(--ink2);margin-bottom:11px;line-height:1.5;}
+.calib .risk .lbl{color:#9C3B2E;}
+.calib .fix{font-size:13px;color:var(--ink);border-left:2px solid var(--accent);padding-left:12px;line-height:1.5;}
+.calib .fix .lbl{color:var(--accent-d);}
+.bottomline{margin-top:14px;border:1px solid var(--glass-brd,rgba(255,255,255,.65));border-radius:18px;padding:clamp(22px,3vw,32px) clamp(24px,3.4vw,38px);background:rgba(252,252,248,.5);backdrop-filter:blur(16px) saturate(1.6);-webkit-backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 8px 22px -14px rgba(20,24,16,.25);}
+.bottomline p{font-family:var(--serif);font-size:clamp(16px,1.9vw,20px);line-height:1.5;max-width:900px;}
+.bottomline p em{color:var(--accent-d);}
+
 [data-reveal]{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease;}
 [data-reveal].seen{opacity:1;transform:none;}
 @media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none;}}
@@ -245,7 +306,7 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 <div class="progress" id="progress"></div>
 <nav class="nav" id="nav"><div class="inner">
   <a class="brand" href="#top"><span class="dot"></span>Vito Christian Samudra</a>
-  <div class="navlinks"><a href="#work">Work</a><a href="#experience">Experience</a><a href="#photos">Photos</a><a href="#background">Background</a><a href="cockpit.html">Cockpit</a><a class="cta" href="mailto:samudravito4@gmail.com">Get in touch</a></div>
+  <div class="navlinks"><a href="#work">Work</a><a href="#experience">Experience</a><a href="#photos">Photos</a><a href="#background">Background</a><a href="#dna">DNA</a><a href="cockpit.html">Cockpit</a><a class="cta" href="mailto:samudravito4@gmail.com">Get in touch</a></div>
 </div></nav>
 
 <header class="hero" id="top">
@@ -383,6 +444,73 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
       <div class="eyebrow" style="margin:26px 0 0;">What I work with</div>
       <div class="chips"><span class="chip">Financial modeling</span><span class="chip">Startup valuation</span><span class="chip">Deal screening</span><span class="chip">Market mapping</span><span class="chip">Impact analysis</span><span class="chip">Cap-table &amp; exit modeling</span><span class="chip">AI workflows</span></div>
     </div>
+  </div>
+</section>
+
+<section id="dna">
+  <div class="sechead" data-reveal><div><span class="eyebrow">Psychological due diligence</span><h2 class="sec">How I&rsquo;m wired.</h2></div>
+  <p class="lead">Two standardized assessments taken in November 2025, published unedited &mdash; peaks, blind spots and all. For recruiters, founders and co&#8209;investors who want to know how I operate before we ever meet. Both reports are downloadable below.</p></div>
+
+  <div class="dnagrid" data-reveal>
+    <div class="dcard">
+      <div class="dhead"><span>Part 01 · Entrepreneur DNA</span><span class="dtag">Archetype: The Achiever</span></div>
+      <p class="archq">&ldquo;The Achiever simply <em>refuses to lose</em> &mdash; and will work night and day to ensure they don&rsquo;t.&rdquo;</p>
+      <ul class="dlist">
+        <li>Thrives in high-pressure, challenging environments</li>
+        <li>Incredibly hard worker that doesn&rsquo;t fear failure</li>
+        <li>Natural ability to motivate others</li>
+        <li>Excels at calculated risks that push the boundaries of what&rsquo;s possible</li>
+      </ul>
+      <div class="dmeta"><span>Taken 10 Nov 2025</span><a class="dl" href="assets/docs/entrepreneur-dna-report.pdf" download>Download report (PDF) &darr;</a></div>
+    </div>
+    <div class="dcard">
+      <div class="dhead"><span>Strongest traits · percentile</span><span class="dtag">Very high &times;3</span></div>
+      <div class="rings">
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:2.6" transform="rotate(-90 50 50)"/></svg><span class="rv">99</span></div><b>Achievement</b><p>Ambitious goals, and the will to go far beyond expectations.</p></div>
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:7.9" transform="rotate(-90 50 50)"/></svg><span class="rv">97</span></div><b>Adaptability</b><p>Re-plans without drama; thrives in ambiguous, fast-moving environments.</p></div>
+        <div class="ring"><div class="rwrap"><svg viewBox="0 0 100 100"><circle class="ringbg" cx="50" cy="50" r="42" fill="none" stroke-width="7"/><circle class="ringfg" cx="50" cy="50" r="42" fill="none" stroke-width="7" stroke-dasharray="263.9" stroke-dashoffset="263.9" style="--off:18.5" transform="rotate(-90 50 50)"/></svg><span class="rv">93</span></div><b>Innovation</b><p>Unconventional solutions; comfort with experimentation and challenging the status quo.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dnagrid" data-reveal>
+    <div class="dcard">
+      <div class="dhead"><span>Part 02 · Big Five</span><span class="dtag">IPIP-NEO-120 · open source</span></div>
+      <svg id="radar" viewBox="0 0 260 212" role="img" aria-label="Big Five radar chart: Openness 88, Conscientiousness 81, Extraversion 71, Agreeableness 53, Neuroticism 69 (of 120)"></svg>
+      <div class="dmeta"><span>Taken 16 Nov 2025</span><span title="Verify at bigfive-test.com">ID 6919f02b&hellip;</span><a class="dl" href="assets/docs/bigfive-results.pdf" download>Download results (PDF) &darr;</a></div>
+    </div>
+    <div class="dcard">
+      <div class="dhead"><span>Domains · score / 120</span><span class="dtag">As classified by the report</span></div>
+      <div class="b5row"><span class="nm">Openness<span>High</span></span><div class="b5track"><div class="b5fill" style="--w:73%"></div></div><span class="sc">88</span></div>
+      <div class="b5row"><span class="nm">Conscientiousness<span>High</span></span><div class="b5track"><div class="b5fill" style="--w:68%"></div></div><span class="sc">81</span></div>
+      <div class="b5row"><span class="nm">Extraversion<span>Low &middot; assertive</span></span><div class="b5track"><div class="b5fill" style="--w:59%"></div></div><span class="sc">71</span></div>
+      <div class="b5row"><span class="nm">Neuroticism<span>Low</span></span><div class="b5track"><div class="b5fill" style="--w:58%"></div></div><span class="sc">69</span></div>
+      <div class="b5row"><span class="nm">Agreeableness<span>Low &middot; objective</span></span><div class="b5track"><div class="b5fill" style="--w:44%"></div></div><span class="sc">53</span></div>
+      <div class="facets">
+        <span class="flabel">Facet peaks (of 20)</span>
+        <span class="facet">Self-Efficacy <b>20</b></span><span class="facet">Excitement-Seeking <b>20</b></span><span class="facet">Adventurousness <b>19</b></span><span class="facet">Achievement-Striving <b>19</b></span><span class="facet">Imagination <b>17</b></span><span class="facet">Intellect <b>16</b></span><span class="facet">Dutifulness <b>16</b></span><span class="facet">Assertiveness <b>13 · high</b></span>
+        <span class="flabel">The honest lows</span>
+        <span class="facet low">Gregariousness <b>5</b></span><span class="facet low">Trust <b>7</b></span><span class="facet low">Cautiousness <b>8</b></span><span class="facet low">Orderliness <b>9</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="dcard" data-reveal style="margin-top:14px;">
+    <div class="dhead"><span>Part 03 · Known blind spots, actively managed</span><span class="dtag">Self-awareness as risk mitigation</span></div>
+    <div class="calib">
+      <div class="c"><span class="cn">28</span><h4>Trust calibration</h4>
+        <p class="risk"><span class="lbl">Baseline risk</span>A natural skepticism of others&rsquo; motives (Trust: moderately low) &mdash; the instinct to question intentions and hold work close instead of delegating.</p>
+        <p class="fix"><span class="lbl">Active practice</span>Deliberate delegation in increasing increments &mdash; handing over progressively larger pieces of work to build efficient teams instead of micromanaging.</p>
+      </div>
+      <div class="c"><span class="cn">10</span><h4>Emotional control</h4>
+        <p class="risk"><span class="lbl">Baseline risk</span>Can be sensitive to hard criticism, and may need extra time to recharge after difficult situations or rejections.</p>
+        <p class="fix"><span class="lbl">Active practice</span>Strategic pauses before responding to triggers; mindful breaks between intense conversations to keep judgment strictly objective.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottomline" data-reveal>
+    <p>The net of it: a <em>deeply analytical, high-output operator</em> &mdash; one who sets brutal targets (Achievement 99), re-plans without drama (Adaptability 97), and defaults to objective truth over social comfort. The blind spots are known, named, and actively managed &mdash; <em>which is exactly what due diligence should look like.</em></p>
   </div>
 </section>
 
@@ -644,6 +772,23 @@ document.addEventListener('keydown',e=>{ if(!lb.classList.contains('open'))retur
     });
   }
   render();
+})();
+
+/* ---------- big five radar ---------- */
+(function(){
+  const svg=document.getElementById('radar'); if(!svg)return;
+  const data=[['OPENNESS',88],['CONSCIENTIOUSNESS',81],['EXTRAVERSION',71],['AGREEABLENESS',53],['NEUROTICISM',69]];
+  const cx=130,cy=106,R=74,N=data.length,MAX=120;
+  const pt=(k,r)=>{const a=-Math.PI/2+k*2*Math.PI/N;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const poly=r=>data.map((_,k)=>pt(k,r).map(v=>v.toFixed(1)).join(',')).join(' ');
+  let g='';
+  [0.25,0.5,0.75,1].forEach(f=>{g+='<polygon class="rgrid" points="'+poly(R*f)+'"/>';});
+  data.forEach((_,k)=>{const[x,y]=pt(k,R);g+='<line class="raxis" x1="'+cx+'" y1="'+cy+'" x2="'+x.toFixed(1)+'" y2="'+y.toFixed(1)+'"/>';});
+  g+='<polygon class="rpoly" points="'+data.map((d,k)=>pt(k,R*d[1]/MAX).map(v=>v.toFixed(1)).join(',')).join(' ')+'"/>';
+  data.forEach((d,k)=>{const[x,y]=pt(k,R*d[1]/MAX);g+='<circle class="rdot" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3"/>';});
+  data.forEach((d,k)=>{const[x,y]=pt(k,R+15);const lab=(k===1?'CONSC.':k===2?'EXTRAV.':k===3?'AGREE.':k===4?'NEURO.':d[0]);
+    g+='<text class="rlab" x="'+x.toFixed(1)+'" y="'+(y+3).toFixed(1)+'" text-anchor="middle">'+lab+' '+d[1]+'</text>';});
+  svg.innerHTML=g;
 })();
 
 /* ---------- hero portrait tilt ---------- */
