@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-06-10T17:17:31Z",
+  "timestamp": "2026-06-11T07:52:06Z",
   "opening": {
-    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
+    "greeting": "Good afternoon, Vito. Midday telemetry is in.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Clear sky, 26°C.",
-      "jakarta": "Clear sky, 28°C.",
-      "insight": "Clear operating window. Good day to front-load external meetings and site movement."
+      "bsd": "Telemetry unavailable.",
+      "jakarta": "Light drizzle, 32°C.",
+      "insight": "High precipitation across the corridor. Pad commute windows and maximize internal focus blocks."
     },
     "verse_of_the_day": "Do not be anxious about anything, but in every situation present your requests to God. — Philippians 4:6",
     "ambient_soundtrack": {
@@ -19,75 +19,75 @@
       "symbol": "^JKSE",
       "label": "JCI / IHSG",
       "kind": "index",
-      "value": 5746.65,
-      "delta_pct": 7.57
+      "value": 5867.09,
+      "delta_pct": 2.1
     },
     {
       "symbol": "^GSPC",
       "label": "S&P 500",
       "kind": "index",
-      "value": 7305.21,
-      "delta_pct": -1.1
+      "value": 7386.65,
+      "delta_pct": -0.26
     },
     {
       "symbol": "^IXIC",
       "label": "Nasdaq",
       "kind": "index",
-      "value": 25302.74,
-      "delta_pct": -1.46
+      "value": 25678.82,
+      "delta_pct": -0.97
     },
     {
       "symbol": "^DJI",
       "label": "Dow Jones",
       "kind": "index",
-      "value": 50192.91,
-      "delta_pct": -1.34
+      "value": 50872.11,
+      "delta_pct": 0.17
     },
     {
       "symbol": "USDIDR=X",
       "label": "USD/IDR",
       "kind": "fx",
-      "value": 17966.0,
-      "delta_pct": -1.23
+      "value": 17995.0,
+      "delta_pct": -0.2
     },
     {
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 91.14,
-      "delta_pct": 3.33
+      "value": 89.68,
+      "delta_pct": -0.39
     },
     {
       "symbol": "ITMG.JK",
       "label": "Coal proxy (ITMG)",
       "kind": "commodity",
-      "value": 21800.0,
-      "delta_pct": -0.34
+      "value": 22250.0,
+      "delta_pct": 1.14
     },
     {
       "symbol": "INCO.JK",
       "label": "Nickel proxy (INCO)",
       "kind": "commodity",
-      "value": 4710.0,
-      "delta_pct": 11.08
+      "value": 4260.0,
+      "delta_pct": -6.37
     }
   ],
   "anomaly": {
     "active": true,
-    "desc": "JCI / IHSG spike of +7.57%; Nasdaq drop of -1.46%"
+    "desc": "JCI / IHSG spike of +2.10%"
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI closed at 5,747 (+7.57%) on the latest session.",
-      "US benchmark Nasdaq moved -1.46% overnight to 25,303."
+      "JCI closed at 5,867 (+2.10%) on the latest session.",
+      "US benchmark Nasdaq moved -0.97% overnight to 25,679."
     ],
     "economic": [
-      "Anthropic plugs Claude AI in Japan for automated software development (Nikkei Asia)",
-      "US tungsten scrap exports to Japan soar on Chinese curbs (Nikkei Asia)"
+      "Indonesia's shrinkflation belies government's 'strong' fundamentals claim (Nikkei Asia)",
+      "Chinese firefighting equipment makers target untapped EU market (Nikkei Asia)"
     ],
     "tech_ai": [
-      "Netflix expands revamped mobile app across Asia and doubles down on kids’ gaming (TechCrunch)",
-      "‘AI-pilled’ firms spend $7,500 per employee each month on AI (TechCrunch)"
+      "Opendoor’s India exit is fueling a bigger conversation about AI and outsourcing (TechCrunch)",
+      "Anthropic’s Dario Amodei has just one direct report (TechCrunch)"
     ],
     "political": [
       "Presiden Prabowo Dengarkan Langsung Aspirasi dan Kisah Para Siswa Sekolah Rakyat di Tabanan (Setkab RI)",
@@ -96,9 +96,9 @@
   },
   "arbiter_brief": "Automated spillover analysis was unavailable this cycle; telemetry and headline ingestion completed normally and the next scheduled run will restore the full arbiter brief.",
   "executive_brief": [
-    "JCI closed at 5,747 (+7.57%) on the latest session.",
-    "Anthropic plugs Claude AI in Japan for automated software development (Nikkei Asia)",
-    "Netflix expands revamped mobile app across Asia and doubles down on kids’ gaming (TechCrunch)"
+    "JCI closed at 5,867 (+2.10%) on the latest session.",
+    "Indonesia's shrinkflation belies government's 'strong' fundamentals claim (Nikkei Asia)",
+    "Opendoor’s India exit is fueling a bigger conversation about AI and outsourcing (TechCrunch)"
   ],
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
   "generated_by": "LangGraph 4-agent pipeline · DeepSeek intelligence base · yfinance / feedparser / Open-Meteo · GitHub Actions cron"
