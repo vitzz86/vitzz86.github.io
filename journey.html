@@ -63,12 +63,12 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rend
   <div class="ovl" id="start">
     <h1>VITO&rsquo;S JOURNEY</h1>
     <p>FROM WHERE IT ALL STARTED<br>TO WHERE I AM TODAY.</p>
-    <p class="keys">← → OR A D MOVE&nbsp;&nbsp;&nbsp;SPACE / W / ↑ JUMP (TAP TWICE = DOUBLE JUMP)<br>BUMP ? BLOCKS · GRAB COINS · DODGE THE SPIKES · REACH THE FLAG<br>IF KEYS DON&rsquo;T RESPOND, CLICK THE GAME AREA ONCE.</p>
-    <button class="btn" id="startBtn">▶ PRESS START</button>
+    <p class="keys">A D MOVE&nbsp;&nbsp;&nbsp;W JUMP (TAP TWICE = DOUBLE JUMP)<br>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br>BUMP ? BLOCKS · GRAB COINS · DODGE THE SPIKES · REACH THE FLAG</p>
+    <button class="btn" id="startBtn">▶ PRESS ENTER TO START</button>
   </div>
 
   <div id="card">
-    <div class="txt"><h2 id="cTitle"></h2><p id="cBody"></p><a id="cLink" class="clink" href="#" target="_blank" rel="noopener" style="display:none"></a><p class="cont blink">PRESS SPACE / TAP TO CONTINUE ▶</p></div>
+    <div class="txt"><h2 id="cTitle"></h2><p id="cBody"></p><a id="cLink" class="clink" href="#" target="_blank" rel="noopener" style="display:none"></a><p class="cont blink">PRESS W / ENTER / TAP TO CONTINUE ▶</p></div>
     <img id="cImg" alt="" style="display:none">
   </div>
   <div id="toast"></div>
@@ -114,7 +114,7 @@ const ZONES=[
 ];
 const SIGNS=[
  {x:170, title:'STAGE 1: KEDIRI',  body:'Where it all began — born in Kediri, East Java, in the shadow of Mt. Kelud. Small town, big targets.', img:null},
- {x:1230,title:'STAGE 2: ITB BANDUNG', body:'Graduated in Information Systems & Technology, where I developed a strong interest in startups, entrepreneurship and product management — with hands-on product management internships along the way, plus an internship in Singapore and an exchange program in Japan that broadened my international exposure.', img:'assets/photos/graduation-itb.jpg'},
+ {x:1080,title:'STAGE 2: ITB BANDUNG', body:'Graduated in Information Systems & Technology, where I developed a strong interest in startups, entrepreneurship and product management — with hands-on product management internships along the way, plus an internship in Singapore and an exchange program in Japan that broadened my international exposure.', img:'assets/photos/graduation-itb.jpg'},
  {x:2230,title:'STAGE 3: SINGAPORE', body:'Selected for the NUS Overseas Colleges (NOC) Program — interned at Forte Biotech as a Business Development Intern while studying Venture Creation: Process and Mindset at the National University of Singapore (NUS).', img:'assets/photos/nus-business-school.jpg'},
  {x:3230,title:'STAGE 4: JAPAN', body:'Represented Indonesia in the Social Innovator Hub Program at Tohoku University, Sendai, Japan — where participants collaborated to address social challenges through entrepreneurship and innovation.', img:'assets/photos/social-innovator-hub.jpg'},
  {x:4280,title:'STAGE 5: JAKARTA — VENTURE CAPITAL', body:'Began my venture capital career at Living Lab Ventures, the Corporate Venture Capital arm of Sinar Mas Land — and currently serve as an Investment Associate at New Energy Nexus Ventures, focusing on climate and energy innovation investments.', img:'assets/photos/team-llv.jpg'},
@@ -228,8 +228,12 @@ const toast=document.getElementById('toast');let toastT=null,cardOpen=false;
 
 const cL=document.getElementById('cLink');
 cL.addEventListener('click',e=>e.stopPropagation());
+/* preload every story photo so cards never flash a previous image */
+[...SIGNS,...QBLOCKS].forEach(s=>{if(s.img){const im=new Image();im.src=s.img;}});
 function showCard(s){cardOpen=true;cT.textContent=s.title;cB.textContent=s.body;
- if(s.img){cI.src=s.img;cI.style.display='block';}else cI.style.display='none';
+ if(s.img){cI.style.display='none';cI.onload=()=>{cI.style.display='block';};cI.src=s.img;
+  if(cI.complete&&cI.naturalWidth)cI.style.display='block';}
+ else{cI.style.display='none';cI.removeAttribute('src');}
  if(s.link){cL.href=s.link;cL.textContent=(s.lab||'VIEW')+' ↗';cL.style.display='inline-block';}else cL.style.display='none';
  card.classList.add('show');}
 function hideCard(){cardOpen=false;card.classList.remove('show');}
@@ -254,7 +258,7 @@ const mB=document.getElementById('muteBtn');
 mB.onclick=e=>{e.preventDefault();muted=!muted;bgm.muted=muted;mB.textContent=muted?'♪ OFF':'♪ ON';};
 
 /* ------------------------------------------------ death & respawn */
-function die(){if(dying||inv)return;sfxDie();lives--;hL.textContent='♥x'+lives;dying=60;P.vy=-4.6;}
+function die(){if(dying||inv||lives<=0)return;sfxDie();lives--;hL.textContent='♥x'+lives;dying=60;P.vy=-4.6;}
 function respawn(){const z=zoneAt(P.x);P.x=Math.max(40,z.x0+26);P.y=GROUND-P.h;P.vx=0;P.vy=0;P.onG=true;jumps=0;inv=90;}
 function gameOver(){running=false;try{bgm.pause();}catch(e){}document.getElementById('over').classList.remove('hide');}
 
@@ -264,6 +268,10 @@ function keyName(e){if(e.code&&KEYMAP[e.code])return KEYMAP[e.code];if(e.code)re
  return ({' ':'Space','Left':'ArrowLeft','Right':'ArrowRight','Up':'ArrowUp'})[e.key]||e.key||'';}
 /* capture phase so host pages / embeds can't swallow the arrows first */
 addEventListener('keydown',e=>{const c=keyName(e);
+ if(c==='Enter'){
+  if(!document.getElementById('start').classList.contains('hide')){document.getElementById('startBtn').click();return;}
+  if(!document.getElementById('over').classList.contains('hide')||!document.getElementById('end').classList.contains('hide')){location.reload();return;}
+ }
  if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(c))e.preventDefault();
  if(cardOpen&&(c==='Space'||c==='Enter')){hideCard();return;}
  keys[c]=true;},true);
