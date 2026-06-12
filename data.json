@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-06-12T00:17:18Z",
+  "timestamp": "2026-06-12T14:11:57Z",
   "opening": {
-    "greeting": "Good morning, Vito. Let's process the boards.",
+    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Clear sky, 26°C.",
-      "jakarta": "Clear sky, 27°C.",
+      "bsd": "Overcast, 27°C.",
+      "jakarta": "Telemetry unavailable.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
     "verse_of_the_day": "Seek first the kingdom of God and His righteousness, and all these things will be added to you. — Matthew 6:33",
@@ -19,86 +19,86 @@
       "symbol": "^JKSE",
       "label": "JCI / IHSG",
       "kind": "index",
-      "value": 5902.38,
-      "delta_pct": 2.71
+      "value": 6007.66,
+      "delta_pct": 2.07
     },
     {
       "symbol": "^GSPC",
       "label": "S&P 500",
       "kind": "index",
-      "value": 7394.3,
-      "delta_pct": 1.75
+      "value": 7414.91,
+      "delta_pct": 0.28
     },
     {
       "symbol": "^IXIC",
       "label": "Nasdaq",
       "kind": "index",
-      "value": 25809.66,
-      "delta_pct": 2.54
+      "value": 25838.33,
+      "delta_pct": 0.11
     },
     {
       "symbol": "^DJI",
       "label": "Dow Jones",
       "kind": "index",
-      "value": 50848.75,
-      "delta_pct": 1.86
+      "value": 51036.31,
+      "delta_pct": 0.37
     },
     {
       "symbol": "USDIDR=X",
       "label": "USD/IDR",
       "kind": "fx",
-      "value": 17975.0,
-      "delta_pct": 0.55
+      "value": 17916.0,
+      "delta_pct": 0.22
     },
     {
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 86.36,
-      "delta_pct": -4.08
+      "value": 87.1,
+      "delta_pct": -0.7
     },
     {
       "symbol": "ITMG.JK",
       "label": "Coal proxy (ITMG)",
       "kind": "commodity",
-      "value": 22350.0,
-      "delta_pct": 1.59
+      "value": 23475.0,
+      "delta_pct": 5.03
     },
     {
       "symbol": "INCO.JK",
       "label": "Nickel proxy (INCO)",
       "kind": "commodity",
-      "value": 4270.0,
-      "delta_pct": -6.15
+      "value": 4710.0,
+      "delta_pct": 10.3
     }
   ],
   "anomaly": {
     "active": true,
-    "desc": "JCI / IHSG spike of +2.71%; Nasdaq spike of +2.54%"
+    "desc": "JCI / IHSG spike of +2.07%"
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI closed at 5,902 (+2.71%) on the latest session.",
-      "US benchmark Nasdaq moved +2.54% overnight to 25,810."
+      "JCI closed at 6,008 (+2.07%) on the latest session.",
+      "US benchmark Nasdaq moved +0.11% overnight to 25,838."
     ],
     "economic": [
-      "BYD brand ambassador Wang Leehom uses fee to buy shares (Nikkei Asia)",
-      "A Burger King's ransom: Rival Japan franchisees courted with $250,000 (Nikkei Asia)"
+      "'Indonesia Bankrupt' rallies demand fiscal reform, end to flagship programs (Nikkei Asia)",
+      "Nikkei revises dividend-focused indices, adjusts constituents (Nikkei Asia)"
     ],
     "tech_ai": [
-      "SpaceX officially prices shares at $135 in the largest IPO ever (TechCrunch)",
-      "Oracle warns of security bug that hackers abused to breach 100+ companies (TechCrunch)"
+      "SpaceX IPO: Everything you need to know (TechCrunch)",
+      "US surveillance law to expire for first time after lawmakers reject Trump’s controversial pick to lead spy agencies (TechCrunch)"
     ],
     "political": [
-      "Presiden Prabowo Dengarkan Langsung Aspirasi dan Kisah Para Siswa Sekolah Rakyat di Tabanan (Setkab RI)",
-      "Harapan yang Tumbuh di SRMP 17 Tabanan: Kisah Orang Tua Menyambut Masa Depan Anak (Setkab RI)"
+      "Panggil Menteri ESDM, Presiden Prabowo Bahas Ketahanan Energi dan Hilirisasi, Pastikan BBM Subsidi serta LPG Tetap Stabil (Setkab RI)",
+      "Dari MBG hingga IFP, Program Prioritas Presiden Prabowo Dorong Kemajuan Pendidikan Nasional (Setkab RI)"
     ]
   },
   "arbiter_brief": "Automated spillover analysis was unavailable this cycle; telemetry and headline ingestion completed normally and the next scheduled run will restore the full arbiter brief.",
   "executive_brief": [
-    "JCI closed at 5,902 (+2.71%) on the latest session.",
-    "BYD brand ambassador Wang Leehom uses fee to buy shares (Nikkei Asia)",
-    "SpaceX officially prices shares at $135 in the largest IPO ever (TechCrunch)"
+    "JCI closed at 6,008 (+2.07%) on the latest session.",
+    "'Indonesia Bankrupt' rallies demand fiscal reform, end to flagship programs (Nikkei Asia)",
+    "SpaceX IPO: Everything you need to know (TechCrunch)"
   ],
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
   "generated_by": "LangGraph 4-agent pipeline · DeepSeek intelligence base · yfinance / feedparser / Open-Meteo · GitHub Actions cron"
