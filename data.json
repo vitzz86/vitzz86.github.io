@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-11T14:39:36Z",
+  "timestamp": "2026-06-12T00:17:18Z",
   "opening": {
-    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
+    "greeting": "Good morning, Vito. Let's process the boards.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Clear sky, 28°C.",
-      "jakarta": "Clear sky, 29°C.",
+      "bsd": "Clear sky, 26°C.",
+      "jakarta": "Clear sky, 27°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
-    "verse_of_the_day": "Do not be anxious about anything, but in every situation present your requests to God. — Philippians 4:6",
+    "verse_of_the_day": "Seek first the kingdom of God and His righteousness, and all these things will be added to you. — Matthew 6:33",
     "ambient_soundtrack": {
-      "track_name": "Evening Jazz & Wind-Down",
-      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX4wta20PHgwo?utm_source=generator"
+      "track_name": "Instrumental Concentration (High-Volatility Desk)",
+      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX3PFzdbtx1Us?utm_source=generator"
     }
   },
   "telemetry": [
@@ -19,43 +19,43 @@
       "symbol": "^JKSE",
       "label": "JCI / IHSG",
       "kind": "index",
-      "value": 5886.03,
-      "delta_pct": -0.28
+      "value": 5902.38,
+      "delta_pct": 2.71
     },
     {
       "symbol": "^GSPC",
       "label": "S&P 500",
       "kind": "index",
-      "value": 7302.71,
-      "delta_pct": 0.49
+      "value": 7394.3,
+      "delta_pct": 1.75
     },
     {
       "symbol": "^IXIC",
       "label": "Nasdaq",
       "kind": "index",
-      "value": 25333.87,
-      "delta_pct": 0.65
+      "value": 25809.66,
+      "delta_pct": 2.54
     },
     {
       "symbol": "^DJI",
       "label": "Dow Jones",
       "kind": "index",
-      "value": 50241.84,
-      "delta_pct": 0.65
+      "value": 50848.75,
+      "delta_pct": 1.86
     },
     {
       "symbol": "USDIDR=X",
       "label": "USD/IDR",
       "kind": "fx",
-      "value": 17977.0,
-      "delta_pct": -0.3
+      "value": 17975.0,
+      "delta_pct": 0.55
     },
     {
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 90.14,
-      "delta_pct": 0.12
+      "value": 86.36,
+      "delta_pct": -4.08
     },
     {
       "symbol": "ITMG.JK",
@@ -73,21 +73,21 @@
     }
   ],
   "anomaly": {
-    "active": false,
-    "desc": ""
+    "active": true,
+    "desc": "JCI / IHSG spike of +2.71%; Nasdaq spike of +2.54%"
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI closed at 5,886 (-0.28%) on the latest session.",
-      "US benchmark Nasdaq moved +0.65% overnight to 25,334."
+      "JCI closed at 5,902 (+2.71%) on the latest session.",
+      "US benchmark Nasdaq moved +2.54% overnight to 25,810."
     ],
     "economic": [
-      "What naphtha shortage? China extends petrochemicals lead during Iran war (Nikkei Asia)",
-      "China's AI companies dig in as SpaceX, US rivals ready IPO bonanza (Nikkei Asia)"
+      "BYD brand ambassador Wang Leehom uses fee to buy shares (Nikkei Asia)",
+      "A Burger King's ransom: Rival Japan franchisees courted with $250,000 (Nikkei Asia)"
     ],
     "tech_ai": [
-      "DoorDash’s new AI chatbot lets you order with prompts and photos (TechCrunch)",
-      "Endurance Energy raises $54M to harness a massive untapped energy source (TechCrunch)"
+      "SpaceX officially prices shares at $135 in the largest IPO ever (TechCrunch)",
+      "Oracle warns of security bug that hackers abused to breach 100+ companies (TechCrunch)"
     ],
     "political": [
       "Presiden Prabowo Dengarkan Langsung Aspirasi dan Kisah Para Siswa Sekolah Rakyat di Tabanan (Setkab RI)",
@@ -96,9 +96,9 @@
   },
   "arbiter_brief": "Automated spillover analysis was unavailable this cycle; telemetry and headline ingestion completed normally and the next scheduled run will restore the full arbiter brief.",
   "executive_brief": [
-    "JCI closed at 5,886 (-0.28%) on the latest session.",
-    "What naphtha shortage? China extends petrochemicals lead during Iran war (Nikkei Asia)",
-    "DoorDash’s new AI chatbot lets you order with prompts and photos (TechCrunch)"
+    "JCI closed at 5,902 (+2.71%) on the latest session.",
+    "BYD brand ambassador Wang Leehom uses fee to buy shares (Nikkei Asia)",
+    "SpaceX officially prices shares at $135 in the largest IPO ever (TechCrunch)"
   ],
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
   "generated_by": "LangGraph 4-agent pipeline · DeepSeek intelligence base · yfinance / feedparser / Open-Meteo · GitHub Actions cron"
