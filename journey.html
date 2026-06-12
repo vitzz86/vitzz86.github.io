@@ -61,7 +61,7 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rend
   <div class="ovl" id="start">
     <h1>VITO&rsquo;S JOURNEY</h1>
     <p>A REAL CV, PLAYABLE.<br>FROM KEDIRI TO THE CAP TABLES OF SOUTHEAST ASIA.</p>
-    <p class="keys">←  → MOVE&nbsp;&nbsp;&nbsp;SPACE / ↑ JUMP<br>BUMP ? BLOCKS FOR FACTS · REACH THE FLAG</p>
+    <p class="keys">← → OR A D MOVE&nbsp;&nbsp;&nbsp;SPACE / W / ↑ JUMP<br>BUMP ? BLOCKS FOR FACTS · REACH THE FLAG</p>
     <button class="btn" id="startBtn">▶ PRESS START</button>
   </div>
 
@@ -273,11 +273,12 @@ function hideCard(){cardOpen=false;card.classList.remove('show');}
 function showToast(msg){toast.textContent=msg;toast.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>toast.style.display='none',3600);}
 
 /* ------------------------------------------------ input */
-addEventListener('keydown',e=>{
- if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(e.code))e.preventDefault();
- if(cardOpen&&(e.code==='Space'||e.code==='Enter')){hideCard();return;}
- keys[e.code]=true;});
-addEventListener('keyup',e=>keys[e.code]=false);
+const KEYMAP={KeyA:'ArrowLeft',KeyD:'ArrowRight',KeyW:'Space'};
+addEventListener('keydown',e=>{const c=KEYMAP[e.code]||e.code;
+ if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(c))e.preventDefault();
+ if(cardOpen&&(c==='Space'||c==='Enter')){hideCard();return;}
+ keys[c]=true;});
+addEventListener('keyup',e=>{const c=KEYMAP[e.code]||e.code;keys[c]=false;});
 function bindTouch(id,code){const el=document.getElementById(id);
  ['pointerdown','touchstart'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();if(cardOpen){hideCard();return;}keys[code]=true;}));
  ['pointerup','pointerleave','touchend'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();keys[code]=false;}));}
@@ -340,12 +341,21 @@ function draw(){
  const frame=!P.onG?'jump':(Math.abs(P.vx)>.3?(Math.floor(P.anim)%2?'walk':'stand'):'stand');
  drawPlayer(Math.round(P.x-cam),Math.round(P.y),frame,P.flip);
 }
-let lastTick=0;
-function tick(){lastTick=performance.now();if(running){update();draw();}}
+/* fixed-step loop with delta-time catch-up: keeps real-time speed on any
+   refresh rate, and stays playable in webviews that throttle timers */
+let lastTick=0,lastT=0,accT=0,startT=0,tickCount=0,slowChecked=false;
+function tick(){lastTick=performance.now();
+ if(!running){lastT=lastTick;return;}
+ accT+=lastTick-lastT;lastT=lastTick;if(accT>700)accT=700;
+ let n=0;while(accT>=16.7&&n<42){update();accT-=16.7;n++;}
+ if(n){draw();tickCount++;}
+ if(!slowChecked&&startT&&lastTick-startT>2500){slowChecked=true;
+  if(tickCount<30)showToast('THIS EMBEDDED VIEW IS THROTTLED — OPEN THIS PAGE IN A NORMAL BROWSER TAB FOR SMOOTH 60FPS.');}
+}
 function loop(){tick();requestAnimationFrame(loop);}
 /* watchdog: some embedded webviews suspend rAF — fall back to a timer */
 setInterval(()=>{if(performance.now()-lastTick>200)tick();},33);
-document.getElementById('startBtn').onclick=()=>{document.getElementById('start').classList.add('hide');running=true;};
+document.getElementById('startBtn').onclick=()=>{document.getElementById('start').classList.add('hide');running=true;startT=lastT=performance.now();};
 draw();loop();
 </script>
 </body>
