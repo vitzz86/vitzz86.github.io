@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-13T00:17:48Z",
+  "timestamp": "2026-06-13T12:27:27Z",
   "opening": {
-    "greeting": "Good morning, Vito. Let's process the boards.",
+    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Overcast, 26°C.",
-      "jakarta": "Overcast, 27°C.",
+      "bsd": "Overcast, 29°C.",
+      "jakarta": "Overcast, 30°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
     "verse_of_the_day": "He gives strength to the weary and increases the power of the weak. — Isaiah 40:29",
     "ambient_soundtrack": {
-      "track_name": "Focus Ambient & Lo-Fi Selection",
-      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0S6bV?utm_source=generator"
+      "track_name": "Instrumental Concentration (High-Volatility Desk)",
+      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX3PFzdbtx1Us?utm_source=generator"
     }
   },
   "telemetry": [
@@ -19,8 +19,8 @@
       "symbol": "^JKSE",
       "label": "JCI / IHSG",
       "kind": "index",
-      "value": 5886.03,
-      "delta_pct": -0.28
+      "value": 6007.66,
+      "delta_pct": 2.07
     },
     {
       "symbol": "^GSPC",
@@ -54,8 +54,8 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 84.29,
-      "delta_pct": -3.9
+      "value": 84.88,
+      "delta_pct": -3.23
     },
     {
       "symbol": "ITMG.JK",
@@ -73,21 +73,21 @@
     }
   ],
   "anomaly": {
-    "active": false,
-    "desc": ""
+    "active": true,
+    "desc": "JCI / IHSG spike of +2.07%"
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI closed at 5,886 (-0.28%) on the latest session.",
+      "JCI closed at 6,008 (+2.07%) on the latest session.",
       "US benchmark Nasdaq moved +0.31% overnight to 25,889."
     ],
     "economic": [
-      "A Swiss artist's portrait of Meiji-era Japan (Nikkei Asia)",
-      "China patrols waters east of Taiwan in response to Japan-Philippine talks (Nikkei Asia)"
+      "Croatia emerges as maritime hub connecting Asia to Central Europe (Nikkei Asia)",
+      "Zenkoji's 'shukubo' inn refurbished to welcome foreign guests (Nikkei Asia)"
     ],
     "tech_ai": [
-      "SpaceX IPO: Live updates on everything you need to know (TechCrunch)",
-      "Meta’s months-old AI unit is a soul-crushing gulag, say the engineers stuck inside it (TechCrunch)"
+      "The FBI built its own replica small town to simulate real-world cyberattacks (TechCrunch)",
+      "Andrew Yang thinks the next big startup opportunity is lowering the cost of living (TechCrunch)"
     ],
     "political": [
       "Panggil Menteri ESDM, Presiden Prabowo Bahas Ketahanan Energi dan Hilirisasi, Pastikan BBM Subsidi serta LPG Tetap Stabil (Setkab RI)",
@@ -96,9 +96,9 @@
   },
   "arbiter_brief": "Automated spillover analysis was unavailable this cycle; telemetry and headline ingestion completed normally and the next scheduled run will restore the full arbiter brief.",
   "executive_brief": [
-    "JCI closed at 5,886 (-0.28%) on the latest session.",
-    "A Swiss artist's portrait of Meiji-era Japan (Nikkei Asia)",
-    "SpaceX IPO: Live updates on everything you need to know (TechCrunch)"
+    "JCI closed at 6,008 (+2.07%) on the latest session.",
+    "Croatia emerges as maritime hub connecting Asia to Central Europe (Nikkei Asia)",
+    "The FBI built its own replica small town to simulate real-world cyberattacks (TechCrunch)"
   ],
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
   "generated_by": "LangGraph 4-agent pipeline · DeepSeek intelligence base · yfinance / feedparser / Open-Meteo · GitHub Actions cron"
