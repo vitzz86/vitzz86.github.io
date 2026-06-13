@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-06-12T14:11:57Z",
+  "timestamp": "2026-06-13T00:17:48Z",
   "opening": {
-    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
+    "greeting": "Good morning, Vito. Let's process the boards.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Overcast, 27°C.",
-      "jakarta": "Telemetry unavailable.",
+      "bsd": "Overcast, 26°C.",
+      "jakarta": "Overcast, 27°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
-    "verse_of_the_day": "Seek first the kingdom of God and His righteousness, and all these things will be added to you. — Matthew 6:33",
+    "verse_of_the_day": "He gives strength to the weary and increases the power of the weak. — Isaiah 40:29",
     "ambient_soundtrack": {
-      "track_name": "Instrumental Concentration (High-Volatility Desk)",
-      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX3PFzdbtx1Us?utm_source=generator"
+      "track_name": "Focus Ambient & Lo-Fi Selection",
+      "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0S6bV?utm_source=generator"
     }
   },
   "telemetry": [
@@ -19,29 +19,29 @@
       "symbol": "^JKSE",
       "label": "JCI / IHSG",
       "kind": "index",
-      "value": 6007.66,
-      "delta_pct": 2.07
+      "value": 5886.03,
+      "delta_pct": -0.28
     },
     {
       "symbol": "^GSPC",
       "label": "S&P 500",
       "kind": "index",
-      "value": 7414.91,
-      "delta_pct": 0.28
+      "value": 7431.46,
+      "delta_pct": 0.5
     },
     {
       "symbol": "^IXIC",
       "label": "Nasdaq",
       "kind": "index",
-      "value": 25838.33,
-      "delta_pct": 0.11
+      "value": 25888.84,
+      "delta_pct": 0.31
     },
     {
       "symbol": "^DJI",
       "label": "Dow Jones",
       "kind": "index",
-      "value": 51036.31,
-      "delta_pct": 0.37
+      "value": 51202.26,
+      "delta_pct": 0.7
     },
     {
       "symbol": "USDIDR=X",
@@ -54,8 +54,8 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 87.1,
-      "delta_pct": -0.7
+      "value": 84.29,
+      "delta_pct": -3.9
     },
     {
       "symbol": "ITMG.JK",
@@ -73,21 +73,21 @@
     }
   ],
   "anomaly": {
-    "active": true,
-    "desc": "JCI / IHSG spike of +2.07%"
+    "active": false,
+    "desc": ""
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI closed at 6,008 (+2.07%) on the latest session.",
-      "US benchmark Nasdaq moved +0.11% overnight to 25,838."
+      "JCI closed at 5,886 (-0.28%) on the latest session.",
+      "US benchmark Nasdaq moved +0.31% overnight to 25,889."
     ],
     "economic": [
-      "'Indonesia Bankrupt' rallies demand fiscal reform, end to flagship programs (Nikkei Asia)",
-      "Nikkei revises dividend-focused indices, adjusts constituents (Nikkei Asia)"
+      "A Swiss artist's portrait of Meiji-era Japan (Nikkei Asia)",
+      "China patrols waters east of Taiwan in response to Japan-Philippine talks (Nikkei Asia)"
     ],
     "tech_ai": [
-      "SpaceX IPO: Everything you need to know (TechCrunch)",
-      "US surveillance law to expire for first time after lawmakers reject Trump’s controversial pick to lead spy agencies (TechCrunch)"
+      "SpaceX IPO: Live updates on everything you need to know (TechCrunch)",
+      "Meta’s months-old AI unit is a soul-crushing gulag, say the engineers stuck inside it (TechCrunch)"
     ],
     "political": [
       "Panggil Menteri ESDM, Presiden Prabowo Bahas Ketahanan Energi dan Hilirisasi, Pastikan BBM Subsidi serta LPG Tetap Stabil (Setkab RI)",
@@ -96,9 +96,9 @@
   },
   "arbiter_brief": "Automated spillover analysis was unavailable this cycle; telemetry and headline ingestion completed normally and the next scheduled run will restore the full arbiter brief.",
   "executive_brief": [
-    "JCI closed at 6,008 (+2.07%) on the latest session.",
-    "'Indonesia Bankrupt' rallies demand fiscal reform, end to flagship programs (Nikkei Asia)",
-    "SpaceX IPO: Everything you need to know (TechCrunch)"
+    "JCI closed at 5,886 (-0.28%) on the latest session.",
+    "A Swiss artist's portrait of Meiji-era Japan (Nikkei Asia)",
+    "SpaceX IPO: Live updates on everything you need to know (TechCrunch)"
   ],
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
   "generated_by": "LangGraph 4-agent pipeline · DeepSeek intelligence base · yfinance / feedparser / Open-Meteo · GitHub Actions cron"
