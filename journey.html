@@ -63,7 +63,7 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rend
   <div class="ovl" id="start">
     <h1>VITO&rsquo;S JOURNEY</h1>
     <p>FROM WHERE IT ALL STARTED<br>TO WHERE I AM TODAY.</p>
-    <p class="keys">A D MOVE&nbsp;&nbsp;&nbsp;W JUMP (TAP TWICE = DOUBLE JUMP)<br>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br>BUMP ? BLOCKS · GRAB COINS · DODGE THE SPIKES · REACH THE FLAG</p>
+    <p class="keys">A D MOVE&nbsp;&nbsp;&nbsp;W JUMP (TAP TWICE = DOUBLE JUMP)<br>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br>BUMP ? BLOCKS · GRAB COINS · STOMP ENEMIES · DODGE SPIKES<br>EACH STAGE GETS HARDER — REACH THE FLAG</p>
     <button class="btn" id="startBtn">▶ PRESS ENTER TO START</button>
   </div>
 
@@ -137,6 +137,20 @@ const COINS=[];
 [[420,150],[450,140],[480,150],[900,185],[930,185],[1550,150],[1580,140],[1610,150],[2080,185],[2110,185],[2550,150],[2580,140],[2610,150],[3050,185],[3080,185],[3550,150],[3580,140],[3610,150],[4100,185],[4130,185],[4600,150],[4630,140],[4660,150],[4860,185],[4890,185]].forEach(c=>COINS.push({x:c[0],y:c[1],got:false,t:Math.random()*6}));
 const FLAG_X=5080,CASTLE_X=5190;
 const SPIKES=[560,1340,1840,2330,2830,3340,3740,4150,4650].map(x=>({x:x,w:28}));
+/* patrolling enemies — count + speed ramp up each stage (Kediri = none). Stomp
+   from above to defeat (+150); touch from the side and you lose a life. */
+const EW=14,EH=13;
+function mkEnemy(x0,x1,spd,col){return {x0,x1,x:(x0+x1)/2,y:GROUND-EH,dir:1,spd,col,alive:true};}
+const ENEMIES=[
+ // Stage 2 · Bandung — 2 slow
+ mkEnemy(1090,1190,.55,'#b0452e'), mkEnemy(1480,1600,.6,'#b0452e'),
+ // Stage 3 · Singapore — 3 medium
+ mkEnemy(2080,2200,.8,'#2f6db0'), mkEnemy(2460,2600,.85,'#2f6db0'), mkEnemy(2730,2900,.9,'#2f6db0'),
+ // Stage 4 · Japan — 4 faster
+ mkEnemy(3070,3200,1.0,'#7a4f9c'), mkEnemy(3400,3540,1.05,'#7a4f9c'), mkEnemy(3580,3700,1.1,'#7a4f9c'), mkEnemy(3800,3940,1.15,'#7a4f9c'),
+ // Stage 5 · Jakarta — 5 fast
+ mkEnemy(4040,4180,1.25,'#1f7a6a'), mkEnemy(4280,4440,1.3,'#1f7a6a'), mkEnemy(4500,4640,1.35,'#1f7a6a'), mkEnemy(4720,4880,1.4,'#1f7a6a'), mkEnemy(4920,5040,1.45,'#1f7a6a'),
+];
 
 /* ------------------------------------------------ sprites */
 const PAL={H:'#1d1d1f',S:'#e8b289',G:'#22313f',J:'#14532d',W:'#f2f1e6',P:'#26323f',E:'#3b2a22',R:'#c0392b'};
@@ -194,6 +208,18 @@ function drawDecor(cam){
  SIGNS.forEach(s=>{signpost(sx(s.x));});
 }
 function pipeP(x){rect(x,GROUND-34,28,9,'#2f9e44');rect(x+3,GROUND-25,22,25,'#37b24d');rect(x+6,GROUND-25,4,25,'#69db7c');rect(x+3,GROUND-34,5,9,'#69db7c');}
+function drawEnemy(e,cam){if(!e.alive)return;const x=Math.round(e.x-cam),y=Math.round(e.y);if(x<-30||x>W+30)return;
+ const dk=e.col,top='rgba(0,0,0,.28)';
+ rect(x+2,y,10,3,dk);rect(x+1,y+2,12,8,dk);rect(x,y+4,14,6,dk);
+ // feet shuffle
+ const ph=(Math.floor(time/8)%2);
+ rect(x+2+ph,y+11,4,2,'#222');rect(x+8-ph,y+11,4,2,'#222');
+ // eyes (look toward travel dir)
+ const ed=e.dir>0?1:-1;
+ rect(x+3,y+4,3,3,'#fff');rect(x+8,y+4,3,3,'#fff');
+ rect(x+4+ed,y+5,1,2,'#111');rect(x+9+ed,y+5,1,2,'#111');
+ // angry brows
+ rect(x+3,y+3,3,1,'#111');rect(x+8,y+3,3,1,'#111');}
 function drawSpike(s,cam){const x=s.x-cam;if(x<-40||x>W+40)return;
  for(let i=0;i<s.w;i+=7){ctx.fillStyle='#525c68';ctx.beginPath();ctx.moveTo(x+i,GROUND);ctx.lineTo(x+i+3.5,GROUND-9);ctx.lineTo(x+i+7,GROUND);ctx.fill();
   ctx.fillStyle='#aab4c0';ctx.fillRect(x+i+3,GROUND-9,1,3);}}
@@ -254,6 +280,7 @@ const sfxCoin =()=>beep([[988,.09,0],[1319,.22,.08]]);
 const sfxBlock=()=>beep([[659,.08,0],[880,.14,.07]]);
 const sfxJump =()=>beep([[523,.09,0,'triangle']]);
 const sfxDie  =()=>beep([[494,.14,0],[392,.14,.14],[330,.16,.28],[262,.4,.44]]);
+const sfxStomp=()=>beep([[392,.05,0],[196,.13,.05]]);
 const mB=document.getElementById('muteBtn');
 mB.onclick=e=>{e.preventDefault();muted=!muted;bgm.muted=muted;mB.textContent=muted?'♪ OFF':'♪ ON';};
 
@@ -305,6 +332,15 @@ function update(){
  if(P.x<2)P.x=2; if(P.x>WORLD-20)P.x=WORLD-20;
  if(P.y>=GROUND-P.h){P.y=GROUND-P.h;P.vy=0;P.onG=true;jumps=0;}
  P.anim+=Math.abs(P.vx)*.35;
+ // enemies: patrol, stomp from above, hurt on side contact
+ for(const e of ENEMIES){
+  if(!e.alive)continue;
+  if(Math.abs(e.x-P.x)<W){e.x+=e.dir*e.spd;
+   if(e.x<=e.x0){e.x=e.x0;e.dir=1;}else if(e.x>=e.x1){e.x=e.x1;e.dir=-1;}}
+  if(P.x+P.w>e.x+1&&P.x<e.x+EW-1&&P.y+P.h>e.y&&P.y<e.y+EH){
+   if(P.vy>0&&P.y+P.h<e.y+9){e.alive=false;P.vy=-5.0;jumps=1;score+=150;sfxStomp();}
+   else if(!inv){die();return;}
+  }}
  // spikes are lethal
  if(!inv&&P.y+P.h>=GROUND-9){
   for(const s of SPIKES){if(P.x+P.w>s.x+3&&P.x<s.x+s.w-3){die();return;}}}
@@ -341,6 +377,7 @@ function draw(){
  rect(0,GROUND,W,H-GROUND,'#9c5a3c');
  for(let gx=-((cam|0)%16);gx<W;gx+=16){rect(gx,GROUND,16,4,gz.top);rect(gx,GROUND+8,7,5,'#7c4226');rect(gx+9,GROUND+16,7,5,'#7c4226');}
  drawDecor(cam);
+ ENEMIES.forEach(e=>drawEnemy(e,cam));
  QBLOCKS.forEach(b=>drawQBlock(b,cam));
  COINS.forEach(c=>drawCoin(c,cam,time));
  // flag slides
