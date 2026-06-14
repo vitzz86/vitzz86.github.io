@@ -1,13 +1,10 @@
 """Sector Flow Matrix (PRD v2 · Module C) — baked at cron time for static hosting.
 
-Fetches each constituent's day delta + a short sparkline via yfinance, computes
-ID-vs-US aggregates and an ALERT/WATCH/NORMAL signal per sector, and emits a
-JSON-ready structure the static cockpit renders client-side. No live backend:
-everything the dashboard needs is pre-compiled here.
-
-Every public helper degrades gracefully — a dead ticker or an offline yfinance
-never raises past collect(); missing prices fall back to a flat 0.0 so the grid
-always renders.
+Batch-fetches the full 200-ticker universe via a single yfinance download, then
+computes per-ticker day delta + sparkline, ID-vs-US sector aggregates, a
+Mega/Large/Mid/Small tier badge, an ALERT/WATCH/NORMAL signal, and a synthesis
+line. Every ticker carries a Yahoo Finance source URL (PRD: tickers link to
+source). Degrades to flat 0.0 when offline so the grid always renders.
 """
 from __future__ import annotations
 
@@ -15,6 +12,8 @@ import sys
 
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
 from config import settings
+
+YF_QUOTE = "https://finance.yahoo.com/quote/"
 
 
 def _signal(agg: float) -> str:
@@ -26,50 +25,54 @@ def _signal(agg: float) -> str:
     return "NORMAL"
 
 
-def _fetch_one(yf, symbol: str) -> dict | None:
-    """Returns {delta_pct, spark:[...], value} or None on failure."""
+def _batch_prices(symbols: list) -> dict:
+    """One bulk download for the whole universe → {symbol: {delta_pct, spark}}."""
+    out = {}
     try:
-        hist = yf.Ticker(symbol).history(period="1mo", interval="1d")
-        closes = hist["Close"].dropna().tolist()
-        if len(closes) < 2:
-            return None
-        value, prev = float(closes[-1]), float(closes[-2])
-        delta = (value - prev) / prev * 100 if prev else 0.0
-        spark = [round(float(c), 4) for c in closes[-20:]]
-        return {"delta_pct": round(delta, 2), "spark": spark, "value": round(value, 2)}
+        import yfinance as yf
+        data = yf.download(symbols, period="1mo", interval="1d",
+                           group_by="ticker", threads=True, progress=False)
     except Exception as e:  # noqa: BLE001
-        print(f"[sectors] {symbol} failed: {e}")
-        return None
+        print(f"[sectors] batch download unavailable: {e}")
+        return out
+    for sym in symbols:
+        try:
+            col = data[sym]["Close"] if len(symbols) > 1 else data["Close"]
+            closes = [float(c) for c in col.dropna().tolist()]
+            if len(closes) < 2:
+                continue
+            value, prev = closes[-1], closes[-2]
+            delta = (value - prev) / prev * 100 if prev else 0.0
+            out[sym] = {"delta_pct": round(delta, 2),
+                        "spark": [round(c, 4) for c in closes[-20:]]}
+        except Exception:  # noqa: BLE001 — one bad symbol never kills the batch
+            continue
+    return out
 
 
 def collect() -> list:
-    """Returns the sectors payload list. Live yfinance where reachable, else a
-    deterministic fallback so the matrix always has content."""
-    try:
-        import yfinance as yf
-    except Exception:  # noqa: BLE001
-        yf = None
+    symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]]
+    prices = _batch_prices(symbols)
 
     out = []
     for sec in settings.SECTORS:
         rows, id_d, us_d = [], [], []
         for c in sec["constituents"]:
             ticker, name, ysym, exch, country, mktcap, tier = c[:7]
-            spec = "spec" in c[7:]
-            data = _fetch_one(yf, ysym) if yf else None
-            delta = data["delta_pct"] if data else 0.0
-            spark = data["spark"] if data else []
+            p = prices.get(ysym)
+            delta = p["delta_pct"] if p else 0.0
+            spark = p["spark"] if p else []
             rows.append({
                 "ticker": ticker, "name": name, "exchange": exch,
                 "country": country, "mktcap": mktcap, "tier": tier,
-                "delta_pct": delta, "spark": spark, "speculative": spec,
+                "delta_pct": delta, "spark": spark,
+                "url": YF_QUOTE + ysym,
             })
             (id_d if country == "ID" else us_d).append(delta)
 
         id_agg = round(sum(id_d) / len(id_d), 2) if id_d else 0.0
         us_agg = round(sum(us_d) / len(us_d), 2) if us_d else 0.0
         agg = round((id_agg + us_agg) / 2, 2)
-        # sector sparkline = mean of constituent sparklines (normalized length)
         sl = [r["spark"] for r in rows if r["spark"]]
         sector_spark = []
         if sl:
@@ -77,6 +80,7 @@ def collect() -> list:
             sl = [s[-n:] for s in sl]
             sector_spark = [round(sum(s[i] / s[0] for s in sl) / len(sl) * 100, 2)
                             for i in range(n)]
+
         ranked = sorted(rows, key=lambda r: r["delta_pct"], reverse=True)
         lead, lag = ranked[0], ranked[-1]
         spread = "in step" if abs(id_agg - us_agg) < 0.4 else (
@@ -91,9 +95,10 @@ def collect() -> list:
             "theme": sec["theme"], "change": agg, "idChange": id_agg,
             "usChange": us_agg, "signal": _signal(agg),
             "spark": sector_spark, "ai": ai,
+            "volume": f"{len(rows)} tickers",
             "themes": settings.SECTOR_THEMES.get(sec["key"], []),
             "constituents": ranked,
         })
     live = sum(1 for s in out for r in s["constituents"] if r["spark"])
-    print(f"[sectors] {len(out)} sectors, {live} constituents with live data")
+    print(f"[sectors] {len(out)} sectors, {live}/{len(symbols)} constituents with live data")
     return out

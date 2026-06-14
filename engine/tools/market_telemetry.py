@@ -17,18 +17,21 @@ def collect() -> dict:
     rows, anomaly_bits = [], []
     for symbol, label, kind in settings.TICKERS:
         try:
-            hist = yf.Ticker(symbol).history(period="5d", interval="1d")
+            hist = yf.Ticker(symbol).history(period="1mo", interval="1d")
             closes = hist["Close"].dropna()
             if len(closes) < 2:
                 raise ValueError("insufficient history")
             value, prev = float(closes.iloc[-1]), float(closes.iloc[-2])
             delta = (value - prev) / prev * 100
+            series = [round(float(c), 4) for c in closes.tolist()[-20:]]
             rows.append({
                 "symbol": symbol,
                 "label": label,
                 "kind": kind,
                 "value": round(value, 2),
                 "delta_pct": round(delta, 2),
+                "spark": series,
+                "url": settings.YF_QUOTE + symbol,
             })
             if symbol in settings.ANOMALY_WATCHLIST and abs(delta) > settings.ANOMALY_THRESHOLD_PCT:
                 direction = "drop" if delta < 0 else "spike"

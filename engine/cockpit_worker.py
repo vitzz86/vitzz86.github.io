@@ -22,7 +22,8 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
-from tools import enterprise_osint, env_context, market_telemetry, news_router, sectors  # noqa: E402
+from tools import (enterprise_osint, env_context, market_telemetry,  # noqa: E402
+                   news_router, podcasts, sectors)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -261,6 +262,9 @@ def compile_payload(state: dict) -> dict:
         "executive_brief": c["executive_brief"],
         "sectors": sectors.collect(),
         "news": news_router.route(state.get("headlines", {})),
+        "podcasts": podcasts.collect(
+            summarize=(lambda s, u: call_deepseek(s, u)) if (
+                settings.DEEPSEEK_API_KEY or settings.OPENROUTER_API_KEY) else None),
         "note_of_the_day": env_context.note_of_the_day(previous_note),
         "generated_by": ("LangGraph 4-agent pipeline · DeepSeek intelligence base · "
                          "yfinance / feedparser / Open-Meteo · GitHub Actions cron"),
