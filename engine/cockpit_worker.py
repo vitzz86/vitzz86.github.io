@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (enterprise_osint, env_context, market_telemetry,  # noqa: E402
-                   news_router, podcasts, sectors)
+                   news_router, podcasts, sectors, spotify, trending)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -241,6 +241,13 @@ def compile_payload(state: dict) -> dict:
         pass
 
     c = state["compiled"]
+    has_llm = bool(settings.DEEPSEEK_API_KEY or settings.OPENROUTER_API_KEY)
+    summarize = (lambda s, u: call_deepseek(s, u)) if has_llm else None
+
+    sec = sectors.collect()
+    _deepseek_sector_ai(sec, has_llm)                 # real AI text for WATCH/ALERT sectors
+    news = news_router.enrich(state.get("headlines", {}), sec, state["telemetry"])
+
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "opening": {
@@ -249,28 +256,49 @@ def compile_payload(state: dict) -> dict:
             "weather": wx,
             "verse_of_the_day": env_context.verse_of_the_day(),
             "ambient_soundtrack": env_context.ambient_soundtrack(rainy, state["anomaly"]),
+            "now_playing": spotify.now_playing(),
         },
         "telemetry": state["telemetry"],
         "anomaly": {"active": state["anomaly"], "desc": state["anomaly_desc"]},
         "intelligence_quadrants": {
-            "market": c["market"],
-            "economic": c["economic"],
-            "tech_ai": c["tech_ai"],
-            "political": c["political"],
+            "market": c["market"], "economic": c["economic"],
+            "tech_ai": c["tech_ai"], "political": c["political"],
         },
         "arbiter_brief": c["arbiter_brief"],
         "executive_brief": c["executive_brief"],
-        "sectors": sectors.collect(),
-        "news": news_router.route(state.get("headlines", {})),
-        "podcasts": podcasts.collect(
-            summarize=(lambda s, u: call_deepseek(s, u)) if (
-                settings.DEEPSEEK_API_KEY or settings.OPENROUTER_API_KEY) else None),
+        "sectors": sec,
+        "news": news["wire"],
+        "sector_news": news["sector_news"],
+        "ticker_news": news["ticker_news"],
+        "trending": trending.collect(),
+        "podcasts": podcasts.collect(summarize=summarize),
+        "config": {"finnhub_key": settings.FINNHUB_API_KEY},
         "note_of_the_day": env_context.note_of_the_day(previous_note),
-        "generated_by": ("LangGraph 4-agent pipeline · DeepSeek intelligence base · "
-                         "yfinance / feedparser / Open-Meteo · GitHub Actions cron"),
+        "generated_by": ("LangGraph pipeline · DeepSeek · yfinance / Google News / "
+                         "Finnhub / Spotify / StockTwits · GitHub Actions cron"),
     }
     validate(payload)
     return payload
+
+
+def _deepseek_sector_ai(sectors_list: list, has_llm: bool) -> None:
+    """Upgrade the deterministic sector synthesis to real DeepSeek analysis for
+    sectors flagged WATCH/ALERT (keeps cost bounded; NORMAL keeps the baked line)."""
+    if not has_llm:
+        return
+    for s in sectors_list:
+        if s["signal"] == "NORMAL":
+            continue
+        cons = ", ".join(f"{c['ticker']} {c['delta_pct']:+.2f}%"
+                         for c in s["constituents"][:8])
+        out = call_deepseek(
+            "You are an institutional analyst. Write ONE tight paragraph (<=70 words) of "
+            "actionable cross-market intelligence for an Indonesia-focused investor. No hedging.",
+            f"Sector: {s['name']} ({s['change']:+.2f}% agg, {s['idChange']:+.2f}% ID / "
+            f"{s['usChange']:+.2f}% US, signal {s['signal']}). Movers: {cons}. "
+            f"Themes: {'; '.join(s.get('themes', []))}.")
+        if out:
+            s["ai"] = out.strip()
 
 
 def write_atomic(payload: dict) -> None:

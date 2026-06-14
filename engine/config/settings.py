@@ -357,12 +357,15 @@ MAX_HEADLINES_PER_CATEGORY = 6
 # show notes and distills a one-paragraph "Core Thesis" to optimize listening time.
 # (name, rss_url, host). Per-feed failures tolerated; a curated fallback shows when
 # a feed is unreachable so the panel always renders.
+# YouTube playlist RSS (no key): youtube.com/feeds/videos.xml?playlist_id=...
+def _yt(pid):
+    return "https://www.youtube.com/feeds/videos.xml?playlist_id=" + pid
 PODCAST_FEEDS = [
-    ("Endgame", "https://anchor.fm/s/your-endgame/podcast/rss", "Gita Wirjawan"),
-    ("Dwarkesh Podcast", "https://api.substack.com/feed/podcast/69345.rss", "Dwarkesh Patel"),
-    ("View From The Top", "https://feeds.feedburner.com/StanfordGsbViewFromTheTop", "Stanford GSB"),
-    ("The Diary of a CEO", "https://feeds.megaphone.fm/thediaryofaceo", "Steven Bartlett"),
-    ("Lex Fridman Podcast", "https://lexfridman.com/feed/podcast/", "Lex Fridman"),
+    ("Endgame", _yt("PL-hh_bKgnJ6GlNCJYV6LfHL9QcP5q_Z7F"), "Gita Wirjawan"),
+    ("Dwarkesh Podcast", _yt("PLd7-bHaQwnthaNDpZ32TtYONGVk95-fhF"), "Dwarkesh Patel"),
+    ("View From The Top", _yt("PLxq_lXOUlvQAwaY_9K4ZFH9Xdar9WzCaL"), "Stanford GSB"),
+    ("The Diary of a CEO", _yt("PL22egh3ok4cP0T7UZRmP6TMLErZYWMN-l"), "Steven Bartlett"),
+    ("Lex Fridman Podcast", _yt("PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4"), "Lex Fridman"),
 ]
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
@@ -391,6 +394,25 @@ JINA_READER_PREFIX = "https://r.jina.ai/"
 # Tavily deep-search (1,000 free req/mo). Only used when an anomaly fires.
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 TAVILY_ENDPOINT = "https://api.tavily.com/search"
+
+# Google News RSS search — keyless, per-entity discovery (any query, full index).
+GOOGLE_NEWS = "https://news.google.com/rss/search"
+GOOGLE_NEWS_GEO = {"ID": "hl=en-ID&gl=ID&ceid=ID:en", "US": "hl=en-US&gl=US&ceid=US:en"}
+NEWS_PER_QUERY = 4          # items kept per index/sector/ticker query
+NEWS_WIRE_CAP = 70          # max items in the global Intelligence Wire
+
+# Finnhub — baked into data.json so the client can poll live US quotes (free key,
+# US stocks only; IDX stays on Yahoo). Public exposure is acceptable for the free tier.
+FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "")
+
+# Spotify now-playing (one-time refresh token → access token each run → current track).
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
+SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN", "")
+
+# Trending — StockTwits (finance social) + Google Trends daily RSS (no keys).
+STOCKTWITS_TRENDING = "https://api.stocktwits.com/api/2/trending/symbols.json"
+GOOGLE_TRENDS_RSS = "https://trends.google.com/trending/rss?geo="
 
 # ---------------------------------------------------------------- weather
 OPEN_METEO = "https://api.open-meteo.com/v1/forecast"

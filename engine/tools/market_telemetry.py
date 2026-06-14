@@ -17,13 +17,13 @@ def collect() -> dict:
     rows, anomaly_bits = [], []
     for symbol, label, kind in settings.TICKERS:
         try:
-            hist = yf.Ticker(symbol).history(period="1mo", interval="1d")
+            hist = yf.Ticker(symbol).history(period="1y", interval="1d")
             closes = hist["Close"].dropna()
             if len(closes) < 2:
                 raise ValueError("insufficient history")
             value, prev = float(closes.iloc[-1]), float(closes.iloc[-2])
             delta = (value - prev) / prev * 100
-            series = [round(float(c), 4) for c in closes.tolist()[-20:]]
+            series = [round(float(c), 4) for c in closes.tolist()[-130:]]
             rows.append({
                 "symbol": symbol,
                 "label": label,

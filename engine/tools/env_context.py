@@ -103,6 +103,22 @@ def focus_state() -> str:
 
 # ------------------------------------------------------------------ verse + sound
 def verse_of_the_day() -> str:
+    """Live daily scripture from bible-api.com (keyless); falls back to the
+    curated pool when offline. A themed verse list seeds the random query so the
+    rotation stays grounded rather than fully arbitrary."""
+    seeds = ["proverbs+16:3", "philippians+4:13", "isaiah+40:29", "jeremiah+29:11",
+             "psalm+118:24", "colossians+3:23", "proverbs+3:5-6", "matthew+6:33",
+             "1+corinthians+16:14", "deuteronomy+31:6", "philippians+4:6",
+             "proverbs+21:5", "joshua+1:9", "romans+8:28"]
+    ref = seeds[now_wib().timetuple().tm_yday % len(seeds)]
+    try:
+        data = _fetch_json(f"https://bible-api.com/{ref}", timeout=12)
+        text = (data.get("text") or "").strip().replace("\n", " ")
+        ref_disp = data.get("reference", "")
+        if text and ref_disp:
+            return f"{text} — {ref_disp}"
+    except Exception as e:  # noqa: BLE001
+        print(f"[env_context] verse fetch failed: {e}")
     return settings.VERSES[now_wib().timetuple().tm_yday % len(settings.VERSES)]
 
 

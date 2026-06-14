@@ -1,10 +1,10 @@
 name: Cockpit Sync
 
-# Twice daily in WIB: 06:00 (23:00 UTC prev day) and 18:00 (11:00 UTC).
+# Every 30 minutes (public repo → free unlimited Actions minutes). GitHub's
+# scheduler is best-effort; real cadence is ~30-45 min. Prices/news refresh each run.
 on:
   schedule:
-    - cron: "0 23 * * *"
-    - cron: "0 11 * * *"
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -27,11 +27,15 @@ jobs:
 
       - name: Execute cockpit pipeline
         env:
-          DEEPSEEK_API_KEY:   ${{ secrets.DEEPSEEK_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          TAVILY_API_KEY:     ${{ secrets.TAVILY_API_KEY }}
-          GCAL_ICS_URL:       ${{ secrets.GCAL_ICS_URL }}
-          COCKPIT_NOTE_URL:   ${{ secrets.COCKPIT_NOTE_URL }}
+          DEEPSEEK_API_KEY:       ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENROUTER_API_KEY:     ${{ secrets.OPENROUTER_API_KEY }}
+          TAVILY_API_KEY:         ${{ secrets.TAVILY_API_KEY }}
+          FINNHUB_API_KEY:        ${{ secrets.FINNHUB_API_KEY }}
+          SPOTIFY_CLIENT_ID:      ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET:  ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN:  ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          GCAL_ICS_URL:           ${{ secrets.GCAL_ICS_URL }}
+          COCKPIT_NOTE_URL:       ${{ secrets.COCKPIT_NOTE_URL }}
         run: python engine/cockpit_worker.py
 
       - name: Commit refreshed data contract

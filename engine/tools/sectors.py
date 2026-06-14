@@ -30,7 +30,8 @@ def _batch_prices(symbols: list) -> dict:
     out = {}
     try:
         import yfinance as yf
-        data = yf.download(symbols, period="1mo", interval="1d",
+        # 1y of daily closes so 1D/1W/1M/YTD are genuinely distinct timeframes
+        data = yf.download(symbols, period="1y", interval="1d",
                            group_by="ticker", threads=True, progress=False)
     except Exception as e:  # noqa: BLE001
         print(f"[sectors] batch download unavailable: {e}")
@@ -43,8 +44,9 @@ def _batch_prices(symbols: list) -> dict:
                 continue
             value, prev = closes[-1], closes[-2]
             delta = (value - prev) / prev * 100 if prev else 0.0
+            # keep ~6mo of daily closes; client slices for 1W/1M/YTD timeframes
             out[sym] = {"delta_pct": round(delta, 2),
-                        "spark": [round(c, 4) for c in closes[-20:]]}
+                        "spark": [round(c, 4) for c in closes[-130:]]}
         except Exception:  # noqa: BLE001 — one bad symbol never kills the batch
             continue
     return out

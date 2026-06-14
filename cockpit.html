@@ -38,7 +38,11 @@ a{color:inherit;text-decoration:none;}
 .alertbar{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:5px;height:22px;padding:0 10px;color:#f6c453;font-size:10px;overflow:hidden;}
 .alertbar .nx{margin-left:auto;color:var(--ink3);cursor:pointer;flex:0 0 auto;}
 .tright{display:flex;align-items:center;gap:12px;flex:0 0 auto;color:var(--ink2);font-size:10px;}
-.tright .ico{color:var(--ink3);cursor:pointer;}.tright .ico:hover{color:var(--ink);}
+.tright .ico{color:var(--ink3);cursor:pointer;display:inline-flex;align-items:center;}.tright .ico:hover{color:var(--ink);}
+.tright .lnk{color:var(--ink2);}.tright .lnk:hover{color:#0a66c2;}
+.closebtn{display:inline-flex;align-items:center;gap:5px;color:var(--ink2);border:1px solid var(--line);border-radius:5px;padding:3px 8px;font-size:10px;transition:background .15s,color .15s,border-color .15s;}
+.closebtn:hover{background:var(--red);color:#fff;border-color:var(--red);}
+@media(max-width:640px){.closebtn span{display:none;}}
 .avatar{width:20px;height:20px;border-radius:5px;background:var(--amber);color:#000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;}
 @media(max-width:900px){.spills,.alertbar{display:none;}}
 
@@ -67,7 +71,8 @@ a{color:inherit;text-decoration:none;}
 .envrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .envcell{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 12px;}
 .envcell .loc{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--ink3);}
-.envcell .tmp{font-size:26px;font-weight:600;display:flex;align-items:flex-start;gap:4px;margin:2px 0;}
+.envcell .tmp{font-size:26px;font-weight:600;display:flex;align-items:center;gap:7px;margin:2px 0;}
+.wico{font-size:22px;line-height:1;}
 .envcell .tmp small{font-size:13px;color:var(--ink2);font-weight:500;}
 .envcell .cond{font-size:11px;color:var(--ink2);}
 .envcell .sub{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:7px;display:flex;gap:10px;}
@@ -88,10 +93,14 @@ a{color:inherit;text-decoration:none;}
 .thesis{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px;margin-top:10px;}
 .thesis .h{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;color:var(--amber);margin-bottom:7px;}
 .thesis p{font-size:11.5px;line-height:1.6;color:#c7c7cf;}
-.capture{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px;}
-.capture .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-.capture .save{font-family:var(--mono);font-size:8.5px;color:var(--cyan);border:1px solid rgba(52,211,192,.3);border-radius:4px;padding:3px 7px;}
-.capture textarea{width:100%;height:74px;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink2);font-family:var(--mono);font-size:10.5px;padding:8px;resize:none;}
+.trendtk{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;}
+.trendtk a{font-family:var(--mono);font-size:10px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:4px 8px;color:var(--ink);transition:border-color .15s,color .15s;}
+.trendtk a:hover{border-color:var(--cyan);color:var(--cyan);}
+.trendtabs{display:flex;gap:6px;margin-bottom:8px;}
+.ttab{font-family:var(--mono);font-size:9px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:4px 8px;cursor:pointer;}
+.ttab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
+#trendSearch .ts{font-family:var(--mono);font-size:11px;color:var(--ink2);padding:6px 0;border-bottom:1px solid var(--line2);}
+#trendSearch .ts .n{color:var(--ink3);margin-right:7px;}
 
 /* index cards */
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
@@ -151,7 +160,9 @@ a{color:inherit;text-decoration:none;}
 .alert.blue{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);color:#86b5f5;}
 
 /* intelligence wire */
-.wtabs{display:flex;gap:6px;margin-bottom:11px;}
+#wsearch{width:100%;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 10px;margin-bottom:9px;}
+#wsearch:focus{outline:none;border-color:var(--cyan);}
+.wtabs{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;}
 .wtab{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:5px 9px;cursor:pointer;}
 .wtab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
 .nrow{border-bottom:1px solid var(--line2);padding:11px 0;}
@@ -210,6 +221,14 @@ footer .g{color:var(--green);}
 .showall{font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;margin-top:9px;display:inline-block;}
 .tierleg{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;color:var(--ink3);margin-bottom:8px;}
 .tierleg span{display:inline-flex;align-items:center;}
+.smnews{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;}
+.smnews .nrow{display:flex;flex-direction:column;gap:3px;padding:8px 0;border-bottom:1px solid var(--line2);}
+.smnews .nh{display:flex;align-items:center;gap:8px;}
+.smnews a.ttl{font-size:12px;color:var(--ink);}.smnews a.ttl:hover{color:var(--amber);}
+.tkback{font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;display:inline-block;margin-bottom:9px;}
+.tkhd{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+.tkhd .tkpx{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
+.tkhd .exch{font-family:var(--mono);font-size:8px;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;}
 </style>
 </head>
 <body>
@@ -223,9 +242,9 @@ footer .g{color:var(--green);}
   </span>
   <span class="alertbar"><span>⚠</span><span id="topAlert">Scanning telemetry&hellip;</span><span class="nx">next →</span></span>
   <span class="tright">
-    <span class="spill"><span class="d dgreen"></span>SSE CONNECTED</span>
-    <span class="ico">⟳</span><span class="ico">⌬</span>
-    <a class="ico" href="index.html" title="Exit to portfolio">✕</a>
+    <span class="spill" id="freshPill"><span class="d dgreen"></span>SYNCING</span>
+    <a class="ico lnk" href="https://www.linkedin.com/in/vito-christian-samudra/" target="_blank" rel="noopener" title="LinkedIn — Vito Christian Samudra" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.77 0 5-2.24 5-5v-14c0-2.76-2.23-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.11-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z"/></svg></a>
+    <a class="closebtn" href="index.html" title="Close — back to portfolio">✕ <span>Portfolio</span></a>
     <span class="avatar">V</span><span style="color:var(--ink2)">VCS</span>
   </span>
 </div>
@@ -239,14 +258,14 @@ footer .g{color:var(--green);}
       <div class="sechd"><h2>Personal Basecamp</h2><span class="tag" id="clock">--:--:-- WIB</span></div>
       <div class="lbl" style="margin-bottom:8px;">Environment Telemetry</div>
       <div class="envrow">
-        <div class="envcell"><div class="loc">JAKARTA WIB</div><div class="tmp" id="jktTmp">--&deg;</div><div class="cond" id="jktCond">&hellip;</div></div>
-        <div class="envcell"><div class="loc">BSD CITY HQ</div><div class="tmp" id="bsdTmp">--&deg;</div><div class="cond" id="bsdCond">&hellip;</div></div>
+        <div class="envcell"><div class="loc">JAKARTA WIB</div><div class="tmp"><span id="jktIco" class="wico"></span><span id="jktTmp">--&deg;</span></div><div class="cond" id="jktCond">&hellip;</div></div>
+        <div class="envcell"><div class="loc">BSD CITY HQ</div><div class="tmp"><span id="bsdIco" class="wico"></span><span id="bsdTmp">--&deg;</span></div><div class="cond" id="bsdCond">&hellip;</div></div>
       </div>
     </div>
     <div class="sec">
       <div class="lbl" style="margin-bottom:8px;">Cognitive Vector</div>
       <div class="vector">⚡ <span id="focus">Synthesis</span></div>
-      <div class="nowplay"><div class="t"><span id="track">&hellip;</span><span style="color:var(--ink3)">▶</span></div><div class="bar"><i></i></div><div class="tm"><span>38:12</span><span>1:42:00</span></div></div>
+      <a class="nowplay" id="nowplay" href="#" target="_blank" rel="noopener"><div class="t"><span id="track">&hellip;</span><span id="npState" style="color:var(--ink3)">▶</span></div><div class="bar"><i id="npBar"></i></div><div class="tm"><span id="npArtist">&hellip;</span><span id="npSrc">Spotify</span></div></a>
     </div>
     <div class="sec">
       <div class="lbl" style="margin-bottom:8px;">▦ Spiritual Anchor &nbsp;·&nbsp; 06:00 WIB</div>
@@ -258,8 +277,11 @@ footer .g{color:var(--green);}
       <div class="thesis"><div class="h">CORE THESIS · AI SYNTHESIS</div><p id="podThesis">&hellip;</p></div>
     </div>
     <div class="sec">
-      <div class="sechd"><h2 style="font-size:11px;">✎ Log · Capture</h2><span class="save">SAVE → SUPABASE</span></div>
-      <div class="capture"><textarea id="note" readonly>## Morning Brief</textarea></div>
+      <div class="sechd"><h2 style="font-size:11px;">▲ What&rsquo;s Trending</h2><span class="tag">STOCKTWITS · GOOGLE TRENDS</span></div>
+      <div class="lbl" style="margin-bottom:7px;">Social tickers · by volume</div>
+      <div class="trendtk" id="trendTk"></div>
+      <div class="trendtabs"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span></div>
+      <div id="trendSearch"></div>
     </div>
   </div>
 
@@ -291,8 +313,10 @@ footer .g{color:var(--green);}
 
   <!-- RIGHT -->
   <div class="col">
-    <div class="sechd"><h2 style="font-size:12px;">⊳ Intelligence Wire</h2><span class="tag">LIVE · DEEPSEEK</span></div>
+    <div class="sechd"><h2 style="font-size:12px;">⊳ Intelligence Wire</h2><span class="tag" id="wireCount">LIVE</span></div>
+    <input id="wsearch" placeholder="search headlines…" autocomplete="off">
     <div class="wtabs" id="wtabs"></div>
+    <div class="wtabs" id="wgeo"></div>
     <div id="wire"></div>
   </div>
 </div>
@@ -317,11 +341,16 @@ footer .g{color:var(--green);}
       <div class="smai"><div class="h">◉ DEEPSEEK-R1 · ACTIONABLE INTELLIGENCE</div><p id="smAi"></p></div>
     </div>
     <div>
-      <div class="cttl">Top constituents · click → Yahoo Finance ↗</div>
-      <div id="smConsts"></div>
-      <span class="showall" id="smShowAll"></span>
+      <div id="smConstPanel">
+        <div class="cttl">Constituents · click a ticker for its chart &amp; news</div>
+        <div class="wtabs" id="smFilter"></div>
+        <div id="smConsts"></div>
+        <span class="showall" id="smShowAll"></span>
+      </div>
+      <div id="smTicker" style="display:none;"></div>
     </div>
   </div>
+  <div class="smnews"><div class="cttl">⊳ Sector news · every item links to source ↗</div><div id="smSecNews"></div></div>
 </div></div>
 
 <script>
@@ -355,14 +384,34 @@ function render(d){
   const o=d.opening||{};
   const wx=o.weather||{};
   const pt=(s)=>{const m=(s||'').match(/(-?\d+)\s*°?C/);return m?m[1]:'--';};
-  $('jktTmp').innerHTML=pt(wx.jakarta)+'&deg;';$('jktCond').textContent=(wx.jakarta||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
-  $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=(wx.bsd||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
+  const wxIcon=(s)=>{const t=(s||'').toLowerCase();
+    if(/thunder|storm/.test(t))return '⛈️';
+    if(/heavy rain|violent/.test(t))return '🌧️';
+    if(/rain|drizzle|shower/.test(t))return '🌦️';
+    if(/fog|mist|rime/.test(t))return '🌫️';
+    if(/overcast/.test(t))return '☁️';
+    if(/cloud/.test(t))return '⛅';
+    if(/clear|sunny/.test(t))return '☀️';
+    return '🌡️';};
+  const condTxt=(s)=>(s||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
+  $('jktTmp').innerHTML=pt(wx.jakarta)+'&deg;';$('jktCond').textContent=condTxt(wx.jakarta);$('jktIco').textContent=wxIcon(wx.jakarta);
+  $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=condTxt(wx.bsd);$('bsdIco').textContent=wxIcon(wx.bsd);
   $('focus').textContent=(o.focus_state||'Synthesis').split('(')[0].replace(/Deep Work.*/,'Deep Work').trim()||'Synthesis';
-  $('track').textContent=(o.ambient_soundtrack||{}).track_name||'—';
+  const np=o.now_playing;
+  if(np&&np.track){
+    $('track').textContent=np.track;$('npArtist').textContent=np.artist||'';
+    $('npState').textContent=np.is_playing?'▶':'❚❚';$('npSrc').textContent='Spotify ↗';
+    $('nowplay').href=np.url||'#';
+    $('npBar').style.width=(np.duration_ms?Math.min(100,np.progress_ms/np.duration_ms*100):0)+'%';
+  } else {
+    $('track').textContent=(o.ambient_soundtrack||{}).track_name||'—';
+    $('npArtist').textContent='Focus playlist';$('npSrc').textContent='Spotify';
+    $('nowplay').href=(o.ambient_soundtrack||{}).embed_url?'#':'#';$('npBar').style.width='38%';
+  }
   const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
-  $('note').value=(o.note_text||d.note_of_the_day)?('## Morning Brief\n\n'+(d.note_of_the_day||'')):'## Morning Brief';
   $('stamp').textContent='compiled '+ago(d.timestamp);
+  $('freshPill').innerHTML='<span class="d dgreen"></span>UPDATED '+ago(d.timestamp).toUpperCase();
 
   /* top alert + active alerts */
   const an=d.anomaly&&d.anomaly.active;
@@ -407,27 +456,44 @@ function render(d){
   $('podThesis').textContent=(pods[0]||{}).thesis||'Listening agent idle.';
   [...document.querySelectorAll('.pod')].forEach(a=>a.addEventListener('mouseenter',()=>{const p=pods[+a.dataset.i];if(p)$('podThesis').textContent=p.thesis;}));
 
+  /* trending */
+  renderTrending(d.trending||{});
+
   /* intelligence wire */
   buildWire(d.news||[]);
 }
 
+let TREND=null,trendGeo='id';
+function renderTrending(t){
+  TREND=t;
+  $('trendTk').innerHTML=(t.tickers||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">—</span>';
+  drawTrends();
+  [...document.querySelectorAll('.ttab')].forEach(b=>b.onclick=()=>{trendGeo=b.dataset.g;[...document.querySelectorAll('.ttab')].forEach(x=>x.classList.toggle('on',x===b));drawTrends();});
+}
+function drawTrends(){
+  const arr=(trendGeo==='id'?TREND.trends_id:TREND.trends_us)||[];
+  $('trendSearch').innerHTML=arr.map((s,i)=>`<div class="ts"><span class="n">${i+1}</span>${esc(s)}</div>`).join('')||'<div class="ts" style="color:var(--ink3)">—</div>';
+}
+
 /* ---- index expand ---- */
+const TF={'1W':5,'1M':22,'3M':65,'6M':130};   // real slices of the 130-pt daily series
 let idxTF='1M';
+function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
 function expandIdx(i){
   const r=DATA.telemetry[i];if(!r)return;
   const up=r.delta_pct>=0,col=up?'#22c55e':'#ef4444';
-  const sl=r.spark||[];const view={'1W':sl.slice(-5),'1M':sl,'YTD':sl,'1D':sl.slice(-2)}[idxTF]||sl;
-  const hi=Math.max(...sl),lo=Math.min(...sl);
+  const view=tfView(r.spark,idxTF);
+  const hi=Math.max(...view),lo=Math.min(...view);
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
     `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(r.delta_pct)} · ${esc(r.label)}</div></div>`+
-    `<div style="display:flex;align-items:center;gap:6px;"><div class="tabset">${['1D','1W','1M','YTD'].map(t=>`<span class="tab ${t===idxTF?'on':''}" data-tf="${t}">${t}</span>`).join('')}</div><button class="xclose" id="idxClose">✕</button></div></div>`+
+    `<div style="display:flex;align-items:center;gap:6px;"><div class="tabset">${Object.keys(TF).map(t=>`<span class="tab ${t===idxTF?'on':''}" data-tf="${t}">${t}</span>`).join('')}</div><button class="xclose" id="idxClose">✕</button></div></div>`+
     `<div class="smchart" style="margin-top:13px;">${spark(view,720,150,col)}</div>`+
-    `<div class="statrow"><div class="c"><div class="k">OPEN</div><div class="v">${fmt(sl[0]||r.value)}</div></div>`+
+    `<div class="statrow"><div class="c"><div class="k">OPEN (${idxTF})</div><div class="v">${fmt(view[0]||r.value)}</div></div>`+
     `<div class="c"><div class="k">HIGH</div><div class="v">${fmt(hi)}</div></div>`+
     `<div class="c"><div class="k">LOW</div><div class="v">${fmt(lo)}</div></div>`+
     `<div class="c"><div class="k">LAST</div><div class="v">${fmt(r.value)}</div></div>`+
-    `<div class="c"><div class="k">RANGE (1M)</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
+    `<div class="c"><div class="k">RANGE</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
     `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on Yahoo Finance ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
@@ -435,21 +501,34 @@ function expandIdx(i){
 }
 
 /* ---- wire ---- */
-let wireFilter='ALL';
+let wireFilter='ALL',wireGeo='ALL',wireQ='',WIRE=[];
+const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐'};
 function buildWire(news){
+  WIRE=news;
   const cats=['ALL','MACRO','STARTUP','PUBLIC_MKT','CLIMATE'];
   $('wtabs').innerHTML=cats.map(c=>`<span class="wtab ${c===wireFilter?'on':''}" data-c="${c}">${c.replace('_',' ')}</span>`).join('');
-  [...document.querySelectorAll('.wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;buildWire(news);});
-  const items=news.filter(n=>wireFilter==='ALL'||n.category===wireFilter);
-  $('wire').innerHTML=items.map((n,i)=>`<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${n.category.replace('_',' ')}</span><span class="src">${esc(n.source)}</span><span class="tm">${(i+1)*7+1}m ago</span></div>`+
+  [...document.querySelectorAll('#wtabs .wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;drawWire();});
+  const geos=[['ALL','Both'],['ID','🇮🇩 Indonesia'],['US','🇺🇸 US']];
+  $('wgeo').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===wireGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
+  [...document.querySelectorAll('#wgeo .wtab')].forEach(t=>t.onclick=()=>{wireGeo=t.dataset.g;drawWire();});
+  const sb=$('wsearch');sb.oninput=()=>{wireQ=sb.value.toLowerCase().trim();drawWire();};
+  drawWire();
+}
+function drawWire(){
+  const items=WIRE.filter(n=>(wireFilter==='ALL'||n.category===wireFilter)
+    &&(wireGeo==='ALL'||n.geo===wireGeo)
+    &&(!wireQ||n.title.toLowerCase().includes(wireQ)||(n.source||'').toLowerCase().includes(wireQ)));
+  $('wireCount').textContent=items.length+' ITEMS';
+  $('wire').innerHTML=items.map(n=>`<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${n.category.replace('_',' ')}</span><span class="src">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span></div>`+
     `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>`+
-    `<a class="rs" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer"><span class="ext">↗</span> read at source</a></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No items in this category.</div>';
+    `<a class="rs" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer"><span class="ext">↗</span> read at source</a></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
 }
 
 /* ---- sector modal ---- */
-let smShowAll=false,smIdx=0;
+let smShowAll=false,smIdx=0,smGeo='ALL';
 function openSector(i){
-  smIdx=i;smShowAll=false;const s=DATA.sectors[i];if(!s)return;
+  smIdx=i;smShowAll=false;smGeo='ALL';const s=DATA.sectors[i];if(!s)return;
+  $('smConstPanel').style.display='';$('smTicker').style.display='none';
   $('smIco').textContent=s.icon;$('smName').textContent=s.name;
   const agg=$('smAgg');agg.textContent=(s.change>=0?'↗ ':'↘ ')+sign(s.change);
   agg.style.color=COLP(s.change);agg.style.background=s.change>=0?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
@@ -458,29 +537,78 @@ function openSector(i){
     `<div class="c"><div class="k">US PERFORMANCE</div><div class="v" style="color:${COLP(s.usChange)}">${sign(s.usChange)}</div></div>`+
     `<div class="c"><div class="k">CONSTITUENTS</div><div class="v">${s.constituents.length}</div></div>`+
     `<div class="c"><div class="k">SIGNAL</div><div class="v">${s.signal}</div></div>`;
-  $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">30-day sector performance</div>'+spark(s.spark,640,120,s.change>=0?'#22c55e':'#ef4444');
+  $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,s.change>=0?'#22c55e':'#ef4444');
   $('smThemes').innerHTML=(s.themes||[]).map(t=>`<li>${esc(t)}</li>`).join('');
   $('smAi').textContent=s.ai||'';
+  const geos=[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']];
+  $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
+  [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;renderConsts(s);});
   renderConsts(s);
-  $('smodal').classList.add('open');
+  const sn=(DATA.sector_news||{})[s.key]||[];
+  $('smSecNews').innerHTML=sn.length?sn.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No sector news this cycle.</div>';
+  $('smodal').classList.add('open');$('smodal').scrollTop=0;
 }
+function newsRow(n){return `<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${(n.category||'').replace('_',' ')}</span><span class="src">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span></div>`+
+  `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
 function renderConsts(s){
-  const list=smShowAll?s.constituents:s.constituents.slice(0,6);
-  $('smConsts').innerHTML=list.map(c=>{
-    const up=c.delta_pct>=0;
-    return `<a class="crow" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">`+
+  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo);
+  const full=list;
+  if(!smShowAll)list=list.slice(0,6);
+  $('smConsts').innerHTML=list.map((c,i)=>{
+    return `<div class="crow" data-tk="${esc(c.ticker)}" style="cursor:pointer">`+
       `<span class="fl">${FLAG[c.country]||''}</span><span class="tk"><i class="tdot ${c.tier}"></i>${esc(c.ticker)}</span>`+
       `<span class="cn">${esc(c.name)}</span><span class="cap">${esc(c.mktcap)}</span>`+
-      `<span class="cd" style="color:${COLP(c.delta_pct)}">${sign(c.delta_pct)}</span></a>`;
-  }).join('');
-  $('smShowAll').textContent=smShowAll?'▲ Show top 6':`▼ Show all ${s.constituents.length}`;
+      `<span class="cd" style="color:${COLP(c.delta_pct)}">${sign(c.delta_pct)}</span></div>`;
+  }).join('')||'<div style="color:var(--ink3);font-size:11px;padding:6px 0;">No tickers for this filter.</div>';
+  [...document.querySelectorAll('#smConsts .crow')].forEach(r=>r.onclick=()=>openTicker(s,r.dataset.tk));
+  $('smShowAll').textContent=full.length<=6?'':(smShowAll?'▲ Show top 6':`▼ Show all ${full.length}`);
+}
+function openTicker(s,tk){
+  const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
+  const live=LIVE[tk];const dp=live?live.dp:c.delta_pct;
+  const up=dp>=0,col=up?'#22c55e':'#ef4444';
+  const view=tfView(c.spark,'3M');const hi=Math.max(...view),lo=Math.min(...view);
+  const news=(DATA.ticker_news||{})[tk]||[];
+  $('smConstPanel').style.display='none';
+  const t=$('smTicker');t.style.display='';
+  t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx" style="color:${col}">${sign(dp)}</span>${live?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>':''}</div>`+
+    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier}</div>`+
+    `<div class="smchart">${spark(view,420,110,col)}</div>`+
+    `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on Yahoo Finance ↗</a>`+
+    `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
+    `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
+  $('tkBack').onclick=()=>{t.style.display='none';$('smConstPanel').style.display='';};
 }
 $('smShowAll').onclick=()=>{smShowAll=!smShowAll;renderConsts(DATA.sectors[smIdx]);};
 $('smClose').onclick=()=>$('smodal').classList.remove('open');
 $('smodal').addEventListener('click',e=>{if(e.target===$('smodal'))$('smodal').classList.remove('open');});
 addEventListener('keydown',e=>{if(e.key==='Escape')$('smodal').classList.remove('open');});
 
-fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(render)
+/* ---- Finnhub live US overlay (free tier = US stocks only; IDX stays Yahoo-baked) ---- */
+const LIVE={};let liveSyms=[];
+function startFinnhub(){
+  const key=(DATA.config||{}).finnhub_key;if(!key)return;
+  // US stock tickers from the universe (megacaps first), capped to respect 60/min
+  const us=[];for(const s of (DATA.sectors||[]))for(const c of s.constituents)
+    if(c.country==='US'&&c.exchange!=='OTC')us.push(c.ticker);
+  liveSyms=[...new Set(us)].slice(0,24);
+  async function poll(){
+    for(const sym of liveSyms){
+      try{const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`);
+        const q=await r.json();if(q&&q.c)LIVE[sym]={c:q.c,dp:q.dp};}catch(e){}
+      await new Promise(r=>setTimeout(r,1100));   // ~55/min, under the 60/min cap
+    }
+    // refresh an open US ticker view with live numbers
+    if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx];
+      const open=$('smTicker').querySelector('.tk');if(open){const tk=open.textContent.replace(/[^A-Z0-9.]/g,'');if(LIVE[tk])openTicker(s,tk);}}
+    $('freshPill').innerHTML='<span class="d dgreen"></span>US LIVE · IDX '+ago(DATA.timestamp).toUpperCase();
+  }
+  poll();setInterval(poll,90000);
+}
+
+fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
+  .then(d=>{render(d);startFinnhub();})
   .catch(e=>{console.error('payload fetch failed',e);$('topAlert').textContent='Payload unreachable — showing shell.';});
 </script>
 </body>
