@@ -12,9 +12,10 @@ Returns:
 from __future__ import annotations
 
 import concurrent.futures as cf
+import datetime as dt
+import email.utils
 import re
 import sys
-import time
 import urllib.parse
 import urllib.request
 
@@ -49,6 +50,17 @@ def _get(url: str, timeout: int = 12) -> str:
         return r.read().decode("utf-8", "ignore")
 
 
+def _parse_ts(s: str) -> int:
+    try:
+        return int(email.utils.parsedate_to_datetime(s.strip()).timestamp())
+    except Exception:  # noqa: BLE001
+        return 0
+
+
+def _now() -> int:
+    return int(dt.datetime.now(dt.timezone.utc).timestamp())
+
+
 def google_news(query: str, geo: str = "US", n: int = None) -> list:
     """Keyless Google News RSS search for any query, region-targeted."""
     n = n or settings.NEWS_PER_QUERY
@@ -69,8 +81,10 @@ def google_news(query: str, geo: str = "US", n: int = None) -> list:
             source = src.group(1).strip() if src else ""
             if not source and " - " in t:
                 t, source = t.rsplit(" - ", 1)
+            pd = re.search(r"<pubDate>(.*?)</pubDate>", block, re.S)
+            ts = _parse_ts(pd.group(1)) if pd else 0
             out.append({"title": t[:220], "url": link.group(1).strip(),
-                        "source": source, "geo": geo, "category": _category(t)})
+                        "source": source, "geo": geo, "category": _category(t), "ts": ts})
     except Exception as e:  # noqa: BLE001
         print(f"[news] google query failed '{query}': {e}")
     return out
@@ -86,6 +100,17 @@ def _from_curated(headlines: dict) -> list:
                               "source": h.get("source", ""), "geo": "GL",
                               "category": _category(title)})
     return items
+
+
+WEEK = 7 * 86400
+
+
+def _recent(items: list, cap: int = None) -> list:
+    """Keep items from the last 7 days, newest first (today prioritized)."""
+    now = _now()
+    fresh = [it for it in items if it.get("ts") and (now - it["ts"]) <= WEEK]
+    fresh.sort(key=lambda it: it["ts"], reverse=True)
+    return fresh[:cap] if cap else fresh
 
 
 def _dedupe(items: list, cap: int) -> list:
@@ -126,10 +151,9 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         items = _dedupe(items, 6)
         for it in items:
             it["sectors"] = [s["key"]]
+        items = _recent(items)            # ≤7 days, newest first
         sector_news[s["key"]] = items
         wire += items
-
-    wire += _from_curated(headlines)      # global wire baseline fills the remainder
 
     # --- per-ticker news (threaded; every constituent) ---
     cons = [(c["ticker"], c["name"].split(" (")[0], c["country"])
@@ -144,12 +168,13 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     try:
         with cf.ThreadPoolExecutor(max_workers=8) as ex:
             for tk, items in ex.map(fetch, cons):
+                items = _recent(items, 4)        # ≤7d, newest first, top 4
                 if items:
                     ticker_news[tk] = items
     except Exception as e:  # noqa: BLE001
         print(f"[news] ticker fetch pool failed: {e}")
 
-    wire = _dedupe(wire, settings.NEWS_WIRE_CAP)
-    print(f"[news] wire={len(wire)} · sectors={len(sector_news)} · "
+    wire = _dedupe(_recent(wire), settings.NEWS_WIRE_CAP)   # week-window, today first
+    print(f"[news] wire={len(wire)} (≤7d) · sectors={len(sector_news)} · "
           f"tickers_with_news={len(ticker_news)}")
     return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news}

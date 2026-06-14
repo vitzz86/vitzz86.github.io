@@ -55,9 +55,13 @@ def collect(summarize=None) -> list:
             thesis = ""
             if summarize:
                 thesis = summarize(
-                    "You distill podcast show notes into one tight 'Core Thesis' "
-                    "paragraph (<=45 words) for a busy investor. No hedging.",
-                    f"Show: {show}. Episode: {title}. Notes: {_clean(notes)[:900]}")
+                    "You are a sharp chief-of-staff briefing a busy investor on a podcast "
+                    "episode they haven't heard. In 2-3 sentences (<=55 words), state the "
+                    "single most important ARGUMENT or insight of the episode and why it "
+                    "matters — not a description of topics. Be concrete and specific. No "
+                    "phrases like 'this episode discusses' or 'the guest talks about'.",
+                    f"Podcast: {show} (host {host}). Episode title: {title}. "
+                    f"Description: {_clean(notes)[:1400]}")
             thesis = (thesis or "").strip() or _extractive_thesis(notes)
             eps.append({"show": show, "host": host, "title": title[:140],
                         "thesis": thesis[:340], "url": link})

@@ -1,11 +1,12 @@
-"""What's Trending — finance social pulse + general search trends (keyless).
+"""Market Movers + social trending (keyless).
 
-StockTwits trending symbols (tickers by social volume) + Google Trends daily RSS
-for Indonesia and the US. Baked at cron time. Degrades to empty lists cleanly.
+Gainers / losers / most-active are computed from our own 200-ticker universe
+(reliable, already fetched) split by market — Google Finance is JS-rendered and
+can't be scraped server-side. StockTwits adds a US social-buzz list.
 """
 from __future__ import annotations
 
-import re
+import json
 import sys
 import urllib.request
 
@@ -13,7 +14,7 @@ sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__fi
 from config import settings
 
 
-def _get(url: str, timeout: int = 15) -> str:
+def _get(url: str, timeout: int = 12) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read().decode("utf-8", "ignore")
@@ -21,41 +22,38 @@ def _get(url: str, timeout: int = 15) -> str:
 
 def stocktwits() -> list:
     try:
-        import json
         d = json.loads(_get(settings.STOCKTWITS_TRENDING))
-        out = []
-        for s in d.get("symbols", [])[:12]:
-            sym = s.get("symbol", "")
-            out.append({
-                "symbol": sym,
-                "name": s.get("title", ""),
-                # crypto symbols come as X.X (e.g. ETH.X); link plain ones to Yahoo
-                "url": ("https://stocktwits.com/symbol/" + sym),
-            })
-        return out
+        return [{"symbol": s.get("symbol", ""), "name": s.get("title", ""),
+                 "url": "https://stocktwits.com/symbol/" + s.get("symbol", "")}
+                for s in d.get("symbols", [])[:12]]
     except Exception as e:  # noqa: BLE001
         print(f"[trending] stocktwits failed: {e}")
         return []
 
 
-def google_trends(geo: str) -> list:
-    try:
-        xml = _get(settings.GOOGLE_TRENDS_RSS + geo)
-        titles = re.findall(r"<title>(.*?)</title>", xml, re.S)
-        # first <title> is the channel name; skip it
-        items = [re.sub(r"<!\[CDATA\[|\]\]>", "", t).strip() for t in titles[1:9]]
-        return [t for t in items if t]
-    except Exception as e:  # noqa: BLE001
-        print(f"[trending] google trends {geo} failed: {e}")
-        return []
-
-
-def collect() -> dict:
-    out = {
-        "tickers": stocktwits(),
-        "trends_id": google_trends("ID"),
-        "trends_us": google_trends("US"),
+def _movers(rows: list) -> dict:
+    """rows: flat list of constituent dicts with delta_pct/turnover/country/url."""
+    def trim(items):
+        return [{"ticker": r["ticker"], "name": r["name"], "country": r["country"],
+                 "delta_pct": r["delta_pct"], "url": r["url"]} for r in items]
+    by_g = sorted(rows, key=lambda r: r["delta_pct"], reverse=True)
+    by_a = sorted(rows, key=lambda r: r.get("turnover", 0), reverse=True)
+    return {
+        "gainers": trim(by_g[:8]),
+        "losers": trim(list(reversed(by_g))[:8]),
+        "active": trim(by_a[:8]),
     }
-    print(f"[trending] {len(out['tickers'])} tickers, "
-          f"{len(out['trends_id'])} ID / {len(out['trends_us'])} US trends")
+
+
+def collect(sectors_list: list) -> dict:
+    rows = [c for s in sectors_list for c in s["constituents"]]
+    id_rows = [r for r in rows if r["country"] == "ID"]
+    us_rows = [r for r in rows if r["country"] == "US"]
+    out = {
+        "id": _movers(id_rows),
+        "us": _movers(us_rows),
+        "social": stocktwits(),
+    }
+    print(f"[trending] movers from {len(rows)} tickers "
+          f"({len(id_rows)} ID / {len(us_rows)} US) + {len(out['social'])} social")
     return out

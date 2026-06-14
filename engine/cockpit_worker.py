@@ -270,7 +270,7 @@ def compile_payload(state: dict) -> dict:
         "news": news["wire"],
         "sector_news": news["sector_news"],
         "ticker_news": news["ticker_news"],
-        "trending": trending.collect(),
+        "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},
         "note_of_the_day": env_context.note_of_the_day(previous_note),
@@ -287,7 +287,7 @@ def _deepseek_sector_ai(sectors_list: list, has_llm: bool) -> None:
     if not has_llm:
         return
     for s in sectors_list:
-        if s["signal"] == "NORMAL":
+        if s["signal"] != "ALERT":        # ALERT only — keeps LLM spend bounded
             continue
         cons = ", ".join(f"{c['ticker']} {c['delta_pct']:+.2f}%"
                          for c in s["constituents"][:8])

@@ -82,6 +82,11 @@ a{color:inherit;text-decoration:none;}
 .nowplay .bar{height:3px;background:var(--line);border-radius:2px;margin-top:9px;overflow:hidden;}
 .nowplay .bar i{display:block;height:100%;width:38%;background:var(--amber);}
 .nowplay .tm{font-family:var(--mono);font-size:8.5px;color:var(--ink3);display:flex;justify-content:space-between;margin-top:5px;}
+.npnow{display:block;font-size:10.5px;color:var(--ink2);margin:8px 0 2px;}.npnow b{color:var(--green);font-weight:600;}.npnow:hover{color:var(--ink);}
+.moodchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+.moodchip{font-family:var(--mono);font-size:9px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:4px 7px;cursor:pointer;color:var(--ink2);}
+.moodchip.on{background:var(--amber);color:#000;border-color:var(--amber);font-weight:600;}
+.moodchip:hover{border-color:var(--amber);}
 .verse{font-style:italic;font-size:13px;line-height:1.6;color:#d6d6dc;}
 .verse .ref{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--amber);margin-top:9px;letter-spacing:.04em;}
 .pod{border-bottom:1px solid var(--line2);padding:10px 0;cursor:pointer;}
@@ -99,8 +104,11 @@ a{color:inherit;text-decoration:none;}
 .trendtabs{display:flex;gap:6px;margin-bottom:8px;}
 .ttab{font-family:var(--mono);font-size:9px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:4px 8px;cursor:pointer;}
 .ttab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
-#trendSearch .ts{font-family:var(--mono);font-size:11px;color:var(--ink2);padding:6px 0;border-bottom:1px solid var(--line2);}
-#trendSearch .ts .n{color:var(--ink3);margin-right:7px;}
+.mv{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line2);font-family:var(--mono);}
+.mv .mtk{font-size:11px;font-weight:600;width:46px;flex:0 0 auto;}
+.mv .mnm{font-size:9.5px;color:var(--ink3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mv .mcd{font-size:11px;font-variant-numeric:tabular-nums;}
+.mv:hover .mtk{color:var(--cyan);}
 
 /* index cards */
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
@@ -265,7 +273,9 @@ footer .g{color:var(--green);}
     <div class="sec">
       <div class="lbl" style="margin-bottom:8px;">Cognitive Vector</div>
       <div class="vector">⚡ <span id="focus">Synthesis</span></div>
-      <a class="nowplay" id="nowplay" href="#" target="_blank" rel="noopener"><div class="t"><span id="track">&hellip;</span><span id="npState" style="color:var(--ink3)">▶</span></div><div class="bar"><i id="npBar"></i></div><div class="tm"><span id="npArtist">&hellip;</span><span id="npSrc">Spotify</span></div></a>
+      <div id="npLine"></div>
+      <div class="moodchips" id="moodChips"></div>
+      <div id="moodPlayer"></div>
     </div>
     <div class="sec">
       <div class="lbl" style="margin-bottom:8px;">▦ Spiritual Anchor &nbsp;·&nbsp; 06:00 WIB</div>
@@ -277,11 +287,12 @@ footer .g{color:var(--green);}
       <div class="thesis"><div class="h">CORE THESIS · AI SYNTHESIS</div><p id="podThesis">&hellip;</p></div>
     </div>
     <div class="sec">
-      <div class="sechd"><h2 style="font-size:11px;">▲ What&rsquo;s Trending</h2><span class="tag">STOCKTWITS · GOOGLE TRENDS</span></div>
-      <div class="lbl" style="margin-bottom:7px;">Social tickers · by volume</div>
-      <div class="trendtk" id="trendTk"></div>
-      <div class="trendtabs"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span></div>
-      <div id="trendSearch"></div>
+      <div class="sechd"><h2 style="font-size:11px;">▲ Market Movers</h2><span class="tag">LIVE UNIVERSE</span></div>
+      <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="active">⇅ Active</span></div>
+      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span></div>
+      <div id="moveList"></div>
+      <div class="lbl" style="margin:12px 0 6px;">Social buzz · StockTwits</div>
+      <div class="trendtk" id="socialTk"></div>
     </div>
   </div>
 
@@ -398,16 +409,10 @@ function render(d){
   $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=condTxt(wx.bsd);$('bsdIco').textContent=wxIcon(wx.bsd);
   $('focus').textContent=(o.focus_state||'Synthesis').split('(')[0].replace(/Deep Work.*/,'Deep Work').trim()||'Synthesis';
   const np=o.now_playing;
-  if(np&&np.track){
-    $('track').textContent=np.track;$('npArtist').textContent=np.artist||'';
-    $('npState').textContent=np.is_playing?'▶':'❚❚';$('npSrc').textContent='Spotify ↗';
-    $('nowplay').href=np.url||'#';
-    $('npBar').style.width=(np.duration_ms?Math.min(100,np.progress_ms/np.duration_ms*100):0)+'%';
-  } else {
-    $('track').textContent=(o.ambient_soundtrack||{}).track_name||'—';
-    $('npArtist').textContent='Focus playlist';$('npSrc').textContent='Spotify';
-    $('nowplay').href=(o.ambient_soundtrack||{}).embed_url?'#':'#';$('npBar').style.width='38%';
-  }
+  $('npLine').innerHTML=(np&&np.track)
+    ?`<a class="npnow" href="${encodeURI(np.url||'#')}" target="_blank" rel="noopener">${np.is_playing?'▶':'❚❚'} <b>${esc(np.track)}</b> · ${esc(np.artist||'')}</a>`
+    :'';
+  renderMoods();
   const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
   $('stamp').textContent='compiled '+ago(d.timestamp);
@@ -463,16 +468,38 @@ function render(d){
   buildWire(d.news||[]);
 }
 
-let TREND=null,trendGeo='id';
+/* ---- Spotify mood player (curated editorial playlists; embed = play in place) ---- */
+const MOODS=[
+  ['Deep Focus','37i9dQZF1DWZeKCadgRdKQ'],
+  ['Lo-Fi Beats','37i9dQZF1DWWQRwui0S6bV'],
+  ['Instrumental Study','37i9dQZF1DX8Uebhn9wzrS'],
+  ['Jazz Vibes','37i9dQZF1DX0SM0LYsmbMT'],
+  ['Energy Boost','37i9dQZF1DX76Wlfdnj7AP'],
+  ['Chill / Wind Down','37i9dQZF1DX4WYpdgoIcn6'],
+];
+let moodPick=0;
+function renderMoods(){
+  $('moodChips').innerHTML=MOODS.map((m,i)=>`<span class="moodchip ${i===moodPick?'on':''}" data-i="${i}">${esc(m[0])}</span>`).join('');
+  [...document.querySelectorAll('.moodchip')].forEach(c=>c.onclick=()=>{moodPick=+c.dataset.i;renderMoods();playMood();});
+  if(!$('moodPlayer').firstChild)playMood();
+}
+function playMood(){
+  const id=MOODS[moodPick][1];
+  $('moodPlayer').innerHTML=`<iframe style="border-radius:9px;margin-top:9px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+}
+let TREND=null,moveType='gainers',moveGeo='id';
 function renderTrending(t){
   TREND=t;
-  $('trendTk').innerHTML=(t.tickers||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">—</span>';
-  drawTrends();
-  [...document.querySelectorAll('.ttab')].forEach(b=>b.onclick=()=>{trendGeo=b.dataset.g;[...document.querySelectorAll('.ttab')].forEach(x=>x.classList.toggle('on',x===b));drawTrends();});
+  drawMovers();
+  $('socialTk').innerHTML=(t.social||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">—</span>';
+  [...document.querySelectorAll('#moveType .ttab')].forEach(b=>b.onclick=()=>{moveType=b.dataset.t;[...document.querySelectorAll('#moveType .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
+  [...document.querySelectorAll('#moveGeo .ttab')].forEach(b=>b.onclick=()=>{moveGeo=b.dataset.g;[...document.querySelectorAll('#moveGeo .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
 }
-function drawTrends(){
-  const arr=(trendGeo==='id'?TREND.trends_id:TREND.trends_us)||[];
-  $('trendSearch').innerHTML=arr.map((s,i)=>`<div class="ts"><span class="n">${i+1}</span>${esc(s)}</div>`).join('')||'<div class="ts" style="color:var(--ink3)">—</div>';
+function drawMovers(){
+  const list=((TREND[moveGeo]||{})[moveType])||[];
+  $('moveList').innerHTML=list.map(m=>`<a class="mv" href="${encodeURI(m.url||'#')}" target="_blank" rel="noopener">`+
+    `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
+    `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></a>`).join('')||'<div style="color:var(--ink3);font-size:10px;padding:6px 0;">—</div>';
 }
 
 /* ---- index expand ---- */
@@ -503,14 +530,19 @@ function expandIdx(i){
 /* ---- wire ---- */
 let wireFilter='ALL',wireGeo='ALL',wireQ='',WIRE=[];
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐'};
+function setActive(sel,el){[...document.querySelectorAll(sel+' .wtab')].forEach(x=>x.classList.toggle('on',x===el));}
+function reltime(ts){if(!ts)return '';const m=Math.round(Date.now()/1000-ts);
+  if(m<3600)return Math.max(1,Math.round(m/60))+'m';
+  if(m<86400)return Math.round(m/3600)+'h';
+  return Math.round(m/86400)+'d';}
 function buildWire(news){
   WIRE=news;
   const cats=['ALL','MACRO','STARTUP','PUBLIC_MKT','CLIMATE'];
   $('wtabs').innerHTML=cats.map(c=>`<span class="wtab ${c===wireFilter?'on':''}" data-c="${c}">${c.replace('_',' ')}</span>`).join('');
-  [...document.querySelectorAll('#wtabs .wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;drawWire();});
+  [...document.querySelectorAll('#wtabs .wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;setActive('#wtabs',t);drawWire();});
   const geos=[['ALL','Both'],['ID','🇮🇩 Indonesia'],['US','🇺🇸 US']];
   $('wgeo').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===wireGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
-  [...document.querySelectorAll('#wgeo .wtab')].forEach(t=>t.onclick=()=>{wireGeo=t.dataset.g;drawWire();});
+  [...document.querySelectorAll('#wgeo .wtab')].forEach(t=>t.onclick=()=>{wireGeo=t.dataset.g;setActive('#wgeo',t);drawWire();});
   const sb=$('wsearch');sb.oninput=()=>{wireQ=sb.value.toLowerCase().trim();drawWire();};
   drawWire();
 }
@@ -518,8 +550,8 @@ function drawWire(){
   const items=WIRE.filter(n=>(wireFilter==='ALL'||n.category===wireFilter)
     &&(wireGeo==='ALL'||n.geo===wireGeo)
     &&(!wireQ||n.title.toLowerCase().includes(wireQ)||(n.source||'').toLowerCase().includes(wireQ)));
-  $('wireCount').textContent=items.length+' ITEMS';
-  $('wire').innerHTML=items.map(n=>`<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${n.category.replace('_',' ')}</span><span class="src">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span></div>`+
+  $('wireCount').textContent=items.length+' · ≤7D';
+  $('wire').innerHTML=items.map(n=>`<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${n.category.replace('_',' ')}</span><span class="src">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span><span class="tm">${reltime(n.ts)}</span></div>`+
     `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>`+
     `<a class="rs" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer"><span class="ext">↗</span> read at source</a></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
 }
@@ -542,13 +574,13 @@ function openSector(i){
   $('smAi').textContent=s.ai||'';
   const geos=[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']];
   $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
-  [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;renderConsts(s);});
+  [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;setActive('#smFilter',t);renderConsts(s);});
   renderConsts(s);
   const sn=(DATA.sector_news||{})[s.key]||[];
   $('smSecNews').innerHTML=sn.length?sn.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No sector news this cycle.</div>';
   $('smodal').classList.add('open');$('smodal').scrollTop=0;
 }
-function newsRow(n){return `<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${(n.category||'').replace('_',' ')}</span><span class="src">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span></div>`+
+function newsRow(n){return `<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${(n.category||'').replace('_',' ')}</span><span class="src">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="tm">${reltime(n.ts)}</span></div>`+
   `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
 function renderConsts(s){
   let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo);
@@ -585,7 +617,23 @@ $('smClose').onclick=()=>$('smodal').classList.remove('open');
 $('smodal').addEventListener('click',e=>{if(e.target===$('smodal'))$('smodal').classList.remove('open');});
 addEventListener('keydown',e=>{if(e.key==='Escape')$('smodal').classList.remove('open');});
 
-/* ---- Finnhub live US overlay (free tier = US stocks only; IDX stays Yahoo-baked) ---- */
+/* ---- live price overlay: CoinGecko (crypto, real-time, keyless) + Finnhub (US) ---- */
+function updateIdxCard(symbol,price,dp){
+  const i=(DATA.telemetry||[]).findIndex(r=>r.symbol===symbol);if(i<0)return;
+  const card=document.querySelector(`.idxcard[data-i="${i}"]`);if(!card)return;
+  DATA.telemetry[i].value=price;if(dp!=null)DATA.telemetry[i].delta_pct=dp;
+  card.querySelector('.px').textContent=fmt(price);
+  const ch=card.querySelector('.ch');if(dp!=null){ch.textContent=sign(dp);ch.style.color=COLP(dp);}
+  card.querySelector('.badge').insertAdjacentHTML('afterend','');
+}
+function startCrypto(){
+  async function poll(){
+    try{const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+      const d=await r.json();if(d.bitcoin){updateIdxCard('BTC-USD',d.bitcoin.usd,d.bitcoin.usd_24h_change);
+        $('freshPill').innerHTML='<span class="d dgreen"></span>BTC LIVE · '+ago(DATA.timestamp).toUpperCase();}}catch(e){}
+  }
+  poll();setInterval(poll,60000);
+}
 const LIVE={};let liveSyms=[];
 function startFinnhub(){
   const key=(DATA.config||{}).finnhub_key;if(!key)return;
@@ -608,7 +656,7 @@ function startFinnhub(){
 }
 
 fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
-  .then(d=>{render(d);startFinnhub();})
+  .then(d=>{render(d);startCrypto();startFinnhub();})
   .catch(e=>{console.error('payload fetch failed',e);$('topAlert').textContent='Payload unreachable — showing shell.';});
 </script>
 </body>

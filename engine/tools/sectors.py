@@ -44,8 +44,14 @@ def _batch_prices(symbols: list) -> dict:
                 continue
             value, prev = closes[-1], closes[-2]
             delta = (value - prev) / prev * 100 if prev else 0.0
+            try:
+                vcol = data[sym]["Volume"] if len(symbols) > 1 else data["Volume"]
+                vol = float(vcol.dropna().tolist()[-1])
+            except Exception:  # noqa: BLE001
+                vol = 0.0
             # keep ~6mo of daily closes; client slices for 1W/1M/YTD timeframes
-            out[sym] = {"delta_pct": round(delta, 2),
+            out[sym] = {"delta_pct": round(delta, 2), "value": round(value, 2),
+                        "turnover": round(value * vol, 0),
                         "spark": [round(c, 4) for c in closes[-130:]]}
         except Exception:  # noqa: BLE001 — one bad symbol never kills the batch
             continue
@@ -68,6 +74,8 @@ def collect() -> list:
                 "ticker": ticker, "name": name, "exchange": exch,
                 "country": country, "mktcap": mktcap, "tier": tier,
                 "delta_pct": delta, "spark": spark,
+                "value": (p or {}).get("value", 0.0),
+                "turnover": (p or {}).get("turnover", 0.0),
                 "url": YF_QUOTE + ysym,
             })
             (id_d if country == "ID" else us_d).append(delta)
