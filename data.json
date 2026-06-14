@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-06-14T11:18:50Z",
+  "timestamp": "2026-06-14T13:00:24Z",
   "opening": {
-    "greeting": "Good evening, Vito. Closing signals are settling.",
+    "greeting": "Late session, Vito. The desks are quiet — here's the wrap.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Partly cloudy, 29°C.",
-      "jakarta": "Mostly clear, 30°C.",
+      "bsd": "Mostly clear, 29°C.",
+      "jakarta": "Clear sky, 29°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
     "verse_of_the_day": "In their hearts humans plan their course, but the Lord establishes their steps. — Proverbs 16:9",
@@ -168,8 +168,8 @@
       "symbol": "BTC-USD",
       "label": "Bitcoin / USD",
       "kind": "crypto",
-      "value": 64504.63,
-      "delta_pct": 0.13,
+      "value": 64307.34,
+      "delta_pct": -0.18,
       "spark": [
         75825.7344,
         74344.7031,
@@ -190,7 +190,7 @@
         63561.0547,
         63543.1992,
         64421.3242,
-        64504.6289
+        64307.3398
       ],
       "url": "https://finance.yahoo.com/quote/BTC-USD"
     },
@@ -4585,9 +4585,9 @@
       "name": "Healthcare",
       "icon": "✛",
       "theme": "Capacity rebuild · BPJS",
-      "change": 0.47,
+      "change": 0.48,
       "idChange": 1.07,
-      "usChange": -0.13,
+      "usChange": -0.12,
       "signal": "NORMAL",
       "spark": [
         100.0,
@@ -4611,7 +4611,7 @@
         96.72,
         97.06
       ],
-      "ai": "Healthcare is +0.47% on aggregate with ID leading US (+1.07% ID / -0.13% US). PEHA leads (+6.09%); LLY lags (-2.41%). BPJS Kesehatan expanding insured population to 280M by 2026 — hospital volume direct beneficiary.",
+      "ai": "Healthcare is +0.48% on aggregate with ID leading US (+1.07% ID / -0.12% US). PEHA leads (+6.09%); LLY lags (-2.41%). BPJS Kesehatan expanding insured population to 280M by 2026 — hospital volume direct beneficiary.",
       "volume": "20 tickers",
       "themes": [
         "BPJS Kesehatan expanding insured population to 280M by 2026 — hospital volume direct beneficiary",
@@ -7307,6 +7307,13 @@
   ],
   "news": [
     {
+      "title": "Elon Musk drifted from Larry Page over a decade ago, but their companies are closer than ever",
+      "source": "CNBC Markets",
+      "url": "https://www.cnbc.com/2026/06/14/elon-musk-drifted-from-larry-page-but-spacex-google-closer-than-ever.html",
+      "category": "CLIMATE",
+      "sectors": []
+    },
+    {
       "title": "Trump says peace deal will be signed Sunday after Iran said it remains cautious on timing",
       "source": "CNBC Markets",
       "url": "https://www.cnbc.com/2026/06/13/trump-iran-deal-strait-of-hormuz.html",
@@ -7314,23 +7321,18 @@
       "sectors": []
     },
     {
-      "title": "From 10% chance of success to $2 trillion market cap: SpaceX's historic IPO",
+      "title": "A year after Meta tapped Alexandr Wang to build a new AI model, Zuckerberg has to sell it",
       "source": "CNBC Markets",
-      "url": "https://www.cnbc.com/2026/06/13/from-10percent-chance-of-success-to-2-trillion-spacexs-historic-ipo.html",
-      "category": "STARTUP",
-      "sectors": []
-    },
-    {
-      "title": "UAE denies 'false' reports of fund transfer to Iran",
-      "source": "CNBC Markets",
-      "url": "https://www.cnbc.com/2026/06/13/uae-denies-false-reports-of-fund-transfer-to-iran.html",
+      "url": "https://www.cnbc.com/2026/06/14/meta-hired-alexandr-wang-to-build-ai-its-zuckerbergs-job-to-sell-it.html",
       "category": "MACRO",
-      "sectors": []
+      "sectors": [
+        "technology"
+      ]
     },
     {
-      "title": "UK forces board sanctioned Russian shadow fleet oil tanker",
+      "title": "Trump heads to G7 summit in France as world awaits Iran deal",
       "source": "CNBC Markets",
-      "url": "https://www.cnbc.com/2026/06/14/uk-forces-board-sanctioned-russian-shadow-fleet-oil-tanker.html",
+      "url": "https://www.cnbc.com/2026/06/14/trump-g7-iran-deal-france-ukraine.html",
       "category": "MACRO",
       "sectors": []
     },
@@ -7425,6 +7427,24 @@
       ]
     },
     {
+      "title": "Google just redesigned the search box for the first time in 25 years — here’s why it matters more than you think.",
+      "source": "VentureBeat AI",
+      "url": "https://venturebeat.com/technology/google-just-redesigned-the-search-box-for-the-first-time-in-25-years-heres-why-it-matters-more-than-you-think",
+      "category": "MACRO",
+      "sectors": [
+        "renewables"
+      ]
+    },
+    {
+      "title": "Railway secures $100 million to challenge AWS with AI-native cloud infrastructure",
+      "source": "VentureBeat AI",
+      "url": "https://venturebeat.com/infrastructure/railway-secures-usd100-million-to-challenge-aws-with-ai-native-cloud",
+      "category": "MACRO",
+      "sectors": [
+        "infrastructure"
+      ]
+    },
+    {
       "title": "Panggil Menteri ESDM, Presiden Prabowo Bahas Ketahanan Energi dan Hilirisasi, Pastikan BBM Subsidi serta LPG Tetap Stabil",
       "source": "Setkab RI",
       "url": "https://setkab.go.id/panggil-menteri-esdm-presiden-prabowo-bahas-ketahanan-energi-dan-hilirisasi-pastikan-bbm-subsidi-serta-lpg-tetap-stabil/",
@@ -7455,13 +7475,6 @@
   ],
   "podcasts": [
     {
-      "show": "Dwarkesh Podcast",
-      "host": "Dwarkesh Patel",
-      "title": "Alex Imas and Phil Trammell – What remains scarce after AGI?",
-      "thesis": "Economics of AGI episode w Alex Imas and Phil Trammell . There’s a bunch of important questions about how we deal with AI that only economics can answer. What is the optimal way to tax and redistribute the wealth that will be generated? How should countries not in the AI supply chain index into the gains?",
-      "url": "https://www.dwarkesh.com/p/alex-imas-phil-trammell"
-    },
-    {
       "show": "Lex Fridman Podcast",
       "host": "Lex Fridman",
       "title": "#497 – Biggest Mysteries in Physics: Antimatter, Dark Energy & ToE – Don Lincoln",
@@ -7474,6 +7487,13 @@
       "title": "Why Asia Will Lead the Next Cycle",
       "thesis": "Indonesia's structural current-account surplus is a multi-decade tailwind. Demographic dividends compound with commodity-export premiums to create a 2030 inflection point invisible in Western macro models.",
       "url": "https://www.youtube.com/@endgame"
+    },
+    {
+      "show": "Dwarkesh Podcast",
+      "host": "Dwarkesh Patel",
+      "title": "The Intelligence Explosion and Economic Implications",
+      "thesis": "Compute scaling is reshaping the cost curve of cognition itself; the binding constraint shifts from talent to energy and data-center capacity — a direct read on the AI-infrastructure capex thesis.",
+      "url": "https://www.dwarkesh.com/"
     },
     {
       "show": "View From The Top",
