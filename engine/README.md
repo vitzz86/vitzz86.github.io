@@ -9,6 +9,23 @@ Four agents run sequentially as a LangGraph state machine and compile the strict
        → [Cross-Market Arbiter] → [Chief of Staff → data.json]
 ```
 
+## v2 — Sector Flow Matrix & universal link layer
+
+`data.json` also carries two v2 surfaces, baked at cron time so the static
+dashboard needs no live backend:
+
+- **`sectors`** — 10-sector-style equity universe (`config/settings.py → SECTORS`,
+  extensible with no code changes). `tools/sectors.py` fetches each constituent's
+  day delta + 20-pt sparkline via yfinance, computes ID-vs-US aggregates, a
+  Mega/Large/Mid/Small tier, an ALERT/WATCH/NORMAL signal, and a synthesis line.
+  Falls back to flat 0.0 when yfinance is unreachable, so the grid always renders.
+- **`news`** — `tools/news_router.py` turns RSS headlines into a deduped list
+  where **every item has a verified source URL** (items without a link are
+  suppressed, per PRD D3), tagged with a category and routed to sectors.
+
+The cockpit renders the sector grid + per-sector modal (constituents, sparklines,
+themes, synthesis, routed news) entirely client-side from this baked payload.
+
 ## LLM intelligence base — DeepSeek
 
 Set **one** of these (checked in this order):

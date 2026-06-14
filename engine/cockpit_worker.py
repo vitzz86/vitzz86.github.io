@@ -22,7 +22,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
-from tools import enterprise_osint, env_context, market_telemetry  # noqa: E402
+from tools import enterprise_osint, env_context, market_telemetry, news_router, sectors  # noqa: E402
 
 
 # ---------------------------------------------------------------- LLM access
@@ -259,6 +259,8 @@ def compile_payload(state: dict) -> dict:
         },
         "arbiter_brief": c["arbiter_brief"],
         "executive_brief": c["executive_brief"],
+        "sectors": sectors.collect(),
+        "news": news_router.route(state.get("headlines", {})),
         "note_of_the_day": env_context.note_of_the_day(previous_note),
         "generated_by": ("LangGraph 4-agent pipeline · DeepSeek intelligence base · "
                          "yfinance / feedparser / Open-Meteo · GitHub Actions cron"),

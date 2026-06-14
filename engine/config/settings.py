@@ -26,6 +26,108 @@ TICKERS = [
 ANOMALY_THRESHOLD_PCT = 1.2
 ANOMALY_WATCHLIST = ("^JKSE", "^IXIC")
 
+# ---------------------------------------------------------------- sector universe
+# Project Cockpit v2 — Sector Flow Matrix. Extensible registry: add sectors or
+# constituents here with no code changes (PRD C5). Curated subset of the full
+# 201-ticker universe, weighted to Vito's climate / SEA venture thesis. Each
+# constituent: (ticker, company, yfinance_symbol, exchange, country, mktcap,
+# tier, *flags). tier ∈ mega|large|mid|small. flags: "spec" = speculative.
+SECTOR_SIGNAL_PCT = {"alert": 1.5, "watch": 0.8}  # |aggregate %| thresholds
+SECTORS = [
+    {"key": "technology", "name": "Technology", "icon": "▚",
+     "theme": "AI infra · Digital banking",
+     "constituents": [
+        ("DCII", "DCI Indonesia",        "DCII.JK", "IDX",    "ID", "IDR 290T", "mega"),
+        ("TLKM", "Telkom Indonesia",     "TLKM.JK", "IDX",    "ID", "IDR 200T", "mega"),
+        ("GOTO", "GoTo Gojek Tokopedia", "GOTO.JK", "IDX",    "ID", "IDR 42T",  "large"),
+        ("NVDA", "Nvidia Corp",          "NVDA",    "NASDAQ", "US", "$3.5T",    "mega"),
+        ("MSFT", "Microsoft Corp",       "MSFT",    "NASDAQ", "US", "$3.1T",    "mega"),
+        ("BUKA", "Bukalapak",            "BUKA.JK", "IDX",    "ID", "IDR 8T",   "mid"),
+     ]},
+    {"key": "financials", "name": "Financials", "icon": "▤",
+     "theme": "BI rate hold · NIM expansion",
+     "constituents": [
+        ("BBCA", "Bank Central Asia",    "BBCA.JK", "IDX",    "ID", "IDR 1,023T", "mega"),
+        ("BMRI", "Bank Mandiri",         "BMRI.JK", "IDX",    "ID", "IDR 600T",   "mega"),
+        ("BBRI", "Bank Rakyat Indonesia","BBRI.JK", "IDX",    "ID", "IDR 650T",   "mega"),
+        ("JPM",  "JPMorgan Chase",       "JPM",     "NYSE",   "US", "$680B",      "mega"),
+        ("V",    "Visa Inc",             "V",       "NYSE",   "US", "$560B",      "mega"),
+        ("ARTO", "Bank Jago",            "ARTO.JK", "IDX",    "ID", "IDR 30T",    "mid"),
+     ]},
+    {"key": "energy", "name": "Mining & Energy", "icon": "◭",
+     "theme": "Nickel glut · coal cash flow",
+     "constituents": [
+        ("ADRO", "Adaro Energy",         "ADRO.JK", "IDX",    "ID", "IDR 89T",  "large"),
+        ("ITMG", "Indo Tambangraya",     "ITMG.JK", "IDX",    "ID", "IDR 28T",  "mid"),
+        ("INCO", "Vale Indonesia",       "INCO.JK", "IDX",    "ID", "IDR 45T",  "mid"),
+        ("XOM",  "ExxonMobil",           "XOM",     "NYSE",   "US", "$520B",    "mega"),
+        ("CVX",  "Chevron",              "CVX",     "NYSE",   "US", "$290B",    "mega"),
+        ("ANTM", "Aneka Tambang",        "ANTM.JK", "IDX",    "ID", "IDR 38T",  "mid"),
+     ]},
+    {"key": "renewables", "name": "Renewables", "icon": "☀",
+     "theme": "PLN green capex · geothermal",
+     "constituents": [
+        ("PGEO", "Pertamina Geothermal", "PGEO.JK", "IDX",    "ID", "IDR 42T",  "mid"),
+        ("BREN", "Barito Renewables",    "BREN.JK", "IDX",    "ID", "IDR 890T", "mega"),
+        ("NEE",  "NextEra Energy",       "NEE",     "NYSE",   "US", "$150B",    "mega"),
+        ("FSLR", "First Solar",          "FSLR",    "NASDAQ", "US", "$22B",     "large"),
+        ("VKTR", "VKTR Teknologi Mobilitas","VKTR.JK","IDX",  "ID", "IDR 6T",   "mid", "spec"),
+        ("ENPH", "Enphase Energy",       "ENPH",    "NASDAQ", "US", "$9B",      "mid"),
+     ]},
+    {"key": "consumer", "name": "Consumer & FMCG", "icon": "▦",
+     "theme": "Demographic compounding",
+     "constituents": [
+        ("ICBP", "Indofood CBP",         "ICBP.JK", "IDX",    "ID", "IDR 130T", "large"),
+        ("UNVR", "Unilever Indonesia",   "UNVR.JK", "IDX",    "ID", "IDR 70T",  "large"),
+        ("MYOR", "Mayora Indah",         "MYOR.JK", "IDX",    "ID", "IDR 60T",  "large"),
+        ("PG",   "Procter & Gamble",     "PG",      "NYSE",   "US", "$390B",    "mega"),
+        ("KO",   "Coca-Cola",            "KO",      "NYSE",   "US", "$270B",    "mega"),
+        ("AMRT", "Sumber Alfaria (Alfamart)","AMRT.JK","IDX", "ID", "IDR 120T", "large"),
+     ]},
+    {"key": "healthcare", "name": "Healthcare", "icon": "✛",
+     "theme": "Capacity rebuild · BPJS",
+     "constituents": [
+        ("KLBF", "Kalbe Farma",          "KLBF.JK", "IDX",    "ID", "IDR 75T",  "large"),
+        ("SIDO", "Sido Muncul",          "SIDO.JK", "IDX",    "ID", "IDR 18T",  "mid"),
+        ("MIKA", "Mitra Keluarga",       "MIKA.JK", "IDX",    "ID", "IDR 40T",  "mid"),
+        ("LLY",  "Eli Lilly",            "LLY",     "NYSE",   "US", "$780B",    "mega"),
+        ("UNH",  "UnitedHealth",         "UNH",     "NYSE",   "US", "$520B",    "mega"),
+        ("HEAL", "Medikaloka Hermina",   "HEAL.JK", "IDX",    "ID", "IDR 22T",  "mid"),
+     ]},
+]
+SECTOR_THEMES = {
+    "technology": [
+        "AI infrastructure capex accelerating — APAC data-center power demand surging",
+        "OJK digital-banking framework revision opens Indonesian fintech reclassification",
+        "US-China decoupling drives the ASEAN semiconductor assembly-hub thesis",
+    ],
+    "financials": [
+        "BI rate path creating a NIM-expansion window for tier-1 Indonesian banks",
+        "Household debt-to-GDP near 17% vs 75%+ in developed markets — long lending runway",
+        "Digital-bank reclassification (ARTO) reprices the growth tail of the sector",
+    ],
+    "energy": [
+        "Energy-transition dual-track: legacy fossil cash flows fund the green pivot",
+        "Indonesian coal and nickel remain the primary USD earner for the current account",
+        "Nickel oversupply pressures spot, but downstream EV-battery demand underwrites volume",
+    ],
+    "renewables": [
+        "PLN green capex: 15GW renewable addition target by 2030",
+        "Geothermal baseload gives Indonesia a structural edge over solar-only peers",
+        "Barito Renewables × Masdar unlocks a utility-scale solar pipeline in Sumatra",
+    ],
+    "consumer": [
+        "270M-population demographic tailwind underwrites long-duration FMCG compounding",
+        "Modern-trade channel shift: e-commerce now ~18% of FMCG distribution",
+        "Input-cost (CPO) normalization eases margin pressure into next cycle",
+    ],
+    "healthcare": [
+        "Post-pandemic hospital-capacity rebuild plus BPJS coverage expansion",
+        "GLP-1 demand (LLY) anchors the US growth narrative; ID names trade on volume",
+        "Branded-generics pricing power (KLBF, SIDO) cushions FX-driven input costs",
+    ],
+}
+
 # ---------------------------------------------------------------- OSINT feeds
 # Per-feed failures are tolerated; the hunter keeps whatever parses cleanly.
 RSS_FEEDS = {
