@@ -768,7 +768,7 @@ function expandIdx(i){
     `<div class="c"><div class="k">LAST</div><div class="v">${fmt(r.value)}</div></div>`+
     `<div class="c"><div class="k">RANGE</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
     `<div class="lbl" style="margin-top:9px;">Last px ${fmt(r.value)} · ${sign(r.delta_pct)} · as of ${wibStamp(DATA.timestamp)}</div>`+
-    `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on Yahoo Finance ↗</a>`;
+    `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on ${r.kind==='crypto'?'CoinGecko':'Yahoo Finance'} ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
   $('idxExp').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -989,7 +989,7 @@ function renderConsts(s){
 }
 function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
-  const live=LIVE[tk];const dp=live?live.dp:c.delta_pct;
+  const live=LIVE[tk]||CRYPTO[tk];const dp=live?live.dp:c.delta_pct;
   const up=dp>=0,col=up?'#22c55e':'#ef4444';
   const view=tfView(c.spark,'3M');const hi=Math.max(...view),lo=Math.min(...view);
   const news=(DATA.ticker_news||{})[tk]||[];
@@ -999,7 +999,7 @@ function openTicker(s,tk){
     `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${(live?live.c:c.value)?fmt(live?live.c:c.value):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(dp)}</span>${live?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>':''}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
     `<div class="smchart">${spark(view,420,110,col)}</div>`+
-    `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on Yahoo Finance ↗</a>`+
+    `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
   $('tkBack').onclick=()=>{t.style.display='none';$('smConstPanel').style.display='';};
@@ -1018,11 +1018,22 @@ function updateIdxCard(symbol,price,dp){
   const ch=card.querySelector('.ch');if(dp!=null){ch.textContent=sign(dp);ch.style.color=COLP(dp);}
   card.querySelector('.badge').insertAdjacentHTML('afterend','');
 }
+const CRYPTO={};
+const CG_IDS={BTC:'bitcoin',ETH:'ethereum',SOL:'solana',BNB:'binancecoin',XRP:'ripple',
+  ADA:'cardano',DOGE:'dogecoin',AVAX:'avalanche-2',LINK:'chainlink',MATIC:'polygon-ecosystem-token'};
 function startCrypto(){
+  const ids=Object.values(CG_IDS).join(',');
+  const idToTk=Object.fromEntries(Object.entries(CG_IDS).map(([t,i])=>[i,t]));
   async function poll(){
-    try{const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-      const d=await r.json();if(d.bitcoin){updateIdxCard('BTC-USD',d.bitcoin.usd,d.bitcoin.usd_24h_change);
-        $('freshPill').innerHTML='<span class="d dgreen"></span>BTC LIVE · '+ago(DATA.timestamp).toUpperCase();}}catch(e){}
+    try{const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+      const d=await r.json();
+      for(const [id,o] of Object.entries(d)){const tk=idToTk[id];if(tk&&o.usd!=null)CRYPTO[tk]={c:o.usd,dp:o.usd_24h_change};}
+      if(d.bitcoin)updateIdxCard('BTC-USD',d.bitcoin.usd,d.bitcoin.usd_24h_change);
+      // live-refresh an open crypto ticker view
+      if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],open=$('smTicker').querySelector('.tk');
+        if(s&&s.key==='crypto'&&open){const tk=open.textContent.replace(/[^A-Z0-9]/g,'');if(CRYPTO[tk])openTicker(s,tk);}}
+      $('freshPill').innerHTML='<span class="d dgreen"></span>CRYPTO LIVE · '+ago(DATA.timestamp).toUpperCase();
+    }catch(e){}
   }
   poll();setInterval(poll,60000);
 }
@@ -1079,14 +1090,17 @@ $('mbVidPlay').onclick=()=>videoToggle();
   _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=!!SS.spPos&&!SS.spPaused;
 })();
 
-/* ---- boot + 30-min auto-refresh (soft re-render keeps players & state alive) ---- */
-fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
+/* ---- boot + auto-refresh ----
+   Cache-bust the URL so the GitHub Pages CDN can't serve a stale data.json, and
+   poll every 5 min so a new payload (baked every 30 min) shows within ~5 min with
+   no manual reload. Soft re-render keeps players & restored state alive. */
+function fetchData(){return fetch('data.json?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();});}
+fetchData()
   .then(d=>{render(d);startClock();startCrypto();startFinnhub();loadSpotifyApi();restoreVideo();})
   .catch(e=>{console.error('payload fetch failed',e);$('topAlert').textContent='Payload unreachable — showing shell.';});
-setInterval(()=>{
-  fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
-    .then(d=>render(d)).catch(()=>{});
-},30*60*1000);
+setInterval(()=>{fetchData().then(d=>render(d)).catch(()=>{});},5*60*1000);
+setInterval(()=>{$('stamp').textContent='compiled '+ago(DATA.timestamp);
+  $('freshPill').innerHTML='<span class="d dgreen"></span>UPDATED '+ago(DATA.timestamp).toUpperCase();},60000);
 setInterval(saveState,5000);            // sample playback position + persist active state
 addEventListener('beforeunload',saveState);
 </script>
