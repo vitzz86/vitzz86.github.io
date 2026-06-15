@@ -417,7 +417,74 @@ TAVILY_ENDPOINT = "https://api.tavily.com/search"
 GOOGLE_NEWS = "https://news.google.com/rss/search"
 GOOGLE_NEWS_GEO = {"ID": "hl=en-ID&gl=ID&ceid=ID:en", "US": "hl=en-US&gl=US&ceid=US:en"}
 NEWS_PER_QUERY = 4          # items kept per index/sector/ticker query
-NEWS_WIRE_CAP = 70          # max items in the global Intelligence Wire
+NEWS_WIRE_CAP = 220         # max items in the wire (~100 ID + ~100 US after dedupe)
+NEWS_TOPIC_PER_QUERY = 10   # items kept per broad wire-topic query (volume driver)
+
+# Intelligence Wire taxonomy (v3): Economy · Tech · Markets & Finance · Crypto.
+# Broad per-geo topic queries fan the wire out to ~100 items/region. (query, category).
+WIRE_TOPICS = {
+    "ID": [
+        ("ekonomi Indonesia pertumbuhan PDB", "ECONOMY"),
+        ("Bank Indonesia suku bunga inflasi", "ECONOMY"),
+        ("APBN fiskal kebijakan pemerintah Indonesia", "ECONOMY"),
+        ("rupiah nilai tukar dollar", "ECONOMY"),
+        ("IHSG saham bursa efek Indonesia", "MARKETS_FINANCE"),
+        ("saham bank BBCA BBRI BMRI emiten", "MARKETS_FINANCE"),
+        ("obligasi surat utang negara investasi", "MARKETS_FINANCE"),
+        ("harga komoditas nikel batu bara emas Indonesia", "MARKETS_FINANCE"),
+        ("startup Indonesia pendanaan modal ventura", "TECH"),
+        ("teknologi AI kecerdasan buatan Indonesia", "TECH"),
+        ("GoTo Bukalapak digital ekonomi Indonesia", "TECH"),
+        ("kripto bitcoin aset digital Indonesia", "CRYPTO"),
+    ],
+    "US": [
+        ("US economy growth jobs report", "ECONOMY"),
+        ("Federal Reserve interest rates inflation", "ECONOMY"),
+        ("US fiscal policy tariffs trade", "ECONOMY"),
+        ("US dollar global economy outlook", "ECONOMY"),
+        ("S&P 500 Nasdaq Dow stock market", "MARKETS_FINANCE"),
+        ("US bank earnings JPMorgan Goldman Sachs", "MARKETS_FINANCE"),
+        ("treasury yields bond market", "MARKETS_FINANCE"),
+        ("gold oil commodities prices", "MARKETS_FINANCE"),
+        ("AI artificial intelligence Nvidia OpenAI", "TECH"),
+        ("startup venture capital funding round", "TECH"),
+        ("big tech Apple Microsoft Google Meta", "TECH"),
+        ("bitcoin ethereum crypto market regulation", "CRYPTO"),
+    ],
+}
+
+# ---------------------------------------------------------------- video intelligence
+# YouTube market-update channels & playlists for the Intelligence Hub "Videos" pane.
+# The Videos agent captures each source's latest uploads (≤1 week) with thumbnail +
+# description. Channels are @handles (resolved to channel_id at runtime); playlists
+# carry their playlist_id directly. category ∈ market_id|market_us|crypto.
+VIDEO_SOURCES = [
+    # --- Indonesia market ---
+    {"name": "Cuap Cuap Cuan", "kind": "channel", "ref": "@cuapcuapcuan", "category": "market_id", "geo": "ID"},
+    {"name": "Bloomberg Technoz", "kind": "channel", "ref": "@bloombergtechnoz", "category": "market_id", "geo": "ID"},
+    {"name": "Mirae Asset Sekuritas", "kind": "channel", "ref": "@MiraeAssetSekuritas", "category": "market_id", "geo": "ID"},
+    {"name": "Sucor Sekuritas", "kind": "channel", "ref": "@SucorSekuritasChannel", "category": "market_id", "geo": "ID"},
+    {"name": "Mandiri Sekuritas", "kind": "channel", "ref": "@GrowinMandiriSekuritas", "category": "market_id", "geo": "ID"},
+    {"name": "IDX Channel", "kind": "channel", "ref": "@IDXChannel", "category": "market_id", "geo": "ID"},
+    # --- US market ---
+    {"name": "Bloomberg Stock Movers", "kind": "playlist", "ref": "PLe4PRejZgr0NxhJreY_kjMBdW8cvmNauU", "category": "market_us", "geo": "US"},
+    {"name": "Bloomberg Tech", "kind": "playlist", "ref": "PLe4PRejZgr0P4uqrz5jfGmmshkjmfxd73", "category": "market_us", "geo": "US"},
+    {"name": "Bloomberg Daybreak: Asia", "kind": "playlist", "ref": "PLe4PRejZgr0Mvkfte_CsCiKEYuP9DtXN8", "category": "market_us", "geo": "US"},
+    {"name": "Bloomberg Daybreak: US", "kind": "playlist", "ref": "PLe4PRejZgr0Pfj-MCX1dSTXnEBCGHl3Yo", "category": "market_us", "geo": "US"},
+    {"name": "Reuters Morning Bid", "kind": "playlist", "ref": "PLZhRxE9191zMdTzeumPO39fdnH2UjT1zP", "category": "market_us", "geo": "US"},
+    {"name": "Morgan Stanley", "kind": "channel", "ref": "@morganstanley", "category": "market_us", "geo": "US"},
+    {"name": "Goldman Sachs", "kind": "channel", "ref": "@GoldmanSachs", "category": "market_us", "geo": "US"},
+    # --- Crypto ---
+    {"name": "Altcoin Daily", "kind": "channel", "ref": "@AltcoinDaily", "category": "crypto", "geo": "CR"},
+    {"name": "Simply Bitcoin", "kind": "channel", "ref": "@SimplyBitcoin", "category": "crypto", "geo": "CR"},
+    {"name": "Bankless", "kind": "channel", "ref": "@Bankless", "category": "crypto", "geo": "CR"},
+]
+VIDEO_CATEGORY_LABELS = {"market_id": "Market ID", "market_us": "Market US", "crypto": "Crypto"}
+VIDEO_WEEK_DAYS = 7          # drop uploads older than this
+VIDEO_PER_SOURCE = 3         # newest N uploads kept per source
+
+# Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
+DAILY_BRIEF_HOURS = [9, 12, 17, 19]
 
 # Finnhub — baked into data.json so the client can poll live US quotes (free key,
 # US stocks only; IDX stays on Yahoo). Public exposure is acceptable for the free tier.

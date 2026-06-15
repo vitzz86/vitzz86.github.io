@@ -22,23 +22,27 @@ import urllib.request
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
 from config import settings
 
+# Intelligence Wire taxonomy v3: Economy · Tech · Markets & Finance · Crypto.
 CATEGORY_KEYWORDS = {
-    "CRYPTO":     ["bitcoin", "ethereum", "crypto", "blockchain", "token", "defi",
-                   "solana", "btc", "eth", "stablecoin", "altcoin", "web3"],
-    "MACRO":      ["rate", "inflation", "gdp", "policy", "central bank", "treasury",
-                   "bi-rate", "the fed", "ecb", "rupiah", "fiscal", "tariff", "yield"],
-    "STARTUP":    ["funding", "series ", "seed", "acquisition", "ipo", "venture",
-                   "raises", "round", "startup", "valuation"],
-    "PUBLIC_MKT": ["earnings", "stock", "shares", "equity", "listed", "dividend",
-                   "buyback", "guidance", "index", "bourse", "saham"],
-    "CLIMATE":    ["renewable", "solar", "carbon", " ev", "energy", "climate",
-                   "green", "geothermal", "battery", "nickel", "emission"],
+    "CRYPTO":          ["bitcoin", "ethereum", "crypto", "blockchain", "token", "defi",
+                        "solana", "btc", "eth", "stablecoin", "altcoin", "web3", "binance"],
+    "TECH":            ["ai", "artificial intelligence", "startup", "venture", "funding",
+                        "series ", "seed", "software", "chip", "semiconductor", "cloud",
+                        "saas", "app", "data center", "nvidia", "openai", "google",
+                        "apple", "microsoft", "meta", "gojek", "goto", "digital", "tech"],
+    "MARKETS_FINANCE": ["stock", "shares", "equity", "earnings", "dividend", "ipo", "bond",
+                        "yield", "treasury", "gold", "oil", "commodity", "nickel", "coal",
+                        "saham", "ihsg", "bourse", "index", "buyback", "bank", "valuation"],
+    "ECONOMY":         ["rate", "inflation", "gdp", "economy", "central bank", "the fed",
+                        "bi-rate", "fiscal", "tariff", "trade", "jobs", "employment",
+                        "rupiah", "policy", "deficit", "budget", "recession", "ekonomi"],
 }
+DEFAULT_CATEGORY = "ECONOMY"
 
 
 def _category(text: str) -> str:
     t = text.lower()
-    best, score = "MACRO", 0
+    best, score = DEFAULT_CATEGORY, 0
     for cat, kws in CATEGORY_KEYWORDS.items():
         s = sum(1 for k in kws if k in t)
         if s > score:
@@ -63,8 +67,15 @@ def _now() -> int:
     return int(dt.datetime.now(dt.timezone.utc).timestamp())
 
 
-def google_news(query: str, geo: str = "US", n: int = None) -> list:
-    """Keyless Google News RSS search for any query, region-targeted."""
+def _clean_html(s: str) -> str:
+    s = re.sub(r"<!\[CDATA\[|\]\]>", "", s or "")
+    s = re.sub(r"<[^>]+>", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def google_news(query: str, geo: str = "US", n: int = None, category: str = None) -> list:
+    """Keyless Google News RSS search for any query, region-targeted.
+    category: force a taxonomy label (else auto-classified from the headline)."""
     n = n or settings.NEWS_PER_QUERY
     geoq = settings.GOOGLE_NEWS_GEO.get(geo, settings.GOOGLE_NEWS_GEO["US"])
     q = query + " when:7d"        # Google News recency operator → last 7 days only
@@ -86,8 +97,16 @@ def google_news(query: str, geo: str = "US", n: int = None) -> list:
                 t, source = t.rsplit(" - ", 1)
             pd = re.search(r"<pubDate>(.*?)</pubDate>", block, re.S)
             ts = _parse_ts(pd.group(1)) if pd else 0
+            desc = re.search(r"<description>(.*?)</description>", block, re.S)
+            summary = _clean_html(desc.group(1)) if desc else ""
+            # Google's RSS description is a related-headlines list — keep it only when
+            # it adds real prose beyond the title; otherwise leave blank for the client.
+            if summary and (summary[:40].lower() == t[:40].lower() or len(summary) < 60):
+                summary = ""
             out.append({"title": t[:220], "url": link.group(1).strip(),
-                        "source": source, "geo": geo, "category": _category(t), "ts": ts})
+                        "source": source, "geo": geo,
+                        "category": category or _category(t),
+                        "summary": summary[:400], "ts": ts})
     except Exception as e:  # noqa: BLE001
         print(f"[news] google query failed '{query}': {e}")
     return out
@@ -145,6 +164,22 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         if q:
             wire += google_news(q[0], q[1], 3)
 
+    # broad per-geo topic fan across the Economy/Tech/Markets/Crypto taxonomy — this is
+    # the volume driver that lifts the wire to ~100 items per region (threaded).
+    topic_jobs = [(q, geo, cat) for geo, lst in settings.WIRE_TOPICS.items()
+                  for q, cat in lst]
+
+    def _topic(job):
+        q, geo, cat = job
+        return google_news(q, geo, settings.NEWS_TOPIC_PER_QUERY, category=cat)
+
+    try:
+        with cf.ThreadPoolExecutor(max_workers=8) as ex:
+            for items in ex.map(_topic, topic_jobs):
+                wire += items
+    except Exception as e:  # noqa: BLE001
+        print(f"[news] topic fan failed: {e}")
+
     # --- per-sector news (richer, sector-tuned queries; recency-biased) ---
     # (us_query, id_query) — tuned to the actual trending angle of each sector
     SQ = {
@@ -189,7 +224,12 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     except Exception as e:  # noqa: BLE001
         print(f"[news] ticker fetch pool failed: {e}")
 
-    wire = _dedupe(_recent(wire), settings.NEWS_WIRE_CAP)   # week-window, today first
-    print(f"[news] wire={len(wire)} (≤7d) · sectors={len(sector_news)} · "
-          f"tickers_with_news={len(ticker_news)}")
+    # balance roughly 50/50 ID/US so neither region starves the wire
+    fresh = _recent(wire)                       # ≤7d, newest first
+    half = settings.NEWS_WIRE_CAP // 2
+    id_w = _dedupe([x for x in fresh if x.get("geo") == "ID"], half)
+    us_w = _dedupe([x for x in fresh if x.get("geo") != "ID"], settings.NEWS_WIRE_CAP - half)
+    wire = sorted(id_w + us_w, key=lambda x: x.get("ts", 0), reverse=True)
+    print(f"[news] wire={len(wire)} (≤7d · {len(id_w)} ID / {len(us_w)} US) · "
+          f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)}")
     return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news}

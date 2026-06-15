@@ -1,10 +1,9 @@
 name: Cockpit Sync
 
-# Every 30 minutes (public repo → free unlimited Actions minutes). GitHub's
-# scheduler is best-effort; real cadence is ~30-45 min. Prices/news refresh each run.
+# Triggered every 30 min by cron-job.org via the GitHub API (workflow_dispatch).
+# The GitHub-native */30 schedule was removed to avoid double-firing — cron-job.org
+# is now the single reliable trigger. Prices/news refresh each run.
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 permissions:

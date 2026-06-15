@@ -22,8 +22,9 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
-from tools import (enterprise_osint, env_context, market_telemetry,  # noqa: E402
-                   news_router, podcasts, sectors, spotify, trending)
+from tools import (daily_brief, enterprise_osint, env_context,  # noqa: E402
+                   market_telemetry, news_router, podcasts, sectors,
+                   spotify, trending, videos)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -238,11 +239,14 @@ def compile_payload(state: dict) -> dict:
     wx = env_context.weather()
     rainy = wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
+    previous_videos, previous_brief = [], None
     try:
         with open(settings.DATA_JSON_PATH, encoding="utf-8") as f:
             _prev = json.load(f)
             previous_note = _prev.get("note_of_the_day")
             previous_pods = _prev.get("podcasts", [])
+            previous_videos = _prev.get("videos", [])
+            previous_brief = _prev.get("daily_brief")
     except Exception:  # noqa: BLE001 — first run has no file
         pass
 
@@ -253,6 +257,10 @@ def compile_payload(state: dict) -> dict:
     sec = sectors.collect()
     _deepseek_sector_ai(sec, has_llm)                 # real AI text for WATCH/ALERT sectors
     news = news_router.enrich(state.get("headlines", {}), sec, state["telemetry"])
+    vids = videos.collect(previous=previous_videos)
+    brief = daily_brief.compile_brief(
+        state["telemetry"], sec, news["wire"], vids, c["arbiter_brief"],
+        summarize=summarize, previous=previous_brief)
 
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -276,6 +284,8 @@ def compile_payload(state: dict) -> dict:
         "news": news["wire"],
         "sector_news": news["sector_news"],
         "ticker_news": news["ticker_news"],
+        "videos": vids,
+        "daily_brief": brief,
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},
