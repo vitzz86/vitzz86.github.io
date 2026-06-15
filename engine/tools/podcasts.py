@@ -22,18 +22,28 @@ def _clean(html: str) -> str:
     return txt
 
 
-def _extractive_thesis(text: str, limit: int = 320) -> str:
-    text = _clean(text)
+_JUNK = re.compile(r"https?://|www\.|\b\d{1,2}:\d{2}\b|get your copy|subscribe|"
+                   r"sponsor|patreon|follow us|available on|amazon|goodreads|"
+                   r"timestamp|chapters?:|outline:", re.I)
+
+
+def _extractive_thesis(raw: str, limit: int = 300) -> str:
+    """Skip YouTube promo/links/timestamps; keep the first real prose sentences."""
+    lines = [l.strip() for l in re.split(r"[\n\r]+", raw or "") if l.strip()]
+    clean = [_clean(l) for l in lines if not _JUNK.search(l)]
+    text = " ".join(clean).strip()
+    text = re.sub(r"\s+", " ", text)
     if not text:
         return ""
-    # first 2 sentences, capped
     parts = re.split(r"(?<=[.!?])\s+", text)
     out = ""
     for p in parts:
+        if len(p) < 25:
+            continue
         if len(out) + len(p) > limit:
             break
         out += p + " "
-    return out.strip() or text[:limit]
+    return out.strip()
 
 
 def collect(summarize=None) -> list:
@@ -62,7 +72,8 @@ def collect(summarize=None) -> list:
                     "phrases like 'this episode discusses' or 'the guest talks about'.",
                     f"Podcast: {show} (host {host}). Episode title: {title}. "
                     f"Description: {_clean(notes)[:1400]}")
-            thesis = (thesis or "").strip() or _extractive_thesis(notes)
+            thesis = (thesis or "").strip() or _extractive_thesis(notes) \
+                or f"New {show} episode — open to listen."
             eps.append({"show": show, "host": host, "title": title[:140],
                         "thesis": thesis[:340], "url": link})
         except Exception as ex:  # noqa: BLE001
