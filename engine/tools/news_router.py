@@ -23,6 +23,8 @@ sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__fi
 from config import settings
 
 CATEGORY_KEYWORDS = {
+    "CRYPTO":     ["bitcoin", "ethereum", "crypto", "blockchain", "token", "defi",
+                   "solana", "btc", "eth", "stablecoin", "altcoin", "web3"],
     "MACRO":      ["rate", "inflation", "gdp", "policy", "central bank", "treasury",
                    "bi-rate", "the fed", "ecb", "rupiah", "fiscal", "tariff", "yield"],
     "STARTUP":    ["funding", "series ", "seed", "acquisition", "ipo", "venture",
@@ -65,7 +67,8 @@ def google_news(query: str, geo: str = "US", n: int = None) -> list:
     """Keyless Google News RSS search for any query, region-targeted."""
     n = n or settings.NEWS_PER_QUERY
     geoq = settings.GOOGLE_NEWS_GEO.get(geo, settings.GOOGLE_NEWS_GEO["US"])
-    url = f"{settings.GOOGLE_NEWS}?q={urllib.parse.quote(query)}&{geoq}"
+    q = query + " when:7d"        # Google News recency operator → last 7 days only
+    url = f"{settings.GOOGLE_NEWS}?q={urllib.parse.quote(q)}&{geoq}"
     out = []
     try:
         xml = _get(url)
@@ -142,18 +145,30 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         if q:
             wire += google_news(q[0], q[1], 3)
 
-    # --- per-sector news ---
+    # --- per-sector news (richer, sector-tuned queries; recency-biased) ---
+    # (us_query, id_query) — tuned to the actual trending angle of each sector
+    SQ = {
+        "technology":   ("AI technology stocks Nvidia data center", "saham teknologi AI Indonesia"),
+        "financials":   ("bank stocks rates earnings", "saham bank Indonesia BBCA BBRI"),
+        "energy":       ("nickel coal mining energy stocks", "saham tambang batu bara nikel"),
+        "renewables":   ("solar renewable energy stocks clean", "energi terbarukan saham hijau Indonesia"),
+        "consumer":     ("consumer staples retail stocks", "saham konsumer ritel Indonesia"),
+        "infrastructure":("infrastructure construction stocks", "saham infrastruktur konstruksi Indonesia"),
+        "healthcare":   ("healthcare pharma biotech stocks", "saham farmasi kesehatan Indonesia"),
+        "logistics":    ("logistics shipping freight stocks", "saham logistik pelayaran Indonesia"),
+        "entertainment":("media streaming entertainment stocks", "saham media hiburan Indonesia"),
+        "property":     ("real estate property REIT stocks", "saham properti real estate Indonesia"),
+        "crypto":       ("bitcoin ethereum crypto market", "kripto bitcoin pasar"),
+    }
     sector_news = {}
     for s in sectors:
-        q = f"Indonesia {s['name']} sector saham"
-        items = google_news(q, "ID", settings.NEWS_PER_QUERY)
-        items += google_news(f"{s['name']} sector stocks US", "US", 2)
-        items = _dedupe(items, 6)
+        usq, idq = SQ.get(s["key"], (f"{s['name']} stocks", f"saham {s['name']} Indonesia"))
+        items = google_news(usq, "US", 5) + google_news(idq, "ID", 5)
+        items = _recent(_dedupe(items, 14))   # ≤7 days, newest first
         for it in items:
             it["sectors"] = [s["key"]]
-        items = _recent(items)            # ≤7 days, newest first
-        sector_news[s["key"]] = items
-        wire += items
+        sector_news[s["key"]] = items[:8]
+        wire += items[:5]
 
     # --- per-ticker news (threaded; every constituent) ---
     cons = [(c["ticker"], c["name"].split(" (")[0], c["country"])

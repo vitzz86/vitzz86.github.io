@@ -14,6 +14,11 @@ sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__fi
 from config import settings
 
 YF_QUOTE = "https://finance.yahoo.com/quote/"
+COINGECKO = "https://www.coingecko.com/en/coins/"
+CG_IDS = {"BTC-USD": "bitcoin", "ETH-USD": "ethereum", "SOL-USD": "solana",
+          "BNB-USD": "binancecoin", "XRP-USD": "ripple", "ADA-USD": "cardano",
+          "DOGE-USD": "dogecoin", "AVAX-USD": "avalanche-2", "LINK-USD": "chainlink",
+          "MATIC-USD": "polygon-ecosystem-token"}
 
 
 def _signal(agg: float) -> str:
@@ -70,19 +75,26 @@ def collect() -> list:
             p = prices.get(ysym)
             delta = p["delta_pct"] if p else 0.0
             spark = p["spark"] if p else []
+            url = (COINGECKO + CG_IDS[ysym]) if (country == "CR" and ysym in CG_IDS) \
+                else (YF_QUOTE + ysym)
             rows.append({
                 "ticker": ticker, "name": name, "exchange": exch,
                 "country": country, "mktcap": mktcap, "tier": tier,
                 "delta_pct": delta, "spark": spark,
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
-                "url": YF_QUOTE + ysym,
+                "url": url,
             })
-            (id_d if country == "ID" else us_d).append(delta)
+            if country == "ID":
+                id_d.append(delta)
+            elif country == "US":
+                us_d.append(delta)
 
-        id_agg = round(sum(id_d) / len(id_d), 2) if id_d else 0.0
-        us_agg = round(sum(us_d) / len(us_d), 2) if us_d else 0.0
-        agg = round((id_agg + us_agg) / 2, 2)
+        all_d = [r["delta_pct"] for r in rows]
+        id_agg = round(sum(id_d) / len(id_d), 2) if id_d else None
+        us_agg = round(sum(us_d) / len(us_d), 2) if us_d else None
+        # crypto / non-split sectors aggregate over all constituents
+        agg = round(sum(all_d) / len(all_d), 2) if all_d else 0.0
         sl = [r["spark"] for r in rows if r["spark"]]
         sector_spark = []
         if sl:
@@ -93,10 +105,13 @@ def collect() -> list:
 
         ranked = sorted(rows, key=lambda r: r["delta_pct"], reverse=True)
         lead, lag = ranked[0], ranked[-1]
-        spread = "in step" if abs(id_agg - us_agg) < 0.4 else (
-            "ID leading US" if id_agg > us_agg else "US leading ID")
-        ai = (f"{sec['name']} is {'+' if agg >= 0 else ''}{agg:.2f}% on aggregate "
-              f"with {spread} ({id_agg:+.2f}% ID / {us_agg:+.2f}% US). "
+        if id_agg is not None and us_agg is not None:
+            spread = "in step" if abs(id_agg - us_agg) < 0.4 else (
+                "ID leading US" if id_agg > us_agg else "US leading ID")
+            split = f" with {spread} ({id_agg:+.2f}% ID / {us_agg:+.2f}% US)"
+        else:
+            split = ""
+        ai = (f"{sec['name']} is {'+' if agg >= 0 else ''}{agg:.2f}% on aggregate{split}. "
               f"{lead['ticker']} leads ({lead['delta_pct']:+.2f}%); "
               f"{lag['ticker']} lags ({lag['delta_pct']:+.2f}%). "
               + settings.SECTOR_THEMES.get(sec["key"], [""])[0] + ".")

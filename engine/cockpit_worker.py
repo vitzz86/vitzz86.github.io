@@ -287,7 +287,7 @@ def _deepseek_sector_ai(sectors_list: list, has_llm: bool) -> None:
     if not has_llm:
         return
     for s in sectors_list:
-        if s["signal"] != "ALERT":        # ALERT only — keeps LLM spend bounded
+        if s["signal"] == "NORMAL":        # WATCH + ALERT get real AI; NORMAL stays deterministic
             continue
         cons = ", ".join(f"{c['ticker']} {c['delta_pct']:+.2f}%"
                          for c in s["constituents"][:8])

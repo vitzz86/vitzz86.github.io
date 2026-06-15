@@ -273,8 +273,26 @@ SECTORS = [
         ("INVH", "Invitation Homes", "INVH", "NYSE", "US", "$20B", "mid"),
         ("VICI", "VICI Properties", "VICI", "NYSE", "US", "$30B", "mid"),
      ]},
+    {"key": "crypto", "name": "Crypto & Digital Assets", "icon": "₿",
+     "theme": "BTC dominance · L1 rotation", "constituents": [
+        ("BTC",   "Bitcoin",      "BTC-USD",   "CRYPTO", "CR", "$1.3T", "mega"),
+        ("ETH",   "Ethereum",     "ETH-USD",   "CRYPTO", "CR", "$420B", "mega"),
+        ("SOL",   "Solana",       "SOL-USD",   "CRYPTO", "CR", "$95B",  "large"),
+        ("BNB",   "BNB",          "BNB-USD",   "CRYPTO", "CR", "$95B",  "large"),
+        ("XRP",   "XRP",          "XRP-USD",   "CRYPTO", "CR", "$130B", "large"),
+        ("ADA",   "Cardano",      "ADA-USD",   "CRYPTO", "CR", "$22B",  "mid"),
+        ("DOGE",  "Dogecoin",     "DOGE-USD",  "CRYPTO", "CR", "$28B",  "mid"),
+        ("AVAX",  "Avalanche",    "AVAX-USD",  "CRYPTO", "CR", "$15B",  "mid"),
+        ("LINK",  "Chainlink",    "LINK-USD",  "CRYPTO", "CR", "$11B",  "mid"),
+        ("MATIC", "Polygon",      "MATIC-USD", "CRYPTO", "CR", "$5B",   "small"),
+     ]},
 ]
 SECTOR_THEMES = {
+    "crypto": [
+        "Bitcoin dominance and spot-ETF flows set the regime for the whole complex",
+        "Layer-1 rotation (SOL, AVAX) tracks risk appetite; alts lag in risk-off",
+        "Regulatory clarity (stablecoins, custody) is the structural unlock for institutional size",
+    ],
     "technology": [
         "AI infrastructure capex accelerating — APAC data center power demand surging",
         "OJK digital banking framework revision benefiting Indonesian fintech reclassification",

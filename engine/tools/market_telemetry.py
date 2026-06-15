@@ -31,7 +31,8 @@ def collect() -> dict:
                 "value": round(value, 2),
                 "delta_pct": round(delta, 2),
                 "spark": series,
-                "url": settings.YF_QUOTE + symbol,
+                "url": ("https://www.coingecko.com/en/coins/bitcoin"
+                        if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),
             })
             if symbol in settings.ANOMALY_WATCHLIST and abs(delta) > settings.ANOMALY_THRESHOLD_PCT:
                 direction = "drop" if delta < 0 else "spike"

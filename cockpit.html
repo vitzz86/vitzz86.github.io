@@ -181,6 +181,7 @@ a{color:inherit;text-decoration:none;}
 .ncat.STARTUP{color:var(--purple);background:rgba(167,139,250,.14);}
 .ncat.PUBLIC_MKT{color:var(--green);background:rgba(34,197,94,.12);}
 .ncat.CLIMATE{color:var(--amber);background:rgba(245,158,11,.14);}
+.ncat.CRYPTO{color:#f7931a;background:rgba(247,147,26,.14);}
 .nrow .src{font-family:var(--mono);font-size:9px;color:var(--ink3);}
 .nrow .tm{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-left:auto;}
 .nrow .ttl{font-size:12.5px;font-weight:500;line-height:1.4;margin-top:6px;color:var(--ink);display:block;}
@@ -271,8 +272,7 @@ footer .g{color:var(--green);}
       </div>
     </div>
     <div class="sec">
-      <div class="lbl" style="margin-bottom:8px;">Cognitive Vector</div>
-      <div class="vector">⚡ <span id="focus">Synthesis</span></div>
+      <div class="sechd" style="margin-bottom:8px;"><h2 style="font-size:11px;">♫ Mood Player</h2><span class="tag">SPOTIFY</span></div>
       <div id="npLine"></div>
       <div class="moodchips" id="moodChips"></div>
       <div id="moodPlayer"></div>
@@ -380,7 +380,7 @@ function spark(arr,w,h,col){
 function liveGreeting(){const h=new Date().getHours();return h<11?"Good morning":h<15?"Midday":h<19?"Good evening":"Late session";}
 function ago(iso){const m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(m<60)return m+'m ago';const h=Math.round(m/60);return h<48?h+'h ago':Math.round(h/24)+'d ago';}
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES'};
-const FLAG={ID:'🇮🇩',US:'🇺🇸'};
+const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
 const COLP=n=>n>=0?'var(--green)':'var(--red)';
 let DATA=null;
 
@@ -407,7 +407,6 @@ function render(d){
   const condTxt=(s)=>(s||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
   $('jktTmp').innerHTML=pt(wx.jakarta)+'&deg;';$('jktCond').textContent=condTxt(wx.jakarta);$('jktIco').textContent=wxIcon(wx.jakarta);
   $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=condTxt(wx.bsd);$('bsdIco').textContent=wxIcon(wx.bsd);
-  $('focus').textContent=(o.focus_state||'Synthesis').split('(')[0].replace(/Deep Work.*/,'Deep Work').trim()||'Synthesis';
   const np=o.now_playing;
   $('npLine').innerHTML=(np&&np.track)
     ?`<a class="npnow" href="${encodeURI(np.url||'#')}" target="_blank" rel="noopener">${np.is_playing?'▶':'❚❚'} <b>${esc(np.track)}</b> · ${esc(np.artist||'')}</a>`
@@ -424,7 +423,7 @@ function render(d){
   const eb=d.executive_brief||[];
   $('alerts').innerHTML=
     (an?`<div class="alert amber"><span>⚠</span><span>${esc(d.anomaly.desc)}</span><span class="tm">live</span></div>`:'')+
-    eb.slice(0,3).map((t,i)=>`<div class="alert ${i%2?'blue':'amber'}"><span>${i%2?'△':'⚠'}</span><span>${esc(t)}</span><span class="tm">${(i+1)*11}m ago</span></div>`).join('');
+    eb.slice(0,3).map((t,i)=>`<div class="alert ${i%2?'blue':'amber'}"><span>${i%2?'△':'⚠'}</span><span>${esc(t)}</span><span class="tm">${ago(d.timestamp)}</span></div>`).join('');
 
   /* marquee */
   const mk=(d.telemetry||[]).map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${fmt(r.value)}</b> <span style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</span></span>`).join('');
@@ -443,11 +442,14 @@ function render(d){
   /* sectors */
   $('secCount').textContent=(d.sectors||[]).length+' sectors · click any card for deep dive';
   $('secGrid').innerHTML=(d.sectors||[]).map((s,i)=>{
-    const up=s.change>=0,tot=Math.abs(s.idChange)+Math.abs(s.usChange)||1;
+    const split=(s.idChange!=null&&s.usChange!=null);
+    const tot=split?(Math.abs(s.idChange)+Math.abs(s.usChange)||1):1;
+    const body=split
+      ?`<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(s.idChange)}">${sign(s.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.idChange)/tot*100}%;background:${COLP(s.idChange)}"></i></div></div>`+
+       `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(s.usChange)}">${sign(s.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.usChange)/tot*100}%;background:${COLP(s.usChange)}"></i></div></div>`
+      :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(s.change)}">${sign(s.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(s.change)}"></i></div></div>`;
     return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${s.signal}">${s.signal}</span></div>`+
-      `<div class="agg" style="color:${COLP(s.change)}">${sign(s.change)}</div>`+
-      `<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(s.idChange)}">${sign(s.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.idChange)/tot*100}%;background:${COLP(s.idChange)}"></i></div></div>`+
-      `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(s.usChange)}">${sign(s.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.usChange)/tot*100}%;background:${COLP(s.usChange)}"></i></div></div>`+
+      `<div class="agg" style="color:${COLP(s.change)}">${sign(s.change)}</div>`+body+
       `<div class="thm"><span>${esc(s.theme)}</span><span>›</span></div></button>`;
   }).join('');
   [...document.querySelectorAll('.seccard')].forEach(b=>b.onclick=()=>openSector(+b.dataset.i));
@@ -471,7 +473,7 @@ function render(d){
 /* ---- Spotify mood player (curated editorial playlists; embed = play in place) ---- */
 const MOODS=[
   ['Deep Focus','37i9dQZF1DWZeKCadgRdKQ'],
-  ['Lo-Fi Beats','37i9dQZF1DWWQRwui0S6bV'],
+  ['Praise Lord','37i9dQZF1DXcb6CQIjdqKy'],
   ['Instrumental Study','37i9dQZF1DX8Uebhn9wzrS'],
   ['Jazz Vibes','37i9dQZF1DX0SM0LYsmbMT'],
   ['Energy Boost','37i9dQZF1DX76Wlfdnj7AP'],
@@ -537,7 +539,7 @@ function reltime(ts){if(!ts)return '';const m=Math.round(Date.now()/1000-ts);
   return Math.round(m/86400)+'d';}
 function buildWire(news){
   WIRE=news;
-  const cats=['ALL','MACRO','STARTUP','PUBLIC_MKT','CLIMATE'];
+  const cats=['ALL','MACRO','CRYPTO','STARTUP','PUBLIC_MKT','CLIMATE'];
   $('wtabs').innerHTML=cats.map(c=>`<span class="wtab ${c===wireFilter?'on':''}" data-c="${c}">${c.replace('_',' ')}</span>`).join('');
   [...document.querySelectorAll('#wtabs .wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;setActive('#wtabs',t);drawWire();});
   const geos=[['ALL','Both'],['ID','🇮🇩 Indonesia'],['US','🇺🇸 US']];
@@ -564,15 +566,16 @@ function openSector(i){
   $('smIco').textContent=s.icon;$('smName').textContent=s.name;
   const agg=$('smAgg');agg.textContent=(s.change>=0?'↗ ':'↘ ')+sign(s.change);
   agg.style.color=COLP(s.change);agg.style.background=s.change>=0?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
-  $('smStats').innerHTML=
-    `<div class="c"><div class="k">ID PERFORMANCE</div><div class="v" style="color:${COLP(s.idChange)}">${sign(s.idChange)}</div></div>`+
-    `<div class="c"><div class="k">US PERFORMANCE</div><div class="v" style="color:${COLP(s.usChange)}">${sign(s.usChange)}</div></div>`+
-    `<div class="c"><div class="k">CONSTITUENTS</div><div class="v">${s.constituents.length}</div></div>`+
-    `<div class="c"><div class="k">SIGNAL</div><div class="v">${s.signal}</div></div>`;
+  const cell=(k,v)=>`<div class="c"><div class="k">${k}</div><div class="v"${typeof v==='number'?` style="color:${COLP(v)}"`:''}>${typeof v==='number'?sign(v):v}</div></div>`;
+  $('smStats').innerHTML=(s.idChange!=null
+    ?cell('ID PERFORMANCE',s.idChange)+cell('US PERFORMANCE',s.usChange)
+    :cell('AGGREGATE',s.change)+cell('ASSETS',String(s.constituents.length)))
+    +cell('CONSTITUENTS',String(s.constituents.length))+cell('SIGNAL',s.signal);
   $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,s.change>=0?'#22c55e':'#ef4444');
   $('smThemes').innerHTML=(s.themes||[]).map(t=>`<li>${esc(t)}</li>`).join('');
   $('smAi').textContent=s.ai||'';
-  const geos=[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']];
+  const hasSplit=(s.idChange!=null);
+  const geos=hasSplit?[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']]:[['ALL','All assets']];
   $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
   [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;setActive('#smFilter',t);renderConsts(s);});
   renderConsts(s);
