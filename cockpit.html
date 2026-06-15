@@ -344,6 +344,21 @@ footer .g{color:var(--green);}
 .vexp .vframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
 .vexp .vsum{font-size:11px;line-height:1.6;color:#c7c7cf;margin-top:8px;}
 .vexp .vopen{font-family:var(--mono);font-size:9px;color:var(--cyan);margin-top:7px;display:inline-block;}
+
+/* sticky mini media bar */
+body{padding-bottom:40px;}
+.mediabar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;align-items:center;gap:14px;height:38px;padding:0 14px;background:#0c0c0f;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--ink2);}
+.mediabar .mbmusic{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--green);flex:0 0 auto;}
+.mediabar .mbmusic:hover{color:#5fe7a0;}
+.mediabar .mbvideo{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0;}
+.mbvt{color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;}
+.mbvideo.on .mbvt{color:var(--red);}
+.mbvol{display:flex;align-items:center;gap:6px;}
+.mbvol input[type=range]{width:78px;accent-color:var(--amber);cursor:pointer;}
+.mbvol #mbVolNum{width:22px;text-align:right;color:var(--ink);}
+.mbstop{background:none;border:1px solid var(--line);color:var(--ink2);border-radius:4px;cursor:pointer;padding:2px 8px;font-family:var(--mono);font-size:9px;}
+.mbstop:hover{color:var(--red);border-color:var(--red);}
+@media(max-width:640px){.mbvt{max-width:120px;}}
 </style>
 </head>
 <body>
@@ -390,6 +405,7 @@ footer .g{color:var(--green);}
     </div>
     <div class="sec">
       <div class="sechd"><h2 style="font-size:11px;">◑ Podcast Agent</h2><span class="tag">INTELLECTUAL DIET · DEEPSEEK</span></div>
+      <div class="hubtabs" id="podTabs" style="margin-bottom:8px;"></div>
       <div id="pods"></div>
     </div>
   </div>
@@ -463,6 +479,16 @@ footer .g{color:var(--green);}
   <span style="margin-left:auto;">Supabase sync · Vercel Edge · GitHub Actions cron</span>
   <span id="stamp">&hellip;</span>
 </footer>
+
+<!-- sticky mini media bar -->
+<div class="mediabar" id="mediabar">
+  <div class="mbmusic" id="mbMusic" title="Mood music — click to jump to the player">🎵 <span id="mbMoodName">—</span></div>
+  <div class="mbvideo" id="mbVideo">
+    <span class="mbvt" id="mbVidTitle">No video playing</span>
+    <span class="mbvol" id="mbVolWrap" style="display:none">📺<input type="range" id="mbVol" min="0" max="100" value="100"><span id="mbVolNum">100</span></span>
+    <button class="mbstop" id="mbStop" style="display:none">⏹ Stop</button>
+  </div>
+</div>
 
 <!-- sector modal -->
 <div class="smodal" id="smodal"><div class="smbox">
@@ -615,12 +641,13 @@ function render(d){
     $('arbiter').textContent=d.arbiter_brief||(d.intelligence_quadrants||{}).market?.join(' ')||'Macro synthesis pending next cron cycle.';
   }
 
-  /* podcasts — two diets, click a title to expand its Summary */
+  /* podcasts — tabbed diets (consistent with the Intelligence Hub) */
   const PODCATS=[['brain','Brain 💪🏼'],['vc','VC & Startup 💸']];
   const pods=d.podcasts||[];
-  $('pods').innerHTML=PODCATS.map(([k,label])=>{
-    const items=pods.filter(p=>(p.category||'brain')===k);
-    const body=items.length?items.map(p=>{
+  $('podTabs').innerHTML=PODCATS.map(([k,label])=>`<span class="hubtab ${k===podCat?'on':''}" data-k="${k}">${label}</span>`).join('');
+  const drawPods=()=>{
+    const items=pods.filter(p=>(p.category||'brain')===podCat);
+    $('pods').innerHTML=items.length?items.map(p=>{
       const fresh=p.ts&&(Date.now()/1000-p.ts)<86400;
       const when=p.published?fdate(p.published):(p.host||'');
       return `<div class="pod">`+
@@ -630,11 +657,12 @@ function render(d){
         `<a class="opn" href="${encodeURI(p.url||'#')}" target="_blank" rel="noopener">▶ Open episode ↗</a></div>`+
       `</div>`;
     }).join(''):'<div class="podempty">No new episodes in the last 7 days.</div>';
-    return `<div class="podcat"><div class="podcatlbl">${label}</div>${body}</div>`;
-  }).join('');
-  [...document.querySelectorAll('#pods .pod')].forEach(el=>{
-    el.querySelector('.pt').onclick=()=>el.classList.toggle('open');
+    [...document.querySelectorAll('#pods .pod')].forEach(el=>{el.querySelector('.pt').onclick=()=>el.classList.toggle('open');});
+  };
+  [...document.querySelectorAll('#podTabs .hubtab')].forEach(t=>t.onclick=()=>{
+    podCat=t.dataset.k;[...document.querySelectorAll('#podTabs .hubtab')].forEach(x=>x.classList.toggle('on',x===t));drawPods();
   });
+  drawPods();
 
   /* trending */
   renderTrending(d.trending||{});
@@ -653,7 +681,7 @@ const MOODS=[
   ['Energy Boost','37i9dQZF1DX76Wlfdnj7AP'],
   ['Chill / Wind Down','37i9dQZF1DX4WYpdgoIcn6'],
 ];
-let moodPick=0;
+let moodPick=0,podCat='brain';
 function renderMoods(){
   $('moodChips').innerHTML=`<select class="moodsel" id="moodSel">`+
     MOODS.map((m,i)=>`<option value="${i}"${i===moodPick?' selected':''}>${esc(m[0])}</option>`).join('')+`</select>`;
@@ -663,6 +691,7 @@ function renderMoods(){
 function playMood(){
   const id=MOODS[moodPick][1];
   $('moodPlayer').innerHTML=`<iframe style="border-radius:9px;margin-top:9px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+  const mn=$('mbMoodName');if(mn)mn.textContent=MOODS[moodPick][0];
 }
 let TREND=null,moveType='gainers',moveGeo='id';
 function renderTrending(t){
@@ -806,11 +835,40 @@ function toggleVideo(el,v){
   if(!v)return;
   const open=el.classList.contains('open');
   [...document.querySelectorAll('#vidList .vid.open')].forEach(o=>{if(o!==el){o.classList.remove('open');o.querySelector('.vexp').innerHTML='';}});
-  if(open){el.classList.remove('open');el.querySelector('.vexp').innerHTML='';return;}
+  if(open){el.classList.remove('open');el.querySelector('.vexp').innerHTML='';stopVideo();return;}
   el.classList.add('open');
-  el.querySelector('.vexp').innerHTML=`<div class="vframe"><iframe src="${encodeURI(v.embed)}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`+
+  el.querySelector('.vexp').innerHTML=`<div class="vframe"><iframe id="ytframe" src="${encodeURI(v.embed)}?rel=0&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`+
     (v.summary?`<div class="vsum">${esc(v.summary)}</div>`:'')+
     `<a class="vopen" href="${encodeURI(v.url)}" target="_blank" rel="noopener">▶ Watch on YouTube ↗</a>`;
+  setNowPlaying(v,el);
+  if(ytApiReady)attachYT();else{pendingVid=true;loadYTApi();}
+}
+
+/* ---- mini media bar + YouTube volume (YT IFrame API) ---- */
+let ytPlayer=null,ytApiReady=false,pendingVid=false,vidVol=100,curVidEl=null;
+function loadYTApi(){
+  if(window.YT&&window.YT.Player){ytApiReady=true;attachYT();return;}
+  if(!document.getElementById('ytapi')){const s=document.createElement('script');s.id='ytapi';s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);}
+}
+window.onYouTubeIframeAPIReady=function(){ytApiReady=true;if(pendingVid){pendingVid=false;attachYT();}};
+function attachYT(){
+  if(!(window.YT&&window.YT.Player)||!document.getElementById('ytframe'))return;
+  try{if(ytPlayer&&ytPlayer.destroy)ytPlayer.destroy();}catch(e){}
+  try{ytPlayer=new YT.Player('ytframe',{events:{onReady:e=>{try{e.target.setVolume(vidVol);}catch(_){}}}});}catch(e){ytPlayer=null;}
+}
+function setNowPlaying(v,el){
+  curVidEl=el;
+  $('mbVidTitle').textContent=v.title;
+  $('mbVideo').classList.add('on');
+  $('mbVolWrap').style.display='';$('mbStop').style.display='';
+}
+function stopVideo(){
+  curVidEl=null;
+  try{if(ytPlayer&&ytPlayer.destroy)ytPlayer.destroy();}catch(e){}
+  ytPlayer=null;
+  $('mbVidTitle').textContent='No video playing';
+  $('mbVideo').classList.remove('on');
+  $('mbVolWrap').style.display='none';$('mbStop').style.display='none';
 }
 
 /* ---- sector modal ---- */
@@ -922,6 +980,12 @@ function showTopAlert(){
 }
 const _nx=document.querySelector('.alertbar .nx');
 if(_nx)_nx.onclick=()=>{topAlertIdx++;showTopAlert();};
+
+/* ---- media bar controls ---- */
+$('mbVol').oninput=e=>{vidVol=+e.target.value;$('mbVolNum').textContent=vidVol;
+  if(ytPlayer&&ytPlayer.setVolume){try{ytPlayer.setVolume(vidVol);}catch(_){}}};
+$('mbStop').onclick=()=>{if(curVidEl){curVidEl.classList.remove('open');curVidEl.querySelector('.vexp').innerHTML='';}stopVideo();};
+$('mbMusic').onclick=()=>{document.getElementById('moodPlayer').scrollIntoView({behavior:'smooth',block:'center'});};
 
 /* ---- boot + 30-min auto-refresh (soft re-render keeps the Spotify embed playing) ---- */
 fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
