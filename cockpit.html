@@ -348,8 +348,11 @@ footer .g{color:var(--green);}
 /* sticky mini media bar */
 body{padding-bottom:40px;}
 .mediabar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;align-items:center;gap:14px;height:38px;padding:0 14px;background:#0c0c0f;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--ink2);}
-.mediabar .mbmusic{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--green);flex:0 0 auto;}
-.mediabar .mbmusic:hover{color:#5fe7a0;}
+.mediabar .mbmusic{display:flex;align-items:center;gap:7px;color:var(--green);flex:0 0 auto;}
+.mediabar .mbmusic .mblink{cursor:pointer;}
+.mediabar .mbmusic .mblink:hover{color:#5fe7a0;}
+.mbbtn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:9px;line-height:1;padding:3px 7px;min-width:24px;}
+.mbbtn:hover{border-color:var(--amber);color:var(--amber);}
 .mediabar .mbvideo{display:flex;align-items:center;gap:10px;margin-left:auto;min-width:0;}
 .mbvt{color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px;}
 .mbvideo.on .mbvt{color:var(--red);}
@@ -482,8 +485,12 @@ body{padding-bottom:40px;}
 
 <!-- sticky mini media bar -->
 <div class="mediabar" id="mediabar">
-  <div class="mbmusic" id="mbMusic" title="Mood music — click to jump to the player">🎵 <span id="mbMoodName">—</span></div>
+  <div class="mbmusic" id="mbMusic">
+    <button class="mbbtn" id="mbMusicPlay" title="Play / pause music">▶</button>
+    <span class="mblink" id="mbMoodLink" title="Jump to the player">🎵 <span id="mbMoodName">—</span></span>
+  </div>
   <div class="mbvideo" id="mbVideo">
+    <button class="mbbtn" id="mbVidPlay" style="display:none" title="Play / pause video">❚❚</button>
     <span class="mbvt" id="mbVidTitle">No video playing</span>
     <span class="mbvol" id="mbVolWrap" style="display:none">📺<input type="range" id="mbVol" min="0" max="100" value="100"><span id="mbVolNum">100</span></span>
     <button class="mbstop" id="mbStop" style="display:none">⏹ Stop</button>
@@ -685,14 +692,45 @@ let moodPick=0,podCat='brain';
 function renderMoods(){
   $('moodChips').innerHTML=`<select class="moodsel" id="moodSel">`+
     MOODS.map((m,i)=>`<option value="${i}"${i===moodPick?' selected':''}>${esc(m[0])}</option>`).join('')+`</select>`;
-  $('moodSel').onchange=e=>{moodPick=+e.target.value;playMood();};
-  if(!$('moodPlayer').firstChild)playMood();
-}
-function playMood(){
-  const id=MOODS[moodPick][1];
-  $('moodPlayer').innerHTML=`<iframe style="border-radius:9px;margin-top:9px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+  $('moodSel').onchange=e=>{moodPick=+e.target.value;switchMood();saveState();};
   const mn=$('mbMoodName');if(mn)mn.textContent=MOODS[moodPick][0];
 }
+
+/* ---- Spotify IFrame API: play/pause + position tracking + mood switching ---- */
+let spotifyApi=null,spotifyController=null,spotifyReady=false;
+let spState={paused:true,pos:0};let _restoreSpotifyPos=0,_spotifyShouldPlay=false;
+function loadSpotifyApi(){
+  if(document.getElementById('spotify-api'))return;
+  const s=document.createElement('script');s.id='spotify-api';
+  s.src='https://open.spotify.com/embed/iframe-api/v1';s.async=true;
+  document.head.appendChild(s);
+  setTimeout(()=>{if(!spotifyController)spotifyFallback();},5000);   // API blocked → plain embed
+}
+function spotifyFallback(){
+  const id=MOODS[moodPick][1];
+  $('moodPlayer').innerHTML=`<iframe style="border-radius:9px;margin-top:9px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+}
+window.onSpotifyIframeApiReady=function(api){spotifyApi=api;createSpotify();};
+function createSpotify(){
+  if(!spotifyApi)return;
+  $('moodPlayer').innerHTML='<div id="spotify-embed" style="margin-top:9px"></div>';
+  spotifyApi.createController(document.getElementById('spotify-embed'),
+    {uri:'spotify:playlist:'+MOODS[moodPick][1],width:'100%',height:152},
+    (controller)=>{
+      spotifyController=controller;spotifyReady=true;
+      controller.addListener('playback_update',e=>{
+        if(e&&e.data){spState.pos=(e.data.position||0)/1000;spState.paused=!!e.data.isPaused;updateMbBtns();saveStateSoon();}
+      });
+      if(_restoreSpotifyPos>0){try{controller.seek(_restoreSpotifyPos);}catch(_){}}
+      if(_spotifyShouldPlay){try{controller.play();}catch(_){}}
+    });
+}
+function switchMood(){
+  if(spotifyController){try{spotifyController.loadUri('spotify:playlist:'+MOODS[moodPick][1]);spotifyController.play();}catch(_){}}
+  else{spotifyFallback();}
+  const mn=$('mbMoodName');if(mn)mn.textContent=MOODS[moodPick][0];
+}
+function spotifyToggle(){if(spotifyController){try{spotifyController.togglePlay();}catch(_){}}}
 let TREND=null,moveType='gainers',moveGeo='id';
 function renderTrending(t){
   TREND=t;
@@ -750,25 +788,26 @@ function fdate(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return '
   return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+reltime(Math.round(d.getTime()/1000));}
 
 let hubInit=false;
+function syncHubUI(){
+  [...document.querySelectorAll('#hubTabs .hubtab')].forEach(x=>x.classList.toggle('on',x.dataset.p===hubPane));
+  $('paneBrief').classList.toggle('on',hubPane==='brief');
+  $('paneNews').classList.toggle('on',hubPane==='news');
+  $('paneVideos').classList.toggle('on',hubPane==='videos');
+  [...document.querySelectorAll('#dateFilter .dchip')].forEach(x=>x.classList.toggle('on',x.dataset.d===dateRange));
+  $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
+}
 function buildHub(d){
   WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;
   if(!hubInit){
     hubInit=true;
     [...document.querySelectorAll('#hubTabs .hubtab')].forEach(t=>t.onclick=()=>{
-      hubPane=t.dataset.p;
-      [...document.querySelectorAll('#hubTabs .hubtab')].forEach(x=>x.classList.toggle('on',x===t));
-      $('paneBrief').classList.toggle('on',hubPane==='brief');
-      $('paneNews').classList.toggle('on',hubPane==='news');
-      $('paneVideos').classList.toggle('on',hubPane==='videos');
-      $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
+      hubPane=t.dataset.p;syncHubUI();saveState();
     });
     [...document.querySelectorAll('#dateFilter .dchip')].forEach(c=>c.onclick=()=>{
-      dateRange=c.dataset.d;
-      [...document.querySelectorAll('#dateFilter .dchip')].forEach(x=>x.classList.toggle('on',x===c));
-      drawWire();drawVideos();
+      dateRange=c.dataset.d;syncHubUI();drawWire();drawVideos();saveState();
     });
-    $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
   }
+  syncHubUI();      // reflect the active/restored pane + date filter in the UI
   buildBrief();buildWire();
   // don't tear down a video the user is watching during the 30-min auto-refresh
   if(!$('vidList').querySelector('.vid.open iframe'))buildVideos();
@@ -840,12 +879,14 @@ function toggleVideo(el,v){
   el.querySelector('.vexp').innerHTML=`<div class="vframe"><iframe id="ytframe" src="${encodeURI(v.embed)}?rel=0&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`+
     (v.summary?`<div class="vsum">${esc(v.summary)}</div>`:'')+
     `<a class="vopen" href="${encodeURI(v.url)}" target="_blank" rel="noopener">▶ Watch on YouTube ↗</a>`;
-  setNowPlaying(v,el);
+  curVid=v;ytState={video_id:v.video_id,time:0,paused:false};
+  setNowPlaying(v,el);saveState();
   if(ytApiReady)attachYT();else{pendingVid=true;loadYTApi();}
 }
 
-/* ---- mini media bar + YouTube volume (YT IFrame API) ---- */
-let ytPlayer=null,ytApiReady=false,pendingVid=false,vidVol=100,curVidEl=null;
+/* ---- mini media bar + YouTube control (YT IFrame API) ---- */
+let ytPlayer=null,ytApiReady=false,pendingVid=false,vidVol=100,curVidEl=null,curVid=null;
+let ytState={video_id:'',time:0,paused:true};let _restoreVidTime=0,_restoreVidPlay=false;
 function loadYTApi(){
   if(window.YT&&window.YT.Player){ytApiReady=true;attachYT();return;}
   if(!document.getElementById('ytapi')){const s=document.createElement('script');s.id='ytapi';s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s);}
@@ -854,21 +895,53 @@ window.onYouTubeIframeAPIReady=function(){ytApiReady=true;if(pendingVid){pending
 function attachYT(){
   if(!(window.YT&&window.YT.Player)||!document.getElementById('ytframe'))return;
   try{if(ytPlayer&&ytPlayer.destroy)ytPlayer.destroy();}catch(e){}
-  try{ytPlayer=new YT.Player('ytframe',{events:{onReady:e=>{try{e.target.setVolume(vidVol);}catch(_){}}}});}catch(e){ytPlayer=null;}
+  try{ytPlayer=new YT.Player('ytframe',{events:{
+    onReady:e=>{try{e.target.setVolume(vidVol);
+      if(_restoreVidTime>0){e.target.seekTo(_restoreVidTime,true);_restoreVidTime=0;}
+      if(_restoreVidPlay){e.target.playVideo();_restoreVidPlay=false;}}catch(_){}},
+    onStateChange:e=>{if(window.YT){ytState.paused=(e.data!==YT.PlayerState.PLAYING);}updateMbBtns();saveStateSoon();}
+  }});}catch(e){ytPlayer=null;}
 }
+function videoToggle(){if(ytPlayer){try{ytState.paused?ytPlayer.playVideo():ytPlayer.pauseVideo();}catch(_){}}}
 function setNowPlaying(v,el){
   curVidEl=el;
   $('mbVidTitle').textContent=v.title;
   $('mbVideo').classList.add('on');
-  $('mbVolWrap').style.display='';$('mbStop').style.display='';
+  $('mbVidPlay').style.display='';$('mbVolWrap').style.display='';$('mbStop').style.display='';
+  updateMbBtns();
 }
 function stopVideo(){
-  curVidEl=null;
+  curVidEl=null;curVid=null;ytState={video_id:'',time:0,paused:true};
   try{if(ytPlayer&&ytPlayer.destroy)ytPlayer.destroy();}catch(e){}
   ytPlayer=null;
   $('mbVidTitle').textContent='No video playing';
   $('mbVideo').classList.remove('on');
-  $('mbVolWrap').style.display='none';$('mbStop').style.display='none';
+  $('mbVidPlay').style.display='none';$('mbVolWrap').style.display='none';$('mbStop').style.display='none';
+  saveState();
+}
+function updateMbBtns(){
+  const mp=$('mbMusicPlay');if(mp)mp.textContent=spState.paused?'▶':'❚❚';
+  const vp=$('mbVidPlay');if(vp)vp.textContent=ytState.paused?'▶':'❚❚';
+}
+
+/* ---- playback state persistence (survives the auto-refresh & manual reload) ---- */
+const PKEY='cockpit.player.v1';let _saveTimer=null;
+function gatherState(){
+  let vtime=ytState.time;
+  try{if(ytPlayer&&ytPlayer.getCurrentTime)vtime=ytPlayer.getCurrentTime()||vtime;}catch(_){}
+  return {mood:moodPick,vol:vidVol,spPos:spState.pos,spPaused:spState.paused,
+    vid:ytState.video_id,vidTime:vtime,vidPaused:ytState.paused,
+    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo};
+}
+function saveState(){try{localStorage.setItem(PKEY,JSON.stringify(gatherState()));}catch(_){}}
+function saveStateSoon(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveState,1200);}
+function loadState(){try{return JSON.parse(localStorage.getItem(PKEY))||{};}catch(_){return{};}}
+function restoreVideo(){
+  const SS=loadState();if(!SS.vid)return;
+  const v=((DATA||{}).videos||[]).find(x=>x.video_id===SS.vid);if(!v)return;
+  _restoreVidTime=SS.vidTime||0;_restoreVidPlay=!SS.vidPaused;
+  const el=[...document.querySelectorAll('#vidList .vid')].find(x=>x.dataset.id===SS.vid);
+  if(el)toggleVideo(el,v);     // reopens in place (pane may be hidden); seeks on ready
 }
 
 /* ---- sector modal ---- */
@@ -983,18 +1056,36 @@ if(_nx)_nx.onclick=()=>{topAlertIdx++;showTopAlert();};
 
 /* ---- media bar controls ---- */
 $('mbVol').oninput=e=>{vidVol=+e.target.value;$('mbVolNum').textContent=vidVol;
-  if(ytPlayer&&ytPlayer.setVolume){try{ytPlayer.setVolume(vidVol);}catch(_){}}};
+  if(ytPlayer&&ytPlayer.setVolume){try{ytPlayer.setVolume(vidVol);}catch(_){}}saveStateSoon();};
 $('mbStop').onclick=()=>{if(curVidEl){curVidEl.classList.remove('open');curVidEl.querySelector('.vexp').innerHTML='';}stopVideo();};
-$('mbMusic').onclick=()=>{document.getElementById('moodPlayer').scrollIntoView({behavior:'smooth',block:'center'});};
+$('mbMoodLink').onclick=()=>{document.getElementById('moodPlayer').scrollIntoView({behavior:'smooth',block:'center'});};
+$('mbMusicPlay').onclick=()=>spotifyToggle();
+$('mbVidPlay').onclick=()=>videoToggle();
 
-/* ---- boot + 30-min auto-refresh (soft re-render keeps the Spotify embed playing) ---- */
+/* ---- restore last session state into the globals before first render ---- */
+(function(){
+  const SS=loadState();
+  if(typeof SS.mood==='number'&&SS.mood>=0&&SS.mood<MOODS.length)moodPick=SS.mood;
+  if(typeof SS.vol==='number'){vidVol=SS.vol;$('mbVol').value=vidVol;$('mbVolNum').textContent=vidVol;}
+  if(SS.podCat)podCat=SS.podCat;
+  if(SS.hubPane)hubPane=SS.hubPane;
+  if(SS.dateRange)dateRange=SS.dateRange;
+  if(SS.vidCat)vidCat=SS.vidCat;
+  if(SS.wireFilter)wireFilter=SS.wireFilter;
+  if(SS.wireGeo)wireGeo=SS.wireGeo;
+  _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=!!SS.spPos&&!SS.spPaused;
+})();
+
+/* ---- boot + 30-min auto-refresh (soft re-render keeps players & state alive) ---- */
 fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
-  .then(d=>{render(d);startClock();startCrypto();startFinnhub();})
+  .then(d=>{render(d);startClock();startCrypto();startFinnhub();loadSpotifyApi();restoreVideo();})
   .catch(e=>{console.error('payload fetch failed',e);$('topAlert').textContent='Payload unreachable — showing shell.';});
 setInterval(()=>{
   fetch('data.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();})
     .then(d=>render(d)).catch(()=>{});
 },30*60*1000);
+setInterval(saveState,5000);            // sample playback position + persist active state
+addEventListener('beforeunload',saveState);
 </script>
 </body>
 </html>
