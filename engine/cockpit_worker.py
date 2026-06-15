@@ -42,19 +42,23 @@ def call_deepseek(system: str, user: str) -> str | None:
     else:
         print("[llm] no DeepSeek/OpenRouter key configured — using fallback route")
         return None
-    try:
-        r = requests.post(url, headers=headers, json={
-            "model": model,
-            "messages": [{"role": "system", "content": system},
-                         {"role": "user", "content": user}],
-            "temperature": 0.4,
-            "max_tokens": settings.LLM_MAX_TOKENS,
-        }, timeout=settings.LLM_TIMEOUT_S)
-        r.raise_for_status()
-        return r.json()["choices"][0]["message"]["content"].strip()
-    except Exception as e:  # noqa: BLE001
-        print(f"[llm] DeepSeek call failed: {e}")
-        return None
+    import time
+    payload = {"model": model,
+               "messages": [{"role": "system", "content": system},
+                            {"role": "user", "content": user}],
+               "temperature": 0.4, "max_tokens": settings.LLM_MAX_TOKENS}
+    for attempt in range(3):                       # retry transient rate-limits/timeouts
+        try:
+            r = requests.post(url, headers=headers, json=payload, timeout=settings.LLM_TIMEOUT_S)
+            if r.status_code in (429, 500, 502, 503):
+                time.sleep(2 * (attempt + 1))
+                continue
+            r.raise_for_status()
+            return r.json()["choices"][0]["message"]["content"].strip()
+        except Exception as e:  # noqa: BLE001
+            print(f"[llm] DeepSeek call failed (attempt {attempt+1}): {e}")
+            time.sleep(1.5)
+    return None
 
 
 # ---------------------------------------------------------------- graph nodes
@@ -233,10 +237,12 @@ def validate(payload: dict) -> None:
 def compile_payload(state: dict) -> dict:
     wx = env_context.weather()
     rainy = wx.pop("_rainy", False)
-    previous_note = None
+    previous_note, previous_pods = None, []
     try:
         with open(settings.DATA_JSON_PATH, encoding="utf-8") as f:
-            previous_note = json.load(f).get("note_of_the_day")
+            _prev = json.load(f)
+            previous_note = _prev.get("note_of_the_day")
+            previous_pods = _prev.get("podcasts", [])
     except Exception:  # noqa: BLE001 — first run has no file
         pass
 
@@ -271,7 +277,7 @@ def compile_payload(state: dict) -> dict:
         "sector_news": news["sector_news"],
         "ticker_news": news["ticker_news"],
         "trending": trending.collect(sec),
-        "podcasts": podcasts.collect(summarize=summarize),
+        "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},
         "note_of_the_day": env_context.note_of_the_day(previous_note),
         "generated_by": ("LangGraph pipeline · DeepSeek · yfinance / Google News / "

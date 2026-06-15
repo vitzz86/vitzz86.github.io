@@ -24,7 +24,8 @@ def _clean(html: str) -> str:
 
 _JUNK = re.compile(r"https?://|www\.|\b\d{1,2}:\d{2}\b|get your copy|subscribe|"
                    r"sponsor|patreon|follow us|available on|amazon|goodreads|"
-                   r"timestamp|chapters?:|outline:", re.I)
+                   r"timestamp|chapters?:|outline:|leave (a |your )?review|"
+                   r"check out|sign up|promo code|discount|----|====", re.I)
 
 
 def _extractive_thesis(raw: str, limit: int = 300) -> str:
@@ -46,10 +47,17 @@ def _extractive_thesis(raw: str, limit: int = 300) -> str:
     return out.strip()
 
 
-def collect(summarize=None) -> list:
-    """summarize: optional callable(system, user)->str for DeepSeek Core Thesis."""
+def collect(summarize=None, previous=None) -> list:
+    """summarize: optional callable(system, user)->str for DeepSeek Core Thesis.
+    previous: prior episodes list — reuse a cached thesis when the episode URL is
+    unchanged so we don't re-summarize (and rate-limit) every run."""
     import feedparser
 
+    cache = {p["url"]: p["thesis"] for p in (previous or [])
+             if p.get("url") and p.get("thesis")
+             and not p["thesis"].startswith("New ")
+             and not _JUNK.search(p["thesis"])          # don't reuse junky theses
+             and len(p["thesis"]) > 40}
     eps = []
     for show, url, host in settings.PODCAST_FEEDS:
         try:
@@ -61,6 +69,10 @@ def collect(summarize=None) -> list:
             link = (e.get("link") or "").strip()
             notes = e.get("summary") or e.get("description") or ""
             if not title or not link:
+                continue
+            if link in cache:                 # unchanged episode → reuse its thesis
+                eps.append({"show": show, "host": host, "title": title[:140],
+                            "thesis": cache[link], "url": link})
                 continue
             thesis = ""
             if summarize:
