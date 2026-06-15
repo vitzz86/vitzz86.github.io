@@ -297,12 +297,14 @@ def _deepseek_sector_ai(sectors_list: list, has_llm: bool) -> None:
             continue
         cons = ", ".join(f"{c['ticker']} {c['delta_pct']:+.2f}%"
                          for c in s["constituents"][:8])
+        split = (f"{s['idChange']:+.2f}% ID / {s['usChange']:+.2f}% US"
+                 if s.get("idChange") is not None and s.get("usChange") is not None
+                 else "global / no ID-US split")
         out = call_deepseek(
             "You are an institutional analyst. Write ONE tight paragraph (<=70 words) of "
             "actionable cross-market intelligence for an Indonesia-focused investor. No hedging.",
-            f"Sector: {s['name']} ({s['change']:+.2f}% agg, {s['idChange']:+.2f}% ID / "
-            f"{s['usChange']:+.2f}% US, signal {s['signal']}). Movers: {cons}. "
-            f"Themes: {'; '.join(s.get('themes', []))}.")
+            f"Sector: {s['name']} ({s['change']:+.2f}% agg, {split}, signal {s['signal']}). "
+            f"Movers: {cons}. Themes: {'; '.join(s.get('themes', []))}.")
         if out:
             s["ai"] = out.strip()
 
