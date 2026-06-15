@@ -23,8 +23,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (daily_brief, enterprise_osint, env_context,  # noqa: E402
-                   market_telemetry, news_router, podcasts, sectors,
-                   spotify, trending, videos)
+                   macro_alerts, market_telemetry, news_router, podcasts,
+                   sectors, spotify, trending, videos)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -261,6 +261,9 @@ def compile_payload(state: dict) -> dict:
     brief = daily_brief.compile_brief(
         state["telemetry"], sec, news["wire"], vids, c["arbiter_brief"],
         summarize=summarize, previous=previous_brief)
+    ma = macro_alerts.compile_macro_alerts(
+        state["telemetry"], sec, news["wire"], vids,
+        state.get("signals", ""), summarize=summarize)
 
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -286,6 +289,8 @@ def compile_payload(state: dict) -> dict:
         "ticker_news": news["ticker_news"],
         "videos": vids,
         "daily_brief": brief,
+        "macro_analysis": ma["macro_analysis"],
+        "alerts": ma["alerts"],
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},

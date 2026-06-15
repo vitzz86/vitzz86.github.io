@@ -40982,5 +40982,84 @@
     "finnhub_key": "d8nabtpr01qvvn94rrdgd8nabtpr01qvvn94rre0"
   },
   "note_of_the_day": "Execution over optimization today. Finalize the fund telemetry baseline scripts before the pre-market sync loops execute.",
-  "generated_by": "LangGraph pipeline · DeepSeek · yfinance / Google News / Finnhub / Spotify / StockTwits · GitHub Actions cron"
+  "generated_by": "LangGraph pipeline · DeepSeek · yfinance / Google News / Finnhub / Spotify / StockTwits · GitHub Actions cron",
+  "macro_analysis": [
+    {
+      "point": "JCI / IHSG at 6,254.97, +4.12% on the session.",
+      "sources": [
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        }
+      ]
+    },
+    {
+      "point": "S&P 500 at 7,543.98, +1.51% on the session.",
+      "sources": [
+        {
+          "name": "S&P 500",
+          "url": "https://finance.yahoo.com/quote/^GSPC"
+        }
+      ]
+    },
+    {
+      "point": "Nasdaq at 26,507.64, +2.39% on the session.",
+      "sources": [
+        {
+          "name": "Nasdaq",
+          "url": "https://finance.yahoo.com/quote/^IXIC"
+        }
+      ]
+    },
+    {
+      "point": "USD/IDR at 17,714.00, -1.16% on the session.",
+      "sources": [
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        }
+      ]
+    },
+    {
+      "point": "Gold Spot at 4,381.30, +3.95% on the session.",
+      "sources": [
+        {
+          "name": "Gold Spot",
+          "url": "https://finance.yahoo.com/quote/GC=F"
+        }
+      ]
+    }
+  ],
+  "alerts": [
+    {
+      "title": "Crypto & Digital Assets +2.58%",
+      "desc": "Crypto’s broad rally (+2.58%) signals risk-on rotation, with ETH leading (+4.99%) on spot-ETF speculation. Layer-1s (SOL, AVAX) confirm appetite for beta. For Indonesia, this implies capital may flow from local equities into digital assets.",
+      "sources": [
+        {
+          "name": "ETH",
+          "url": "https://www.coingecko.com/en/coins/ethereum"
+        }
+      ]
+    },
+    {
+      "title": "Financials +2.53%",
+      "desc": "Indonesian tier-1 banks surge on BI rate hold, widening NIMs. BBCA (78% CASA, 25%+ ROE) is the premier ASEAN compounder; US deregulation tailwinds amplify cross-market flows. Overweight BBCA, BBRI; BMRI’s +7% signals momentum.",
+      "sources": [
+        {
+          "name": "BMRI",
+          "url": "https://finance.yahoo.com/quote/BMRI.JK"
+        }
+      ]
+    },
+    {
+      "title": "Technology +2.44%",
+      "desc": "Aggressive US AI capex spillover is lifting ID tech, but the real alpha is in ASEAN semiconductor assembly plays. OJK’s digital banking revision directly benefits BELI and EMTK via fintech reclassification. Short US semis (AMD) to fund long",
+      "sources": [
+        {
+          "name": "AMD",
+          "url": "https://finance.yahoo.com/quote/AMD"
+        }
+      ]
+    }
+  ]
 }
