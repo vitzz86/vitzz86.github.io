@@ -239,7 +239,7 @@ def compile_payload(state: dict) -> dict:
     wx = env_context.weather()
     rainy = wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
-    previous_videos, previous_brief = [], None
+    previous_videos, previous_brief, previous_sectors = [], None, []
     try:
         with open(settings.DATA_JSON_PATH, encoding="utf-8") as f:
             _prev = json.load(f)
@@ -247,6 +247,7 @@ def compile_payload(state: dict) -> dict:
             previous_pods = _prev.get("podcasts", [])
             previous_videos = _prev.get("videos", [])
             previous_brief = _prev.get("daily_brief")
+            previous_sectors = _prev.get("sectors", [])
     except Exception:  # noqa: BLE001 — first run has no file
         pass
 
@@ -255,7 +256,7 @@ def compile_payload(state: dict) -> dict:
     summarize = (lambda s, u: call_deepseek(s, u)) if has_llm else None
 
     sec = sectors.collect()
-    _deepseek_sector_ai(sec, has_llm)                 # real AI text for WATCH/ALERT sectors
+    _deepseek_sector_intel(sec, has_llm, previous_sectors)   # DeepSeek ai + structural themes
     news = news_router.enrich(state.get("headlines", {}), sec, state["telemetry"])
     vids = videos.collect(previous=previous_videos)
     brief = daily_brief.compile_brief(
@@ -302,26 +303,55 @@ def compile_payload(state: dict) -> dict:
     return payload
 
 
-def _deepseek_sector_ai(sectors_list: list, has_llm: bool) -> None:
-    """Upgrade the deterministic sector synthesis to real DeepSeek analysis for
-    sectors flagged WATCH/ALERT (keeps cost bounded; NORMAL keeps the baked line)."""
+def _deepseek_sector_intel(sectors_list: list, has_llm: bool,
+                           previous_sectors: list | None = None) -> None:
+    """DeepSeek sector synthesis: a tight actionable paragraph (`ai`) AND 3 structural
+    `themes`, in ONE JSON call per sector. WATCH/ALERT sectors regenerate every run;
+    NORMAL sectors reuse the cached DeepSeek output (generated once, marked themes_ai)
+    to bound cost. Falls back to the deterministic ai + settings.SECTOR_THEMES when no
+    LLM is configured or a call/parse fails."""
     if not has_llm:
         return
+    prev = {s.get("key"): s for s in (previous_sectors or [])}
     for s in sectors_list:
-        if s["signal"] == "NORMAL":        # WATCH + ALERT get real AI; NORMAL stays deterministic
+        cached = prev.get(s["key"])
+        active = s["signal"] in ("WATCH", "ALERT")
+        if not active and cached and cached.get("themes_ai") and cached.get("themes"):
+            s["themes"] = cached["themes"]            # reuse cached DeepSeek themes (NORMAL)
+            s["themes_ai"] = True
+            if cached.get("ai"):
+                s["ai"] = cached["ai"]
             continue
         cons = ", ".join(f"{c['ticker']} {c['delta_pct']:+.2f}%"
                          for c in s["constituents"][:8])
         split = (f"{s['idChange']:+.2f}% ID / {s['usChange']:+.2f}% US"
                  if s.get("idChange") is not None and s.get("usChange") is not None
                  else "global / no ID-US split")
-        out = call_deepseek(
-            "You are an institutional analyst. Write ONE tight paragraph (<=70 words) of "
-            "actionable cross-market intelligence for an Indonesia-focused investor. No hedging.",
+        raw = call_deepseek(
+            "You are an institutional analyst briefing an Indonesia-focused investor. "
+            "Output RAW JSON only (no code fences): {\"ai\":\"one tight <=70-word "
+            "actionable paragraph, no hedging\",\"themes\":[\"3 structural-theme bullets, "
+            "each one specific full sentence on a durable driver of this sector\"]}. "
+            "Plain text inside the values.",
             f"Sector: {s['name']} ({s['change']:+.2f}% agg, {split}, signal {s['signal']}). "
-            f"Movers: {cons}. Themes: {'; '.join(s.get('themes', []))}.")
-        if out:
-            s["ai"] = out.strip()
+            f"Movers: {cons}.")
+        obj = None
+        if raw:
+            txt = raw.strip()
+            if txt.startswith("```"):
+                txt = txt.strip("`")
+                txt = txt[txt.find("{"):]
+            try:
+                obj = json.loads(txt[txt.index("{"):txt.rindex("}") + 1])
+            except Exception:  # noqa: BLE001
+                obj = None
+        if obj:
+            if isinstance(obj.get("ai"), str) and obj["ai"].strip():
+                s["ai"] = obj["ai"].strip()
+            th = obj.get("themes")
+            if isinstance(th, list) and [t for t in th if str(t).strip()]:
+                s["themes"] = [str(t).strip()[:200] for t in th[:4] if str(t).strip()]
+                s["themes_ai"] = True
 
 
 def write_atomic(payload: dict) -> None:

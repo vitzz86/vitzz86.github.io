@@ -538,6 +538,8 @@ function spark(arr,w,h,col){
 }
 function liveGreeting(){const h=new Date().getHours();return h<11?"Good morning":h<15?"Midday":h<19?"Good evening":"Late session";}
 function ago(iso){const m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(m<60)return m+'m ago';const h=Math.round(m/60);return h<48?h+'h ago':Math.round(h/24)+'d ago';}
+function wibStamp(iso){const d=iso?new Date(iso):new Date();if(isNaN(d))return '';
+  return d.toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WIB';}
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES'};
 const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
 const COLP=n=>n>=0?'var(--green)':'var(--red)';
@@ -765,6 +767,7 @@ function expandIdx(i){
     `<div class="c"><div class="k">LOW</div><div class="v">${fmt(lo)}</div></div>`+
     `<div class="c"><div class="k">LAST</div><div class="v">${fmt(r.value)}</div></div>`+
     `<div class="c"><div class="k">RANGE</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
+    `<div class="lbl" style="margin-top:9px;">Last px ${fmt(r.value)} · ${sign(r.delta_pct)} · as of ${wibStamp(DATA.timestamp)}</div>`+
     `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on Yahoo Finance ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
@@ -993,8 +996,8 @@ function openTicker(s,tk){
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx" style="color:${col}">${sign(dp)}</span>${live?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>':''}</div>`+
-    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${(live?live.c:c.value)?fmt(live?live.c:c.value):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(dp)}</span>${live?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>':''}</div>`+
+    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
     `<div class="smchart">${spark(view,420,110,col)}</div>`+
     `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on Yahoo Finance ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+

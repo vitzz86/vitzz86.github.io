@@ -20,18 +20,25 @@ sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__fi
 from config import settings  # noqa: F401  (kept for parity / future tuning)
 
 _SYSTEM = (
-    "You are a cross-market macro analyst for an Indonesia-focused investor. "
+    "You are a cross-market macro strategist for an Indonesia-focused investor. "
     "Output RAW JSON only (no code fences), EXACTLY this schema: "
-    '{"macro_analysis":[{"point":"one sentence explaining a key index/commodity/FX '
-    'move or a macro update, include the number","refs":[{"t":"ticker","id":"<exact '
-    'symbol from TELEMETRY>"}]}],'
+    '{"macro_analysis":[{"point":"2-3 connected sentences of cause-and-effect '
+    'analysis","refs":[{"t":"ticker","id":"<exact TELEMETRY symbol>"},{"t":"news","i":0}]}],'
     '"alerts":[{"title":"short alert headline","desc":"1-2 sentence description",'
     '"refs":[{"t":"news","i":0}]}]}. '
-    "Provide 4-6 macro_analysis bullets and 3-5 alerts. EVERY item MUST include at "
-    "least one ref, drawn ONLY from the provided data: ticker refs use an EXACT symbol "
-    "from TELEMETRY; news/video refs use the given integer index ({\"t\":\"news\",\"i\":N} "
-    "or {\"t\":\"video\",\"i\":N}). Never invent a source, symbol or index. Tie each "
-    "point to what the numbers/headlines actually say. Plain text inside JSON values."
+    "MACRO_ANALYSIS: write 3-5 analytical bullets. Each bullet is 2-3 connected "
+    "sentences that trace a CATALYST taken from the NEWS/VIDEOS provided through its "
+    "cross-market consequences to the Indonesia implication (JCI / Rupiah / "
+    "commodities / rates), the way a strategist reasons — not a price read-out. "
+    "Synthesize from the actual headlines: explain WHY moves happened and what they "
+    "mean for foreign flows, the Rupiah, commodity names, and duration-sensitive tech. "
+    "Make the final bullet the key risk or linchpin to watch. "
+    "ALERTS: 3-5 concrete, actionable alerts, each grounded in a specific headline or number. "
+    "REFERENCES (mandatory, anti-hallucination): EVERY item includes >=1 ref drawn ONLY "
+    "from the provided data — ticker refs use an EXACT symbol from TELEMETRY; news/video "
+    'refs use the given integer index ({"t":"news","i":N} or {"t":"video","i":N}). Cite '
+    "the NEWS/VIDEO that drove the point AND the ticker(s) it moved. Never invent a "
+    "source, symbol or index. Plain text inside JSON values."
 )
 
 
@@ -76,32 +83,39 @@ def _resolve_refs(refs, tel_by_sym, cons_by_tk, news, videos) -> list:
     return out
 
 
-def _fallback(telemetry, sectors, tel_by_sym) -> dict:
+def _fallback(telemetry, sectors, tel_by_sym, news=None) -> dict:
     def ref(sym):
         r = tel_by_sym.get(sym)
         return [{"name": r["label"], "url": r["url"]}] if r else []
 
     ma = []
-    for sym in ("^JKSE", "^GSPC", "^IXIC", "USDIDR=X", "GC=F", "BZ=F", "BTC-USD", "^TNX"):
+    for sym in ("^JKSE", "^GSPC", "^IXIC", "USDIDR=X", "GC=F", "BZ=F", "BTC-USD"):
         r = tel_by_sym.get(sym)
         if r:
             ma.append({"point": f"{r['label']} at {r['value']:,.2f}, {r['delta_pct']:+.2f}% on the session.",
                        "sources": ref(sym)})
-        if len(ma) >= 5:
+        if len(ma) >= 4:
             break
     al = []
-    for s in sorted(sectors, key=lambda s: abs(s.get("change", 0.0)), reverse=True)[:3]:
+    # alerts from the freshest macro/markets headlines (real article links)
+    for n in (news or [])[:3]:
+        al.append({"title": n["title"][:120],
+                   "desc": (n.get("summary") or "")[:240],
+                   "sources": [{"name": n.get("source") or "Source", "url": n["url"]}]})
+    # top up with the biggest sector moves if we have headroom
+    for s in sorted(sectors, key=lambda s: abs(s.get("change", 0.0)), reverse=True):
+        if len(al) >= 4:
+            break
         cons = s.get("constituents") or []
         lead = cons[0] if cons else None
-        srcs = [{"name": lead["ticker"], "url": lead["url"]}] if lead else []
         al.append({"title": f"{s['name']} {s['change']:+.2f}%",
                    "desc": (s.get("ai") or f"{s['name']} sector aggregate moved {s['change']:+.2f}%.")[:240],
-                   "sources": srcs})
+                   "sources": [{"name": lead["ticker"], "url": lead["url"]}] if lead else []})
     return {"macro_analysis": ma, "alerts": al}
 
 
 def compile_macro_alerts(telemetry, sectors, news, videos, signals="", summarize=None) -> dict:
-    nlist, vlist = news[:14], videos[:8]
+    nlist, vlist = news[:16], videos[:10]
     tel_by_sym = {r["symbol"]: r for r in telemetry}
     cons_by_tk = {c["ticker"]: c for s in sectors for c in s.get("constituents", [])}
 
@@ -141,7 +155,7 @@ def compile_macro_alerts(telemetry, sectors, news, videos, signals="", summarize
 
     if result is None:
         print("[macro_alerts] deterministic fallback")
-        result = _fallback(telemetry, sectors, tel_by_sym)
+        result = _fallback(telemetry, sectors, tel_by_sym, nlist)
     print(f"[macro_alerts] {len(result['macro_analysis'])} macro bullets, "
           f"{len(result['alerts'])} alerts")
     return result
