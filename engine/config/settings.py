@@ -378,13 +378,28 @@ MAX_HEADLINES_PER_CATEGORY = 6
 # YouTube playlist RSS (no key): youtube.com/feeds/videos.xml?playlist_id=...
 def _yt(pid):
     return "https://www.youtube.com/feeds/videos.xml?playlist_id=" + pid
-PODCAST_FEEDS = [
-    ("Endgame", _yt("PL-hh_bKgnJ6GlNCJYV6LfHL9QcP5q_Z7F"), "Gita Wirjawan"),
-    ("Dwarkesh Podcast", _yt("PLd7-bHaQwnthaNDpZ32TtYONGVk95-fhF"), "Dwarkesh Patel"),
-    ("View From The Top", _yt("PLxq_lXOUlvQAwaY_9K4ZFH9Xdar9WzCaL"), "Stanford GSB"),
-    ("The Diary of a CEO", _yt("PL22egh3ok4cP0T7UZRmP6TMLErZYWMN-l"), "Steven Bartlett"),
-    ("Lex Fridman Podcast", _yt("PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4"), "Lex Fridman"),
+
+# Two intellectual diets. Each feed: (show, kind, ref, host). kind ∈ playlist (ref=
+# playlist_id) | channel (ref=@handle, resolved to channel_id at runtime). Only
+# episodes from the last PODCAST_WEEK_DAYS are kept; each carries its publish date.
+PODCAST_CATEGORIES = [
+    {"key": "brain", "label": "Brain 💪🏼", "feeds": [
+        ("Endgame", "playlist", "PL-hh_bKgnJ6GlNCJYV6LfHL9QcP5q_Z7F", "Gita Wirjawan"),
+        ("Dwarkesh Podcast", "playlist", "PLd7-bHaQwnthaNDpZ32TtYONGVk95-fhF", "Dwarkesh Patel"),
+        ("View From The Top", "playlist", "PLxq_lXOUlvQAwaY_9K4ZFH9Xdar9WzCaL", "Stanford GSB"),
+        ("The Diary of a CEO", "playlist", "PL22egh3ok4cP0T7UZRmP6TMLErZYWMN-l", "Steven Bartlett"),
+        ("Lex Fridman Podcast", "playlist", "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4", "Lex Fridman"),
+    ]},
+    {"key": "vc", "label": "VC & Startup 💸", "feeds": [
+        ("20VC", "channel", "@20VC", "Harry Stebbings"),
+        ("All-In", "channel", "@allin", "Chamath · Sacks · Friedberg · Calacanis"),
+        ("Invest Like The Best", "channel", "@ILTB_Podcast", "Patrick O'Shaughnessy"),
+        ("a16z", "channel", "@a16z", "Andreessen Horowitz"),
+        ("Sequoia Capital", "channel", "@sequoiacapital", "Sequoia"),
+    ]},
 ]
+PODCAST_WEEK_DAYS = 7        # drop episodes older than this
+PODCAST_PER_SHOW = 2         # newest N episodes kept per show within the window
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
      "title": "Why Asia Will Lead the Next Cycle",

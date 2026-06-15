@@ -250,7 +250,10 @@ footer .g{color:var(--green);}
 .moodsel{width:100%;margin-top:9px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 9px;cursor:pointer;}
 .moodsel:focus{outline:none;border-color:var(--amber);}
 
-/* podcast expand */
+/* podcast categories + expand */
+.podcat{margin-bottom:13px;}
+.podcatlbl{font-family:var(--mono);font-size:10px;letter-spacing:.04em;font-weight:600;color:var(--amber);margin:2px 0 5px;}
+.podempty{font-size:10.5px;color:var(--ink3);padding:3px 0 6px;}
 .pod .pt .caret{float:right;color:var(--ink3);font-size:9px;transition:transform .15s;}
 .pod.open .pt .caret{transform:rotate(90deg);}
 .psum{display:none;margin-top:9px;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:10px 11px;}
@@ -612,16 +615,22 @@ function render(d){
     $('arbiter').textContent=d.arbiter_brief||(d.intelligence_quadrants||{}).market?.join(' ')||'Macro synthesis pending next cron cycle.';
   }
 
-  /* podcasts — click the title to expand its Summary */
+  /* podcasts — two diets, click a title to expand its Summary */
+  const PODCATS=[['brain','Brain 💪🏼'],['vc','VC & Startup 💸']];
   const pods=d.podcasts||[];
-  $('pods').innerHTML=pods.map((p,i)=>{
-    const when=p.published||p.date||'';
-    return `<div class="pod" data-i="${i}">`+
-      `<div class="ph">${i===0?'<span class="new">NEW</span>':''}<span>${esc(p.show)}</span><span style="margin-left:auto">${esc(when||p.host||'')}</span></div>`+
-      `<div class="pt">${esc(p.title)}<span class="caret">▸</span></div>`+
-      `<div class="psum"><div class="psh">Summary</div><p>${esc(p.thesis||'Listening agent idle.')}</p>`+
-      `<a class="opn" href="${encodeURI(p.url||'#')}" target="_blank" rel="noopener">▶ Open episode ↗</a></div>`+
-    `</div>`;
+  $('pods').innerHTML=PODCATS.map(([k,label])=>{
+    const items=pods.filter(p=>(p.category||'brain')===k);
+    const body=items.length?items.map(p=>{
+      const fresh=p.ts&&(Date.now()/1000-p.ts)<86400;
+      const when=p.published?fdate(p.published):(p.host||'');
+      return `<div class="pod">`+
+        `<div class="ph">${fresh?'<span class="new">NEW</span>':''}<span>${esc(p.show)}</span><span style="margin-left:auto">${esc(when)}</span></div>`+
+        `<div class="pt">${esc(p.title)}<span class="caret">▸</span></div>`+
+        `<div class="psum"><div class="psh">Summary</div><p>${esc(p.thesis||'Open the episode to listen.')}</p>`+
+        `<a class="opn" href="${encodeURI(p.url||'#')}" target="_blank" rel="noopener">▶ Open episode ↗</a></div>`+
+      `</div>`;
+    }).join(''):'<div class="podempty">No new episodes in the last 7 days.</div>';
+    return `<div class="podcat"><div class="podcatlbl">${label}</div>${body}</div>`;
   }).join('');
   [...document.querySelectorAll('#pods .pod')].forEach(el=>{
     el.querySelector('.pt').onclick=()=>el.classList.toggle('open');
