@@ -387,7 +387,7 @@ PODCAST_CATEGORIES = [
         ("Lex Fridman Podcast", "channel", "UCSHZKyawb77ixDdsGog4iWA", "Lex Fridman"),
         ("Dwarkesh Podcast", "channel", "UCXl4i9dYBrFOabk0xGmbkRA", "Dwarkesh Patel"),
         ("The Diary of a CEO", "channel", "UCGq-a57w-aPwyi3pW7XLiHw", "Steven Bartlett"),
-        ("Endgame", "channel", "UChiUMbV5wKdfxZJR_RY7oeQ", "Gita Wirjawan"),
+        ("Endgame", "channel", "UCDaqDYhGmJdrlHr4h9LQ5uw", "Gita Wirjawan"),
         ("Veritasium", "channel", "UCHnyfMqiRRG1u-2MsSQLbXA", "Derek Muller"),
         ("The Overpost", "channel", "UCFWKvu581DpCRFfadjjIy7w", "Leon Hartono"),
     ]},
