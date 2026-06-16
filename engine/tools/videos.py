@@ -49,33 +49,47 @@ def _clean(s: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s or "")).strip()
 
 
+def fetch_feed(url: str, tries: int = 3):
+    """Parse a YouTube RSS feed with retry — GitHub runners hit transient
+    404/429/500 from YouTube under bursty load; a short backoff recovers them."""
+    import time
+
+    import feedparser
+    feed = None
+    for i in range(tries):
+        feed = feedparser.parse(url)
+        if feed.entries:
+            return feed
+        status = getattr(feed, "status", 0)
+        if status in (200,) and not feed.entries:
+            return feed                      # genuinely empty (e.g., brand-new channel)
+        time.sleep(1.2 * (i + 1))            # 404/429/500/0 → back off and retry
+    return feed
+
+
 def collect(previous: list | None = None) -> list:
-    """previous: prior payload's videos — reuse resolved channel ids to skip lookups."""
+    """previous: prior payload's videos (unused now — channel ids are pinned in config)."""
     import feedparser
 
     week_ago = dt.datetime.now(dt.timezone.utc) - dt.timedelta(days=settings.VIDEO_WEEK_DAYS)
-    id_cache = {}
-    for v in (previous or []):
-        if v.get("channel_handle") and v.get("channel_id"):
-            id_cache[v["channel_handle"].lstrip("@")] = v["channel_id"]
 
-    def feed_url(src: dict) -> str | None:
-        if src["kind"] == "playlist":
-            return FEED + "playlist_id=" + src["ref"]
-        cid = _resolve_channel_id(src["ref"], id_cache)
-        return (FEED + "channel_id=" + cid) if cid else None
+    def feed_url(src: dict) -> str:
+        key = "playlist_id" if src["kind"] == "playlist" else "channel_id"
+        return f"{FEED}{key}={src['ref']}"
 
     def fetch(src: dict) -> list:
-        url = feed_url(src)
-        if not url:
-            return []
         out = []
         try:
-            feed = feedparser.parse(url)
-            for e in feed.entries[: settings.VIDEO_PER_SOURCE]:
+            feed = fetch_feed(feed_url(src))
+            for e in feed.entries:                       # scan the whole feed window
+                if len(out) >= settings.VIDEO_PER_SOURCE:
+                    break
                 vid = e.get("yt_videoid") or ""
                 pub = e.get("published_parsed")
+                link = (e.get("link") or "")
                 if not vid or not pub:
+                    continue
+                if settings.SKIP_SHORTS and "/shorts/" in link:   # drop Shorts
                     continue
                 pub_dt = dt.datetime(*pub[:6], tzinfo=dt.timezone.utc)
                 if pub_dt < week_ago:
@@ -86,11 +100,10 @@ def collect(previous: list | None = None) -> list:
                     "video_id": vid,
                     "title": (e.get("title") or "").strip()[:200],
                     "channel": src["name"],
-                    "channel_handle": src["ref"] if src["kind"] == "channel" else "",
-                    "channel_id": id_cache.get(src["ref"].lstrip("@"), "") if src["kind"] == "channel" else "",
+                    "channel_id": src["ref"] if src["kind"] == "channel" else "",
                     "category": src["category"],
                     "geo": src["geo"],
-                    "url": WATCH + vid,
+                    "url": (link or WATCH + vid),
                     "embed": EMBED + vid,
                     "thumb": thumb,
                     "published": pub_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -103,7 +116,7 @@ def collect(previous: list | None = None) -> list:
 
     vids = []
     try:
-        with cf.ThreadPoolExecutor(max_workers=8) as ex:
+        with cf.ThreadPoolExecutor(max_workers=4) as ex:   # gentle on YouTube to avoid throttling
             for items in ex.map(fetch, settings.VIDEO_SOURCES):
                 vids += items
     except Exception as e:  # noqa: BLE001

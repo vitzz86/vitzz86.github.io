@@ -384,22 +384,22 @@ def _yt(pid):
 # episodes from the last PODCAST_WEEK_DAYS are kept; each carries its publish date.
 PODCAST_CATEGORIES = [
     {"key": "brain", "label": "Brain 💪🏼", "feeds": [
-        ("Endgame", "playlist", "PL-hh_bKgnJ6GlNCJYV6LfHL9QcP5q_Z7F", "Gita Wirjawan"),
-        ("Dwarkesh Podcast", "playlist", "PLd7-bHaQwnthaNDpZ32TtYONGVk95-fhF", "Dwarkesh Patel"),
-        ("View From The Top", "playlist", "PLxq_lXOUlvQAwaY_9K4ZFH9Xdar9WzCaL", "Stanford GSB"),
-        ("The Diary of a CEO", "playlist", "PL22egh3ok4cP0T7UZRmP6TMLErZYWMN-l", "Steven Bartlett"),
-        ("Lex Fridman Podcast", "playlist", "PLrAXtmErZgOdP_8GztsuKi9nrraNbKKp4", "Lex Fridman"),
+        ("Endgame", "channel", "UC4V-NrmzhDFbrxw5UlL5opw", "Gita Wirjawan"),
+        ("Dwarkesh Podcast", "channel", "UCXl4i9dYBrFOabk0xGmbkRA", "Dwarkesh Patel"),
+        ("Stanford GSB", "channel", "UCGwuxdEeCf0TIA2RbPOj-8g", "View From The Top"),
+        ("The Diary of a CEO", "channel", "UCGq-a57w-aPwyi3pW7XLiHw", "Steven Bartlett"),
+        ("Lex Fridman Podcast", "channel", "UCSHZKyawb77ixDdsGog4iWA", "Lex Fridman"),
     ]},
     {"key": "vc", "label": "VC & Startup 💸", "feeds": [
-        ("20VC", "channel", "@20VC", "Harry Stebbings"),
-        ("All-In", "channel", "@allin", "Chamath · Sacks · Friedberg · Calacanis"),
-        ("Invest Like The Best", "channel", "@ILTB_Podcast", "Patrick O'Shaughnessy"),
-        ("a16z", "channel", "@a16z", "Andreessen Horowitz"),
-        ("Sequoia Capital", "channel", "@sequoiacapital", "Sequoia"),
+        ("20VC", "channel", "UCf0PBRjhf0rF8fWBIxTuoWA", "Harry Stebbings"),
+        ("All-In", "channel", "UCESLZhusAkFfsNsApnjF_Cg", "Chamath · Sacks · Friedberg · Calacanis"),
+        ("Invest Like The Best", "channel", "UCpQBb0fToph3jrDulwz1iUQ", "Patrick O'Shaughnessy"),
+        ("a16z", "channel", "UC9cn0TuPq4dnbTY-CBsm8XA", "Andreessen Horowitz"),
+        ("Sequoia Capital", "channel", "UCWrF0oN6unbXrWsTN7RctTw", "Sequoia"),
     ]},
 ]
 PODCAST_WEEK_DAYS = 7        # drop episodes older than this
-PODCAST_PER_SHOW = 2         # newest N episodes kept per show within the window
+PODCAST_PER_SHOW = 6         # newest N (non-Shorts) episodes kept per show within the window
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
      "title": "Why Asia Will Lead the Next Cycle",
@@ -473,30 +473,35 @@ WIRE_TOPICS = {
 # The Videos agent captures each source's latest uploads (≤1 week) with thumbnail +
 # description. Channels are @handles (resolved to channel_id at runtime); playlists
 # carry their playlist_id directly. category ∈ market_id|market_us|crypto.
+# Channels carry their resolved channel_id directly (kind="channel", ref=UC…) — the
+# RSS-by-channel-id endpoint works from CI, whereas resolving @handles via the HTML
+# page is bot-blocked on GitHub runners. Playlists carry their playlist_id.
 VIDEO_SOURCES = [
     # --- Indonesia market ---
-    {"name": "Cuap Cuap Cuan", "kind": "channel", "ref": "@cuapcuapcuan", "category": "market_id", "geo": "ID"},
-    {"name": "Bloomberg Technoz", "kind": "channel", "ref": "@bloombergtechnoz", "category": "market_id", "geo": "ID"},
-    {"name": "Mirae Asset Sekuritas", "kind": "channel", "ref": "@MiraeAssetSekuritas", "category": "market_id", "geo": "ID"},
-    {"name": "Sucor Sekuritas", "kind": "channel", "ref": "@SucorSekuritasChannel", "category": "market_id", "geo": "ID"},
-    {"name": "Mandiri Sekuritas", "kind": "channel", "ref": "@GrowinMandiriSekuritas", "category": "market_id", "geo": "ID"},
-    {"name": "IDX Channel", "kind": "channel", "ref": "@IDXChannel", "category": "market_id", "geo": "ID"},
+    {"name": "Cuap Cuap Cuan", "kind": "channel", "ref": "UCxytnTZxVm7Y0ZhliKZXrbg", "category": "market_id", "geo": "ID"},
+    {"name": "Bloomberg Technoz", "kind": "channel", "ref": "UCQK22ORBCfQdnVim9I0JnJw", "category": "market_id", "geo": "ID"},
+    {"name": "Mirae Asset Sekuritas", "kind": "channel", "ref": "UCbgUIA1udecuOCfDaOFkZ1w", "category": "market_id", "geo": "ID"},
+    {"name": "Sucor Sekuritas", "kind": "channel", "ref": "UCPBdATHLzMNg4XIXxLf_P7w", "category": "market_id", "geo": "ID"},
+    {"name": "Mandiri Sekuritas", "kind": "channel", "ref": "UCsy__Nh0Eh7f6NTMAzvPamA", "category": "market_id", "geo": "ID"},
+    {"name": "IDX Channel", "kind": "channel", "ref": "UCQA6NejSxQguRkD3L8eXHzA", "category": "market_id", "geo": "ID"},
     # --- US market ---
     {"name": "Bloomberg Stock Movers", "kind": "playlist", "ref": "PLe4PRejZgr0NxhJreY_kjMBdW8cvmNauU", "category": "market_us", "geo": "US"},
     {"name": "Bloomberg Tech", "kind": "playlist", "ref": "PLe4PRejZgr0P4uqrz5jfGmmshkjmfxd73", "category": "market_us", "geo": "US"},
     {"name": "Bloomberg Daybreak: Asia", "kind": "playlist", "ref": "PLe4PRejZgr0Mvkfte_CsCiKEYuP9DtXN8", "category": "market_us", "geo": "US"},
     {"name": "Bloomberg Daybreak: US", "kind": "playlist", "ref": "PLe4PRejZgr0Pfj-MCX1dSTXnEBCGHl3Yo", "category": "market_us", "geo": "US"},
     {"name": "Reuters Morning Bid", "kind": "playlist", "ref": "PLZhRxE9191zMdTzeumPO39fdnH2UjT1zP", "category": "market_us", "geo": "US"},
-    {"name": "Morgan Stanley", "kind": "channel", "ref": "@morganstanley", "category": "market_us", "geo": "US"},
-    {"name": "Goldman Sachs", "kind": "channel", "ref": "@GoldmanSachs", "category": "market_us", "geo": "US"},
+    {"name": "Schwab Network", "kind": "channel", "ref": "UCqoSrYgusd8ZddtMoWhjHYA", "category": "market_us", "geo": "US"},
+    {"name": "Morgan Stanley", "kind": "channel", "ref": "UCz6RzD6KG_hH_oHb2kyW5jQ", "category": "market_us", "geo": "US"},
+    {"name": "Goldman Sachs", "kind": "channel", "ref": "UCyz6-taovlaOkPsPtK4KNEg", "category": "market_us", "geo": "US"},
     # --- Crypto ---
-    {"name": "Altcoin Daily", "kind": "channel", "ref": "@AltcoinDaily", "category": "crypto", "geo": "CR"},
-    {"name": "Simply Bitcoin", "kind": "channel", "ref": "@SimplyBitcoin", "category": "crypto", "geo": "CR"},
-    {"name": "Bankless", "kind": "channel", "ref": "@Bankless", "category": "crypto", "geo": "CR"},
+    {"name": "Altcoin Daily", "kind": "channel", "ref": "UCbLhGKVY-bJPcawebgtNfbw", "category": "crypto", "geo": "CR"},
+    {"name": "Simply Bitcoin", "kind": "channel", "ref": "UCB6Q0S1gUHXMe5-Jjx0_laQ", "category": "crypto", "geo": "CR"},
+    {"name": "Bankless", "kind": "channel", "ref": "UCAl9Ld79qaZxp9JzEOwd3aA", "category": "crypto", "geo": "CR"},
 ]
 VIDEO_CATEGORY_LABELS = {"market_id": "Market ID", "market_us": "Market US", "crypto": "Crypto"}
 VIDEO_WEEK_DAYS = 7          # drop uploads older than this
-VIDEO_PER_SOURCE = 3         # newest N uploads kept per source
+VIDEO_PER_SOURCE = 6         # newest N (non-Shorts) uploads kept per source within the window
+SKIP_SHORTS = True           # exclude YouTube Shorts (the substantive content is long-form)
 
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
 DAILY_BRIEF_HOURS = [9, 12, 17, 19]

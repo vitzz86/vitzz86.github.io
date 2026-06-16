@@ -67,9 +67,14 @@ def _now() -> int:
     return int(dt.datetime.now(dt.timezone.utc).timestamp())
 
 
+import html as _html  # noqa: E402
+
+
 def _clean_html(s: str) -> str:
     s = re.sub(r"<!\[CDATA\[|\]\]>", "", s or "")
-    s = re.sub(r"<[^>]+>", " ", s)
+    s = _html.unescape(s)              # decode &lt;a&gt; → <a> (Google News double-encodes)
+    s = re.sub(r"<[^>]+>", " ", s)     # strip the now-real tags
+    s = _html.unescape(s)              # &nbsp; → space, any residual entities
     return re.sub(r"\s+", " ", s).strip()
 
 

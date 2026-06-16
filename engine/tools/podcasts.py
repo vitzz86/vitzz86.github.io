@@ -58,9 +58,7 @@ def collect(summarize=None, previous=None) -> list:
     channel_ids so we don't re-summarize or re-resolve every run."""
     import datetime as _dt
 
-    import feedparser
-
-    from tools.videos import _resolve_channel_id
+    from tools.videos import fetch_feed
 
     now = _dt.datetime.now(_dt.timezone.utc)
     week_ago = now - _dt.timedelta(days=settings.PODCAST_WEEK_DAYS)
@@ -70,21 +68,14 @@ def collect(summarize=None, previous=None) -> list:
              and not p["thesis"].startswith("New ")
              and not _JUNK.search(p["thesis"])          # don't reuse junky theses
              and len(p["thesis"]) > 40}
-    id_cache = {p["channel_handle"].lstrip("@"): p["channel_id"]
-                for p in prev if p.get("channel_handle") and p.get("channel_id")}
 
     eps = []
     for cat in settings.PODCAST_CATEGORIES:
         for show, kind, ref, host in cat["feeds"]:
-            if kind == "playlist":
-                url = FEED + "playlist_id=" + ref
-            else:
-                cid = _resolve_channel_id(ref, id_cache)
-                url = (FEED + "channel_id=" + cid) if cid else None
-            if not url:
-                continue
+            key = "playlist_id" if kind == "playlist" else "channel_id"
+            url = f"{FEED}{key}={ref}"
             try:
-                feed = feedparser.parse(url)
+                feed = fetch_feed(url)
                 kept = 0
                 for e in feed.entries:
                     if kept >= settings.PODCAST_PER_SHOW:
@@ -94,6 +85,8 @@ def collect(summarize=None, previous=None) -> list:
                     pub = e.get("published_parsed")
                     if not title or not link or not pub:
                         continue
+                    if getattr(settings, "SKIP_SHORTS", True) and "/shorts/" in link:
+                        continue                  # drop Shorts; keep the long episodes
                     pub_dt = _dt.datetime(*pub[:6], tzinfo=_dt.timezone.utc)
                     if pub_dt < week_ago:          # ≤1 week only, drop the rest
                         continue
@@ -125,8 +118,7 @@ def collect(summarize=None, previous=None) -> list:
                         "thumb": thumb,
                         "published": pub_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "ts": int(pub_dt.timestamp()),
-                        "channel_handle": ref if kind == "channel" else "",
-                        "channel_id": id_cache.get(ref.lstrip("@"), "") if kind == "channel" else "",
+                        "channel_id": ref if kind == "channel" else "",
                     })
                     kept += 1
             except Exception as ex:  # noqa: BLE001
