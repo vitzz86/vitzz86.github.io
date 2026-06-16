@@ -400,6 +400,7 @@ PODCAST_CATEGORIES = [
 ]
 PODCAST_WEEK_DAYS = 7        # drop episodes older than this
 PODCAST_PER_SHOW = 6         # newest N (non-Shorts) episodes kept per show within the window
+PODCAST_FETCH_PER_RUN = 7    # fetch the stalest N feeds/run (rest maintained by accumulation)
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
      "title": "Why Asia Will Lead the Next Cycle",
@@ -502,6 +503,10 @@ VIDEO_CATEGORY_LABELS = {"market_id": "Market ID", "market_us": "Market US", "cr
 VIDEO_WEEK_DAYS = 7          # drop uploads older than this
 VIDEO_PER_SOURCE = 6         # newest N (non-Shorts) uploads kept per source within the window
 SKIP_SHORTS = True           # exclude YouTube Shorts (the substantive content is long-form)
+# YouTube throttles GitHub IPs, so each run fetches only the STALEST N sources first
+# (missing/oldest prioritized) and lets accumulation maintain the rest — this keeps
+# per-run load low so prioritized feeds actually succeed, and converges to full coverage.
+VIDEO_FETCH_PER_RUN = 10
 
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
 DAILY_BRIEF_HOURS = [9, 12, 17, 19]

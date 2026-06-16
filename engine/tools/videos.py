@@ -114,10 +114,23 @@ def collect(previous: list | None = None) -> list:
             print(f"[videos] {src['name']} failed: {ex}")
         return out
 
+    # Refresh the STALEST sources first (missing → oldest), capped per run, so
+    # prioritized feeds get an un-throttled attempt; the rest ride on accumulation.
+    import random
+    fresh_ts = {}
+    for v in (previous or []):
+        ch = v.get("channel", "")
+        fresh_ts[ch] = max(fresh_ts.get(ch, 0), v.get("ts", 0))
+    srcs = list(settings.VIDEO_SOURCES)
+    now_s = int(dt.datetime.now(dt.timezone.utc).timestamp())
+    random.Random(now_s // 1800).shuffle(srcs)                  # rotate ties each 30-min run
+    ordered = sorted(srcs, key=lambda s: fresh_ts.get(s["name"], 0))
+    to_fetch = ordered[: getattr(settings, "VIDEO_FETCH_PER_RUN", len(ordered))]
+
     vids = []
     try:
         with cf.ThreadPoolExecutor(max_workers=4) as ex:   # gentle on YouTube to avoid throttling
-            for items in ex.map(fetch, settings.VIDEO_SOURCES):
+            for items in ex.map(fetch, to_fetch):
                 vids += items
     except Exception as e:  # noqa: BLE001
         print(f"[videos] fetch pool failed: {e}")

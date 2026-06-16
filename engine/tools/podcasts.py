@@ -69,9 +69,24 @@ def collect(summarize=None, previous=None) -> list:
              and not _JUNK.search(p["thesis"])          # don't reuse junky theses
              and len(p["thesis"]) > 40}
 
+    # Fetch the STALEST shows first (missing → oldest), capped per run; accumulation
+    # maintains the rest. Ensures a perpetually-throttled feed (e.g. the last in the
+    # sequence) still gets a prioritized, un-throttled attempt and converges.
+    fresh_ts = {}
+    for p in prev:
+        sh = p.get("show", "")
+        fresh_ts[sh] = max(fresh_ts.get(sh, 0), p.get("ts", 0))
+    import random
+    feeds = [(cat["key"], show, kind, ref, host)
+             for cat in settings.PODCAST_CATEGORIES
+             for (show, kind, ref, host) in cat["feeds"]]
+    random.Random(int(now.timestamp()) // 1800).shuffle(feeds)   # rotate ties each 30-min run
+    feeds.sort(key=lambda f: fresh_ts.get(f[1], 0))              # stable → stalest first, fair ties
+    feeds = feeds[: getattr(settings, "PODCAST_FETCH_PER_RUN", len(feeds))]
+
     eps = []
-    for cat in settings.PODCAST_CATEGORIES:
-        for show, kind, ref, host in cat["feeds"]:
+    for cat_key, show, kind, ref, host in feeds:
+        if True:
             key = "playlist_id" if kind == "playlist" else "channel_id"
             url = f"{FEED}{key}={ref}"
             try:
@@ -111,7 +126,7 @@ def collect(summarize=None, previous=None) -> list:
                     thumb = ((mt[0].get("url") if mt else "")
                              or (f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg" if vid else ""))
                     eps.append({
-                        "show": show, "host": host, "category": cat["key"],
+                        "show": show, "host": host, "category": cat_key,
                         "title": title[:140], "thesis": thesis[:340], "url": link,
                         "video_id": vid,
                         "embed": ("https://www.youtube.com/embed/" + vid) if vid else "",
