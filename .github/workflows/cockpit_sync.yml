@@ -48,11 +48,15 @@ jobs:
           fi
           git add data.json
           git commit -m "cockpit: refresh intelligence payload"
-          # Retry with rebase so a concurrent push (manual or another run) can't fail us.
+          # Concurrent runs (cron + manual) both touch data.json. Rebase with
+          # "-X theirs" auto-resolves the conflict to OUR freshly-generated payload
+          # (no "unmerged files" dead-end); --abort cleans up between retries.
           for i in 1 2 3 4 5; do
-            if git pull --rebase --autostash origin main && git push; then
+            git fetch -q origin main
+            if git rebase -X theirs origin/main >/dev/null 2>&1 && git push >/dev/null 2>&1; then
               echo "pushed on attempt $i"; exit 0
             fi
-            echo "push attempt $i failed — rebasing & retrying"; sleep 4
+            git rebase --abort 2>/dev/null || true
+            echo "push attempt $i failed — retrying"; sleep 5
           done
           echo "::error::could not push data.json after retries"; exit 1
