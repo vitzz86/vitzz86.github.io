@@ -110,7 +110,9 @@ def verse_of_the_day() -> str:
              "psalm+118:24", "colossians+3:23", "proverbs+3:5-6", "matthew+6:33",
              "1+corinthians+16:14", "deuteronomy+31:6", "philippians+4:6",
              "proverbs+21:5", "joshua+1:9", "romans+8:28"]
-    ref = seeds[now_wib().timetuple().tm_yday % len(seeds)]
+    _n = now_wib()
+    bucket = _n.timetuple().tm_yday * 8 + _n.hour // 3   # rotate every 3h (aligns with Daily Brief)
+    ref = seeds[bucket % len(seeds)]
     try:
         data = _fetch_json(f"https://bible-api.com/{ref}", timeout=12)
         text = (data.get("text") or "").strip().replace("\n", " ")
@@ -119,7 +121,7 @@ def verse_of_the_day() -> str:
             return f"{text} — {ref_disp}"
     except Exception as e:  # noqa: BLE001
         print(f"[env_context] verse fetch failed: {e}")
-    return settings.VERSES[now_wib().timetuple().tm_yday % len(settings.VERSES)]
+    return settings.VERSES[bucket % len(settings.VERSES)]
 
 
 def ambient_soundtrack(rainy: bool, anomaly: bool) -> dict:

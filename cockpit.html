@@ -420,11 +420,11 @@ body{padding-bottom:40px;}
       <div id="moodPlayer"></div>
     </div>
     <div class="sec">
-      <div class="lbl" style="margin-bottom:8px;">▦ Spiritual Anchor &nbsp;·&nbsp; 06:00 WIB</div>
+      <div class="lbl" style="margin-bottom:8px;">▦ Spiritual Anchor</div>
       <div class="verse" id="verse">&hellip;</div>
     </div>
     <div class="sec">
-      <div class="sechd"><h2 style="font-size:11px;">◑ Podcast Agent</h2><span class="tag">INTELLECTUAL DIET · DEEPSEEK</span></div>
+      <div class="sechd"><h2 style="font-size:11px;">◑ Knowledge Hub</h2><span class="tag">INTELLECTUAL DIET · DEEPSEEK</span></div>
       <div class="hubtabs" id="podTabs" style="margin-bottom:8px;"></div>
       <div id="pods"></div>
     </div>
@@ -853,7 +853,7 @@ function buildHub(d){
 
 function buildBrief(){
   const b=BRIEF,el=$('paneBrief');
-  if(!b){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:10px 0;">Daily brief compiles at 9AM · 12PM · 5PM · 7PM WIB.</div>';return;}
+  if(!b){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:10px 0;">Daily brief refreshes every 3 hours (WIB) — tracking both the Indonesia &amp; US sessions.</div>';return;}
   const s=b.sentiment||{};
   const col=v=>v>=60?'var(--green)':v<=40?'var(--red)':'var(--amber)';
   const bar=(k,v)=>`<div class="sbar"><span class="sk">${k}</span><span class="st"><i style="width:${v}%;background:${col(v)}"></i></span><span class="sv">${v}</span></div>`;
@@ -864,7 +864,7 @@ function buildBrief(){
     return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm"><span class="ncat ${n.category||''}">${CATLABEL[n.category]||n.category||''}</span><span>${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
   el.innerHTML=
-    `<div class="briefdate">INTELLIGENCE BRIEF</div><div class="briefwin">${esc(win)} WIB</div>`+
+    `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+
     `<div class="bsec"><div class="bh">MARKET SENTIMENT SCORE</div><div class="sentbox"><div class="sentscore"><div class="sn" style="color:${col(s.score||50)}">${s.score!=null?s.score:'—'}</div><div class="sd">/ 100</div></div><div class="sentbars"><div class="sentlabel" style="color:${col(s.score||50)}">${esc((s.label||'').toUpperCase())}</div>${bar('Indonesia',s.indonesia||0)}${bar('US Markets',s.us||0)}${bar('Global',s.global||0)}${bar('Crypto',s.crypto||0)}</div></div></div>`+
     (b.synthesis?`<div class="bsec"><div class="bh">DAILY SYNTHESIS</div><div class="synth">${esc(b.synthesis)}</div></div>`:'')+
     (watch?`<div class="bsec"><div class="bh">▶ MUST-WATCH TODAY</div>${watch}</div>`:'')+
@@ -888,10 +888,7 @@ function drawWire(){
     &&(!wireQ||n.title.toLowerCase().includes(wireQ)||(n.source||'').toLowerCase().includes(wireQ)));
   $('wireCount').textContent=items.length+' news';
   $('wire').innerHTML=items.map(n=>`<div class="nrow"><div class="nh"><span class="ncat ${n.category}">${CATLABEL[n.category]||(n.category||'').replace('_',' ')}</span><span class="src">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span><span class="tm">${reltime(n.ts)}</span></div>`+
-    `<span class="ttl">${esc(n.title)}</span>`+
-    `<div class="nsum"><p>${esc(n.summary||'Summary pending — open the article for the full detail.')}</p>`+
-    `<a class="rs" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer"><span class="ext">↗</span> open in new tab</a></div></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
-  [...document.querySelectorAll('#wire .nrow .ttl')].forEach(t=>t.onclick=()=>t.closest('.nrow').classList.toggle('open'));
+    `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)} <span class="ext">↗</span></a></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
 }
 
 function buildVideos(){

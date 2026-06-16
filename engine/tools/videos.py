@@ -101,12 +101,13 @@ def _api_entries(kind: str, ref: str) -> list:
                     "media_thumbnail": [{"url": th}] if th else None,
                     "summary": sn.get("description", "")})
         vids.append(vid)
-    if settings.SKIP_SHORTS and vids:
+    if vids:
         try:
             durs = _api_durations(vids)
             for e in out:
                 d = durs.get(e["yt_videoid"])
-                if d is not None and d <= 70:          # mark Shorts so the loop filters them
+                e["_dur"] = d                          # seconds (used for Shorts + 5-min podcast filter)
+                if settings.SKIP_SHORTS and d is not None and d <= 70:
                     e["link"] = EMBED.replace("/embed/", "/shorts/") + e["yt_videoid"]
         except Exception as ex:  # noqa: BLE001
             print(f"[yt-api] duration lookup failed: {ex}")

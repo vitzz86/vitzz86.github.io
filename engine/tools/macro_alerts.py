@@ -131,7 +131,10 @@ def compile_macro_alerts(telemetry, sectors, news, videos, signals="", summarize
                 f"=== NEWS (cite by index) ===\n{nstr}\n\n"
                 f"=== VIDEOS (cite by index) ===\n{vstr}\n\n"
                 f"=== FILTERED SIGNALS ===\n{signals or 'none'}")
-        obj = _parse_json(summarize(_SYSTEM, user))
+        raw = summarize(_SYSTEM, user)
+        obj = _parse_json(raw)
+        if not obj:
+            print(f"[macro_alerts] LLM unparseable (len={len(raw or '')}); tail: …{(raw or '')[-100:]!r}")
         if obj:
             try:
                 ma = []

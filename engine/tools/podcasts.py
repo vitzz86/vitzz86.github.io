@@ -100,6 +100,10 @@ def collect(summarize=None, previous=None) -> list:
                         continue
                     if getattr(settings, "SKIP_SHORTS", True) and "/shorts/" in link:
                         continue                  # drop Shorts; keep the long episodes
+                    dur = e.get("_dur")
+                    if (getattr(settings, "PODCAST_MIN_DURATION_S", 0) and dur is not None
+                            and dur < settings.PODCAST_MIN_DURATION_S):
+                        continue                  # drop anything under 5 min (needs API key for duration)
                     pub_dt = _dt.datetime(*pub[:6], tzinfo=_dt.timezone.utc)
                     if pub_dt < week_ago:          # ≤1 week only, drop the rest
                         continue
@@ -131,6 +135,7 @@ def collect(summarize=None, previous=None) -> list:
                         "thumb": thumb,
                         "published": pub_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "ts": int(pub_dt.timestamp()),
+                        "duration_s": dur,
                         "channel_id": ref if kind == "channel" else "",
                     })
                     kept += 1
@@ -145,10 +150,12 @@ def collect(summarize=None, previous=None) -> list:
     valid_shows = {s for cat in settings.PODCAST_CATEGORIES for (s, *_r) in cat["feeds"]}
     by_url = {}
     for p in prev:
+        _d = p.get("duration_s")
         if (p.get("url") and p.get("video_id") and p.get("ts", 0) >= week_cut
                 and "/shorts/" not in p.get("url", "")
-                and p.get("show") in valid_shows):   # drop sources removed from config (e.g. Stanford GSB)
-            by_url[p["url"]] = p           # only real episodes persist (not the curated fallback)
+                and p.get("show") in valid_shows     # drop sources removed from config (e.g. Stanford GSB)
+                and _d is not None and _d >= settings.PODCAST_MIN_DURATION_S):  # drop <5min (+ resets pre-duration items)
+            by_url[p["url"]] = p           # only real ≥5min episodes persist (not the curated fallback)
     for e in eps:
         by_url[e["url"]] = e
     per_show = collections.defaultdict(list)

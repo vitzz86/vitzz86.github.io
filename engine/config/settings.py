@@ -387,13 +387,18 @@ PODCAST_CATEGORIES = [
         ("Lex Fridman Podcast", "channel", "UCSHZKyawb77ixDdsGog4iWA", "Lex Fridman"),
         ("Dwarkesh Podcast", "channel", "UCXl4i9dYBrFOabk0xGmbkRA", "Dwarkesh Patel"),
         ("The Diary of a CEO", "channel", "UCGq-a57w-aPwyi3pW7XLiHw", "Steven Bartlett"),
-        ("Endgame", "channel", "UC4V-NrmzhDFbrxw5UlL5opw", "Gita Wirjawan"),
+        ("Endgame", "channel", "UChiUMbV5wKdfxZJR_RY7oeQ", "Gita Wirjawan"),
         ("Veritasium", "channel", "UCHnyfMqiRRG1u-2MsSQLbXA", "Derek Muller"),
         ("The Overpost", "channel", "UCFWKvu581DpCRFfadjjIy7w", "Leon Hartono"),
     ]},
     {"key": "techai", "label": "Tech & AI 🤖", "feeds": [
         ("NVIDIA", "channel", "UCHuiy8bXnmK5nisYHUd1J5g", "NVIDIA"),
         ("AI Explained", "channel", "UCNJ1Ymd5yFuUPtn21xtRbbw", "AI Explained"),
+        ("IBM Technology", "channel", "UCKWaEZ-_VweaEx1j62do_vQ", "IBM"),
+        ("CXOTalk", "channel", "UCGeqHuR3eUU5tnmgjkqZazw", "Michael Krigsman"),
+        ("Nate Herk", "channel", "UC2ojq-nuP8ceeHqiroeKhBA", "AI Automation"),
+        ("AI Engineer", "channel", "UCLKPca3kwwd-B59HNr-_lvA", "AI Engineer"),
+        ("Nick Saraev", "channel", "UCbo-KbSjJDG6JWQ_MTZ_rNA", "Nick Saraev"),
     ]},
     {"key": "economy", "label": "Economy 📊", "feeds": [   # macro · markets · finance explainers
         ("Patrick Boyle", "channel", "UCASM0cgfkJxQ1ICmRilfHLw", "Patrick Boyle"),
@@ -409,11 +414,13 @@ PODCAST_CATEGORIES = [
         ("Invest Like The Best", "channel", "UCpQBb0fToph3jrDulwz1iUQ", "Patrick O'Shaughnessy"),
         ("a16z", "channel", "UC9cn0TuPq4dnbTY-CBsm8XA", "Andreessen Horowitz"),
         ("Sequoia Capital", "channel", "UCWrF0oN6unbXrWsTN7RctTw", "Sequoia"),
+        ("Y Combinator", "channel", "UCcefcZRL2oaA_uBNeo5UOWg", "Y Combinator"),
     ]},
 ]
 PODCAST_WEEK_DAYS = 7        # drop episodes older than this
 PODCAST_PER_SHOW = 6         # newest N (non-Shorts) episodes kept per show within the window
 PODCAST_FETCH_PER_RUN = 10   # fetch the stalest N feeds/run (rest maintained by accumulation)
+PODCAST_MIN_DURATION_S = 300 # Knowledge Hub: drop anything under 5 min (clips/Shorts noise; needs API key)
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
      "title": "Why Asia Will Lead the Next Cycle",
@@ -531,7 +538,7 @@ VIDEO_FETCH_PER_RUN = 12
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
-DAILY_BRIEF_HOURS = [9, 12, 17, 19]
+DAILY_BRIEF_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]   # every 3h WIB — tracks both ID & US sessions
 
 # Finnhub — baked into data.json so the client can poll live US quotes (free key,
 # US stocks only; IDX stays on Yahoo). Public exposure is acceptable for the free tier.
@@ -564,7 +571,7 @@ DEEPSEEK_NATIVE_MODEL = os.getenv("COCKPIT_MODEL_NATIVE", "deepseek-chat")
 OPENROUTER_URL   = "https://openrouter.ai/api/v1/chat/completions"
 OPENROUTER_MODEL = os.getenv("COCKPIT_MODEL", "deepseek/deepseek-v4-flash")
 LLM_TIMEOUT_S    = 90
-LLM_MAX_TOKENS   = 1400
+LLM_MAX_TOKENS   = 3000   # headroom so structured JSON (macro/alerts/brief) isn't truncated
 
 # ---------------------------------------------------------------- personal hooks
 # Secret iCal address of a Google Calendar (Settings -> Integrate calendar).
