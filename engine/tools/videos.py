@@ -122,12 +122,26 @@ def collect(previous: list | None = None) -> list:
     except Exception as e:  # noqa: BLE001
         print(f"[videos] fetch pool failed: {e}")
 
-    # de-dup by video_id (a clip can appear in several playlists), newest first
-    seen, uniq = set(), []
-    for v in sorted(vids, key=lambda v: v["ts"], reverse=True):
-        if v["video_id"] not in seen:
-            seen.add(v["video_id"])
-            uniq.append(v)
-    print(f"[videos] {len(uniq)} videos (≤{settings.VIDEO_WEEK_DAYS}d) "
-          f"from {len(settings.VIDEO_SOURCES)} sources")
-    return uniq
+    # ACCUMULATE: YouTube throttles GitHub IPs, so each run only reaches a random
+    # subset of feeds. Merge this run's fresh items with the previous payload's
+    # still-fresh items (≤window) so a transient feed failure never wipes content —
+    # coverage fills in over a few runs and persists until items age out.
+    import collections
+    week_cut = int(dt.datetime.now(dt.timezone.utc).timestamp()) - settings.VIDEO_WEEK_DAYS * 86400
+    by_id = {}
+    for v in (previous or []):
+        if (v.get("video_id") and v.get("ts", 0) >= week_cut
+                and "/shorts/" not in (v.get("url") or "")):
+            by_id[v["video_id"]] = v
+    for v in vids:                                 # fresh overlays previous (same id)
+        by_id[v["video_id"]] = v
+    per_ch = collections.defaultdict(list)         # cap newest N per channel → bounded
+    for v in sorted(by_id.values(), key=lambda x: x["ts"], reverse=True):
+        if len(per_ch[v["channel"]]) < settings.VIDEO_PER_SOURCE:
+            per_ch[v["channel"]].append(v)
+    out = sorted((v for lst in per_ch.values() for v in lst),
+                 key=lambda x: x["ts"], reverse=True)
+    fresh_ids = {v["video_id"] for v in vids}
+    print(f"[videos] {len(out)} videos (merged, ≤{settings.VIDEO_WEEK_DAYS}d) · "
+          f"{len(fresh_ids)} fresh this run · {len(per_ch)} channels")
+    return out

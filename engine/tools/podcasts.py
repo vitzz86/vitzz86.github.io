@@ -124,9 +124,27 @@ def collect(summarize=None, previous=None) -> list:
             except Exception as ex:  # noqa: BLE001
                 print(f"[podcasts] {show} failed: {ex}")
 
-    eps.sort(key=lambda p: p["ts"], reverse=True)     # newest first; client groups by category
-    print(f"[podcasts] {len(eps)} episodes (≤{settings.PODCAST_WEEK_DAYS}d) "
-          f"across {len(settings.PODCAST_CATEGORIES)} diets")
-    if not eps:                          # total feed outage → curated fallback
-        eps = [dict(fb, category="brain") for fb in settings.PODCAST_FALLBACK]
-    return eps
+    # ACCUMULATE across runs (YouTube throttles GitHub IPs → each run reaches only a
+    # subset of feeds). Merge fresh episodes with the previous payload's still-fresh
+    # real episodes so a transient failure never empties a diet; bounded per show.
+    import collections
+    week_cut = int(now.timestamp()) - settings.PODCAST_WEEK_DAYS * 86400
+    by_url = {}
+    for p in prev:
+        if (p.get("url") and p.get("video_id") and p.get("ts", 0) >= week_cut
+                and "/shorts/" not in p.get("url", "")):
+            by_url[p["url"]] = p           # only real episodes persist (not the curated fallback)
+    for e in eps:
+        by_url[e["url"]] = e
+    per_show = collections.defaultdict(list)
+    for p in sorted(by_url.values(), key=lambda x: x.get("ts", 0), reverse=True):
+        if len(per_show[p["show"]]) < settings.PODCAST_PER_SHOW:
+            per_show[p["show"]].append(p)
+    merged = sorted((p for lst in per_show.values() for p in lst),
+                    key=lambda x: x.get("ts", 0), reverse=True)
+    print(f"[podcasts] {len(merged)} episodes (merged, ≤{settings.PODCAST_WEEK_DAYS}d) · "
+          f"{len(eps)} fresh this run · "
+          f"{dict(collections.Counter(p['category'] for p in merged))}")
+    if not merged:                       # cold start, total outage → curated fallback
+        merged = [dict(fb, category="brain") for fb in settings.PODCAST_FALLBACK]
+    return merged
