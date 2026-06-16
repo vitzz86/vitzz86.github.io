@@ -34,7 +34,7 @@ a{color:inherit;text-decoration:none;}
 .spills{display:flex;gap:14px;flex:0 0 auto;}
 .spill{display:flex;align-items:center;gap:5px;color:var(--ink2);font-size:10px;}
 .spill .d{width:6px;height:6px;border-radius:50%;}
-.dgreen{background:var(--green);box-shadow:0 0 5px var(--green);}.damber{background:var(--amber);box-shadow:0 0 5px var(--amber);}
+.dgreen{background:var(--green);box-shadow:0 0 5px var(--green);}.damber{background:var(--amber);box-shadow:0 0 5px var(--amber);}.dred{background:var(--red);box-shadow:0 0 5px var(--red);}
 .alertbar{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:5px;height:22px;padding:0 10px;color:#f6c453;font-size:10px;overflow:hidden;}
 .alertbar .nx{margin-left:auto;color:var(--ink3);cursor:pointer;flex:0 0 auto;}
 .tright{display:flex;align-items:center;gap:12px;flex:0 0 auto;color:var(--ink2);font-size:10px;}
@@ -121,7 +121,9 @@ a{color:inherit;text-decoration:none;}
 .idxcard .sl{margin-top:8px;height:30px;}
 .idxcard .top{display:flex;justify-content:space-between;align-items:flex-start;}
 .idxcard .tic{color:var(--ink3);font-size:13px;}
-.livedot{color:var(--green);font-size:8px;margin-right:4px;animation:livepulse 2s ease-in-out infinite;}
+.mdot{font-size:8px;margin-right:4px;}
+.mdot.live{color:var(--green);animation:livepulse 2s ease-in-out infinite;}
+.mdot.shut{color:var(--red);}
 @keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* expanded index */
@@ -650,16 +652,16 @@ function render(d){
 
   /* market open/closed pill — driven by JCI (the Indonesia-focused primary index) */
   const jci=(d.telemetry||[]).find(r=>r.symbol==='^JKSE')||(d.telemetry||[])[0];
-  if($('mktState')&&jci&&jci.state){
-    const op=jci.state==='open';
-    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'damber'}"></span>Market <b style="color:${op?'var(--green)':'var(--ink2)'}">${op?'OPEN':'CLOSED'}</b>`;
+  if($('mktState')&&jci){
+    const op=mktOpen(jci);
+    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dred'}"></span>Market <b style="color:${op?'var(--green)':'var(--red)'}">${op?'OPEN':'CLOSED'}</b>`;
   }
 
-  /* index cards */
+  /* index cards — green dot = trading now, red dot = market closed */
   $('idxScroll').innerHTML=(d.telemetry||[]).map((r,i)=>{
-    const up=r.delta_pct>=0;
-    const live=r.state==='open'?'<span class="livedot" title="Market open">●</span>':'';
-    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${live}${up?'↗':'↘'}</span></div>`+
+    const up=r.delta_pct>=0,op=mktOpen(r);
+    const dot=`<span class="mdot ${op?'live':'shut'}" title="${op?'Market open':'Market closed'}">●</span>`;
+    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${dot}${up?'↗':'↘'}</span></div>`+
       `<div class="sym">${esc(r.label)}</div><div class="px">${fmt(r.value)}</div>`+
       `<div class="ch" style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</div>`+
       `<div class="sl">${spark(r.spark,150,30,up?'#22c55e':'#ef4444')}</div></div>`;
@@ -793,19 +795,30 @@ function drawMovers(){
     `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></a>`).join('')||'<div style="color:var(--ink3);font-size:10px;padding:6px 0;">—</div>';
 }
 
+/* ---- market open/closed (live, from baked session bounds; falls back to state) ---- */
+function mktOpen(o){const n=Date.now()/1000;
+  if(o&&o.mkt_start&&o.mkt_end)return n>=o.mkt_start&&n<=o.mkt_end;
+  return (o||{}).state==='open';}
+
 /* ---- index expand ---- */
-const TF={'1W':5,'1M':22,'3M':65,'6M':130};   // real slices of the 130-pt daily series
-let idxTF='1M';
+const TF={'24h':0,'1W':5,'1M':22,'3M':65,'6M':130};   // 24h=intraday; rest slice the daily series
+let idxTF='24h',tkTF='24h';
 function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
+// returns {view, pct} for the selected timeframe of a row/constituent object
+function tfData(o,tf){
+  if(tf==='24h')return {view:(o.intraday||[]),pct:o.delta_pct};
+  const view=tfView(o.spark,tf);
+  const pct=(view.length>1&&view[0])?(view[view.length-1]-view[0])/view[0]*100:o.delta_pct;
+  return {view,pct};
+}
 function expandIdx(i){
   const r=DATA.telemetry[i];if(!r)return;
-  const view=tfView(r.spark,idxTF);
+  const td=tfData(r,idxTF);let view=td.view;const tfPct=td.pct;
+  if(!view.length)view=tfView(r.spark,'1W');           // graceful fallback if no intraday
   const hi=Math.max(...view),lo=Math.min(...view);
-  // return OVER the selected window (so the % actually changes per timeframe)
-  const tfPct=(view.length>1&&view[0])?(view[view.length-1]-view[0])/view[0]*100:r.delta_pct;
   const col=tfPct>=0?'#22c55e':'#ef4444';
-  const stateTxt=r.state==='open'?'<span style="color:var(--green)">● LIVE</span>'
-                                  :'<span style="color:var(--ink3)">● CLOSED</span>';
+  const stateTxt=mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
+                           :'<span style="color:var(--red)">● CLOSED</span>';
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
     `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
@@ -1062,18 +1075,24 @@ function renderConsts(s){
 function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
   const live=LIVE[tk]||CRYPTO[tk];const dp=live?live.dp:c.delta_pct;
-  const up=dp>=0,col=up?'#22c55e':'#ef4444';
-  const view=tfView(c.spark,'3M');const hi=Math.max(...view),lo=Math.min(...view);
+  const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
+  if(!view.length)view=tfView(c.spark,'1W');
+  const col=tfPct>=0?'#22c55e':'#ef4444';
+  const op=live?true:mktOpen(c);
+  const stateBadge=op?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>'
+                     :'<span class="exch" style="color:var(--red);border-color:var(--red)">● CLOSED</span>';
   const news=(DATA.ticker_news||{})[tk]||[];
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${(live?live.c:c.value)?fmt(live?live.c:c.value):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(dp)}</span>${live?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>':''}</div>`+
-    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${(live?live.c:c.value)?fmt(live?live.c:c.value):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
+    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
+    `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${spark(view,420,110,col)}</div>`+
     `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
+  [...document.querySelectorAll('#smTicker .tab')].forEach(tab=>tab.onclick=()=>{tkTF=tab.dataset.tf;openTicker(s,tk);});
   $('tkBack').onclick=()=>{t.style.display='none';$('smConstPanel').style.display='';};
 }
 $('smShowAll').onclick=()=>{smShowAll=!smShowAll;renderConsts(DATA.sectors[smIdx]);};

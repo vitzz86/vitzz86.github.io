@@ -33,7 +33,10 @@ def collect() -> dict:
             "delta_pct": delta,
             "prev_close": round(r["prev_close"], 2),
             "state": "open" if r["open"] else "closed",
+            "mkt_start": r.get("mkt_start"),
+            "mkt_end": r.get("mkt_end"),
             "spark": r["spark"],
+            "intraday": r.get("intraday", []),
             "url": ("https://www.coingecko.com/en/coins/bitcoin"
                     if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),
         })

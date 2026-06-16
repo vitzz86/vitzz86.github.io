@@ -17,8 +17,8 @@ import urllib.request
 CHART = "https://query1.finance.yahoo.com/v8/finance/chart/"
 
 
-def _chart(sym: str, rng: str) -> dict | None:
-    url = f"{CHART}{urllib.parse.quote(sym)}?range={rng}&interval=1d"
+def _chart(sym: str, rng: str, interval: str) -> dict | None:
+    url = f"{CHART}{urllib.parse.quote(sym)}?range={rng}&interval={interval}"
     for attempt in range(3):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -29,11 +29,20 @@ def _chart(sym: str, rng: str) -> dict | None:
     return None
 
 
+def _closes(res: dict) -> list:
+    try:
+        return [round(float(c), 4)
+                for c in (res["indicators"]["quote"][0].get("close") or []) if c is not None]
+    except Exception:  # noqa: BLE001 — some symbols have no intraday/quote block
+        return []
+
+
 def _one(sym: str) -> dict | None:
-    # range=1d → the OFFICIAL prior close (chartPreviousClose) = yesterday's close,
-    # the exact anchor Yahoo/Bloomberg use for "today's %". (At longer ranges this
-    # field is the close from the start of the window, which is why 6mo gave 40%.)
-    day = _chart(sym, "1d")
+    # range=1d&interval=30m → the OFFICIAL prior close (chartPreviousClose, the exact
+    # anchor Yahoo/Bloomberg use for "today's %"), the live session bounds (open/closed),
+    # AND the intraday series for the 24h chart — all in one call. (chartPreviousClose
+    # is range-dependent: only range=1d gives yesterday's close, not the window start.)
+    day = _chart(sym, "1d", "30m")
     if not day:
         return None
     m = day["meta"]
@@ -41,19 +50,23 @@ def _one(sym: str) -> dict | None:
     if price is None or not pc:
         return None
     reg = (m.get("currentTradingPeriod") or {}).get("regular") or {}
+    start, end = reg.get("start"), reg.get("end")
     now = int(time.time())
-    is_open = bool(reg.get("start") and reg.get("end") and reg["start"] <= now <= reg["end"])
     out = {"value": round(float(price), 4),
            "prev_close": round(float(pc), 4),
            "delta_pct": round((price - pc) / pc * 100, 2),
-           "open": is_open, "spark": [], "volume": 0.0}
-    # range=6mo → daily close series for the sparkline + timeframe-window returns
-    six = _chart(sym, "6mo")
+           "open": bool(start and end and start <= now <= end),
+           "mkt_start": start, "mkt_end": end,
+           "intraday": _closes(day), "spark": [], "volume": 0.0}
+    # range=6mo&interval=1d → daily series for the 1W/1M/3M/6M sparkline + window returns
+    six = _chart(sym, "6mo", "1d")
     if six:
-        q = six["indicators"]["quote"][0]
-        out["spark"] = [round(float(c), 4) for c in (q.get("close") or []) if c is not None][-130:]
-        vols = [v for v in (q.get("volume") or []) if v is not None]
-        out["volume"] = float(vols[-1]) if vols else 0.0
+        out["spark"] = _closes(six)[-130:]
+        try:
+            vols = [v for v in (six["indicators"]["quote"][0].get("volume") or []) if v is not None]
+            out["volume"] = float(vols[-1]) if vols else 0.0
+        except Exception:  # noqa: BLE001
+            pass
     return out
 
 

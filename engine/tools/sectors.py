@@ -39,7 +39,9 @@ def _batch_prices(symbols: list) -> dict:
     for sym, r in yquote.fetch(symbols).items():
         out[sym] = {"delta_pct": r["delta_pct"], "value": round(r["value"], 2),
                     "turnover": round(r["value"] * r.get("volume", 0.0), 0),
-                    "spark": r["spark"], "open": r["open"]}
+                    "spark": r["spark"], "open": r["open"],
+                    "intraday": r.get("intraday", []),
+                    "mkt_start": r.get("mkt_start"), "mkt_end": r.get("mkt_end")}
     return out
 
 
@@ -64,6 +66,9 @@ def collect() -> list:
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
                 "state": "open" if (p or {}).get("open") else "closed",
+                "mkt_start": (p or {}).get("mkt_start"),
+                "mkt_end": (p or {}).get("mkt_end"),
+                "intraday": (p or {}).get("intraday", []),
                 "url": url,
             })
             if country == "ID":
