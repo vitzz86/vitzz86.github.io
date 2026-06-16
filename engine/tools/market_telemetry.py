@@ -11,34 +11,35 @@ from config import settings
 
 
 def collect() -> dict:
-    """Returns {"rows": [...], "anomaly": bool, "anomaly_desc": str}."""
-    import yfinance as yf
+    """Returns {"rows": [...], "anomaly": bool, "anomaly_desc": str}.
 
+    Prices/% come from Yahoo's v8 quote (tools.yquote) — the value, official prior
+    close and daily % exactly as Yahoo/Bloomberg show, plus open/closed state."""
+    from tools import yquote
+
+    quotes = yquote.fetch([sym for sym, _, _ in settings.TICKERS])
     rows, anomaly_bits = [], []
     for symbol, label, kind in settings.TICKERS:
-        try:
-            hist = yf.Ticker(symbol).history(period="1y", interval="1d")
-            closes = hist["Close"].dropna()
-            if len(closes) < 2:
-                raise ValueError("insufficient history")
-            value, prev = float(closes.iloc[-1]), float(closes.iloc[-2])
-            delta = (value - prev) / prev * 100
-            series = [round(float(c), 4) for c in closes.tolist()[-130:]]
-            rows.append({
-                "symbol": symbol,
-                "label": label,
-                "kind": kind,
-                "value": round(value, 2),
-                "delta_pct": round(delta, 2),
-                "spark": series,
-                "url": ("https://www.coingecko.com/en/coins/bitcoin"
-                        if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),
-            })
-            if symbol in settings.ANOMALY_WATCHLIST and abs(delta) > settings.ANOMALY_THRESHOLD_PCT:
-                direction = "drop" if delta < 0 else "spike"
-                anomaly_bits.append(f"{label} {direction} of {delta:+.2f}%")
-        except Exception as e:  # noqa: BLE001 — a dead ticker must not kill the run
-            print(f"[market_telemetry] {symbol} failed: {e}")
+        r = quotes.get(symbol)
+        if not r:
+            print(f"[market_telemetry] {symbol} — no quote this run")
+            continue
+        delta = r["delta_pct"]
+        rows.append({
+            "symbol": symbol,
+            "label": label,
+            "kind": kind,
+            "value": round(r["value"], 2),
+            "delta_pct": delta,
+            "prev_close": round(r["prev_close"], 2),
+            "state": "open" if r["open"] else "closed",
+            "spark": r["spark"],
+            "url": ("https://www.coingecko.com/en/coins/bitcoin"
+                    if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),
+        })
+        if symbol in settings.ANOMALY_WATCHLIST and abs(delta) > settings.ANOMALY_THRESHOLD_PCT:
+            direction = "drop" if delta < 0 else "spike"
+            anomaly_bits.append(f"{label} {direction} of {delta:+.2f}%")
 
     return {
         "rows": rows,

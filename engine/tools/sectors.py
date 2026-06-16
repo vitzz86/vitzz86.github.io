@@ -31,35 +31,15 @@ def _signal(agg: float) -> str:
 
 
 def _batch_prices(symbols: list) -> dict:
-    """One bulk download for the whole universe → {symbol: {delta_pct, spark}}."""
+    """Authoritative Yahoo v8 quotes for the universe → {symbol: {delta_pct, value,
+    turnover, spark, open}}. Matches Yahoo/Bloomberg (official prior close, no gappy
+    history mislabeling multi-day moves as 1-day)."""
+    from tools import yquote
     out = {}
-    try:
-        import yfinance as yf
-        # 1y of daily closes so 1D/1W/1M/YTD are genuinely distinct timeframes
-        data = yf.download(symbols, period="1y", interval="1d",
-                           group_by="ticker", threads=True, progress=False)
-    except Exception as e:  # noqa: BLE001
-        print(f"[sectors] batch download unavailable: {e}")
-        return out
-    for sym in symbols:
-        try:
-            col = data[sym]["Close"] if len(symbols) > 1 else data["Close"]
-            closes = [float(c) for c in col.dropna().tolist()]
-            if len(closes) < 2:
-                continue
-            value, prev = closes[-1], closes[-2]
-            delta = (value - prev) / prev * 100 if prev else 0.0
-            try:
-                vcol = data[sym]["Volume"] if len(symbols) > 1 else data["Volume"]
-                vol = float(vcol.dropna().tolist()[-1])
-            except Exception:  # noqa: BLE001
-                vol = 0.0
-            # keep ~6mo of daily closes; client slices for 1W/1M/YTD timeframes
-            out[sym] = {"delta_pct": round(delta, 2), "value": round(value, 2),
-                        "turnover": round(value * vol, 0),
-                        "spark": [round(c, 4) for c in closes[-130:]]}
-        except Exception:  # noqa: BLE001 — one bad symbol never kills the batch
-            continue
+    for sym, r in yquote.fetch(symbols).items():
+        out[sym] = {"delta_pct": r["delta_pct"], "value": round(r["value"], 2),
+                    "turnover": round(r["value"] * r.get("volume", 0.0), 0),
+                    "spark": r["spark"], "open": r["open"]}
     return out
 
 
@@ -83,6 +63,7 @@ def collect() -> list:
                 "delta_pct": delta, "spark": spark,
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
+                "state": "open" if (p or {}).get("open") else "closed",
                 "url": url,
             })
             if country == "ID":

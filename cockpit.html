@@ -121,6 +121,8 @@ a{color:inherit;text-decoration:none;}
 .idxcard .sl{margin-top:8px;height:30px;}
 .idxcard .top{display:flex;justify-content:space-between;align-items:flex-start;}
 .idxcard .tic{color:var(--ink3);font-size:13px;}
+.livedot{color:var(--green);font-size:8px;margin-right:4px;animation:livepulse 2s ease-in-out infinite;}
+@keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* expanded index */
 .idxexp{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:11px;display:none;}
@@ -386,7 +388,7 @@ body{padding-bottom:40px;}
 <div class="topbar">
   <span class="logo"><span class="v">▚</span> PROJECT&nbsp;COCKPIT <span class="ver">v2.0</span></span>
   <span class="spills">
-    <span class="spill"><span class="d dgreen"></span>Market <b style="color:var(--green)">OPEN</b></span>
+    <span class="spill" id="mktState"><span class="d dgreen"></span>Market <b style="color:var(--green)">OPEN</b></span>
     <span class="spill"><span class="d damber"></span>AI <b style="color:var(--amber)">ACTIVE</b></span>
     <span class="spill"><span class="d dgreen"></span>RSS <b style="color:var(--green)">LIVE</b></span>
   </span>
@@ -646,10 +648,18 @@ function render(d){
   const mk=(d.telemetry||[]).map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${fmt(r.value)}</b> <span style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</span></span>`).join('');
   $('marq').innerHTML=mk+mk;
 
+  /* market open/closed pill — driven by JCI (the Indonesia-focused primary index) */
+  const jci=(d.telemetry||[]).find(r=>r.symbol==='^JKSE')||(d.telemetry||[])[0];
+  if($('mktState')&&jci&&jci.state){
+    const op=jci.state==='open';
+    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'damber'}"></span>Market <b style="color:${op?'var(--green)':'var(--ink2)'}">${op?'OPEN':'CLOSED'}</b>`;
+  }
+
   /* index cards */
   $('idxScroll').innerHTML=(d.telemetry||[]).map((r,i)=>{
     const up=r.delta_pct>=0;
-    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${up?'↗':'↘'}</span></div>`+
+    const live=r.state==='open'?'<span class="livedot" title="Market open">●</span>':'';
+    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${live}${up?'↗':'↘'}</span></div>`+
       `<div class="sym">${esc(r.label)}</div><div class="px">${fmt(r.value)}</div>`+
       `<div class="ch" style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</div>`+
       `<div class="sl">${spark(r.spark,150,30,up?'#22c55e':'#ef4444')}</div></div>`;
@@ -789,12 +799,16 @@ let idxTF='1M';
 function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
 function expandIdx(i){
   const r=DATA.telemetry[i];if(!r)return;
-  const up=r.delta_pct>=0,col=up?'#22c55e':'#ef4444';
   const view=tfView(r.spark,idxTF);
   const hi=Math.max(...view),lo=Math.min(...view);
+  // return OVER the selected window (so the % actually changes per timeframe)
+  const tfPct=(view.length>1&&view[0])?(view[view.length-1]-view[0])/view[0]*100:r.delta_pct;
+  const col=tfPct>=0?'#22c55e':'#ef4444';
+  const stateTxt=r.state==='open'?'<span style="color:var(--green)">● LIVE</span>'
+                                  :'<span style="color:var(--ink3)">● CLOSED</span>';
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
-    `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(r.delta_pct)} · ${esc(r.label)}</div></div>`+
+    `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
     `<div style="display:flex;align-items:center;gap:6px;"><div class="tabset">${Object.keys(TF).map(t=>`<span class="tab ${t===idxTF?'on':''}" data-tf="${t}">${t}</span>`).join('')}</div><button class="xclose" id="idxClose">✕</button></div></div>`+
     `<div class="smchart" style="margin-top:13px;">${spark(view,720,150,col)}</div>`+
     `<div class="statrow"><div class="c"><div class="k">OPEN (${idxTF})</div><div class="v">${fmt(view[0]||r.value)}</div></div>`+
@@ -802,7 +816,7 @@ function expandIdx(i){
     `<div class="c"><div class="k">LOW</div><div class="v">${fmt(lo)}</div></div>`+
     `<div class="c"><div class="k">LAST</div><div class="v">${fmt(r.value)}</div></div>`+
     `<div class="c"><div class="k">RANGE</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
-    `<div class="lbl" style="margin-top:9px;">Last px ${fmt(r.value)} · ${sign(r.delta_pct)} · as of ${wibStamp(DATA.timestamp)}</div>`+
+    `<div class="lbl" style="margin-top:9px;">Last px ${fmt(r.value)} · today <span style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</span> · ${stateTxt} · as of ${wibStamp(DATA.timestamp)}</div>`+
     `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on ${r.kind==='crypto'?'CoinGecko':'Yahoo Finance'} ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
