@@ -58,7 +58,7 @@ def collect(summarize=None, previous=None) -> list:
     channel_ids so we don't re-summarize or re-resolve every run."""
     import datetime as _dt
 
-    from tools.videos import fetch_feed
+    from tools.videos import get_feed
 
     now = _dt.datetime.now(_dt.timezone.utc)
     week_ago = now - _dt.timedelta(days=settings.PODCAST_WEEK_DAYS)
@@ -87,10 +87,8 @@ def collect(summarize=None, previous=None) -> list:
     eps = []
     for cat_key, show, kind, ref, host in feeds:
         if True:
-            key = "playlist_id" if kind == "playlist" else "channel_id"
-            url = f"{FEED}{key}={ref}"
             try:
-                feed = fetch_feed(url)
+                feed = get_feed(kind, ref)
                 kept = 0
                 for e in feed.entries:
                     if kept >= settings.PODCAST_PER_SHOW:
@@ -144,10 +142,12 @@ def collect(summarize=None, previous=None) -> list:
     # real episodes so a transient failure never empties a diet; bounded per show.
     import collections
     week_cut = int(now.timestamp()) - settings.PODCAST_WEEK_DAYS * 86400
+    valid_shows = {s for cat in settings.PODCAST_CATEGORIES for (s, *_r) in cat["feeds"]}
     by_url = {}
     for p in prev:
         if (p.get("url") and p.get("video_id") and p.get("ts", 0) >= week_cut
-                and "/shorts/" not in p.get("url", "")):
+                and "/shorts/" not in p.get("url", "")
+                and p.get("show") in valid_shows):   # drop sources removed from config (e.g. Stanford GSB)
             by_url[p["url"]] = p           # only real episodes persist (not the curated fallback)
     for e in eps:
         by_url[e["url"]] = e
@@ -157,9 +157,14 @@ def collect(summarize=None, previous=None) -> list:
             per_show[p["show"]].append(p)
     merged = sorted((p for lst in per_show.values() for p in lst),
                     key=lambda x: x.get("ts", 0), reverse=True)
+    present = {p["show"] for p in merged}
+    all_shows = [s for cat in settings.PODCAST_CATEGORIES for (s, *_r) in cat["feeds"]]
+    missing = [s for s in all_shows if s not in present]
     print(f"[podcasts] {len(merged)} episodes (merged, ≤{settings.PODCAST_WEEK_DAYS}d) · "
-          f"{len(eps)} fresh this run · "
+          f"{len(eps)} fresh this run · {len(present)}/{len(all_shows)} shows · "
           f"{dict(collections.Counter(p['category'] for p in merged))}")
+    if missing:
+        print(f"[podcasts] stale/missing (prioritized next run): {missing}")
     if not merged:                       # cold start, total outage → curated fallback
         merged = [dict(fb, category="brain") for fb in settings.PODCAST_FALLBACK]
     return merged

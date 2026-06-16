@@ -251,6 +251,8 @@ footer .g{color:var(--green);}
 .moodsel:focus{outline:none;border-color:var(--amber);}
 
 /* podcast categories + expand */
+#podTabs{flex-wrap:wrap;}
+#podTabs .hubtab{flex:1 1 calc(50% - 3px);}
 .podcat{margin-bottom:13px;}
 .podcatlbl{font-family:var(--mono);font-size:10px;letter-spacing:.04em;font-weight:600;color:var(--amber);margin:2px 0 5px;}
 .podempty{font-size:10.5px;color:var(--ink3);padding:3px 0 6px;}
@@ -684,7 +686,7 @@ function render(d){
   }
 
   /* podcasts — tabbed diets (consistent with the Intelligence Hub) */
-  const PODCATS=[['brain','Brain 💪🏼'],['vc','VC & Startup 💸']];
+  const PODCATS=[['brain','Brain 💪🏼'],['techai','Tech & AI 🤖'],['economy','Economy 📊'],['vc','VC & Startup 💸']];
   const pods=d.podcasts||[];
   $('podTabs').innerHTML=PODCATS.map(([k,label])=>`<span class="hubtab ${k===podCat?'on':''}" data-k="${k}">${label}</span>`).join('');
   const drawPods=()=>{

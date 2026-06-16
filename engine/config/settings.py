@@ -383,12 +383,25 @@ def _yt(pid):
 # playlist_id) | channel (ref=@handle, resolved to channel_id at runtime). Only
 # episodes from the last PODCAST_WEEK_DAYS are kept; each carries its publish date.
 PODCAST_CATEGORIES = [
-    {"key": "brain", "label": "Brain 💪🏼", "feeds": [
-        ("Endgame", "channel", "UC4V-NrmzhDFbrxw5UlL5opw", "Gita Wirjawan"),
-        ("Dwarkesh Podcast", "channel", "UCXl4i9dYBrFOabk0xGmbkRA", "Dwarkesh Patel"),
-        ("Stanford GSB", "channel", "UCGwuxdEeCf0TIA2RbPOj-8g", "View From The Top"),
-        ("The Diary of a CEO", "channel", "UCGq-a57w-aPwyi3pW7XLiHw", "Steven Bartlett"),
+    {"key": "brain", "label": "Brain 💪🏼", "feeds": [   # big-idea interviews · science · deep thinking
         ("Lex Fridman Podcast", "channel", "UCSHZKyawb77ixDdsGog4iWA", "Lex Fridman"),
+        ("Dwarkesh Podcast", "channel", "UCXl4i9dYBrFOabk0xGmbkRA", "Dwarkesh Patel"),
+        ("The Diary of a CEO", "channel", "UCGq-a57w-aPwyi3pW7XLiHw", "Steven Bartlett"),
+        ("Endgame", "channel", "UC4V-NrmzhDFbrxw5UlL5opw", "Gita Wirjawan"),
+        ("Veritasium", "channel", "UCHnyfMqiRRG1u-2MsSQLbXA", "Derek Muller"),
+        ("The Overpost", "channel", "UCFWKvu581DpCRFfadjjIy7w", "Leon Hartono"),
+    ]},
+    {"key": "techai", "label": "Tech & AI 🤖", "feeds": [
+        ("NVIDIA", "channel", "UCHuiy8bXnmK5nisYHUd1J5g", "NVIDIA"),
+        ("AI Explained", "channel", "UCNJ1Ymd5yFuUPtn21xtRbbw", "AI Explained"),
+    ]},
+    {"key": "economy", "label": "Economy 📊", "feeds": [   # macro · markets · finance explainers
+        ("Patrick Boyle", "channel", "UCASM0cgfkJxQ1ICmRilfHLw", "Patrick Boyle"),
+        ("Economics Explained", "channel", "UCZ4AMrDcNrfy3X6nsU8-rPg", "Economics Explained"),
+        ("Money & Macro", "channel", "UCCKpicnIwBP3VPxBAZWDeNA", "Joeri Schasfoort"),
+        ("The Plain Bagel", "channel", "UCFCEuCsyWP0YkP3CZ3Mr01Q", "Richard Coffin"),
+        ("Money Strategist", "channel", "UCJoUwf4OJaRvjSfsDnK-bqw", "Money Strategist"),
+        ("Econ", "channel", "UCyHJ94JzwY92NsBVzJ2aE3Q", "econyt"),
     ]},
     {"key": "vc", "label": "VC & Startup 💸", "feeds": [
         ("20VC", "channel", "UCf0PBRjhf0rF8fWBIxTuoWA", "Harry Stebbings"),
@@ -400,7 +413,7 @@ PODCAST_CATEGORIES = [
 ]
 PODCAST_WEEK_DAYS = 7        # drop episodes older than this
 PODCAST_PER_SHOW = 6         # newest N (non-Shorts) episodes kept per show within the window
-PODCAST_FETCH_PER_RUN = 7    # fetch the stalest N feeds/run (rest maintained by accumulation)
+PODCAST_FETCH_PER_RUN = 10   # fetch the stalest N feeds/run (rest maintained by accumulation)
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
      "title": "Why Asia Will Lead the Next Cycle",
@@ -494,6 +507,10 @@ VIDEO_SOURCES = [
     {"name": "Schwab Network", "kind": "channel", "ref": "UCqoSrYgusd8ZddtMoWhjHYA", "category": "market_us", "geo": "US"},
     {"name": "Morgan Stanley", "kind": "channel", "ref": "UCz6RzD6KG_hH_oHb2kyW5jQ", "category": "market_us", "geo": "US"},
     {"name": "Goldman Sachs", "kind": "channel", "ref": "UCyz6-taovlaOkPsPtK4KNEg", "category": "market_us", "geo": "US"},
+    {"name": "CNBC Television", "kind": "channel", "ref": "UCrp_UI8XtuYfpiqluWLD7Lw", "category": "market_us", "geo": "US"},
+    {"name": "Bloomberg Television", "kind": "channel", "ref": "UCIALMKvObZNtJ6AmdCLP7Lg", "category": "market_us", "geo": "US"},
+    {"name": "Kitco News", "kind": "channel", "ref": "UC9ijza42jVR3T6b8bColgvg", "category": "market_us", "geo": "US"},
+    {"name": "BBC News", "kind": "channel", "ref": "UC16niRr50-MSBwiO3YDb3RA", "category": "market_us", "geo": "US"},
     # --- Crypto ---
     {"name": "Altcoin Daily", "kind": "channel", "ref": "UCbLhGKVY-bJPcawebgtNfbw", "category": "crypto", "geo": "CR"},
     {"name": "Simply Bitcoin", "kind": "channel", "ref": "UCB6Q0S1gUHXMe5-Jjx0_laQ", "category": "crypto", "geo": "CR"},
@@ -506,7 +523,12 @@ SKIP_SHORTS = True           # exclude YouTube Shorts (the substantive content i
 # YouTube throttles GitHub IPs, so each run fetches only the STALEST N sources first
 # (missing/oldest prioritized) and lets accumulation maintain the rest — this keeps
 # per-run load low so prioritized feeds actually succeed, and converges to full coverage.
-VIDEO_FETCH_PER_RUN = 10
+VIDEO_FETCH_PER_RUN = 12
+# YouTube Data API key (optional). When set, feeds are pulled via the official API
+# (not IP-throttled like RSS scraping on GitHub runners) → full coverage every run.
+# Falls back to RSS automatically when unset or on any API error. Free key:
+# console.cloud.google.com → enable "YouTube Data API v3" → add as repo secret.
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
 DAILY_BRIEF_HOURS = [9, 12, 17, 19]

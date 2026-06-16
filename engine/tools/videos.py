@@ -49,6 +49,84 @@ def _clean(s: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s or "")).strip()
 
 
+def _iso_dur(s: str) -> int | None:
+    m = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", s or "")
+    if not m:
+        return None
+    h, mi, se = (int(x) if x else 0 for x in m.groups())
+    return h * 3600 + mi * 60 + se
+
+
+def _api_durations(ids: list) -> dict:
+    import json
+    out = {}
+    key = settings.YOUTUBE_API_KEY
+    for i in range(0, len(ids), 50):
+        batch = ",".join(ids[i:i + 50])
+        url = ("https://www.googleapis.com/youtube/v3/videos?part=contentDetails"
+               f"&id={batch}&key={key}")
+        data = json.loads(_get(url, timeout=25))
+        for it in data.get("items", []):
+            out[it["id"]] = _iso_dur(it.get("contentDetails", {}).get("duration", ""))
+    return out
+
+
+def _api_entries(kind: str, ref: str) -> list:
+    """Pull recent uploads via the YouTube Data API (channel uploads playlist UU…,
+    or an explicit playlist). Returns RSS-shaped dicts so the existing loops work;
+    Shorts are flagged (link → /shorts/) via a batched duration lookup."""
+    import json
+    key = settings.YOUTUBE_API_KEY
+    playlist = ("UU" + ref[2:]) if (kind == "channel" and ref.startswith("UC")) else ref
+    url = ("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
+           f"&maxResults=20&playlistId={playlist}&key={key}")
+    data = json.loads(_get(url, timeout=25))
+    out, vids = [], []
+    for it in data.get("items", []):
+        sn = it.get("snippet", {})
+        vid = (sn.get("resourceId") or {}).get("videoId")
+        if not vid:
+            continue
+        pp = None
+        try:
+            d = dt.datetime.strptime(sn.get("publishedAt", ""), "%Y-%m-%dT%H:%M:%SZ")
+            pp = (d.year, d.month, d.day, d.hour, d.minute, d.second, 0, 0, 0)
+        except Exception:  # noqa: BLE001
+            pass
+        thumbs = sn.get("thumbnails", {})
+        th = ((thumbs.get("high") or thumbs.get("medium") or thumbs.get("default") or {})
+              .get("url", ""))
+        out.append({"yt_videoid": vid, "title": sn.get("title", ""),
+                    "link": WATCH + vid, "published_parsed": pp,
+                    "media_thumbnail": [{"url": th}] if th else None,
+                    "summary": sn.get("description", "")})
+        vids.append(vid)
+    if settings.SKIP_SHORTS and vids:
+        try:
+            durs = _api_durations(vids)
+            for e in out:
+                d = durs.get(e["yt_videoid"])
+                if d is not None and d <= 70:          # mark Shorts so the loop filters them
+                    e["link"] = EMBED.replace("/embed/", "/shorts/") + e["yt_videoid"]
+        except Exception as ex:  # noqa: BLE001
+            print(f"[yt-api] duration lookup failed: {ex}")
+    return out
+
+
+def get_feed(kind: str, ref: str):
+    """API-first (full coverage, no GitHub-IP throttle) with automatic RSS fallback."""
+    import types
+    if settings.YOUTUBE_API_KEY:
+        try:
+            entries = _api_entries(kind, ref)
+            if entries:
+                return types.SimpleNamespace(entries=entries, status=200)
+        except Exception as e:  # noqa: BLE001
+            print(f"[yt-api] {ref} failed → RSS fallback: {e}")
+    key = "playlist_id" if kind == "playlist" else "channel_id"
+    return fetch_feed(f"{FEED}{key}={ref}")
+
+
 def fetch_feed(url: str, tries: int = 3):
     """Parse a YouTube RSS feed with retry — GitHub runners hit transient
     404/429/500 from YouTube under bursty load; a short backoff recovers them."""
@@ -80,7 +158,7 @@ def collect(previous: list | None = None) -> list:
     def fetch(src: dict) -> list:
         out = []
         try:
-            feed = fetch_feed(feed_url(src))
+            feed = get_feed(src["kind"], src["ref"])
             for e in feed.entries:                       # scan the whole feed window
                 if len(out) >= settings.VIDEO_PER_SOURCE:
                     break
@@ -141,10 +219,12 @@ def collect(previous: list | None = None) -> list:
     # coverage fills in over a few runs and persists until items age out.
     import collections
     week_cut = int(dt.datetime.now(dt.timezone.utc).timestamp()) - settings.VIDEO_WEEK_DAYS * 86400
+    valid_channels = {s["name"] for s in settings.VIDEO_SOURCES}
     by_id = {}
     for v in (previous or []):
         if (v.get("video_id") and v.get("ts", 0) >= week_cut
-                and "/shorts/" not in (v.get("url") or "")):
+                and "/shorts/" not in (v.get("url") or "")
+                and v.get("channel") in valid_channels):   # drop sources removed from config
             by_id[v["video_id"]] = v
     for v in vids:                                 # fresh overlays previous (same id)
         by_id[v["video_id"]] = v
@@ -155,6 +235,10 @@ def collect(previous: list | None = None) -> list:
     out = sorted((v for lst in per_ch.values() for v in lst),
                  key=lambda x: x["ts"], reverse=True)
     fresh_ids = {v["video_id"] for v in vids}
+    present = {v["channel"] for v in out}
+    missing = [s["name"] for s in settings.VIDEO_SOURCES if s["name"] not in present]
     print(f"[videos] {len(out)} videos (merged, ≤{settings.VIDEO_WEEK_DAYS}d) · "
-          f"{len(fresh_ids)} fresh this run · {len(per_ch)} channels")
+          f"{len(fresh_ids)} fresh this run · {len(present)}/{len(settings.VIDEO_SOURCES)} sources")
+    if missing:
+        print(f"[videos] stale/missing (prioritized next run): {missing}")
     return out
