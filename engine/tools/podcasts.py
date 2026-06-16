@@ -113,9 +113,16 @@ def collect(summarize=None, previous=None) -> list:
                                 f"Description: {_clean(notes)[:1400]}")
                         thesis = (thesis or "").strip() or _extractive_thesis(notes) \
                             or f"New {show} episode — open to listen."
+                    vid = e.get("yt_videoid") or ""
+                    mt = e.get("media_thumbnail")
+                    thumb = ((mt[0].get("url") if mt else "")
+                             or (f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg" if vid else ""))
                     eps.append({
                         "show": show, "host": host, "category": cat["key"],
                         "title": title[:140], "thesis": thesis[:340], "url": link,
+                        "video_id": vid,
+                        "embed": ("https://www.youtube.com/embed/" + vid) if vid else "",
+                        "thumb": thumb,
                         "published": pub_dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
                         "ts": int(pub_dt.timestamp()),
                         "channel_handle": ref if kind == "channel" else "",
