@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-06-16T05:02:55Z",
+  "timestamp": "2026-06-16T05:32:48Z",
   "opening": {
     "greeting": "Good afternoon, Vito. Midday telemetry is in.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
       "bsd": "Mostly clear, 33°C.",
-      "jakarta": "Mostly clear, 32°C.",
-      "insight": "High thermal load midday. Schedule outdoor movement early; hydrate before afternoon syncs."
+      "jakarta": "Light drizzle, 32°C.",
+      "insight": "High precipitation across the corridor. Pad commute windows and maximize internal focus blocks."
     },
     "verse_of_the_day": "We know that all things work together for good for those who love God, to those who are called according to his purpose. — Romans 8:28",
     "ambient_soundtrack": {
@@ -440,8 +440,8 @@
       "symbol": "^N225",
       "label": "Nikkei 225",
       "kind": "index",
-      "value": 69737.67,
-      "delta_pct": 5.63,
+      "value": 69698.41,
+      "delta_pct": 5.57,
       "spark": [
         49303.2812,
         49303.4492,
@@ -572,7 +572,7 @@
         64179.2695,
         64217.2695,
         66020.0391,
-        69737.6719
+        69698.4062
       ],
       "url": "https://finance.yahoo.com/quote/^N225"
     },
@@ -720,8 +720,8 @@
       "symbol": "BTC-USD",
       "label": "Bitcoin / USD",
       "kind": "crypto",
-      "value": 65833.82,
-      "delta_pct": 0.19,
+      "value": 66038.84,
+      "delta_pct": 0.5,
       "spark": [
         70555.3906,
         69281.9688,
@@ -852,7 +852,7 @@
         63543.1992,
         64421.3242,
         65710.3984,
-        65833.8203
+        66038.8438
       ],
       "url": "https://www.coingecko.com/en/coins/bitcoin"
     },
@@ -860,8 +860,8 @@
       "symbol": "GC=F",
       "label": "Gold Spot",
       "kind": "commodity",
-      "value": 4342.3,
-      "delta_pct": 0.33,
+      "value": 4346.3,
+      "delta_pct": 0.42,
       "spark": [
         4206.7002,
         4196.3999,
@@ -992,7 +992,7 @@
         4090.3,
         4215.0,
         4328.0,
-        4342.2998
+        4346.2998
       ],
       "url": "https://finance.yahoo.com/quote/GC=F"
     },
@@ -1000,8 +1000,8 @@
       "symbol": "BZ=F",
       "label": "Brent Crude",
       "kind": "commodity",
-      "value": 82.93,
-      "delta_pct": -0.29,
+      "value": 82.73,
+      "delta_pct": -0.53,
       "spark": [
         61.94,
         62.21,
@@ -1132,7 +1132,7 @@
         90.38,
         87.33,
         83.17,
-        82.93
+        82.73
       ],
       "url": "https://finance.yahoo.com/quote/BZ=F"
     },
@@ -1140,8 +1140,8 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 80.73,
-      "delta_pct": -0.02,
+      "value": 80.51,
+      "delta_pct": -0.3,
       "spark": [
         58.25,
         58.46,
@@ -1272,7 +1272,7 @@
         87.71,
         84.88,
         80.75,
-        80.73
+        80.51
       ],
       "url": "https://finance.yahoo.com/quote/CL=F"
     },
@@ -1700,7 +1700,7 @@
       "symbol": "DX-Y.NYB",
       "label": "US Dollar Index",
       "kind": "fx",
-      "value": 99.76,
+      "value": 99.77,
       "delta_pct": 0.02,
       "spark": [
         99.09,
@@ -1832,7 +1832,7 @@
         99.95,
         99.86,
         99.75,
-        99.765
+        99.769
       ],
       "url": "https://finance.yahoo.com/quote/DX-Y.NYB"
     },
@@ -2123,26 +2123,27 @@
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI relief bounce to 6007.66, up 2.07% on foreign positioning.",
-      "US markets steady with S&P 500 up 0.50%, Nasdaq up 0.31%."
+      "JCI surges 2.07% to 6007 on short-covering, not conviction.",
+      "Nikkei hits 70,000 on BOJ hike; US 10Y at 4.49% caps risk appetite."
     ],
     "economic": [
-      "BOJ hikes rates to 1%, highest since 1995, strengthening yen.",
-      "US 10Y yield at 4.49% keeps Indonesian project financing expensive."
+      "BI holds steady as Rupiah strengthens to 17,695 on DXY stall.",
+      "Coal slips 0.43% while nickel jumps 7.75% on supply fears."
     ],
     "tech_ai": [
-      "Railway's $100 million AI-native cloud raise validates SEA venture capital.",
-      "Google redesigns search box for first time in 25 years, shifting AI paradigm."
+      "SpaceX IPO and Google search redesign are US narratives, not SEA venture drivers.",
+      "AI-native cloud funding hits $100M, but local venture hinges on Rupiah stability."
     ],
     "political": [
-      "Prabowo reaffirms energy security and hilirisasi, stabilizing nickel and coal policy."
+      "Prabowo orders energy security briefing, signals hilirisasi continuity.",
+      "Strait of Hormuz disruption threatens commodity supply chains for Indonesia."
     ]
   },
-  "arbiter_brief": "JCI's 2% bounce to 6007 is a relief rally driven by BOJ's rate hike to 1%, which strengthened the yen and sent Nikkei surging 5.6%. For Indonesia, Rupiah stability at 17,695 eases foreign outflow pressure, but US 10Y yield at 4.49% keeps financing expensive. Coal proxy ITMG slipped on China's weak retail sales, while nickel proxy INCO jumped 7.75% on Prabowo's hilirisasi push. Today's volume suggests positioning, not conviction.",
+  "arbiter_brief": "Jakarta's 2% bounce on low volume is short-covering, not a trend shift. The Nikkei rally misreads BOJ's hawkish endgame, lifting regional risk temporarily. US 10Y at 4.49% keeps financing costs high for domestic projects, pressuring infrastructure and climate ventures. Nickel's 7.75% spike on Hormuz jitters is a commodity tailwind, but coal's slip signals fading demand. Tech spillover is muted; local venture climate remains hostage to Rupiah stability. Watch for foreign selling if USD/IDR breaches 17,800.",
   "executive_brief": [
-    "Watch for foreign net buy acceleration on JCI tomorrow after today's relief rally.",
-    "Capitalize on Rupiah stability to secure project financing before US yields rise further.",
-    "Double down on AI infrastructure ventures as Railway's $100 million raise signals foreign appetite."
+    "Monitor foreign flows into JCI; yesterday's bounce may reverse on low volume.",
+    "Hedge Rupiah exposure; weakness past 17,800 triggers capital outflow risk.",
+    "Leverage nickel rally for commodity plays but avoid coal amid demand slowdown."
   ],
   "sectors": [
     {
@@ -2448,7 +2449,7 @@
           "delta_pct": 4.77,
           "spark": [
             665.0703,
-            655.2559,
+            655.2558,
             648.4435,
             651.0168,
             642.5588,
@@ -3371,7 +3372,7 @@
             182.2577,
             179.8307,
             182.817,
-            183.1166,
+            183.1167,
             177.6034,
             182.4275,
             184.5449,
@@ -3467,11 +3468,11 @@
             481.8343,
             483.7657,
             482.7701,
-            484.6915,
+            484.6916,
             485.8563,
             485.5477,
             484.9404,
-            485.3187,
+            485.3188,
             481.4759,
             470.8432,
             470.7536,
@@ -3481,7 +3482,7 @@
             477.1551,
             475.0644,
             468.5833,
-            457.3433,
+            457.3434,
             454.6354,
             457.8212,
             452.5049,
@@ -3504,7 +3505,7 @@
             400.0584,
             399.5407,
             395.1005,
-            397.8284,
+            397.8283,
             397.5988,
             396.3715,
             383.6391,
@@ -4199,7 +4200,7 @@
             264.7727,
             259.211,
             258.624,
-            258.0868,
+            258.0867,
             239.8396,
             238.3571,
             232.3477,
@@ -4232,7 +4233,7 @@
             190.7792,
             198.4601,
             193.8038,
-            191.9731,
+            191.9732,
             195.0575,
             192.1025,
             200.3704,
@@ -4253,7 +4254,7 @@
             184.7002,
             178.4022,
             184.0932,
-            185.7249,
+            185.725,
             185.2971,
             186.2324,
             184.0932,
@@ -5318,12 +5319,12 @@
         93.95,
         96.48
       ],
-      "ai": "Buy BMRI, BBNI, and BBCA on strong domestic credit growth and NIM expansion; trim BBRI on valuation risk. US financials offer tactical upside on rate cuts, but overweight Indonesia for structural earnings momentum.",
+      "ai": "Buy Indonesian banks aggressively: BMRI, BBNI, BBCA, and BBRI are surging on strong loan growth and NIM expansion, with domestic demand outpacing US peers. This structural credit cycle, supported by stable rates and rising consumption, offers durable alpha—add exposure now before valuations re-rate further.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesian banks benefit from accelerating loan growth and stable NIMs as BI holds rates, driving re-rating of large caps like BMRI and BBCA.",
-        "US financials gain from Fed easing expectations, but SCHW and GS face margin compression risks, limiting upside versus Indonesian peers.",
-        "Structural digital adoption and rising fee income in Indonesia support sustainable ROE expansion, making the sector a core long-term overweight."
+        "Indonesia's bank-led financials are benefiting from a multi-year credit cycle driven by infrastructure spending and household consumption, outpacing US counterparts on earnings momentum.",
+        "NIM expansion is structural, not cyclical, as Indonesian banks repriced loans faster than deposits, with BBRI and BMRI leading on cost efficiency and digital adoption.",
+        "Regulatory tailwinds from OJK's relaxed provisioning rules and BI's rate hold are amplifying ROE growth, making Indonesian banks a core EM overweight."
       ],
       "constituents": [
         {
@@ -5344,22 +5345,22 @@
             4393.9229,
             4429.9385,
             4411.9307,
-            4456.9507,
-            4402.9268,
+            4456.9502,
+            4402.9272,
             4474.958,
-            4456.9507,
-            4339.8994,
+            4456.9502,
+            4339.8989,
             4492.9663,
             4501.9702,
             4524.48,
             4637.0293,
-            4659.5391,
+            4659.5396,
             4592.0093,
             4546.9897,
             4546.9897,
-            4569.4995,
+            4569.5,
             4592.0093,
-            4569.4995,
+            4569.5,
             4546.9897,
             4482.689,
             4418.3882,
@@ -5769,7 +5770,7 @@
           "spark": [
             1258.7101,
             1263.3547,
-            1267.9994,
+            1267.9995,
             1257.955,
             1301.0028,
             1262.738,
@@ -5911,29 +5912,29 @@
           "tier": "mega",
           "delta_pct": 4.91,
           "spark": [
-            3466.9268,
+            3466.927,
             3430.7188,
-            3385.4585,
-            3331.1462,
+            3385.4587,
+            3331.1465,
             3322.0945,
             3358.3025,
             3313.0422,
-            3340.1985,
-            3303.9902,
+            3340.1982,
+            3303.9905,
             3322.0945,
-            3331.1462,
+            3331.1465,
             3313.0422,
             3276.8342,
             3285.8862,
-            3421.6667,
-            3340.1985,
-            3394.5107,
-            3421.6667,
+            3421.6665,
+            3340.1982,
+            3394.5105,
+            3421.6665,
             3412.6147,
-            3403.5625,
+            3403.5627,
             3412.6147,
             3412.6147,
-            3421.6667,
+            3421.6665,
             3437.6338,
             3418.8489,
             3409.4565,
@@ -6936,7 +6937,7 @@
             94.2552,
             93.523,
             93.3152,
-            92.2169,
+            92.217,
             94.1959,
             95.3634,
             95.3733,
@@ -7089,7 +7090,7 @@
             55.249,
             54.5961,
             53.9531,
-            51.9153,
+            51.9152,
             52.0241,
             52.4,
             51.5393,
@@ -7207,65 +7208,65 @@
           "tier": "large",
           "delta_pct": 1.52,
           "spark": [
-            1060.2496,
+            1060.2495,
             1050.2222,
             1059.4091,
-            1071.3252,
+            1071.3251,
             1089.5997,
-            1076.9915,
+            1076.9913,
             1070.1385,
-            1056.2742,
+            1056.2743,
             1053.1691,
             1053.1592,
             1048.3928,
             1076.1212,
             1074.4797,
-            1076.8629,
+            1076.8628,
             1076.0223,
-            1076.3091,
+            1076.3092,
             1071.2758,
             1058.4497,
-            1073.0063,
-            1107.3208,
-            1099.9238,
-            1063.147,
-            1075.8345,
-            1073.0458,
+            1073.0062,
+            1107.3207,
+            1099.924,
+            1063.1469,
+            1075.8346,
+            1073.0457,
             1077.1597,
             1077.4365,
-            1079.7208,
+            1079.7207,
             1143.8009,
-            1150.2485,
+            1150.2487,
             1097.7186,
-            1115.3208,
+            1115.3209,
             1127.059,
             1117.358,
             1109.0811,
-            1094.396,
+            1094.3959,
             1109.2096,
             1115.2517,
-            1106.5098,
+            1106.5099,
             1107.2219,
             1058.1926,
-            1064.2051,
+            1064.2052,
             1043.0825,
-            1044.6448,
+            1044.6449,
             1067.9036,
             1075.696,
             1070.8505,
             1043.9032,
             1059.6068,
             1060.7539,
-            1080.1262,
-            1069.2682,
+            1080.1263,
+            1069.2683,
             1081.491,
-            1059.1124,
-            1069.0409,
+            1059.1123,
+            1069.0408,
             1081.6294,
             1078.1583,
-            1051.4188,
-            1056.4423,
-            1040.8969,
+            1051.4187,
+            1056.4424,
+            1040.897,
             1037.5742,
             1023.5024,
             950.0961,
@@ -7497,7 +7498,7 @@
           "spark": [
             329.8745,
             325.4926,
-            325.154,
+            325.1541,
             324.3872,
             344.2052,
             346.3961,
@@ -7509,8 +7510,8 @@
             350.6385,
             351.9232,
             353.676,
-            353.5365,
-            353.1482,
+            353.5366,
+            353.1481,
             352.1622,
             349.2642,
             345.0517,
@@ -7527,10 +7528,10 @@
             324.4768,
             323.9391,
             325.0146,
-            324.8354,
+            324.8353,
             327.1358,
             323.9192,
-            325.6321,
+            325.632,
             330.4322,
             320.5033,
             332.4638,
@@ -7641,21 +7642,21 @@
           "spark": [
             543.7674,
             538.7037,
-            535.8229,
+            535.823,
             537.1287,
             561.56,
             570.0925,
             567.3015,
             564.2015,
-            563.6532,
+            563.6533,
             564.3909,
             570.3915,
             573.8504,
             574.4983,
-            577.5883,
-            577.7379,
+            577.5884,
+            577.7378,
             576.0433,
-            575.5648,
+            575.5649,
             569.0459,
             561.3208,
             566.7433,
@@ -8350,12 +8351,12 @@
         116.24,
         119.09
       ],
-      "ai": "Indonesia's mining & energy sector surged on a dual catalyst: China's stimulus-driven commodity demand optimism and domestic policy clarity on downstreaming mandates. ANTM and AMMN led on nickel/copper exposure, while coal names lagged. This rally has legs as Indonesia tightens export controls and global supply chains diversify, but watch for profit-taking after such a sharp move.",
+      "ai": "Indonesia's mining & energy sector surged on a combination of global commodity price tailwinds and domestic policy catalysts, with nickel and tin stocks leading. The ALERT signal reflects accelerating momentum from China's stimulus and Indonesia's downstream processing push. Position into diversified miners with exposure to nickel and tin, as structural demand from EVs and electronics remains robust despite near-term volatility.",
       "volume": "20 tickers",
       "themes": [
-        "Nickel downstreaming mandates are creating a structural moat for Indonesian processors like ANTM and INCO, as the government's ban on raw ore exports forces global EV battery supply chains to invest i",
-        "Copper and gold miners (AMMN, MDKA) benefit from a multi-year capex cycle driven by Freeport's Grasberg expansion and new discoveries, positioning Indonesia as a critical minerals hub outside China.",
-        "Coal's relative underperformance (SMMT, NEM) reflects a secular shift as Indonesia's energy transition policy and export tax reforms gradually erode thermal coal's long-term demand profile, despite ne"
+        "Nickel downstreaming in Indonesia is a durable driver, as mandatory domestic processing and EV battery demand create a structural premium for integrated producers like ANTM and INCO.",
+        "Tin supply constraints from Myanmar and Indonesia's export quota system underpin a multi-year price floor, benefiting TINS and SMMT as global electronics and solar demand grows.",
+        "Copper's long-term deficit narrative, driven by electrification and data center buildout, supports FCX and AMMN, with Indonesia's Grasberg mine providing a stable, high-grade production base."
       ],
       "constituents": [
         {
@@ -9519,25 +9520,25 @@
           "tier": "large",
           "delta_pct": 1.75,
           "spark": [
-            1635.6986,
-            1626.8809,
+            1635.6985,
+            1626.8807,
             1596.0186,
             1596.0186,
             1604.8363,
-            1622.4718,
+            1622.4719,
             1631.2897,
             1596.0186,
-            1600.4275,
-            1675.3785,
+            1600.4274,
+            1675.3787,
             1618.063,
-            1613.6541,
-            1569.5653,
-            1569.5653,
-            1609.2452,
+            1613.6542,
+            1569.5652,
+            1569.5652,
+            1609.2451,
             1591.6096,
-            1600.4275,
-            1675.3785,
-            1675.3785,
+            1600.4274,
+            1675.3787,
+            1675.3787,
             1670.9697,
             1679.7875,
             1666.5608,
@@ -9817,7 +9818,7 @@
             89.4046,
             93.5316,
             90.8427,
-            90.5571,
+            90.557,
             91.9064,
             91.3352,
             90.4192,
@@ -10241,7 +10242,7 @@
           "spark": [
             147.1986,
             145.9327,
-            145.7168,
+            145.7169,
             148.5823,
             147.9052,
             147.1888,
@@ -10249,7 +10250,7 @@
             144.0093,
             146.7276,
             144.9318,
-            144.9907,
+            144.9906,
             147.0024,
             147.6991,
             147.6893,
@@ -10266,7 +10267,7 @@
             159.3082,
             160.8096,
             164.1167,
-            163.0569,
+            163.0568,
             163.155,
             162.2129,
             163.6162,
@@ -10277,7 +10278,7 @@
             166.7564,
             167.9929,
             173.5963,
-            170.7798,
+            170.7799,
             174.715,
             177.8454,
             175.8827,
@@ -10693,7 +10694,7 @@
             104.3867,
             103.2072,
             100.799,
-            103.7675,
+            103.7674,
             103.1285,
             103.6397,
             106.1953,
@@ -11382,12 +11383,12 @@
         113.66,
         114.15
       ],
-      "ai": "Indonesia's renewables rally (+2.55%) signals domestic policy tailwinds, with KEEN and BREN leading on captive solar and geothermal mandates. Watch for regulatory catalysts from the new government's energy roadmap and potential US IRA-linked supply chain shifts. Position into local champions with proven project pipelines.",
+      "ai": "Indonesia's renewables rally (+2.55%) signals policy tailwinds from the new government's accelerated 75GW green capacity target by 2030, with KEEN and BREN leading on captive solar and geothermal project wins. Watch for sustained momentum as domestic manufacturing incentives and carbon trading rules finalize, but US clean-tech weakness (-0.67%) warrants caution on global rate sensitivity.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's new administration is accelerating renewable energy targets, prioritizing captive solar and geothermal to reduce coal dependence and attract foreign capital.",
-        "Domestic climate-tech players like KEEN and BREN are benefiting from mandated local content requirements and rising corporate PPAs for industrial decarbonization.",
-        "US policy uncertainty under the IRA creates a bifurcation, favoring Indonesia's self-sufficiency push over export-oriented clean tech, boosting local manufacturing and project development."
+        "Indonesia's 75GW renewable capacity target by 2030, backed by new presidential decrees on captive solar and geothermal licensing, creates a durable pipeline for local EPC and IPP players like KEEN and",
+        "Domestic carbon trading exchange launch and mandatory emission reporting for coal plants drive structural demand for climate-tech solutions, benefiting CSAP and ESSA.",
+        "US clean-energy tariff uncertainty and high interest rates are compressing margins for global solar and wind equipment makers, but Indonesia's shielded market offers relative stability for local champ"
       ],
       "constituents": [
         {
@@ -12848,7 +12849,7 @@
             80.5074,
             80.182,
             79.1664,
-            79.7185,
+            79.7186,
             78.4269,
             78.9199,
             78.6734,
@@ -12894,7 +12895,7 @@
             92.7437,
             94.341,
             93.779,
-            90.7026,
+            90.7027,
             93.0882,
             92.0359,
             91.9168,
@@ -14414,12 +14415,12 @@
         90.54,
         92.25
       ],
-      "ai": "Indonesia consumer stocks surged 4.26% today, led by UNVR +7% and MYOR +6.4%, signaling strong domestic demand recovery ahead of Ramadan. Buy UNVR for defensive staples exposure and MYOR for cocoa price tailwinds; both benefit from rising middle-class consumption and stable rupiah.",
+      "ai": "Indonesia's consumer sector surged 4.26% today, signaling a strong rotation into domestic staples and discretionary plays. UNVR's 7% jump on resilient demand, alongside MYOR, GGRM, and ICBP gains, confirms robust local consumption momentum. Buy ICBP and AMRT for exposure to structural food and retail growth, as rising middle-class spending and stable rupiah support further upside.",
       "volume": "20 tickers",
       "themes": [
-        "Pre-Ramadan consumption spike drives FMCG volume growth, with staples like UNVR and ICBP seeing accelerated restocking by trade channels.",
-        "Cocoa and palm oil price stability boosts margins for MYOR and CPIN, while GGRM and HMSP gain from excise tax clarity and resilient tobacco demand.",
-        "Modern retail expansion via AMRT and INDF's integrated food chain captures urbanization trends, supported by government social spending and minimum wage hikes."
+        "Rising middle-class disposable income in Indonesia is driving sustained demand for branded consumer goods and packaged foods, benefiting companies like ICBP and UNVR.",
+        "Government infrastructure spending and stable inflation are boosting rural purchasing power, fueling growth in mass-market FMCG and tobacco stocks such as GGRM and HMSP.",
+        "Modern retail expansion, led by AMRT, is capturing wallet share from traditional channels, creating a durable growth runway for consumer distribution networks."
       ],
       "constituents": [
         {
@@ -16025,8 +16026,8 @@
             857.9713,
             860.2249,
             855.1791,
-            853.2147,
-            847.6104,
+            853.2146,
+            847.6105,
             852.387,
             869.409,
             870.8948,
@@ -16044,12 +16045,12 @@
             948.3065,
             954.0603,
             960.9011,
-            961.5492,
+            961.5493,
             980.0969,
             973.4257,
             980.4858,
-            974.9216,
-            967.5524,
+            974.9215,
+            967.5523,
             958.079,
             950.2112,
             938.8876,
@@ -16886,11 +16887,11 @@
             305.9147,
             312.8388,
             314.8242,
-            310.646,
+            310.6461,
             314.7847,
             315.7329,
             311.9696,
-            312.345,
+            312.3449,
             307.0309,
             309.4904,
             306.8728,
@@ -16898,13 +16899,13 @@
             304.2553,
             301.8847,
             299.5438,
-            296.1854,
+            296.1855,
             299.0598,
             300.4328,
             305.0949,
             303.554,
             302.991,
-            305.648,
+            305.6481,
             304.3541,
             304.8381,
             303.6627,
@@ -16912,12 +16913,12 @@
             301.944,
             302.2798,
             305.4604,
-            309.115,
+            309.1151,
             310.2806,
             308.9669,
             311.6437,
             311.1399,
-            314.6267,
+            314.6266,
             315.565,
             319.7234,
             319.516,
@@ -16926,11 +16927,11 @@
             321.9755,
             319.2493,
             328.0106,
-            323.5657,
+            323.5658,
             323.6053,
-            323.8719,
+            323.872,
             323.1015,
-            325.1956,
+            325.1955,
             330.4602,
             328.9687,
             328.9292,
@@ -17032,7 +17033,7 @@
             53.3035,
             53.0186,
             52.8713,
-            53.8144,
+            53.8143,
             53.5393,
             53.3526,
             53.1955,
@@ -17446,12 +17447,12 @@
         99.84,
         101.12
       ],
-      "ai": "Indonesia's infrastructure sector shows a WATCH signal with strong local outperformance (+1.81% ID vs +1.04% US), led by TOWR's +13.37% surge. This suggests selective momentum in telecom and toll road plays, likely driven by government capex acceleration and digitalization tailwinds. Position into high-conviction names like TLKM and JSMR for near-term upside, but remain cautious on broader laggards.",
+      "ai": "Indonesia's infrastructure sector shows positive momentum with broad-based gains, led by TOWR's 13.37% surge. Watch for sustained foreign inflows into toll roads and telecom towers, as government capex acceleration and digitalization drive structural demand. Position for further upside in tower and toll operators.",
       "volume": "20 tickers",
       "themes": [
-        "Government's accelerated infrastructure spending under the new capital Nusantara project is a durable catalyst for toll road and construction firms like JSMR and PWR.",
-        "Rapid digitalization and 5G rollout in Indonesia drive sustained demand for telecom tower operators like TOWR and TLKM, supported by rising data consumption.",
-        "Urbanization and middle-class expansion in Java and Sumatra create long-term structural demand for cement and building materials players like VMC and MLM."
+        "Government's accelerated infrastructure spending under the new administration will sustain demand for toll roads and utilities, benefiting operators like JSMR and CARR.",
+        "Rapid digitalization and 5G rollout are driving tower and fiber demand, supporting TOWR and TLKM's revenue growth.",
+        "Privatization and land monetization by property-linked infrastructure firms like KIJA offer upside through asset recycling and capital efficiency gains."
       ],
       "constituents": [
         {
@@ -17468,12 +17469,12 @@
             523.5947,
             528.4427,
             528.4427,
-            538.1389,
-            538.1389,
+            538.139,
+            538.139,
             542.9871,
-            538.1389,
+            538.139,
             547.8351,
-            538.1389,
+            538.139,
             535.066,
             525.2483,
             530.1572,
@@ -18328,46 +18329,46 @@
           "delta_pct": 2.0,
           "spark": [
             620.5499,
-            610.3869,
+            610.387,
             621.7567,
             630.4037,
             626.5839,
             632.1989,
             627.8206,
-            617.3684,
+            617.3683,
             625.7162,
             632.2588,
             630.8326,
-            637.0859,
+            637.086,
             641.4344,
             643.2994,
             635.58,
-            629.7454,
+            629.7455,
             621.0087,
             632.7574,
             640.2974,
-            644.5261,
+            644.5262,
             623.3824,
             636.4177,
             664.9019,
             661.9499,
-            663.9446,
-            635.0215,
+            663.9445,
+            635.0214,
             639.2402,
             649.9318,
             629.2269,
             639.4397,
             650.3407,
-            647.7575,
+            647.7576,
             650.0714,
-            647.5282,
+            647.5281,
             648.5056,
             651.5974,
             650.221,
             652.5947,
             661.2617,
             669.39,
-            669.1706,
+            669.1707,
             688.1701,
             693.8849,
             706.2321,
@@ -18376,13 +18377,13 @@
             677.0596,
             664.7624,
             659.975,
-            673.6088,
-            684.1209,
-            681.7871,
+            673.6089,
+            684.1208,
+            681.787,
             695.002,
             671.5044,
-            676.6608,
-            674.7758,
+            676.6607,
+            674.7757,
             664.4005,
             655.8428,
             659.6573,
@@ -19050,7 +19051,7 @@
             161.2416,
             160.3117,
             159.3133,
-            156.1321,
+            156.1322,
             155.4568,
             150.3767,
             150.8503,
@@ -19091,19 +19092,19 @@
             162.4534,
             169.3304,
             169.8336,
-            170.2283,
+            170.2282,
             172.241,
             177.9044,
-            178.5556,
+            178.5557,
             177.4901,
             173.6717,
             174.5399,
             173.3362,
             173.7408,
             175.8621,
-            177.194,
+            177.1941,
             174.017,
-            174.836,
+            174.8359,
             176.3061,
             175.7535,
             180.1836,
@@ -19112,7 +19113,7 @@
             177.2533,
             178.4471,
             178.1807,
-            177.9933,
+            177.9932,
             178.4204,
             180.0495,
             179.1952,
@@ -19203,7 +19204,7 @@
             84.8373,
             84.0563,
             84.3784,
-            85.345,
+            85.3449,
             85.7647,
             86.1845,
             86.5555,
@@ -19242,7 +19243,7 @@
             89.6796,
             85.3547,
             84.4175,
-            85.921,
+            85.9209,
             85.6183,
             86.536,
             83.9977,
@@ -19769,7 +19770,7 @@
           "spark": [
             124.6877,
             125.4555,
-            127.6802,
+            127.6801,
             128.5168,
             128.1428,
             128.6153,
@@ -19917,13 +19918,13 @@
             176.4939,
             175.5129,
             175.0855,
-            173.9879,
+            173.988,
             173.3663,
             169.2869,
             167.4609,
             167.5774,
             169.5006,
-            169.7823,
+            169.7822,
             171.346,
             172.4445,
             173.3173,
@@ -19934,7 +19935,7 @@
             166.1775,
             167.0504,
             165.2654,
-            168.2273,
+            168.2272,
             170.6105,
             174.0627,
             178.0543,
@@ -19949,12 +19950,12 @@
             177.8484,
             175.828,
             170.3555,
-            169.7964,
+            169.7965,
             173.1506,
             168.188,
             167.9723,
             170.3653,
-            175.0728,
+            175.0729,
             177.0049,
             184.5665,
             188.4012,
@@ -19992,7 +19993,7 @@
             167.7271,
             170.3849,
             172.7485,
-            170.7281,
+            170.7282,
             172.7877,
             176.4655,
             175.8378,
@@ -20940,7 +20941,7 @@
             76.4151,
             77.0443,
             76.7297,
-            77.7915,
+            77.7916,
             78.2733,
             78.6764,
             78.5093,
@@ -20957,7 +20958,7 @@
             79.9939,
             77.2803,
             78.7453,
-            80.1217,
+            80.1218,
             81.9606,
             82.2878,
             83.1403,
@@ -22803,8 +22804,8 @@
             566.6543,
             561.5284,
             572.2389,
-            577.315,
-            570.7132,
+            577.3151,
+            570.7131,
             574.765,
             569.0264,
             561.4416,
@@ -22964,7 +22965,7 @@
             104.9129,
             105.8886,
             107.298,
-            107.0318,
+            107.0319,
             109.3873,
             108.934,
             107.6133,
@@ -23510,12 +23511,12 @@
         104.19,
         104.65
       ],
-      "ai": "Indonesia's logistics sector shows strong local momentum (+2.36%) driven by domestic demand, with KPIG and SMDR leading gains. Watch for further upside as e-commerce and infrastructure spending fuel structural growth, but US weakness (-0.59%) warrants caution on global spillovers.",
+      "ai": "Indonesia logistics outperformed US peers, led by KPIG and SMDR, signaling domestic demand resilience. Watch for sustained momentum as e-commerce and infrastructure spending drive volume growth; position tactically in pure-play Indonesian names over global laggards.",
       "volume": "20 tickers",
       "themes": [
-        "E-commerce expansion in Indonesia's archipelago is driving durable demand for last-mile and cold-chain logistics services, benefiting players like KPIG and ASSA.",
-        "Government infrastructure spending on ports and toll roads is structurally lowering logistics costs and improving connectivity, supporting volume growth for SMDR and IPCM.",
-        "Rising fuel costs and regulatory shifts toward green logistics are pressuring margins, favoring efficient operators like BIRD with modern fleets over legacy players."
+        "E-commerce expansion in Indonesia continues to structurally boost last-mile and warehousing demand, favoring local operators like KPIG and BIRD.",
+        "Government infrastructure push (e.g., toll roads, ports) lowers logistics costs and improves asset utilization for domestic players such as SMDR and ASSA.",
+        "Global trade slowdown pressures US logistics firms (CHRW, GXO), reinforcing Indonesia's relative advantage from insular supply chain needs and domestic consumption growth."
       ],
       "constituents": [
         {
@@ -24415,14 +24416,14 @@
             165.5945,
             164.8794,
             169.607,
-            171.365,
+            171.3649,
             172.239,
             171.1365,
             174.136,
             174.573,
             173.9075,
             178.1584,
-            176.6885,
+            176.6884,
             175.4569,
             176.897,
             179.2012,
@@ -24440,7 +24441,7 @@
             166.6374,
             174.8113,
             176.172,
-            184.5942,
+            184.5943,
             183.9288,
             188.7656,
             175.9932,
@@ -24448,8 +24449,8 @@
             174.712,
             182.8264,
             183.9884,
-            185.9649,
-            192.0035,
+            185.9648,
+            192.0034,
             188.5769,
             183.5514,
             179.0269,
@@ -26542,12 +26543,12 @@
         81.03,
         81.93
       ],
-      "ai": "Indonesia's entertainment sector shows strong local momentum (+2.84%) driven by ARCI's 12% surge and digital platform gains (RBLX +5.43%). Watch for sustained domestic consumption tailwinds as rising middle-class spending on streaming, gaming, and media services accelerates. Position into MNCN and ACES for structural exposure to Indonesia's demographic dividend and digital adoption trends.",
+      "ai": "Indonesia's entertainment sector is showing strong relative outperformance, driven by ARCI's 12% surge and broad-based gains in media and consumer services. This signals rising domestic consumption and digital engagement, making selective exposure to local leaders like ARCI and MNCN attractive for near-term momentum.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's young, digitally-native population (median age 30) drives structural demand for mobile-first entertainment, gaming, and streaming services, outpacing global peers.",
-        "Rising middle-class disposable income in Indonesia shifts spending from traditional media to digital platforms, benefiting local leaders like MNCN and ACES.",
-        "Regulatory tailwinds from Indonesia's digital economy push (e.g., local content requirements, tax incentives) create durable competitive moats for domestic entertainment and consumer service firms."
+        "Rising middle-class disposable income in Indonesia is structurally boosting demand for domestic entertainment and media platforms, favoring local players over global competitors.",
+        "Accelerating digitalization and mobile-first consumption patterns are creating durable revenue growth for streaming, gaming, and e-commerce services in Indonesia.",
+        "Regulatory support for local content and creative industries is providing a long-term tailwind for Indonesian media companies, reducing reliance on foreign IP."
       ],
       "constituents": [
         {
@@ -26559,12 +26560,12 @@
           "tier": "mid",
           "delta_pct": 12.07,
           "spark": [
-            1109.266,
+            1109.2659,
             1138.3297,
-            1181.9253,
-            1181.9253,
+            1181.9252,
+            1181.9252,
             1191.6132,
-            1273.9603,
+            1273.9604,
             1249.7406,
             1249.7406,
             1220.6769,
@@ -29296,7 +29297,7 @@
           "delta_pct": -4.84,
           "spark": [
             199.8761,
-            201.4575,
+            201.4576,
             194.8253,
             194.6573,
             201.932,
@@ -29880,7 +29881,7 @@
           "delta_pct": 1.69,
           "spark": [
             202.895,
-            199.4888,
+            199.4887,
             194.4439,
             189.7467,
             183.6889,
@@ -29899,7 +29900,7 @@
             184.3245,
             185.6453,
             183.4506,
-            184.3741,
+            184.3742,
             184.3642,
             185.0197,
             184.7912,
@@ -29920,7 +29921,7 @@
             186.1319,
             186.2014,
             184.1954,
-            189.7367,
+            189.7368,
             194.5631,
             195.8839,
             199.449,
@@ -31321,7 +31322,7 @@
           "spark": [
             124.6877,
             125.4555,
-            127.6802,
+            127.6801,
             128.5168,
             128.1428,
             128.6153,
@@ -31782,7 +31783,7 @@
             180.2397,
             181.0709,
             181.0025,
-            180.6406,
+            180.6407,
             181.2274,
             180.4744,
             179.6921,
@@ -31803,7 +31804,7 @@
             195.2988,
             197.235,
             195.6411,
-            194.9663,
+            194.9664,
             196.5407,
             198.1151,
             199.3374,
@@ -32470,7 +32471,7 @@
       "name": "Crypto & Digital Assets",
       "icon": "₿",
       "theme": "BTC dominance · L1 rotation",
-      "change": 0.23,
+      "change": 0.47,
       "idChange": null,
       "usChange": null,
       "signal": "NORMAL",
@@ -32604,7 +32605,7 @@
         80.43,
         81.78,
         83.75,
-        84.0
+        84.21
       ],
       "ai": "Buy the ETH/SOL/XRP momentum into US regulatory clarity tailwinds and Indonesia's pending crypto exchange launch; rotate out of BNB on Binance legal overhang. Position for a 2-week tactical rally as altcoins catch up to BTC's relative strength, but keep stops tight given macro uncertainty.",
       "volume": "10 tickers",
@@ -32621,7 +32622,7 @@
           "country": "CR",
           "mktcap": "$95B",
           "tier": "large",
-          "delta_pct": 3.11,
+          "delta_pct": 3.45,
           "spark": [
             87.4648,
             87.6398,
@@ -32752,10 +32753,10 @@
             66.7493,
             68.8728,
             71.1662,
-            73.38
+            73.62
           ],
-          "value": 73.38,
-          "turnover": 205083740686.0,
+          "value": 73.62,
+          "turnover": 206757591386.0,
           "url": "https://www.coingecko.com/en/coins/solana"
         },
         {
@@ -32765,7 +32766,7 @@
           "country": "CR",
           "mktcap": "$130B",
           "tier": "large",
-          "delta_pct": 3.08,
+          "delta_pct": 3.32,
           "spark": [
             1.4715,
             1.4242,
@@ -32896,10 +32897,10 @@
             1.1321,
             1.15,
             1.1858,
-            1.2223
+            1.2252
           ],
-          "value": 1.22,
-          "turnover": 3716213335.0,
+          "value": 1.23,
+          "turnover": 3723051209.0,
           "url": "https://www.coingecko.com/en/coins/ripple"
         },
         {
@@ -32909,7 +32910,7 @@
           "country": "CR",
           "mktcap": "$420B",
           "tier": "mega",
-          "delta_pct": 2.12,
+          "delta_pct": 2.18,
           "spark": [
             2063.387,
             2090.5493,
@@ -33040,155 +33041,11 @@
             1665.1278,
             1680.2146,
             1724.6133,
-            1761.16
+            1762.2
           ],
-          "value": 1761.16,
-          "turnover": 31895017822550.0,
+          "value": 1762.2,
+          "turnover": 31757217381453.0,
           "url": "https://www.coingecko.com/en/coins/ethereum"
-        },
-        {
-          "ticker": "LINK",
-          "name": "Chainlink",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$11B",
-          "tier": "mid",
-          "delta_pct": 0.28,
-          "spark": [
-            8.8795,
-            8.9133,
-            8.8324,
-            8.8298,
-            8.5613,
-            8.3116,
-            8.4027,
-            8.7683,
-            9.0885,
-            8.7819,
-            8.9255,
-            8.8306,
-            8.5989,
-            8.5695,
-            8.9414,
-            8.876,
-            8.6727,
-            8.2652,
-            8.2031,
-            9.2563,
-            9.0985,
-            8.7088,
-            8.8437,
-            8.6723,
-            8.9485,
-            8.8124,
-            9.3485,
-            9.1969,
-            8.7937,
-            8.695,
-            8.5234,
-            8.86,
-            8.9831,
-            8.9955,
-            9.0585,
-            9.088,
-            9.1615,
-            9.4821,
-            9.9271,
-            9.7952,
-            9.2258,
-            9.0473,
-            9.1132,
-            8.8074,
-            8.6852,
-            9.1027,
-            9.2465,
-            9.3747,
-            8.9145,
-            8.5638,
-            8.4282,
-            8.4053,
-            8.6107,
-            8.7775,
-            8.9378,
-            8.6285,
-            8.6582,
-            8.6929,
-            8.8116,
-            8.8051,
-            9.2956,
-            8.8605,
-            8.9428,
-            9.0878,
-            9.0694,
-            8.7372,
-            9.3629,
-            9.0228,
-            9.2615,
-            9.5808,
-            9.6251,
-            9.2929,
-            9.0707,
-            9.2911,
-            9.3982,
-            9.2987,
-            9.3559,
-            9.3774,
-            9.3462,
-            9.4941,
-            9.321,
-            9.2396,
-            9.1182,
-            9.1044,
-            9.0927,
-            9.1744,
-            9.1315,
-            9.3532,
-            9.766,
-            9.9942,
-            9.8517,
-            10.3302,
-            10.3719,
-            10.7125,
-            10.5936,
-            10.2838,
-            10.2116,
-            10.4731,
-            10.0662,
-            9.7199,
-            9.5541,
-            9.5928,
-            9.4498,
-            9.6219,
-            9.7406,
-            9.4154,
-            9.5584,
-            9.429,
-            9.4978,
-            9.3748,
-            9.1281,
-            8.9884,
-            9.0152,
-            9.1652,
-            9.1267,
-            9.038,
-            8.3624,
-            8.335,
-            8.0008,
-            7.3507,
-            7.398,
-            7.8985,
-            7.9875,
-            7.837,
-            7.563,
-            7.8823,
-            7.8557,
-            7.9774,
-            8.1662,
-            8.189
-          ],
-          "value": 8.19,
-          "turnover": 2611417897.0,
-          "url": "https://www.coingecko.com/en/coins/chainlink"
         },
         {
           "ticker": "BTC",
@@ -33197,7 +33054,7 @@
           "country": "CR",
           "mktcap": "$1.3T",
           "tier": "mega",
-          "delta_pct": 0.2,
+          "delta_pct": 0.47,
           "spark": [
             70555.3906,
             69281.9688,
@@ -33328,24 +33185,155 @@
             63543.1992,
             64421.3242,
             65710.3984,
-            65843.3672
+            66020.6797
           ],
-          "value": 65843.37,
-          "turnover": 2069602572988944.0,
+          "value": 66020.68,
+          "turnover": 2041159811655360.0,
           "url": "https://www.coingecko.com/en/coins/bitcoin"
         },
         {
-          "ticker": "MATIC",
-          "name": "Polygon",
+          "ticker": "LINK",
+          "name": "Chainlink",
           "exchange": "CRYPTO",
           "country": "CR",
-          "mktcap": "$5B",
-          "tier": "small",
-          "delta_pct": 0.0,
-          "spark": [],
-          "value": 0.0,
-          "turnover": 0.0,
-          "url": "https://www.coingecko.com/en/coins/polygon-ecosystem-token"
+          "mktcap": "$11B",
+          "tier": "mid",
+          "delta_pct": 0.41,
+          "spark": [
+            8.8795,
+            8.9133,
+            8.8324,
+            8.8298,
+            8.5613,
+            8.3116,
+            8.4027,
+            8.7683,
+            9.0885,
+            8.7819,
+            8.9255,
+            8.8306,
+            8.5989,
+            8.5695,
+            8.9414,
+            8.876,
+            8.6727,
+            8.2652,
+            8.2031,
+            9.2563,
+            9.0985,
+            8.7088,
+            8.8437,
+            8.6723,
+            8.9485,
+            8.8124,
+            9.3485,
+            9.1969,
+            8.7937,
+            8.695,
+            8.5234,
+            8.86,
+            8.9831,
+            8.9955,
+            9.0585,
+            9.088,
+            9.1615,
+            9.4821,
+            9.9271,
+            9.7952,
+            9.2258,
+            9.0473,
+            9.1132,
+            8.8074,
+            8.6852,
+            9.1027,
+            9.2465,
+            9.3747,
+            8.9145,
+            8.5638,
+            8.4282,
+            8.4053,
+            8.6107,
+            8.7775,
+            8.9378,
+            8.6285,
+            8.6582,
+            8.6929,
+            8.8116,
+            8.8051,
+            9.2956,
+            8.8605,
+            8.9428,
+            9.0878,
+            9.0694,
+            8.7372,
+            9.3629,
+            9.0228,
+            9.2615,
+            9.5808,
+            9.6251,
+            9.2929,
+            9.0707,
+            9.2911,
+            9.3982,
+            9.2987,
+            9.3559,
+            9.3774,
+            9.3462,
+            9.4941,
+            9.321,
+            9.2396,
+            9.1182,
+            9.1044,
+            9.0927,
+            9.1744,
+            9.1315,
+            9.3532,
+            9.766,
+            9.9942,
+            9.8517,
+            10.3302,
+            10.3719,
+            10.7125,
+            10.5936,
+            10.2838,
+            10.2116,
+            10.4731,
+            10.0662,
+            9.7199,
+            9.5541,
+            9.5928,
+            9.4498,
+            9.6219,
+            9.7406,
+            9.4154,
+            9.5584,
+            9.429,
+            9.4978,
+            9.3748,
+            9.1281,
+            8.9884,
+            9.0152,
+            9.1652,
+            9.1267,
+            9.038,
+            8.3624,
+            8.335,
+            8.0008,
+            7.3507,
+            7.398,
+            7.8985,
+            7.9875,
+            7.837,
+            7.563,
+            7.8823,
+            7.8557,
+            7.9774,
+            8.1662,
+            8.2
+          ],
+          "value": 8.2,
+          "turnover": 2628028566.0,
+          "url": "https://www.coingecko.com/en/coins/chainlink"
         },
         {
           "ticker": "AVAX",
@@ -33354,7 +33342,7 @@
           "country": "CR",
           "mktcap": "$15B",
           "tier": "mid",
-          "delta_pct": -0.09,
+          "delta_pct": 0.36,
           "spark": [
             9.2744,
             9.2275,
@@ -33485,11 +33473,24 @@
             6.5649,
             6.7155,
             6.7758,
-            6.77
+            6.8
           ],
-          "value": 6.77,
-          "turnover": 2160108335.0,
+          "value": 6.8,
+          "turnover": 2170331798.0,
           "url": "https://www.coingecko.com/en/coins/avalanche-2"
+        },
+        {
+          "ticker": "MATIC",
+          "name": "Polygon",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$5B",
+          "tier": "small",
+          "delta_pct": 0.0,
+          "spark": [],
+          "value": 0.0,
+          "turnover": 0.0,
+          "url": "https://www.coingecko.com/en/coins/polygon-ecosystem-token"
         },
         {
           "ticker": "BNB",
@@ -33498,7 +33499,7 @@
           "country": "CR",
           "mktcap": "$95B",
           "tier": "large",
-          "delta_pct": -0.54,
+          "delta_pct": -0.39,
           "spark": [
             657.4215,
             647.3503,
@@ -33629,10 +33630,10 @@
             603.5066,
             609.5438,
             616.0859,
-            612.74
+            613.68
           ],
-          "value": 612.74,
-          "turnover": 831383579385.0,
+          "value": 613.68,
+          "turnover": 832914371678.0,
           "url": "https://www.coingecko.com/en/coins/binancecoin"
         },
         {
@@ -33642,7 +33643,7 @@
           "country": "CR",
           "mktcap": "$28B",
           "tier": "mid",
-          "delta_pct": -2.1,
+          "delta_pct": -1.78,
           "spark": [
             0.0985,
             0.0983,
@@ -33773,10 +33774,10 @@
             0.086,
             0.0879,
             0.0888,
-            0.0869
+            0.0872
           ],
           "value": 0.09,
-          "turnover": 85033981.0,
+          "turnover": 85923702.0,
           "url": "https://www.coingecko.com/en/coins/dogecoin"
         },
         {
@@ -33786,7 +33787,7 @@
           "country": "CR",
           "mktcap": "$22B",
           "tier": "mid",
-          "delta_pct": -3.77,
+          "delta_pct": -3.33,
           "spark": [
             0.2762,
             0.2724,
@@ -33917,10 +33918,10 @@
             0.1698,
             0.1718,
             0.1828,
-            0.1759
+            0.1767
           ],
           "value": 0.18,
-          "turnover": 100311102.0,
+          "turnover": 100576247.0,
           "url": "https://www.coingecko.com/en/coins/cardano"
         }
       ],
@@ -33929,8 +33930,8 @@
   ],
   "news": [
     {
-      "title": "Biotech IPO window is opening but big pharma M&amp;A still sets the pace, top bankers tell CNBC - CNBC",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQck50TzhlU1BiR293bmV0RFhtWmVpOGJ0Z3U1eDgxeGFSU1ZCUnhoTVJvMGFmdzgyRlluNGNqSEZTLUlwbXY0bWF6VzlQQi1sWW54eVQtOFA1MVpBMVVyNlhhQkRVRVVYNHdpaVAzX2lodG1DLTJST2ZrNFA0OEREUmJta9IBiAFBVV95cUxQenZPM3hVcWhzVTZXZWtqYTJ0T09uUWp0b0V5eVZCTEI2bDEtSEl5OWI0NWF3bEkzQnB3LTl3YzI5QndtX3pyU1Jrd3FyMW8zcnZYOHpCRUJ5YWRSWE5zTlJBWG1aVy1KQU5hNW53MnIweUhHS25nZVpmeUVtb0FOVE56OXRieWZq?oc=5",
+      "title": "Biotech IPO window is open but big pharma M&amp;A sets the pace: Bankers - CNBC",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQck50TzhlU1BiR293bmV0RFhtWmVpOGJ0Z3U1eDgxeGFSU1ZCUnhoTVJvMGFmdzgyRlluNGNqSEZTLUlwbXY0bWF6VzlQQi1sWW54eVQtOFA1MVpBMVVyNlhhQkRVRVVYNHdpaVAzX2lodG1DLTJST2ZrNFA0OEREUmJtaw?oc=5",
       "source": "CNBC",
       "geo": "US",
       "category": "MARKETS_FINANCE",
@@ -34040,6 +34041,15 @@
       "ts": 1781540700
     },
     {
+      "title": "Indian AI startup Sarvam has become a unicorn after raising $234 million in the first close of a $300 million Series B funding round led by HCLTech, valuing the company at $1.5 billion. The round was led by HCLTech as a ",
+      "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1adzNuSnZLak9ocmItWmUwNlRVQkFseTRoUXJxLUhHeFZIT2FBX0FrUl9Md2FGcWduNEFacmV0Um5mQkFHZ3J0Ujh2ZFQtYW5Gc1E?oc=5",
+      "source": "instagram.com",
+      "geo": "US",
+      "category": "TECH",
+      "summary": "",
+      "ts": 1781539598
+    },
+    {
       "title": "MANGOS: AI Firms Overtake Magnificent 7 in U.S. Stock Market - 조선일보",
       "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOb2RnM044NzU3OUFpRkthMWs5V282RDBMM2EtT1hNVDczakxxYzlMZDlONTI1cXAzYnlVc2V0Rl9HVUJ1dDRuUnRhM1ZTVWotal9EZDJjSWtLdzVWcVFRZ3BFcFlGWkZtRzFYaVJYbC1JSjRuTUhmQktXSVZ2QkpKS3hKY0w4TWFJ?oc=5",
       "source": "조선일보",
@@ -34095,18 +34105,6 @@
       "category": "TECH",
       "summary": "",
       "ts": 1781530230
-    },
-    {
-      "title": "Alexandria Real Estate Equities, Inc. (ARE) Stock Price, News, Quote &amp; History - Yahoo Finance",
-      "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE1kX1IwWmw0clJOd05USWtQMy1tVGkyZ2hDcnpQTHhId3h1eFZ1b3o5aE80dmo3Znp3a2RVeXgwclJ0NTEzWUlTRzBWUXY?oc=5",
-      "source": "Yahoo Finance",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781529943,
-      "sectors": [
-        "property"
-      ]
     },
     {
       "title": "Invesco Releases 2026 Midyear Investment Outlook Focused on Resilient Economy - PR Newswire",
@@ -34200,6 +34198,15 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781519674
+    },
+    {
+      "title": "The Jakarta Composite Index (JCI) rebounded, a positive reaction to the peace agreement between the US and Iran. - Kompas.id",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxORXlNUzZUbmNGYjRWcWdPUmhEa0ZXemJ4V251cC1LRmdpUm52SjgwUmxwVl9rVHZreGhkZERqVnZsdFlYQ2F3YklXckRVT2FIek50YVRQXzVhUVdMbk9nTURpeXdqVEp1Zl9TcUlZSWNpbmdkWTE5WVJSS0lDLXBMbWdoX2JNX2FlczRIMG9GRGJUeHVHVkUteXhiR2NhQQ?oc=5",
+      "source": "Kompas.id",
+      "geo": "ID",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781519520
     },
     {
       "title": "Warsh's debut Fed press conference may reveal his strategy for inflation, rates - Reuters",
@@ -34365,6 +34372,15 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781471585
+    },
+    {
+      "title": "Bond market selloff may be just the beginning - TS Lombard's Blitz - MSN",
+      "url": "https://news.google.com/rss/articles/CBMijgNBVV95cUxPSF9SZVpiSUVLZlRYWGJ6ZUhxbW5HZGlxSUdiWHlmZUJ6VVJfcEV0OFowaFpVVUluM3gxVnNMYmMtZ0pRT0w5eXhDc0NheUk1a1BNdTNkNm8yMkhldkQyWFh1WWN0Tl8tN205MDdmcmhSQnpnSU1GajExSVp1MEkyeFc4eFZackQ4ODR5QldVbUlPZjFVdWs5SWkwNnA1dGRueHVVZy1jS1h0VFdGZF93Wmt2T01NNjZTOVFzbTFBem9PTmNYWHZxQXhrTW1Ud1V5QXZYSVJsUmkxZjJoQ3BmSTNxQThuNnVPU1hhcDBwSGNQVnRka29Kd2Z5STVqU2xCMlNkVEVrbzZWaDA1OWVFSWM2VXdCdzljUFU3NkVOMkh4dTJWWkFCVWt3YzBpV1FQbWxQb1IxNEpiQjU2dzcyaDl4WFlSVWY3QjBoczV2aFhjUUZkb25ZQnlaRlRWUHNRUTRiaUFvZmdxUGQtZmNPZXhwT2owOVd0TFJKbnE4SkhybERPeXVYTnhGWk0tQQ?oc=5",
+      "source": "MSN",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781463094
     },
     {
       "title": "American Homes 4 Rent vs. Essex Property Trust: Which Real Estate Stock Is a Better Buy in 2026? - The Motley Fool",
@@ -34820,15 +34836,6 @@
       "ts": 1781262001
     },
     {
-      "title": "Opinion: 5 Days Until the Fed Picks Wall Street over Main Street — Again - 24/7 Wall St.",
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPclQ0TS03aDV0TmxyNEdUcHlzTlJKRGxlQ1k2bHhXMm9UdXBaZUFCSG1lUjl4TmVCa2N3SDJsejhwcTY2RV9NWTY1ZloxcV9JejJ6dTJPU2JrV0xiQU1yaDBacHhVWExCSXI4WEQ0dU1naFd4bjFqV3lWcF9iU3BtbU04RS1VRlU2a0lZMWIxTkRHZTdEZlFheEhtTzgtaHU4Xzg1cVlxckxEUlNha0Y3clQ4WQ?oc=5",
-      "source": "24/7 Wall St.",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781260671
-    },
-    {
       "title": "These four consumer staples stocks stand out for both value and performance (XLP:NYSEARCA) - Seeking Alpha",
       "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQcmQ2bnBGTkxrSENmWF8xVjZuaUpCM3lRWVFwSDFzekhDMUxkenhNd1RNTU9mZ2p5VGJNQTFmWGsxQ1A1UWZZcGtsRTVKTE1NanVlaTMzQUhURFdTSE1URmVxQkZsSlQxemhPd2pPdFFMR3g3enFXMF9Ha2lmUUQ3RTgxX1QzYThVTjVFNlNsY3VJdHhxN3VTamFQa3g5cGpqNzdwR0FESW5oYW0xSzMtX2s1Zw?oc=5",
       "source": "Seeking Alpha",
@@ -34880,6 +34887,15 @@
       "ts": 1781247851
     },
     {
+      "title": "E-mini S&amp;P 500 Futures Overview - CME Group",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTFA5UXRvZEwyTEt6T2x0OGJmLXNhM1BXLUUyTTlXZWY1S1VXSG5CSHMzSUpJRVVzcVRKYXd0YzI5Vm9Gc2pDY18zdGR1WU9GZU5oWTQzTWlDQnR3WlJwQVZka1oteS1VU3YtWG5kZEJEZnVmM0k?oc=5",
+      "source": "CME Group",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781247600
+    },
+    {
       "title": "S&amp;P 500 Snapshot: Late Week Rally Pushes Index into Green - Advisor Perspectives",
       "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQOXBiUW9MUGFOMEJyZ3dhbHcxQzh3YTZySTdZVnhQcnFiY1hRcDFya1B4dnRRMlZFaTZUN1ZjWXgtQldEa3FmOHFYZ3FuazViOHIxMDlLS2hPODBzUjAzSGxoNDhlelRKclV1SDlFQVZ2WWx5dmJ0d0J2ekRhVHZmTExtNmFFRk5vNmt4TkZieU5vRXJhaVJOMEdvRlRpcTk1Z2E1ZWM5YkUtc25sbGdReHYwampHRnN3WVE?oc=5",
       "source": "Advisor Perspectives",
@@ -34894,6 +34910,15 @@
       "source": "FOREX.com",
       "geo": "US",
       "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781247600
+    },
+    {
+      "title": "Dow Jones Averages | Industrial, Transportation, Utilities, &amp; Composite | Britannica Money - Britannica",
+      "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE5TVnF3emdEdU9fQk1jZnEzajRJZWhiYy1lNExCSTdwVjNFcFF0RHNrWE92cl9VeHdqU2tVb0NjN3l0ak1KUUJTU1RnZ1hUa3l3ZlJ1aWZlcFNLclQycUhN?oc=5",
+      "source": "Britannica",
+      "geo": "US",
+      "category": "ECONOMY",
       "summary": "",
       "ts": 1781247600
     },
@@ -34944,15 +34969,6 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781236860
-    },
-    {
-      "title": "US Dollar Holds Firm as Sticky Inflation Reinforces Fed Caution: BBH - CryptoRank",
-      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTFAxMi1kUDduZzNRYS1GV2Y0bDNId3FqQ2JvVzNxRjdRTXBPclFheXp5bnlNTGpGRGpKU0NLaUxCZDJ1M09mS1ZXRlpwajFrU0hsdnlFZ3NHQVZYSl8xT2d6dmF1dlRucjhZMWstSUdvOVU0OHhrWUZ0eE1EY08zdw?oc=5",
-      "source": "CryptoRank",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781232804
     },
     {
       "title": "Saham Emiten Prajogo Dilahap Gara-gara Ini - investor.id",
@@ -35016,18 +35032,9 @@
       "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPOWhCblQ4WENHYjhIRUFyT3N4Q24zZFd4RTEyRmF5VktOWE1yRlI0R2VFMklqTXdrR0o5WEl4dExWYmpOaEotcW9WSU1oY3ZGaVZ1MkE5QzhnZmNCTkZwMUxXZWtVeXpnd0VLTHlWVF9iV1AwNmNNaDBjSGxLRWUwSUpEUmZxNnVYUGxzUnhFM0RENVdDcnp3R21uZFk1UF9TelNhQm41Z3RPZ3V6VkhLZjV5WjVWZw?oc=5",
       "source": "Investor's Business Daily",
       "geo": "US",
-      "category": "TECH",
-      "summary": "",
-      "ts": 1781211900
-    },
-    {
-      "title": "Marvell stock surges on S&amp;P 500 inclusion - Yahoo Finance",
-      "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOdTVqWkdJQXVURVo3UU1BN2RGSmhRVnZna2lMSHJlaUpETFJlU25pTU0zZ2dGLUQ2ZVQ2UVdKYjVxY2VqRFJnWDk1UUFUUExmOXBWbXpTMng2cTRZLTVVV2xXQk9oak9YdktoM08xTHFVVS1Uejd0bnV5c2kyclVmQnZPOFZULTNVLVFTcWFqeVZDN2h5YTBGLXdERjMwMzZhQl84UUx4bw?oc=5",
-      "source": "Yahoo Finance",
-      "geo": "US",
       "category": "MARKETS_FINANCE",
       "summary": "",
-      "ts": 1781210115
+      "ts": 1781211900
     },
     {
       "title": "Oracle, Meta, Dell and more: Tech layoffs with ties to Austin - Austin American-Statesman",
@@ -35244,15 +35251,6 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781076600
-    },
-    {
-      "title": "Interest Rate Sentiment and Buybacks Bring Financial Markets into the Green Zone - Kompas.id",
-      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQNWc2V0t0eFpxam5ReDkwc1M2TTlJaWhkbU9hSzVFc0FkOGpWT1BJT2laODlvUDF3LVZiUkoxZWpCTVlTYlYxaWhrZS1mNGtvOFA5SVBRdm5SWkxzNjVFN1FJM1JpckItaF9YbnpMa3pnWXNEVkhhc29zeUdmLVpSMjR1WjZOQlo2dnhNMzFtZFRMQzYwYkI2SWI1M2tSeFU?oc=5",
-      "source": "Kompas.id",
-      "geo": "ID",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781076240
     },
     {
       "title": "IHSG Terbang Tinggi, 6 Saham Meroket hingga Mentok ARA - investor.id",
@@ -35681,8 +35679,8 @@
     ],
     "healthcare": [
       {
-        "title": "Biotech IPO window is opening but big pharma M&amp;A still sets the pace, top bankers tell CNBC - CNBC",
-        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQck50TzhlU1BiR293bmV0RFhtWmVpOGJ0Z3U1eDgxeGFSU1ZCUnhoTVJvMGFmdzgyRlluNGNqSEZTLUlwbXY0bWF6VzlQQi1sWW54eVQtOFA1MVpBMVVyNlhhQkRVRVVYNHdpaVAzX2lodG1DLTJST2ZrNFA0OEREUmJta9IBiAFBVV95cUxQenZPM3hVcWhzVTZXZWtqYTJ0T09uUWp0b0V5eVZCTEI2bDEtSEl5OWI0NWF3bEkzQnB3LTl3YzI5QndtX3pyU1Jrd3FyMW8zcnZYOHpCRUJ5YWRSWE5zTlJBWG1aVy1KQU5hNW53MnIweUhHS25nZVpmeUVtb0FOVE56OXRieWZq?oc=5",
+        "title": "Biotech IPO window is open but big pharma M&amp;A sets the pace: Bankers - CNBC",
+        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQck50TzhlU1BiR293bmV0RFhtWmVpOGJ0Z3U1eDgxeGFSU1ZCUnhoTVJvMGFmdzgyRlluNGNqSEZTLUlwbXY0bWF6VzlQQi1sWW54eVQtOFA1MVpBMVVyNlhhQkRVRVVYNHdpaVAzX2lodG1DLTJST2ZrNFA0OEREUmJtaw?oc=5",
         "source": "CNBC",
         "geo": "US",
         "category": "MARKETS_FINANCE",
@@ -35755,9 +35753,9 @@
         ]
       },
       {
-        "title": "Amazon’s Trucking Push Sparks Fresh Selloff in Transport Stocks - Bloomberg.com",
+        "title": "Amazon’s Trucking Push Sparks Fresh Selloff in Transport Stocks - Bloomberg",
         "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNOE9LLXVnYWZ0bE83QnI0SGRjWjRqWFg1Tm1qb2tDLWE4WHRTSm5vVDNOTDNQQm5uNl9tcGZwOGEtS194TE0tWVN1RWpSZ0VDTHBZdU1TcGhlaXV0UnhaQkY1TjRfNjFUQndhSi1rVlJ4d3NHVWJpYkQzQlVMVHQ5UEw5ZTZSVHdUWHdoa3Fzd09od2p0RDJLcnhBaEVlUzhqT1doWnFCa2JJZVVwdUlrc2ItY24?oc=5",
-        "source": "Bloomberg.com",
+        "source": "Bloomberg",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
@@ -35867,18 +35865,6 @@
     ],
     "property": [
       {
-        "title": "Alexandria Real Estate Equities, Inc. (ARE) Stock Price, News, Quote &amp; History - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE1kX1IwWmw0clJOd05USWtQMy1tVGkyZ2hDcnpQTHhId3h1eFZ1b3o5aE80dmo3Znp3a2RVeXgwclJ0NTEzWUlTRzBWUXY?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781529943,
-        "sectors": [
-          "property"
-        ]
-      },
-      {
         "title": "American Homes 4 Rent vs. Essex Property Trust: Which Real Estate Stock Is a Better Buy in 2026? - The Motley Fool",
         "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxOdVdDVVJuSUtPaDdvNFA0MzNVZ3gzZnVIbzAzVkRRejFTSXNmUkRJWHhfNXZERkJnRHF3WmYxNFhVZTJ2YkJkNWNxR2dUZkpGWV8zazdXVk43c0tZTDlkOVpfOU9FYUVXdnlaNHVDTm5TMVJyMVExM3R0SDNQSGZBdG9sWjZ5SXVSTVR5UjlFR0VFVzIwQnZ5NEtweG42eHkxcGktYmNmcWhuMmVqdGlVdUtJX01rcV9OMXRxeGtRTk9mT2FNQ3dDWTlQaFYxN0tpcDM5M2IxcFhTYndCX3hv?oc=5",
         "source": "The Motley Fool",
@@ -35922,6 +35908,18 @@
         "category": "ECONOMY",
         "summary": "",
         "ts": 1781033460,
+        "sectors": [
+          "property"
+        ]
+      },
+      {
+        "title": "10 Monthly Dividend Stocks With Ultra Safe Dividends - Sure Dividend",
+        "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBXVUZzbE9WQkJpQXNfQ3FmVjJSeXVpLUtldEVEZkRENmU1MFFqVkJORWdxX3RMaUJuSm9HSkRadDM1VFhTS1RKQmJLTjc4QngteUdQbVlKQmdSV25EZjZvbEl2WnlQSWxsU2FfcnRWcWVab2NjTDBJd05BaTcwUFU?oc=5",
+        "source": "Sure Dividend",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781032519,
         "sectors": [
           "property"
         ]
@@ -36372,6 +36370,15 @@
     ],
     "SMCI": [
       {
+        "title": "Supermicro Computer stock sinks on $7 billion equity raise - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPRDVkUXpqNDdmdXI3WjZmUF9JTDZUeFB1T3lrT3NacUxheTBHWGVvaXRGbHFlbHFJbk9FaHhqcFR0MWV4bHNyeXl3eW91WS1mMUM3WHRWcDc1TzZxTHI1d3BqQV9qM2JxSzFoamZEdGZJUktzTzZkUTJWVlVGOVREODY4OXFUdE5oX2gyazdfeVJ3SUl3Xzk2MDlEdmt1OUZMWVpXTTU0aEFtVllEbVg1VUl4ZU94elVUWUZhSHVB?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781209836
+      },
+      {
         "title": "Supermicro Stock Tumbles On Financing Deals To Fund AI Orders - Investor's Business Daily",
         "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNZzR5MXBocXFxRllyRDkzQW0zUE5JR1AtMVUyOEk5R3R3OXZ0SEtQN0dPVG5UUHNuOXdQdk9NZXBxRzdMR3FDU0ZpTDlSN1RJSmFDa3hNV1F5SkFaVG5ta01JU1dMOUFQX19zdTR6amdWTTlVaDJ1d2NmSUdQQTlkMW5iQk1odHlrQnJjb1VtWlExNkxmeUJZbzJXWUVFTEJiU19F?oc=5",
         "source": "Investor's Business Daily",
@@ -36379,15 +36386,6 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781123400
-      },
-      {
-        "title": "Why Super Micro Computer Stock Got Crushed Today - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQeEV6bThLaUNBcWNUaFVWb3ZNTDNCRlVxOFB2UzlpMkZEcGh1cFVDZi1XWThhQlZIeDJQSTdYam13YXZmTnA2VDBhbzd1UWhnTVZsUmcwNUNDT09Wa0w2NGRQblZIOVlVZ1NWOEpDNUxDMWwyaWItRWZwQU52Y2ZkZjFfQ1lVcDVnTWVwclBsRC1oa0d1WnhnVk96RQ?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781105031
       },
       {
         "title": "Super Micro stock falls 13% on $7 billion financing plans as company touts AI server orders - CNBC",
@@ -36460,7 +36458,7 @@
     "BBRI": [
       {
         "title": "BBRI launches IDR 500 billion buyback for MESOP programme - IDNFinancials.com",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQZERuSWlEMjY1RjkxQ3p6UGZWOUR0S3VUZnB2Z0txRldmb3RCNnpDMmlENmNDV1lYc1gyVGRRSGduN1hqNzNnd0l4dTFxWnJQWENvM0QyRG5UQlJBVXNkR29NSk9OdlF6MDRPVEN1bXE3dEh6dlpSejNWTTZwXzM2MlNWcHlBcXh5Q1VXS3NMbS1mOUhOZWNZNXIteS1aZw?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOcGFRVF8xSVZrcHhwTk5BWUl3VWpJdEFHT3M1dHJUSkpJNy1ZaGNtd1UwMVJtT2xCemdxZGFWaHZRWDQ1Yk5zb3hNQjFmQnNpZC1jRXk2d3ZJa3NuZGtYR3AxcmR4Z1k0RFFZcVVWZEhJT3NmMU9vem1tZlBDWTRaSEROWDRZNXBSRElJRmJ3aGpSTHVPTmlaMjhxa1YxcHM?oc=5",
         "source": "IDNFinancials.com",
         "geo": "ID",
         "category": "MARKETS_FINANCE",
@@ -36651,13 +36649,13 @@
         "ts": 1781252179
       },
       {
-        "title": "Bank of America Declares Preferred Stock Dividends Payable in July and August 2026 - PR Newswire",
-        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPU3pLb0xmdk1JWlczOVVmLWZLRUhzY3M2YmI1STNtQTA4T3poY1QwUDkxWE1xRDFxSmdsUWNsVjdkM2k0Q1RPVERlSG1fNmNXRm4xTUVLblZ2YVA3QV9CMUZ4Q3l1Wm5aUGhuSzdUNnoydkpKeXNaS0hpOWhJLUcyWlBybGRvcjF4X0JNUkc0ODJYVGZST0tlZ1BLY3NRb19pRlBQZEhabDVLMjBYZkpCRDBjY2sxSEJlaE5hSXBTSnBIV19Ec182VXB2NW9KNXRKYWQwTg?oc=5",
-        "source": "PR Newswire",
+        "title": "Should I Buy BAC (Bank of America Corporation) | AI Analysis, Technical &amp; News Insights - Kavout",
+        "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE9UclUyN0FDVFNIWUJrMl81ZFQzOUdmVWNFTmRjeWJ6U3pfV2gyN25vSmo1eWd3d3NETmMtSGVTTndFb3NiSnlsNU5kTXlQU3N4c0pCcmRKcDN3amY2SWlSRnVtNVd3M1l2LUtxWm42RkU2TTlN?oc=5",
+        "source": "Kavout",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "TECH",
         "summary": "",
-        "ts": 1781208900
+        "ts": 1781247216
       }
     ],
     "BLK": [
@@ -37012,6 +37010,15 @@
     ],
     "SLB": [
       {
+        "title": "Why SLB (SLB) Stock Is Down Today - StockStory",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQRlU4RjlVRFFJTHpuNlpKb3VKQy1LVUlrcVBKN3E1UFRzYUctd3E5NlYtSXc5STZpZGVGX0FIVVF5V0FWV214Rlk3ckVkdjJHa09TQktVSl9vQ1hyY1JqTEx6ZnhNMUlMa2ZmRkVIOTFJXzRxcE1IZHZOdG1JTC1mc0tSMktJYmNhSEVmTG44MmZEUGF0?oc=5",
+        "source": "StockStory",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781539763
+      },
+      {
         "title": "Is SLB (SLB) the Best Turnaround Stock to Buy in 2026? - Yahoo Finance",
         "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPMi1EOEZMWGc0dzdPWVpmYUdLRGE4TmUtR3c0YXQ4VjdnVXZ5WXFFUDR3UEJvVzVFSHNmYXRBTUg1Qk84eXF1eDZYWmJWc2RGVEpGX0EwR1BER183X2ZxQVVpUnhVcVhvejZKZ2FOQmRKS2ZHdW9HVUhtSWpPYVJhWVR4YjA4VU92WkFnV0RtT2ludjhvOEJxV3F3?oc=5",
         "source": "Yahoo Finance",
@@ -37019,15 +37026,6 @@
         "category": "MARKETS_FINANCE",
         "summary": "",
         "ts": 1781369599
-      },
-      {
-        "title": "Assessing SLB (SLB) Valuation After Recent Share Price Moves And The ChampionX Integration Story - simplywall.st",
-        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxOU0FQNi05Si1rM1UybnU3UFRVZjZIZEFsQ1RMSGRlS3hETHJkTUJBb0hDa1J1Yng5aG51NWd0aVdHZHl2X2w4Qk5YM3hnUWpXTkhSOER6dENQSFZGX2U4RVJEQnEzdEtYWWhEMXlvekZkV184QlY1SUw0VlF4RERNeWRpM3VCMVA2MDJDelB6b3dJbTZadjI4cFlxbGZMZnpadElycnlXb0dGTkJzTHVSNzlOdHRuTnE20gG-AUFVX3lxTE04ZUpTM3ZTam00MEZ5bXFpYjRTbHVoM1prNzdmTGVTVkVMSjFNcF9wYS01NEc2djBWNld4OWRVa3RqSDZCeGNXeE9HTDExTjhrUzM2X0RHS2tELUY2cW9EWDEtRmRLQTgzU25jTlV6LXI2SWc3WkxrMldjbFY4UUcyYTdZWmdFUk1VeUgxVFg3WHpaNU5Cb2wtZWJKRVFWVHNnV0oyWHRmOTRWMGk0MGktMXFMMk55Q01rM0RjSnc?oc=5",
-        "source": "simplywall.st",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781135288
       },
       {
         "title": "SLB to Host 2026 Digital Investor Day - Stock Titan",
@@ -37206,13 +37204,13 @@
     ],
     "NEE": [
       {
-        "title": "NextEra Energy (NEE) stock sinks as market gains: What you should know - MSN",
-        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQbV9sTTFtR0JVLW51cEVkXzZnSndYeVEzTXNSTGowM0hpRUdVMEhpUk1zX2RWbHVENGtTWW9fcTl1eF9sNy02R2YxcHFpR2FYc1pRZkdXS2U4V0RqeWVJMUU0OGMtQ1UtY0VqV01ZTkpEV3RxaXVDVkxMeGQwaHV2VTBESWp2Yk1mTGZ0VVNlTUlxNDVoUE1ZUWNvNEktbXVscWJPVG5nb1c5cmM0QXJ2bGo4UU5RMGpROFVR?oc=5",
-        "source": "MSN",
+        "title": "NextEra Energy Stock Up as Traders Watch Dominion Bid, AI Demand - TechStock²",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOZjMybDVEU1pJTHBTNVcwc1ZxcVJVQWpiV09udmdGX0RCQ1k3RlJ2S1JVbFBac2VhMVJSdXlPbVJFZmJJc1JhTVA4clk5aFVFaHoxak5PN0NRMU1nSnJHc1M3RDFocjBCU0RCQUdlM1YxTmpJSWtMYVJpdGs5WnQ2eUVNSHN6ZHI4VlNBcg?oc=5",
+        "source": "TechStock²",
         "geo": "US",
         "category": "TECH",
         "summary": "",
-        "ts": 1781324813
+        "ts": 1781377144
       },
       {
         "title": "Is NextEra Energy, Inc. (NEE) A Good Stock To Buy Now? - Yahoo Finance",
@@ -37710,13 +37708,13 @@
     ],
     "NKE": [
       {
-        "title": "How Nike’s Running Revival Changes The Nike Stock Story - Trefis",
-        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNSmFneTNLNHVwclBtRnIta3hpTEVYX2d4alluYnBzbG9xcDd5bmRJSnlGMml2NVA5bkpkRDItVXpySHp1SVVIdS1oZHZfOHN6N0llMHVxRnlzSkFyakpKOTNLdENDQm9KcGpoQ25zdmFSdnFvMjdiNl9INmI1RVhKZkJCamt0UzZaaEpHNFp4MDE5c2pYVHZBdUs3VXZPMlA3aGE2aGVyUzBiWXpCTmJKOC1uVlM?oc=5",
+        "title": "Years of Rewards: $28 Bil From Nike Stock - Trefis",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPd2pFdF9GOVo4cXZHZzJRY3pRdEdzMlNQLUx4Y0hJVHFoSi1HZHRkR2hWWFljMm91SUx4SkJtN2pjSFZkZll5WmNSTTJ3bUdhcFdSYXhhZnlTcThCanJRTDVVOFA0b0RwVnBqa3o1NTlBcW1CemZsVkpaSjdtRkVoNTdlcDhsTGNndFczeTF4aklrZGpIWFJtT1dyRmZrdXg1?oc=5",
         "source": "Trefis",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781283300
+        "ts": 1781340430
       },
       {
         "title": "A Look At Nike (NKE) Valuation As Recent Share Performance Remains Mixed - Yahoo Finance",
@@ -38118,13 +38116,13 @@
         "ts": 1781359380
       },
       {
-        "title": "Should I Buy UNH (UnitedHealth Group Incorporated) | AI Analysis, Technical &amp; News Insights - Kavout",
-        "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE1wY3dkeVNldlhORXdhZGUwMGFYaGJTdWJKNFhNN09Cb3lRcU1YMmRTVWItamZoTUVGYWtXMlFrdjA0WTlFdXI1VVhDcGV3bDJrRmREWVIxeEl0M2o5VDlxZXBWZGR2ZHBlaDVPM3VpdjZqVTQ4RUFyZ0F3?oc=5",
-        "source": "Kavout",
+        "title": "The Stock Price of UnitedHealth Group Still Falls More Than 30% from Two Years Ago, and Policy Dependency Becomes a Key Investment Consideration - NAI500",
+        "url": "https://news.google.com/rss/articles/CBMihgJBVV95cUxNYktvRVFLM2xSOXR3Q1pSWFFkdHBYdzljUVNpY1RjWllIVnc0NUo1S2ZmdFVseE1mZi15bVA2RlRfQm9Zb0laUmo2QXBfQ0p1SVdSWEtzNzlHUzRCeFI4Z3FfR3JfZUs3YUN1ZGlic01ZNmNfNDZzazRyYk8xbHh4ZjhocTAtWEQzd0FGRGRtVGlrOTFFUkxLdktsckxDWDNneFBMZXF6Q0FwWDFpanljMUw3ODBMRUVtbm5oaERWdEdWeGphRWlVMHhvYjV4VzBsZnU4a1Q4Si0zdGNpNDQwS3JyOWIwVTV3aVM3T1BlM3lkU2wzZlR5WHhwNXJBbW00MWhTVTZR?oc=5",
+        "source": "NAI500",
         "geo": "US",
         "category": "TECH",
         "summary": "",
-        "ts": 1781223064
+        "ts": 1781250056
       },
       {
         "title": "UnitedHealth Group (UNH) Stock Moves -1.28%: What You Should Know - Yahoo Finance",
@@ -38234,15 +38232,6 @@
         "ts": 1781253646
       },
       {
-        "title": "A Look At Thermo Fisher Scientific (TMO) Valuation After Q1 Beat And ASMS Product Announcements - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQdWtVZmVONHhoV3I0OFV6MDRvY2pjMHc4OFM1RUw3WTRwMWVBSmltMzlJOElqeW5NSjhvNXlIYWxFS2Vkc29WM0Jhb0dYY1RYdW9URmNWUkkybGFueXJ3dW9BRmw0MHJVRWZZY3BXamNLREFVaXUydlBuTE1hLXhycmxPN0VLOWlCRUJFdldlNU5wWUl5eUFpdDFjbmRRWkE?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781129731
-      },
-      {
         "title": "Thermo Fisher Scientific Inc (TMO) Stock Up 5.2% and Still Under - GuruFocus",
         "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQNW96MjQ3Rjg3S2RpS2JhM0duNktzZXhQSXdFR3IxdG9Del92OVNsMlBlbnVvUWwyT25tZHYyT19zRFdzVUc4YWxDVGxLRVltYzNHZmdOaW9HVmZEbERPRFMtNGFUQk5veGxjTGV0ZzlleFg2WWZ2V1IwRGRhZGZiVUozUGNESWk0X1Q5TUNhRkVheVl6SUNwd0ItY0t2aUhfeFhveFpRd29XZ3ZaM3VId05QQlZ1REtGbG0wYjV3dXRkNXBXcEZhUjRNYjE?oc=5",
         "source": "GuruFocus",
@@ -38250,6 +38239,15 @@
         "category": "MARKETS_FINANCE",
         "summary": "",
         "ts": 1781040264
+      },
+      {
+        "title": "Cerity Partners LLC Purchases 201,956 Shares of Thermo Fisher Scientific Inc. $TMO - MarketBeat",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPWExwMEsteUpfLUVrMWZFUFRwNUN4R1BHMHlrZjVPVkl0LWxQaTVSNmtjNjhHNVZLa3JDY0JxNGM5SENmX2FXQ0JXM21vdjNuaTJWaEVReU1GNG8xNG1JZms1Yk1VcmwzNV9UcnA1SEhXUmU1Rzh3dUdIWXUxRm1yLXhoRUJSWVgyczBWUzJHd29CTlE2dlAyUjRILWRhRVJJdGZUZ2pCUlV0WTJMQklRRkdfa0JoYmVNUmRGakx5RjlpWnc2blM5UGNoT2pZMDhWZVhRakM0cw?oc=5",
+        "source": "MarketBeat",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1780992862
       }
     ],
     "MRK": [
@@ -38312,6 +38310,15 @@
     ],
     "ABBV": [
       {
+        "title": "AbbVie Stock in 2026: Skyrizi and Rinvoq Drive 12% Revenue Growth as Margins Begin to Inflect - TIKR.com",
+        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNWkZUOW9NRWdFRHNNR29HY3dwY2t3ajFKRGR4NGFfS2xuUmRmVU1BNXYtcGo4TVpZNVYza1RpSjg4ajh5U2J1N0YxQzFRbTR2bkpUclIxQnhBTHZwdTUtNk9mQ3l0TnFBdEJjZFZsOEtPZFhRQXRrU1BoQWtXbFZFRHhNdm5YbS1fRlJDYVZMQ2NKMjA4R0hyZ2xQcEtWMUp2czlnclJrc0pKb1JqRVpkam9nUUhqUC1Ed2c?oc=5",
+        "source": "TIKR.com",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781540153
+      },
+      {
         "title": "AbbVie (ABBV) Stock After Steady Gains Can DCF Upside Offset A Lofty P/E Ratio - simplywall.st",
         "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPbjZwV1VfY1EwTG9iSWE1X3RkSzJ4NGVza3cwUjI4TndLbl9iczkxdE9UeDBMMUpxcFJrUFRUM3pqTGsyN0U2Q0w3LXBxQnEwX2VycWIySk01TURjOWwtSGVEN1hucm1kcnRoRkpiMlBvVExDUTlmTXVtaWZXZDJ2U0gzUV9WNXFFYy00aDQwU1JNQkpyUUkwMkhSUTZtQmtsNWxYRDdGOGViYVA3TWRtOVhXSUsxaEszenB4M09RZHBORG1UMHVYeURDVFQxUVhiWTFYRtIB2gFBVV95cUxOamlHMFJyZ0xSQi1Xa1dvejUtX0VMMmFJUjUtOGhxRm9wNzBac1NJRGxjeGpySlcwUC1CMjNtNFBjT2EzdXNCd0Q4WUVzS1FvWHllUWctZFBJTTl0R24wako2dmpYMmd6amh3a0FVM0VVWWxRQ040MDdiU2tVSk5qMG9lM2ptSmZ5U2lTLWQ4ODA2aGZlLUdTZHl1c0dMSUFkeHJhaG9CT3lJUE9qUUtmTHdRWl9OOURidTRhU3VrN2FxaGhnb0lsSEhnWFZhbGFXSG9qZ0NwS2c2UQ?oc=5",
         "source": "simplywall.st",
@@ -38319,15 +38326,6 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781360605
-      },
-      {
-        "title": "Up 45% Since 2024: 1 Glaring Reality That Makes AbbVie Stock a Hold at $225 - 24/7 Wall St.",
-        "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxOVzhHclF6M1ByQUZ3cmlOMWxBWmlXWXRtd2RfRWk3VE1tVml5SElNU3VtOThYTlhnVVRrQ1lSUzVqMlNaWU9QT1lvQm1mWlZFMlgxMUE2SGFJTlZqYXhpTlNJYkR5VlFlQkM2Z0VUNHFscUdrbVZHTDhqN3d1bGwyY1ZIbDktQWJGX0FWVlBWa3FYTUhqVzlJNTBGWmM1bzF1YzcxS2tLOVFSckhGWnBSbUh0R2hpOXc?oc=5",
-        "source": "24/7 Wall St.",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781202127
       },
       {
         "title": "Is AbbVie Inc. (ABBV) A Good Stock To Buy Now? - Yahoo Finance",
@@ -38350,6 +38348,15 @@
         "ts": 1781138700
       },
       {
+        "title": "O Shaughnessy Asset Management LLC Increases Stock Holdings in C.H. Robinson Worldwide, Inc. $CHRW - MarketBeat",
+        "url": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxNcUxMbl9wbm0wRGlFRHF5akx6dVp5QVFsNXBrY3pSOHJPR0dCMTJaeGRzemtiNW91RXFmQW5VWkFQTW9NUmkwenV3Sk8zamgtTlZkcS1PaGdQU3ZSVEZMUEdHalpiWU82bVNYc05fZ0V6Yzg5QVR5TUlQUXBwMWozWk90amJxSm5PbzBFcHRiUkZDTHcxYkc1bDFaaFYyY0hHcUxNX3gtMG1NcWVYLVI5b25kdU1ONHFQTnF5VnlJNW1rcUNDX1ZuN0hUTDRlU0otZUttNjdCaTVWXzlTWnFIc09adzJfTU5fT3c?oc=5",
+        "source": "MarketBeat",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781084631
+      },
+      {
         "title": "UBS Boosts C.H. Robinson (CHRW) Price Target on Favorable Freight Trends - Yahoo Finance",
         "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOanQ1WnVuVGFiZmkxd0tKdkx4U1BiUUNPWm9uN2N0TDBqQWloNll6dWo4WEktYTNTazQwZGtnbm81UXlXWENzSlRBSlY2QlFRNFRKVTd0bDl1LUkwV29YWWJreWxfb21aSjBpWTQtVm02M2oydDVpRlVORmRGZE1tSzJMeDh0V3RZUVBrMnNxNzFndw?oc=5",
         "source": "Yahoo Finance",
@@ -38357,15 +38364,6 @@
         "category": "ECONOMY",
         "summary": "",
         "ts": 1781061960
-      },
-      {
-        "title": "Assessing C.H. Robinson (CHRW) Valuation After Lean AI Engineer Platform Launch - simplywall.st",
-        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNQ3gwS3E0Nm5tMlA3X3ItMzZCQWtoN3IxN2ZSYjZUeFlSa2p1RUUtczdtMUUyUkd6TjlwY09fYTBRZEtWYUhvOUxqdGFLUXNGODFCWVh6NmprSk4xZVVtNjcyczN3WlNtamFtTlpzaWxoSHdTYlZWTU9qeGhIT0VOeGhZRkh4emNpa0RsbXo4SW55aTQxTnFqZENVRUFCWEdqT1BPdnhrTWdvSXlDdkh3SFRCYTltMHBHUFctcmFQLUtKbV9WSDRlako1N1JreG9GcmtCTzVVd0tpNzBaeUHSAeMBQVVfeXFMT2wwTUdaTm0wS0pBZnpNVVBYRE9UMlN2Y0pHcXozQldWRjFqbDBKVlZiTl9fTjlSTmYyMEQ1N2RwVEh4ckFOVV9GbEp0cGlPN3pQOW5YTTlYTG9tSG9oQ0hJalpKY1AySmIxRWVFOWNYWF9LVFAxRVN1bWdwOXVIT0FHRkliRWlVZTZFek5nRF9seGhMZDAwRy1NbWg4Ulk5TWxlZXdFLWJoR1BfanozNGdvbkdZY04xa1RTOHVDLXVrSWFOazZ5Q2dINzFldDZnRHBVejdBVFFqYlJJVTd6b29zN3M?oc=5",
-        "source": "simplywall.st",
-        "geo": "US",
-        "category": "TECH",
-        "summary": "",
-        "ts": 1780982482
       }
     ],
     "GXO": [
@@ -38740,6 +38738,15 @@
     ],
     "LYV": [
       {
+        "title": "Live Nation Entertainment Stock Surges 10%, With A 5-Day Winning Spree - Trefis",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQd29IZ3RFRGNXVjVUNmtrRzh6UTU3WkQ5VExudTB3eGpFV0tpbkVIZmpMNzlsUElqNy1ZcGRVLURnUEZKemtqXzZQeGU2TEhfRk83Uk1uc1B6a1hnS1BMUEFhRDRQeERtMDU0b0JVQ3pXSE1DZGZNdVRoRHhHMjlIcFpiR3lJNXd4MzByWFYzLXlrV0U2Y212ejFwZmdoZGlUcDV3X2VIX0d2YW9oZktXeVJkWHVIdEdjdnlHZkUxSktaZGN1ZjBVeWwxTnBwTkIxbWVv?oc=5",
+        "source": "Trefis",
+        "geo": "US",
+        "category": "TECH",
+        "summary": "",
+        "ts": 1781586845
+      },
+      {
         "title": "Live Nation Entertainment (LYV) Stock Looks Slightly Undervalued After Recent Strong Multi Year Returns - simplywall.st",
         "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOSV8wVlhpaUdZR182WVdjUnBQeEpMdEhwaXBvS2wxVVU1RDFGZHZSX09ZMHBNVk9kcmtkTjZrUXRCS05zTGttVVNEcFl5ZTRmU2RkY1JRR1lMcWNJOG9mLTBzQ3VEZVhEQS1ZR0ZGeW9NS0VRRzFDMExkWHhiMWt4T19zd283YTBfNVRpM3NRczFfNmx5RHlaMk8zRmtxby1ybGpLdkt1VnhCQzVucXdQRkRfRWVoV1lqUHJpaTZaZ3FaYlQxb040Z0x1TGttZTdKajlBUNIB2gFBVV95cUxONzNEcktIWm5OUDVXX0lzZDlBdzA2TFoxM21SX2NtMnBoSVlsMmZHaGMtZlV1WTlkVjlla1U0M1c4N1hfV2NxWjI5UlhZUmtreVh3T0F2ZGQ5R1JGNmxTYTVKRnBXQkVkeUd0SHVKQkozV3JRWUczSERNODhqWU82QjZnX1ZBQTZDcy16cEg2SGJZQjZtV0JHNVdDSmZoWGlTaVRvM2lsQUpSSndIdzV2OHFPektjbmtHa2xqLWlhM0tmbkU2TFlvTElMTGJKSURkYnVrc1R4QUJKQQ?oc=5",
         "source": "simplywall.st",
@@ -38756,15 +38763,6 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781241110
-      },
-      {
-        "title": "Live Nation Entertainment, Inc. $LYV Shares Acquired by CenterBook Partners LP - MarketBeat",
-        "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxOdDkwX09KMkFzX2sxRy1Mc0RBS1NLWURPLUdTTkt4YW9XVF9UTDJ1c05yVjM1bEg4bUFPMkd6NzBlM1RocHFDMm1aV1ctZDJ3QWpscVlIZWRTT0xKazZJXzdMRlBYY2xzSndoU2tlRm1qdlh0NGFrb3ZReW9ubEhEX1NweENjS05UQ2tyME1SN1RWQV9oNnBKRnBJNGtNSExUMlk3MURMeUotLW91OG52QmR0LUxqZk0tSG1LOTlXY29jMjRTaEgtUUZrR3lSOU55aXc?oc=5",
-        "source": "MarketBeat",
-        "geo": "US",
-        "category": "TECH",
-        "summary": "",
-        "ts": 1780992249
       }
     ],
     "TTWO": [
@@ -38962,12 +38960,12 @@
       },
       {
         "title": "CBRE Group Inc (CBRE) Stock Up 3.3% and Still Undervalued -- GF Score: 95/100 - GuruFocus",
-        "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQT19BcW1TQWJuN3VySGNiT0lVb1dfYkpFeHZoak1UZGNueUd2SmY2RmhQWC1EeDdjY3N5akxSaE1kX1FOX1VScEFZWnFyRHRWLWxmS3cxYUM3UTI4cWZib01ibG90RE9RX0pIQUlZT3dJUWhTbzgtal9XdXlMVWlrVU1saExYekxBYzRaZzZORmpveXlTTUpfc1JWTWEyel82LU9YSU1nSlVRU3M?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQUnpTV3hZNGZNd0p1ZTFaOHpHaVBsd1F5WVM0ZkFSUWNYYmZWQTROeGJXX3FwNjNCYkplTWN1b1ZRWGVmb1NEWUdSLXU2UTczTVNGS2NQQTNXM29KMVVCTG9icHpsMTlKLUJDZFdsWWJoemNHZ0xjOHREM1FyNWVjbWFmbks3VWZ6X3BLN2I0WDFnR3BxelBYNW8xcjR0aElibWpub2l3UXY2YzZIa1ViSXI0ZkF1NnBrbWJz?oc=5",
         "source": "GuruFocus",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781046380
+        "ts": 1781056350
       }
     ],
     "ASRI": [
@@ -39052,6 +39050,15 @@
     ],
     "AVB": [
       {
+        "title": "AvalonBay And Equity Residential Merger Reshapes Multifamily REIT Valuation Story - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOVGdRNDlMSkV5UnZ0Q3VSNm9YT3NiOXhlTHRlTTBjbll6MUtNTEZFT1ZySDBDaWpyVlpoNnZBZTJONGFuNnRNeTNYQWc0MjcwUlhySzhtcFhUNV9vS1BYaVdpejFfbl9qYlV6QUdTWWpTLWJVSUlXUnJsZFN0NTVlSHBKQmc3S2RFS2FkR3dYcnNyeUEwSlJ5d1JKcXNLR05GT2VmbFJyZzJUQUFHemc?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781363576
+      },
+      {
         "title": "Assessing AvalonBay Communities (AVB) Valuation After Recent Share Price Momentum And Modest Undervaluation Estimate - simplywall.st",
         "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOcS1TVGRlX1RmcGZCY0hJNHVkOGVxNG1kRmhEdTZ1UnhDRElFYU54V29BOTVMVk9lOGgzZ3QyQ2hOdFpYbmtvM3NyU3NRV3JjR1U2LXJrVVg1Y0JlanROMzBFQ3NJRmE1dWcxQUMwbV8xc0RvTzI1bUtOQmRadTRkZGdmcXhLV09XaUh2UnVBckZkU25VXzF6cU92MWRWeGk4ZU95WG9PYXMxSm1DZ0w3N2Rxa00wNFFFZW50aVRWZm1POFVwaTRER3pSOFFoZkVMNVJxTmdVTdIB3AFBVV95cUxQMXdRWTNTby03dko0aWdjZl9fMlg3UXdiS2RNQVA5TFliRldZOXNMZDdoWFNxYXhFb00zZWZLZXBPM2huNVEyeDV1LUlxQWd5ZHhqM1M0YlVMdzlXRFBkS3lqSTczMlRvMHA5dVNZVzNrSFJSNzJrRkg3blpRQzR2RjlzaVRsS09sOC1yQ2l5QnpCSm5jLXNyMVJNY1BsYTY3OG1mdGVLY3JMTFlVRDk1M0lOSVo2cjNvTHZNYkJpS2dTUnc4eWgtanVZaVlzTXdhdnc1NExCZ000bjFv?oc=5",
         "source": "simplywall.st",
@@ -39068,15 +39075,6 @@
         "category": "MARKETS_FINANCE",
         "summary": "",
         "ts": 1781047575
-      },
-      {
-        "title": "AvalonBay Communities, Inc. Declares Second Quarter 2026 Dividends - Business Wire",
-        "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNZzlLbnBxdHRrZGkzT0NEOENHUFdScDFUcmFacGRPa0lQTFhVanJaaHl4M1NIWmU5UFJiUW1BdnBiYWFnSFVSYzFfb1ROU21QUzdNcmJnN0lBcUxxbEFadGxTSmVfNVpwa2psMHpNbXkyUW5qOWNnZnd4V29NLWdGcG5NcFZGeGVzdGhTeWg0YWpoNzJ1bmVvT2VoV2pSejBlSmtDTXRMMVFMdUtuZkprM0ZLSWhBUVpoWnM5bU9pTQ?oc=5",
-        "source": "Business Wire",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781036100
       }
     ],
     "SPG": [
@@ -39282,35 +39280,6 @@
         "ts": 1781242080
       }
     ],
-    "LINK": [
-      {
-        "title": "Best Altcoins to Buy in 2026 - The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1LWUdXOEo5ZGx5eGRnelhKVVNnUEhQX25Wc01vSm9odm90SXhvVkI5SHVJZnNhVTYwVEdpYmNXT3JvdDBnN3VxZGNPT1JialJXQ09UTXZzYnBTTEJWd2E3V0Y0Y1Z1c19hZlFXZ0t6SlJWQmFPOUZDbzkybw?oc=5",
-        "source": "The Motley Fool",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781467620
-      },
-      {
-        "title": "Chainlink Settles the World Cup but Markets Won’t Settle LINK - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQTl9iX3MzQ2FXOGFMc2dMQjBubnEwOEJQMFJnQ2ZILVVKd1Z1N1owd3UzcDY1bUhLTnFZTW8zM1NqbGIwM2pwVFBkT2U1Q0lnMW9TSlkyYWQ0MG92ZDBIZ2EyRFE2ZTdONk9KOEl4bjhyNktUOTdydXRoX283cXd5Wi1pcWhsdk5EcUZ6QnBZTWhHeE5mNGhOSkxKYTFBRUpEeEE?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "CR",
-        "category": "TECH",
-        "summary": "",
-        "ts": 1781418660
-      },
-      {
-        "title": "BITCOIN PRICE TARGETS REVEALED (Short Squeeze)!!! - Bitcoin News Today, Ethereum &amp; Altcoins Seth Jarvis (3rolccZH6i) - Mshale",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9NZ1JGcmdfb0pHLU1ZZm5fTmFFaHU4MHR3WVZHdE5xWG9ZaWxFcVlOalFmZ0RObUVwdDZKVmp3RkhjOG9YdTdDVGtTQVlRMmJjalQ3R29LV1BvRzQ?oc=5",
-        "source": "Mshale",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781205533
-      }
-    ],
     "BTC": [
       {
         "title": "Strategy Stock MSTR Offers Bitcoin Exposure At 18% Discount - Bitcoin Magazine",
@@ -39340,33 +39309,33 @@
         "ts": 1781003408
       }
     ],
-    "MATIC": [
+    "LINK": [
       {
-        "title": "Stock Market: Will S&amp;P 500 Open Up Or Down Today? - Benzinga",
-        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNNk03dVVZOFVydVRYRl9QdlN5cFVrYkFUTE9taG9QajlYQ3FMOUV1c0owdlNpTGpJd09OZzdSTTZwY29pLUZ1X0hiZXJtejZySmYxVk84Y24tSFVxNHljR1pzUE5yMEh0Z1l4YUl5TmE2YWtoaDItZE1hNXh0bmxnT2x2Qmx3eFh0UThzQVpKdXZZQlBNOE5JVlRBR0ViT29fYjNYUERSQk5SSlZsSlNsYU1fdjl1QQ?oc=5",
-        "source": "Benzinga",
-        "geo": "CR",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781504037
-      },
-      {
-        "title": "Polygon (prev. MATIC) Price Today | POL to ZAR Live Price, Market Cap &amp; Chart - Binance",
-        "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9HaTNmS2syU1ZKY1pMWnQ0Ynk3OWhOSVlDWklPaWVlVGpyT1pfbk5HOG5TM25fNUU2Sld2akR1VV84U2ZMLXhKNkRkVl91TWYtckkwX09HeTRFQXRSLUVkVFgtNUk3TnJjZ3Aw?oc=5",
-        "source": "Binance",
+        "title": "Best Altcoins to Buy in 2026 - The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1LWUdXOEo5ZGx5eGRnelhKVVNnUEhQX25Wc01vSm9odm90SXhvVkI5SHVJZnNhVTYwVEdpYmNXT3JvdDBnN3VxZGNPT1JialJXQ09UTXZzYnBTTEJWd2E3V0Y0Y1Z1c19hZlFXZ0t6SlJWQmFPOUZDbzkybw?oc=5",
+        "source": "The Motley Fool",
         "geo": "CR",
         "category": "CRYPTO",
         "summary": "",
-        "ts": 1781125320
+        "ts": 1781467620
       },
       {
-        "title": "10 Best Cryptos To Buy Under $1 In June 2026 - ZebPay",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBVRmdMa1YxSXZ4SFV1cHBDR2JIVDQ5dlRIeVNNNHVyV3hjR1RldWhicVNqT2dOZnV0bXNRZTdnOGttc29rcDc0b3dBUTlYXzU0LU5GaFlEWXRRV2dIaTB2cDhOSGtYTFkyNkZ4bkpnNkV1U3NHV1Z3c01vNA?oc=5",
-        "source": "ZebPay",
+        "title": "Chainlink Settles the World Cup but Markets Won’t Settle LINK - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQTl9iX3MzQ2FXOGFMc2dMQjBubnEwOEJQMFJnQ2ZILVVKd1Z1N1owd3UzcDY1bUhLTnFZTW8zM1NqbGIwM2pwVFBkT2U1Q0lnMW9TSlkyYWQ0MG92ZDBIZ2EyRFE2ZTdONk9KOEl4bjhyNktUOTdydXRoX283cXd5Wi1pcWhsdk5EcUZ6QnBZTWhHeE5mNGhOSkxKYTFBRUpEeEE?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "CR",
+        "category": "TECH",
+        "summary": "",
+        "ts": 1781418660
+      },
+      {
+        "title": "BITCOIN PRICE TARGETS REVEALED (Short Squeeze)!!! - Bitcoin News Today, Ethereum &amp; Altcoins Seth Jarvis (3rolccZH6i) - Mshale",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9NZ1JGcmdfb0pHLU1ZZm5fTmFFaHU4MHR3WVZHdE5xWG9ZaWxFcVlOalFmZ0RObUVwdDZKVmp3RkhjOG9YdTdDVGtTQVlRMmJjalQ3R29LV1BvRzQ?oc=5",
+        "source": "Mshale",
         "geo": "CR",
         "category": "CRYPTO",
         "summary": "",
-        "ts": 1781074800
+        "ts": 1781205533
       }
     ],
     "AVAX": [
@@ -39398,16 +39367,36 @@
         "ts": 1781193601
       }
     ],
-    "BNB": [
+    "MATIC": [
       {
-        "title": "Airbnb Has Gone Sideways for Years. Here’s Why 2026 Could Be the Turning Point - TIKR.com",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPU0dWbldheWg1c1FLVXVrcU9Ud2Q3MnVXVl9RZlE4ekJHSV9YcEJsZ21iczZ0eldhTWJ5RVZSamN4d3ZNV1BYUENuMmo4dVZvczBRWEZ1OWJ6SW9oV2FVbTZ3M2w2eGcwZlk5VlM5Wk9JcUpscWc1WjVQeGNQZlU3VThQTGh4ZFh4ZDl0b2xQWG1oRXUybGMxeUhuQ21NWlpQSmZyTg?oc=5",
-        "source": "TIKR.com",
+        "title": "Stock Market: Will S&amp;P 500 Open Up Or Down Today? - Benzinga",
+        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNNk03dVVZOFVydVRYRl9QdlN5cFVrYkFUTE9taG9QajlYQ3FMOUV1c0owdlNpTGpJd09OZzdSTTZwY29pLUZ1X0hiZXJtejZySmYxVk84Y24tSFVxNHljR1pzUE5yMEh0Z1l4YUl5TmE2YWtoaDItZE1hNXh0bmxnT2x2Qmx3eFh0UThzQVpKdXZZQlBNOE5JVlRBR0ViT29fYjNYUERSQk5SSlZsSlNsYU1fdjl1QQ?oc=5",
+        "source": "Benzinga",
         "geo": "CR",
-        "category": "TECH",
+        "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781535607
+        "ts": 1781504037
       },
+      {
+        "title": "Polygon (prev. MATIC) Price Today | POL to ZAR Live Price, Market Cap &amp; Chart - Binance",
+        "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE9HaTNmS2syU1ZKY1pMWnQ0Ynk3OWhOSVlDWklPaWVlVGpyT1pfbk5HOG5TM25fNUU2Sld2akR1VV84U2ZMLXhKNkRkVl91TWYtckkwX09HeTRFQXRSLUVkVFgtNUk3TnJjZ3Aw?oc=5",
+        "source": "Binance",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781125320
+      },
+      {
+        "title": "10 Best Cryptos To Buy Under $1 In June 2026 - ZebPay",
+        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBVRmdMa1YxSXZ4SFV1cHBDR2JIVDQ5dlRIeVNNNHVyV3hjR1RldWhicVNqT2dOZnV0bXNRZTdnOGttc29rcDc0b3dBUTlYXzU0LU5GaFlEWXRRV2dIaTB2cDhOSGtYTFkyNkZ4bkpnNkV1U3NHV1Z3c01vNA?oc=5",
+        "source": "ZebPay",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781074800
+      }
+    ],
+    "BNB": [
       {
         "title": "BANQUE NATIONALE DE BELGIQUE (BNB.BR) Stock Chart - ChartMill",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE0waG9UanV4aDNPTjZOTmd3TkpQLWVKUWd4OWozd1dRNFJpenItQmRNenpEMW1UZm1tZkNOWTB1WDJ3Nmg5YklMRWZqTUlYcW1hX2tVQ0hXWkVDYWZDU2MtY0lHMHZBTXc?oc=5",
@@ -39416,6 +39405,15 @@
         "category": "MARKETS_FINANCE",
         "summary": "",
         "ts": 1781283600
+      },
+      {
+        "title": "VanEck bets BNB’s real-world usage can stand out in a crowded crypto ETF market - CoinDesk",
+        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPb1ViYzhzWjNnNVpiODVHSDJjMlpFd09tbFg4bzJlMzVOd3g0RGZYQW9fcWgzTWtjemZRSUtLMzhVRFE0cG1iUDJobGNCQXREYmtqZHBoU3NBZXg2ZUd5b1NTZVBUTlo1VnhJT0hDclk0Zmx2YXV2a1NyYkVCMlY5QkpnaVhQQzBtNTJHdnctanRtdHdJVFRFYm9heGlHVDQyWVBkelNtMUxpVFhtdnM5NWdYM19LNTVIRjUtVWI1S00?oc=5",
+        "source": "CoinDesk",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781280502
       },
       {
         "title": "CEO Brian Chesky Just Sold More Than $24 Million in Airbnb Stock. Should Investors Follow Suit? - The Motley Fool",
@@ -40729,80 +40727,158 @@
   },
   "macro_analysis": [
     {
-      "point": "JCI / IHSG at 6,007.66, +2.07% on the session.",
+      "point": "The US-Iran peace deal and reopening of the Strait of Hormuz have driven oil prices lower, reducing global inflation fears and easing pressure on the Fed to hike rates. This has boosted risk appetite across emerging markets, including Indonesia, where the JCI rallied 2.07% and the rupiah strengthene",
       "sources": [
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
+        },
+        {
+          "name": "MarketWatch",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQR25EeHJqMWRTdy03Y1UzN3VYYXdhSzlUeFhYQmRGdDhuOHVFMjdzRlhOdnl5ZEtqenQxN1l5SkxVYWt6ZGpqdUJXcjEyZEF3WF9DTHptNGhPNVNod3I3OWFvOWVIYXFzSGFRSkVrb1U1LTBQMUtjbDcyb2VScVlYWFhYcmppTmxZbmJwYlRWTDAwalBmckY3RjFNam9sX1VnekpjVmViQlpwLXlpQkJYQXBKU28yLWZHLW4wQkxn?oc=5"
+        },
         {
           "name": "JCI / IHSG",
           "url": "https://finance.yahoo.com/quote/^JKSE"
-        }
-      ]
-    },
-    {
-      "point": "S&P 500 at 7,431.46, +0.50% on the session.",
-      "sources": [
-        {
-          "name": "S&P 500",
-          "url": "https://finance.yahoo.com/quote/^GSPC"
-        }
-      ]
-    },
-    {
-      "point": "Nasdaq at 25,888.84, +0.31% on the session.",
-      "sources": [
-        {
-          "name": "Nasdaq",
-          "url": "https://finance.yahoo.com/quote/^IXIC"
-        }
-      ]
-    },
-    {
-      "point": "USD/IDR at 17,695.00, -0.43% on the session.",
-      "sources": [
+        },
         {
           "name": "USD/IDR",
           "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        }
+      ]
+    },
+    {
+      "point": "Lower oil prices directly benefit Indonesia's current account by reducing the import bill for crude and fuel subsidies, while also lowering domestic inflation expectations. This supports the rupiah and allows Bank Indonesia to maintain an accommodative stance, further attracting foreign portfolio fl",
+      "sources": [
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
+        },
+        {
+          "name": "MarketWatch",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQR25EeHJqMWRTdy03Y1UzN3VYYXdhSzlUeFhYQmRGdDhuOHVFMjdzRlhOdnl5ZEtqenQxN1l5SkxVYWt6ZGpqdUJXcjEyZEF3WF9DTHptNGhPNVNod3I3OWFvOWVIYXFzSGFRSkVrb1U1LTBQMUtjbDcyb2VScVlYWFhYcmppTmxZbmJwYlRWTDAwalBmckY3RjFNam9sX1VnekpjVmViQlpwLXlpQkJYQXBKU28yLWZHLW4wQkxn?oc=5"
+        },
+        {
+          "name": "Crude Oil (WTI)",
+          "url": "https://finance.yahoo.com/quote/CL=F"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        }
+      ]
+    },
+    {
+      "point": "The rally in nickel proxy INCO (+7.75%) reflects a broader commodity rebound driven by the risk-on mood and the US-Iran peace deal, which reduces geopolitical uncertainty. However, coal proxy ITMG fell 0.43% as lower oil prices and a potential shift in energy policy weigh on thermal coal demand, hig",
+      "sources": [
+        {
+          "name": "Nickel proxy (INCO)",
+          "url": "https://finance.yahoo.com/quote/INCO.JK"
+        },
+        {
+          "name": "Coal proxy (ITMG)",
+          "url": "https://finance.yahoo.com/quote/ITMG.JK"
+        },
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
+        }
+      ]
+    },
+    {
+      "point": "The key risk to watch is the sustainability of the US-Iran deal and the actual timeline for full Strait of Hormuz reopening, as tanker operators warn it could take weeks. Any setback could reverse oil's decline, reignite rate-hike fears, and trigger a sharp reversal in JCI and rupiah gains, especial",
+      "sources": [
+        {
+          "name": "MarketWatch",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQR25EeHJqMWRTdy03Y1UzN3VYYXdhSzlUeFhYQmRGdDhuOHVFMjdzRlhOdnl5ZEtqenQxN1l5SkxVYWt6ZGpqdUJXcjEyZEF3WF9DTHptNGhPNVNod3I3OWFvOWVIYXFzSGFRSkVrb1U1LTBQMUtjbDcyb2VScVlYWFhYcmppTmxZbmJwYlRWTDAwalBmckY3RjFNam9sX1VnekpjVmViQlpwLXlpQkJYQXBKU28yLWZHLW4wQkxn?oc=5"
+        },
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
+        },
+        {
+          "name": "CBOE VIX",
+          "url": "https://finance.yahoo.com/quote/^VIX"
+        },
+        {
+          "name": "Crude Oil (WTI)",
+          "url": "https://finance.yahoo.com/quote/CL=F"
         }
       ]
     }
   ],
   "alerts": [
     {
-      "title": "Biotech IPO window is opening but big pharma M&amp;A still sets the pace, top bankers tell CNBC - CNBC",
-      "desc": "",
+      "title": "JCI surges 2% on US-Iran peace deal and falling oil",
+      "desc": "The JCI rallied 2.07% to 6007.66 as the US-Iran agreement and lower oil prices boosted risk appetite, with financials and mining leading gains. Monitor for continued foreign inflows if the deal holds.",
       "sources": [
         {
-          "name": "CNBC",
-          "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQck50TzhlU1BiR293bmV0RFhtWmVpOGJ0Z3U1eDgxeGFSU1ZCUnhoTVJvMGFmdzgyRlluNGNqSEZTLUlwbXY0bWF6VzlQQi1sWW54eVQtOFA1MVpBMVVyNlhhQkRVRVVYNHdpaVAzX2lodG1DLTJST2ZrNFA0OEREUmJta9IBiAFBVV95cUxQenZPM3hVcWhzVTZXZWtqYTJ0T09uUWp0b0V5eVZCTEI2bDEtSEl5OWI0NWF3bEkzQnB3LTl3YzI5QndtX3pyU1Jrd3FyMW8zcnZYOHpCRUJ5YWRSWE5zTlJBWG1aVy1KQU5hNW53MnIweUhHS25nZVpmeUVtb0FOVE56OXRieWZq?oc=5"
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
         }
       ]
     },
     {
-      "title": "Global big tech companies such as Google, Amazon, Microsoft, and Meta have declared \"脫 Nvidia\" by sc.. - 매일경제",
-      "desc": "",
+      "title": "Rupiah strengthens 0.43% as oil drop eases import costs",
+      "desc": "USD/IDR fell to 17695 as lower crude prices improve Indonesia's trade balance and reduce inflation pressure, supporting BI's policy stance. Watch for further gains if oil stays below $80.",
       "sources": [
         {
-          "name": "매일경제",
-          "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFB4TjFZRm1JbVpCQkRTVF9kS2lsNU9sejRXdnl6b1dXX1NTc0JKWDRzZ0Q0ZjlCU0duc0lydm5ETHBXQmdjc2cydFhWZw?oc=5"
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "Crude Oil (WTI)",
+          "url": "https://finance.yahoo.com/quote/CL=F"
         }
       ]
     },
     {
-      "title": "S&amp;P 500, Nasdaq, Dow Futures Retreat After Rally Fueled By SpaceX, US-Iran Deal As Fed Meeting Looms: TSLA, PLAY, FI",
-      "desc": "S&P 500, Nasdaq, Dow Futures Retreat After Rally Fueled By SpaceX, US-Iran Deal As Fed Meeting Looms: TSLA, PLAY, FISV In Focus Stocktwits",
+      "title": "Nickel proxy INCO jumps 7.75% on risk-on commodity rally",
+      "desc": "INCO surged as the peace deal and falling oil prices lifted commodity demand expectations, while coal proxy ITMG slipped 0.43% on energy transition concerns. This divergence signals sector-specific opportunities in Indonesia.",
       "sources": [
         {
-          "name": "Stocktwits",
-          "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxORlVUTXRteDFpT1JZeVlPRWtGX25scF9aaVZBWG9XNm9INVVrV3FHdTZiTGltRmRROXUtWTNJNUZxZmhxQXVOOTVJNDAzODZDRDNQb2htaTItRFZDU1dHTjM3SmZzdU54VFlsVXF1Y1JwZ1dheFBGUGVFWVZJeHpEVU5KODV2di16eFNRN1ZYVHdGTjE0d0FKa2QyeGZIUmdjQ000LWdTVUItdkVxY3RYeTMyRHhPbDlkb1Y2NGd1bU1xc2g1Mmh2TGhRVXlPWW4zTVVyWFpxWm1mRTVXbnRUek5SbGhScjNSS1k1eDVXQW0?oc=5"
+          "name": "Nickel proxy (INCO)",
+          "url": "https://finance.yahoo.com/quote/INCO.JK"
+        },
+        {
+          "name": "Coal proxy (ITMG)",
+          "url": "https://finance.yahoo.com/quote/ITMG.JK"
+        },
+        {
+          "name": "CryptoRank",
+          "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQa1dnZUo4emF3S2JRcVpwTl9NWElKa3VTUFkxaHZ0SmtNMm5kSzRQR2pZV3NNSmdLRjBWZFNsTXlUM1ZOYzVjczZIYW0ybk02X2FTT3ViWElTY2ZqZHJFMEstSmttalkyUWx2Y2dlaWpzVnFoWXhXZ2QyZHZXS1NxZ1FmVndvLVNJbWJJX0xOTmY3SWtva2c?oc=5"
         }
       ]
     },
     {
-      "title": "Mining & Energy +2.79%",
-      "desc": "Indonesia's mining & energy sector surged on a dual catalyst: China's stimulus-driven commodity demand optimism and domestic policy clarity on downstreaming mandates. ANTM and AMMN led on nickel/copper exposure, while coal names lagged. Thi",
+      "title": "VIX plunges 9% signaling market complacency on geopolitical risk",
+      "desc": "The CBOE VIX fell to 17.68 as the US-Iran deal calmed markets, but the sharp drop raises the risk of a volatility spike if the Strait of Hormuz reopening faces delays. Hedge JCI positions accordingly.",
       "sources": [
         {
-          "name": "ANTM",
-          "url": "https://finance.yahoo.com/quote/ANTM.JK"
+          "name": "CBOE VIX",
+          "url": "https://finance.yahoo.com/quote/^VIX"
+        },
+        {
+          "name": "MarketWatch",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQR25EeHJqMWRTdy03Y1UzN3VYYXdhSzlUeFhYQmRGdDhuOHVFMjdzRlhOdnl5ZEtqenQxN1l5SkxVYWt6ZGpqdUJXcjEyZEF3WF9DTHptNGhPNVNod3I3OWFvOWVIYXFzSGFRSkVrb1U1LTBQMUtjbDcyb2VScVlYWFhYcmppTmxZbmJwYlRWTDAwalBmckY3RjFNam9sX1VnekpjVmViQlpwLXlpQkJYQXBKU28yLWZHLW4wQkxn?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "US 10Y yield rises 0.54% as rate-hike fears ease but bond supply looms",
+      "desc": "The US 10-year yield climbed to 4.49% despite falling oil, as markets price in a stable Fed outlook. For Indonesia, this keeps the rupiah under check but may limit further JCI gains if global yields rise further.",
+      "sources": [
+        {
+          "name": "US 10Y Yield",
+          "url": "https://finance.yahoo.com/quote/^TNX"
+        },
+        {
+          "name": "MarketWatch",
+          "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQR25EeHJqMWRTdy03Y1UzN3VYYXdhSzlUeFhYQmRGdDhuOHVFMjdzRlhOdnl5ZEtqenQxN1l5SkxVYWt6ZGpqdUJXcjEyZEF3WF9DTHptNGhPNVNod3I3OWFvOWVIYXFzSGFRSkVrb1U1LTBQMUtjbDcyb2VScVlYWFhYcmppTmxZbmJwYlRWTDAwalBmckY3RjFNam9sX1VnekpjVmViQlpwLXlpQkJYQXBKU28yLWZHLW4wQkxn?oc=5"
         }
       ]
     }
@@ -41167,9 +41243,9 @@
         "url": "https://stocktwits.com/symbol/SPCX"
       },
       {
-        "symbol": "PURR",
-        "name": "Hyperliquid Strategies Inc.",
-        "url": "https://stocktwits.com/symbol/PURR"
+        "symbol": "SNDK",
+        "name": "Sandisk Corp",
+        "url": "https://stocktwits.com/symbol/SNDK"
       },
       {
         "symbol": "WDC",
@@ -41177,39 +41253,19 @@
         "url": "https://stocktwits.com/symbol/WDC"
       },
       {
-        "symbol": "FISV",
-        "name": "Fiserv, Inc.",
-        "url": "https://stocktwits.com/symbol/FISV"
-      },
-      {
-        "symbol": "FOXA",
-        "name": "Fox Corporation",
-        "url": "https://stocktwits.com/symbol/FOXA"
-      },
-      {
-        "symbol": "NTLA",
-        "name": "Intellia Therapeutics Inc",
-        "url": "https://stocktwits.com/symbol/NTLA"
-      },
-      {
         "symbol": "AAOI",
         "name": "Applied Optoelectronics Inc",
         "url": "https://stocktwits.com/symbol/AAOI"
       },
       {
-        "symbol": "QUBT",
-        "name": "Quantum Computing Inc",
-        "url": "https://stocktwits.com/symbol/QUBT"
+        "symbol": "MUU",
+        "name": "Direxion Daily MU Bull 2X Shares",
+        "url": "https://stocktwits.com/symbol/MUU"
       },
       {
-        "symbol": "CHPY",
-        "name": "YieldMax Semiconductor Portfolio Option Income ETF",
-        "url": "https://stocktwits.com/symbol/CHPY"
-      },
-      {
-        "symbol": "UVXY",
-        "name": "ProShares Ultra VIX Short-Term Futures ETF",
-        "url": "https://stocktwits.com/symbol/UVXY"
+        "symbol": "ZETA",
+        "name": "Zeta Global Holdings Corp",
+        "url": "https://stocktwits.com/symbol/ZETA"
       },
       {
         "symbol": "FUBO",
@@ -41217,9 +41273,29 @@
         "url": "https://stocktwits.com/symbol/FUBO"
       },
       {
-        "symbol": "XPEV",
-        "name": "XPeng Inc - ADR",
-        "url": "https://stocktwits.com/symbol/XPEV"
+        "symbol": "CADL",
+        "name": "Candel Therapeutics Inc",
+        "url": "https://stocktwits.com/symbol/CADL"
+      },
+      {
+        "symbol": "DXYZ",
+        "name": "DESTINY TECH 100 INC",
+        "url": "https://stocktwits.com/symbol/DXYZ"
+      },
+      {
+        "symbol": "ROKU",
+        "name": "Roku Inc",
+        "url": "https://stocktwits.com/symbol/ROKU"
+      },
+      {
+        "symbol": "SNAP",
+        "name": "Snap Inc",
+        "url": "https://stocktwits.com/symbol/SNAP"
+      },
+      {
+        "symbol": "CRO.X",
+        "name": "Crypto.com Coin",
+        "url": "https://stocktwits.com/symbol/CRO.X"
       }
     ]
   },
