@@ -71,13 +71,36 @@ def _api_durations(ids: list) -> dict:
     return out
 
 
+def _api_uploads_playlist(kind: str, ref: str) -> str:
+    """Return the playlist id to query. Channel refs may be UC ids or @handles."""
+    if kind != "channel":
+        return ref
+    if ref.startswith("UC"):
+        return "UU" + ref[2:]
+    import json
+    key = settings.YOUTUBE_API_KEY
+    handle = ref if ref.startswith("@") else "@" + ref
+    url = ("https://www.googleapis.com/youtube/v3/channels"
+           f"?part=contentDetails&forHandle={handle}&key={key}")
+    data = json.loads(_get(url, timeout=25))
+    items = data.get("items") or []
+    if not items:
+        raise ValueError(f"channel handle unresolved: {ref}")
+    uploads = (items[0].get("contentDetails", {})
+               .get("relatedPlaylists", {})
+               .get("uploads"))
+    if not uploads:
+        raise ValueError(f"uploads playlist missing: {ref}")
+    return uploads
+
+
 def _api_entries(kind: str, ref: str) -> list:
     """Pull recent uploads via the YouTube Data API (channel uploads playlist UU…,
     or an explicit playlist). Returns RSS-shaped dicts so the existing loops work;
     Shorts are flagged (link → /shorts/) via a batched duration lookup."""
     import json
     key = settings.YOUTUBE_API_KEY
-    playlist = ("UU" + ref[2:]) if (kind == "channel" and ref.startswith("UC")) else ref
+    playlist = _api_uploads_playlist(kind, ref)
     url = ("https://www.googleapis.com/youtube/v3/playlistItems?part=snippet"
            f"&maxResults=20&playlistId={playlist}&key={key}")
     data = json.loads(_get(url, timeout=25))
@@ -125,7 +148,10 @@ def get_feed(kind: str, ref: str):
         except Exception as e:  # noqa: BLE001
             print(f"[yt-api] {ref} failed → RSS fallback: {e}")
     key = "playlist_id" if kind == "playlist" else "channel_id"
-    return fetch_feed(f"{FEED}{key}={ref}")
+    rss_ref = ref
+    if kind == "channel" and not ref.startswith("UC"):
+        rss_ref = _resolve_channel_id(ref, {}) or ref
+    return fetch_feed(f"{FEED}{key}={rss_ref}")
 
 
 def fetch_feed(url: str, tries: int = 3):

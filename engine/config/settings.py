@@ -390,6 +390,7 @@ PODCAST_CATEGORIES = [
         ("Endgame", "channel", "UCDaqDYhGmJdrlHr4h9LQ5uw", "Gita Wirjawan"),
         ("Veritasium", "channel", "UCHnyfMqiRRG1u-2MsSQLbXA", "Derek Muller"),
         ("The Overpost", "channel", "UCFWKvu581DpCRFfadjjIy7w", "Leon Hartono"),
+        ("Astronacci", "channel", "@astronacciinternational", "Astronacci"),
     ]},
     {"key": "techai", "label": "Tech & AI 🤖", "feeds": [
         ("NVIDIA", "channel", "UCHuiy8bXnmK5nisYHUd1J5g", "NVIDIA"),

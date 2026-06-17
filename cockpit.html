@@ -518,7 +518,7 @@ body{padding-bottom:40px;}
       <span class="mblink" id="mbMoodLink" title="Jump to the player">🎵 <span id="mbMoodName">—</span></span>
     </div>
     <div class="mbvideo" id="mbVideo">
-      <span class="mbsrc"><button id="mbSrcNews" class="on">📰 News</button><button id="mbSrcPod">🎙 Podcast</button></span>
+      <span class="mbsrc"><button id="mbSrcNews" class="on">📰 News</button><button id="mbSrcPod">🎙 Knowledge</button></span>
       <button class="mbbtn" id="mbVidPrev" title="Previous">⏮</button>
       <button class="mbbtn" id="mbVidPlay" title="Play / pause">▶</button>
       <button class="mbbtn" id="mbVidNext" title="Next">⏭</button>
@@ -733,6 +733,7 @@ const MOODS=[
   ['Instrumental Study','37i9dQZF1DX8Uebhn9wzrS'],
   ['Jazz Vibes','37i9dQZF1DX0SM0LYsmbMT'],
   ['Praise Lord','37i9dQZF1DXcb6CQIjdqKy'],
+  ['Thanks God','17cbyJEkWpfpKy0uK7bNfx'],
   ['Motivation','78Suoigk80gI9mI9z5tYl8'],
   ['Energy Boost','37i9dQZF1DX76Wlfdnj7AP'],
   ['Chill / Wind Down','37i9dQZF1DX4WYpdgoIcn6'],
@@ -953,7 +954,8 @@ function playAt(idx,startPlay){
   const q=ytQueueArr();if(!q.length)return;
   ytIdx=Math.max(0,Math.min(idx,q.length-1));
   const item=q[ytIdx];if(!item.embed)return;
-  $('mbFrame').innerHTML=`<iframe id="ytframe" src="${encodeURI(item.embed)}?rel=0&enablejsapi=1&autoplay=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+  const auto=startPlay===false?0:1;
+  $('mbFrame').innerHTML=`<iframe id="ytframe" src="${encodeURI(item.embed)}?rel=0&enablejsapi=1&autoplay=${auto}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
   $('mbVidTitle').textContent=item.title;
   $('mbVideo').classList.add('on');$('mbPanel').classList.add('open');
   _restoreVidPlay=startPlay!==false;ytPaused=true;updateMbBtns();
@@ -988,7 +990,7 @@ function stopVideo(){
 function setSource(src){
   if(ytSource===src)return;
   ytSource=src;syncSrcBtns();ytIdx=-1;renderQueue();
-  $('mbVidTitle').textContent='Pick a '+(src==='podcast'?'podcast':'video');saveState();
+  $('mbVidTitle').textContent='Pick a '+(src==='podcast'?'knowledge video':'video');saveState();
 }
 function syncSrcBtns(){
   $('mbSrcNews').classList.toggle('on',ytSource==='news');
@@ -1027,8 +1029,8 @@ function restoreVideo(){
   ytSource=SS.ytSource||'news';syncSrcBtns();
   ytSpeed=SS.speed||1;const sp=$('mbSpeed');if(sp)sp.value=String(ytSpeed);
   const q=ytQueueArr();const i=q.findIndex(x=>x.video_id===SS.vid);if(i<0)return;
-  _restoreVidTime=SS.vidTime||0;_restoreVidPlay=!SS.vidPaused;
-  playAt(i,!SS.vidPaused);
+  _restoreVidTime=SS.vidTime||0;_restoreVidPlay=false;
+  playAt(i,false);
   if(!SS.panel)$('mbPanel').classList.remove('open');     // respect collapsed state
 }
 
@@ -1185,7 +1187,7 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.vidCat)vidCat=SS.vidCat;
   if(SS.wireFilter)wireFilter=SS.wireFilter;
   if(SS.wireGeo)wireGeo=SS.wireGeo;
-  _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=!!SS.spPos&&!SS.spPaused;
+  _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=false;
 })();
 
 /* ---- boot + auto-refresh ----
