@@ -827,6 +827,7 @@ function liveQuote(tk){return CRYPTO[tk]||LIVE[tk]||null;}
 function qDelta(row){const q=liveQuote(row.ticker);return q&&q.dp!=null?q.dp:row.delta_pct;}
 function qValue(row){const q=liveQuote(row.ticker);return q&&q.c!=null?q.c:row.value;}
 function cryptoUrl(tk,fallback){return tk==='MATIC'?'https://www.coingecko.com/en/coins/polygon':fallback;}
+function sectorSignal(change){const a=Math.abs(Number(change)||0);return a>=1.5?'ALERT':a>=0.8?'WATCH':'NORMAL';}
 function sectorMetrics(s){
   const rows=s.constituents||[];
   const vals=rows.map(qDelta).filter(Number.isFinite);
@@ -847,7 +848,8 @@ function drawSectors(){
       ?`<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(m.idChange)}">${sign(m.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.idChange)/tot*100}%;background:${COLP(m.idChange)}"></i></div></div>`+
        `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(m.usChange)}">${sign(m.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.usChange)/tot*100}%;background:${COLP(m.usChange)}"></i></div></div>`
       :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(m.change)}">${sign(m.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(m.change)}"></i></div></div>`;
-    return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${s.signal}">${s.signal}</span></div>`+
+    const sig=sectorSignal(m.change);
+    return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${sig}">${sig}</span></div>`+
       `<div class="agg" style="color:${COLP(m.change)}">${sign(m.change)}</div>`+body+
       `<div class="thm"><span></span><span>›</span></div></button>`;
   }).join('');
@@ -1120,7 +1122,7 @@ function openSector(i){
   $('smStats').innerHTML=(m.idChange!=null
     ?cell('ID PERFORMANCE',m.idChange)+cell('US PERFORMANCE',m.usChange)
     :cell('AGGREGATE',m.change)+cell('ASSETS',String(s.constituents.length)))
-    +cell('CONSTITUENTS',String(s.constituents.length))+cell('SIGNAL',s.signal);
+    +cell('CONSTITUENTS',String(s.constituents.length))+cell('SIGNAL',sectorSignal(m.change));
   $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,m.change>=0?'#22c55e':'#ef4444');
   $('smThemes').innerHTML=(s.themes||[]).map(t=>`<li>${esc(t)}</li>`).join('');
   $('smAi').textContent=s.ai||'';
