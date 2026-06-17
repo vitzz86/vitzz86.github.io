@@ -19,6 +19,7 @@ CG_IDS = {"BTC-USD": "bitcoin", "ETH-USD": "ethereum", "SOL-USD": "solana",
           "BNB-USD": "binancecoin", "XRP-USD": "ripple", "ADA-USD": "cardano",
           "DOGE-USD": "dogecoin", "AVAX-USD": "avalanche-2", "LINK-USD": "chainlink",
           "MATIC-USD": "polygon-ecosystem-token"}
+CG_SLUGS = {"MATIC-USD": "polygon"}
 
 
 def _signal(agg: float) -> str:
@@ -73,7 +74,7 @@ def collect() -> list:
             p = prices.get(ysym)
             delta = p["delta_pct"] if p else 0.0
             spark = p["spark"] if p else []
-            url = (COINGECKO + CG_IDS[ysym]) if (country == "CR" and ysym in CG_IDS) \
+            url = (COINGECKO + CG_SLUGS.get(ysym, CG_IDS[ysym])) if (country == "CR" and ysym in CG_IDS) \
                 else (YF_QUOTE + ysym)
             rows.append({
                 "ticker": ticker, "name": name, "exchange": exch,
