@@ -185,8 +185,12 @@ a{color:inherit;text-decoration:none;}
 .alert.blue{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);color:#86b5f5;}
 
 /* intelligence wire */
-#wsearch{width:100%;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 10px;margin-bottom:9px;}
-#wsearch:focus{outline:none;border-color:var(--cyan);}
+#wsearch,#vsearch{width:100%;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 10px;margin-bottom:9px;}
+#wsearch:focus,#vsearch:focus{outline:none;border-color:var(--cyan);}
+.digestbox{border-left:2px solid var(--amber);background:rgba(245,158,11,.045);border-radius:0 8px 8px 0;padding:9px 10px;margin-bottom:10px;}
+.digestbox .dh{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--amber);margin-bottom:6px;}
+.digestbox .di{font-size:10.5px;line-height:1.55;color:#c9c9d2;margin-top:4px;}
+.digestbox .di b{color:var(--cyan);font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;}
 .wtabs{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;}
 .wtab{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:5px 9px;cursor:pointer;}
 .wtab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
@@ -501,6 +505,7 @@ body{padding-bottom:40px;}
     <div class="hubpane on" id="paneBrief"></div>
     <!-- NEWS -->
     <div class="hubpane" id="paneNews">
+      <div id="newsDigest"></div>
       <input id="wsearch" placeholder="search headlines…" autocomplete="off">
       <div class="wtabs" id="wtabs"></div>
       <div class="wtabs" id="wgeo"></div>
@@ -508,6 +513,8 @@ body{padding-bottom:40px;}
     </div>
     <!-- VIDEOS -->
     <div class="hubpane" id="paneVideos">
+      <div id="videoDigest"></div>
+      <input id="vsearch" placeholder="search videos…" autocomplete="off">
       <div class="wtabs" id="vidTabs"></div>
       <div id="vidList"></div>
     </div>
@@ -895,7 +902,7 @@ function expandIdx(i){
 
 /* ---- intelligence hub: Daily Brief · News · Videos ---- */
 let hubPane='brief',dateRange='1w',vidCat='ALL';
-let wireFilter='ALL',wireGeo='ALL',wireQ='',WIRE=[],VIDEOS=[],BRIEF=null;
+let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null;
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
@@ -903,6 +910,35 @@ const VCATLABEL={ALL:'All',market_id:'🇮🇩 Market ID',market_us:'🇺🇸 Ma
 const RANGE={today:86400,'3d':3*86400,'1w':7*86400};
 function inRange(ts){if(!ts)return true;return (Date.now()/1000-ts)<=RANGE[dateRange];}
 function normTitle(s){return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
+const CRYPTO_TERMS=['bitcoin','btc','ethereum','eth','crypto','cryptocurrency','kripto','blockchain','stablecoin','altcoin','defi','web3','token','binance','solana','xrp','cardano','dogecoin','coingecko','coindesk','coinvestasi','indodax','pluang','beincrypto'];
+function rxEsc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+function hasNewsTerm(txt,term){const k=normTitle(term);return k.length<=5?new RegExp(`\\b${rxEsc(k)}\\b`).test(txt):txt.includes(k);}
+function newsCat(n){
+  const t=normTitle([n.title,n.summary,n.source].join(' '));
+  if(CRYPTO_TERMS.some(k=>hasNewsTerm(t,k)))return 'CRYPTO';
+  return n.category||'ECONOMY';
+}
+const NEWS_NOISE=['top pro news','crypto bloomberg com','markets bloomberg com','sector industry performance','sector amp industry performance','stock price news quote','stock price news quote and history','stock price news quote history','personal investing','subscriber tertinggi','persentase rumah tangga dengan laptop','pusat data ekonomi dan bisnis indonesia'];
+function goodNews(n){const t=normTitle(n&&n.title||'');return !!(n&&n.url&&t&&!NEWS_NOISE.some(p=>t.includes(p)));}
+const DIGEST_TOPICS=[
+  ['IHSG and Indonesian equities',['ihsg','jci','saham','emiten','idx','bei','bursa']],
+  ['rupiah and Bank Indonesia policy',['rupiah','bank indonesia','bi rate','suku bunga','idr']],
+  ['US rates and Fed policy',['federal reserve','fed','rate','rates','warsh','treasury']],
+  ['US indices and stock-market breadth',['s p 500','nasdaq','dow','wall street']],
+  ['AI, semiconductors, and technology capex',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
+  ['commodities, energy, and shipping',['oil','gold','nickel','coal','commodity','commodities','hormuz','shipping']],
+  ['crypto markets and regulation',['bitcoin','ethereum','crypto','kripto','stablecoin','blockchain']],
+  ['company earnings, valuation, and corporate actions',['earnings','revenue','profit','valuation','target','ipo','laba']],
+  ['bonds, yields, and fixed income',['bond','bonds','yield','yields','obligasi','surat utang']],
+  ['Asia policy and cross-market spillovers',['boj','japan','nikkei','china','asia','apac']],
+  ['geopolitics and trade risk',['iran','tariff','trade','war','geopolitical','geopolitics']]
+];
+function humanList(a){a=a.filter(Boolean);if(a.length<2)return a[0]||'';if(a.length===2)return `${a[0]} and ${a[1]}`;return `${a.slice(0,-1).join(', ')}, and ${a[a.length-1]}`;}
+function digestTopics(rows){
+  const txt=normTitle(rows.map(x=>x.title||'').join(' '));
+  return DIGEST_TOPICS.map(([label,terms])=>[terms.reduce((n,t)=>n+(txt.includes(normTitle(t))?1:0),0),label])
+    .filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,4).map(x=>x[1]);
+}
 function rebuildPrioritySets(){
   MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()};MUST_READ={urls:new Set(),titles:new Set()};
   ((BRIEF||{}).must_watch||[]).forEach(m=>{const v=m.video||m||{};
@@ -914,6 +950,30 @@ function rebuildPrioritySets(){
 }
 function isMustWatch(v){return !!(v&&(MUST_WATCH.ids.has(v.video_id)||MUST_WATCH.urls.has(v.url)||MUST_WATCH.titles.has(normTitle(v.title))));}
 function isMustRead(n){return !!(n&&(MUST_READ.urls.has(n.url)||MUST_READ.titles.has(normTitle(n.title))));}
+function prioritySort(kind,items){
+  const fn=kind==='video'?isMustWatch:isMustRead;
+  return items.slice().sort((a,b)=>(fn(b)?1:0)-(fn(a)?1:0)||(b.ts||0)-(a.ts||0)||(b.score||0)-(a.score||0));
+}
+function localDigest(kind){
+  const rows=kind==='video_digest'?(VIDEOS||[]).filter(goodVideo):(WIRE||[]).filter(goodNews);
+  const one=(label,arr)=>{
+    const ranked=prioritySort(kind==='video_digest'?'video':'news',arr).slice(0,12);
+    if(!ranked.length)return '';
+    const topics=digestTopics(ranked);
+    return topics.length?`${label}: coverage focuses on ${humanList(topics)}.`:`${label}: coverage is concentrated in the latest market and business headlines.`;
+  };
+  return {indonesia:one('Indonesia',rows.filter(x=>x.geo==='ID')),
+          us:one('US/global',rows.filter(x=>x.geo!=='ID'))};
+}
+function digestHTML(kind){
+  const baked=(BRIEF||{})[kind]||{};
+  const d=(baked.indonesia||baked.us)?baked:localDigest(kind);
+  if(!d.indonesia&&!d.us)return '';
+  const label=kind==='video_digest'?'VIDEO SYNTHESIS':'NEWS SYNTHESIS';
+  const id=d.indonesia?`<div class="di"><b>Indonesia</b> ${esc(d.indonesia.replace(/^Indonesia:\s*/i,''))}</div>`:'';
+  const us=d.us?`<div class="di"><b>US / Global</b> ${esc(d.us.replace(/^(US\/global|US|Global):\s*/i,''))}</div>`:'';
+  return `<div class="digestbox"><div class="dh">${label}</div>${id}${us}</div>`;
+}
 function setActive(sel,el){[...document.querySelectorAll(sel+' .wtab')].forEach(x=>x.classList.toggle('on',x===el));}
 function reltime(ts){if(!ts)return '';const m=Math.round(Date.now()/1000-ts);
   if(m<3600)return Math.max(1,Math.round(m/60))+'m';
@@ -923,6 +983,7 @@ function fdate(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return '
   return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+reltime(Math.round(d.getTime()/1000));}
 function durLabel(sec){sec=Number(sec||0);if(!sec)return '';const h=Math.floor(sec/3600),m=Math.round((sec%3600)/60);
   return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}m`;}
+function goodVideo(v){const t=(v&&v.title||'').trim().toLowerCase();return !!(v&&v.video_id&&t&&t!=='private video'&&t!=='deleted video'&&!t.includes('video unavailable'));}
 
 let hubInit=false;
 function syncHubUI(){
@@ -960,8 +1021,8 @@ function buildBrief(){
   const win=b.generated_for?b.generated_for.replace('T',' · ')+':00':'Today';
   const watch=(b.must_watch||[]).map(m=>{const v=m.video||{};
     return `<a class="bcard" href="${encodeURI(v.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
-  const read=(b.must_read||[]).map(m=>{const n=m.news||{};
-    return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${n.category||''}">${CATLABEL[n.category]||n.category||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
+  const read=(b.must_read||[]).map(m=>{const n=m.news||{},cat=newsCat(n);
+    return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
   el.innerHTML=
     `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+
@@ -973,6 +1034,7 @@ function buildBrief(){
 }
 
 function buildWire(){
+  $('newsDigest').innerHTML=digestHTML('news_digest');
   const cats=['ALL','ECONOMY','TECH','MARKETS_FINANCE','CRYPTO'];
   $('wtabs').innerHTML=cats.map(c=>`<span class="wtab ${c===wireFilter?'on':''}" data-c="${c}">${CATLABEL[c]||c}</span>`).join('');
   [...document.querySelectorAll('#wtabs .wtab')].forEach(t=>t.onclick=()=>{wireFilter=t.dataset.c;setActive('#wtabs',t);drawWire();});
@@ -983,22 +1045,25 @@ function buildWire(){
   drawWire();
 }
 function drawWire(){
-  const items=WIRE.filter(n=>(wireFilter==='ALL'||n.category===wireFilter)
+  const items=prioritySort('news',WIRE.filter(n=>goodNews(n)&&(wireFilter==='ALL'||newsCat(n)===wireFilter)
     &&(wireGeo==='ALL'||n.geo===wireGeo)&&inRange(n.ts)
-    &&(!wireQ||n.title.toLowerCase().includes(wireQ)||(n.source||'').toLowerCase().includes(wireQ)));
+    &&(!wireQ||n.title.toLowerCase().includes(wireQ)||(n.source||'').toLowerCase().includes(wireQ))));
   $('wireCount').textContent=items.length+' news';
-  $('wire').innerHTML=items.map(n=>`<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${n.category}">${CATLABEL[n.category]||(n.category||'').replace('_',' ')}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
-    `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)} <span class="ext">↗</span></a></div>`).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
+  $('wire').innerHTML=items.map(n=>{const cat=newsCat(n);return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${cat}">${CATLABEL[cat]||(cat||'').replace('_',' ')}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
+    `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)} <span class="ext">↗</span></a></div>`;}).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No matching items.</div>';
 }
 
 function buildVideos(){
+  $('videoDigest').innerHTML=digestHTML('video_digest');
   const cats=['ALL','market_id','market_us','crypto'];
   $('vidTabs').innerHTML=cats.map(c=>`<span class="wtab ${c===vidCat?'on':''}" data-c="${c}">${VCATLABEL[c]||c}</span>`).join('');
   [...document.querySelectorAll('#vidTabs .wtab')].forEach(t=>t.onclick=()=>{vidCat=t.dataset.c;setActive('#vidTabs',t);drawVideos();});
+  const sb=$('vsearch');sb.oninput=()=>{vidQ=sb.value.toLowerCase().trim();drawVideos();};
   drawVideos();
 }
 function drawVideos(){
-  const items=VIDEOS.filter(v=>(vidCat==='ALL'||v.category===vidCat)&&inRange(v.ts));
+  const items=prioritySort('video',VIDEOS.filter(v=>goodVideo(v)&&(vidCat==='ALL'||v.category===vidCat)&&inRange(v.ts)
+    &&(!vidQ||v.title.toLowerCase().includes(vidQ)||(v.channel||'').toLowerCase().includes(vidQ)||(v.summary||'').toLowerCase().includes(vidQ))));
   $('vidList').innerHTML=items.map(v=>`<div class="vid" data-id="${esc(v.video_id)}"><div class="vidtop"><img class="vthumb" loading="lazy" src="${encodeURI(v.thumb||'')}" alt=""><div class="vmeta"><div class="vt">${esc(v.title)}</div><div class="vc chiprow">${isMustWatch(v)?'<span class="meta-chip priority">MUST WATCH</span>':''}<span class="vcat ${v.category}">${VCATLABEL[v.category]||v.category}</span><span class="meta-chip source">${esc(v.channel)}</span><span class="meta-chip date">${fdate(v.published)}</span>${v.duration_s?`<span class="meta-chip">${esc(durLabel(v.duration_s))}</span>`:''}</div></div></div><div class="vexp">${v.summary?`<div class="vsum">${esc(v.summary)}</div>`:''}<a class="vopen" href="${encodeURI(v.url)}" target="_blank" rel="noopener">▶ Watch on YouTube ↗</a></div></div>`).join('')
     ||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No videos in this window.</div>';
   [...document.querySelectorAll('#vidList .vid')].forEach(el=>{
@@ -1010,7 +1075,7 @@ function drawVideos(){
 let ytPlayer=null,ytApiReady=false,ytSource='news',ytIdx=-1,ytPaused=true,ytSpeed=1,ytTime=0;
 let _restoreVidTime=0,_restoreVidPlay=false,_pendingPlay=false;
 function ytQueueArr(){
-  return ((ytSource==='podcast'?(DATA||{}).podcasts:(DATA||{}).videos)||[]).filter(x=>x.video_id);
+  return ((ytSource==='podcast'?(DATA||{}).podcasts:(DATA||{}).videos)||[]).filter(x=>ytSource==='podcast'?x.video_id:goodVideo(x));
 }
 function loadYTApi(){
   if(window.YT&&window.YT.Player){ytApiReady=true;return;}
@@ -1132,11 +1197,11 @@ function openSector(i){
   $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
   [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;setActive('#smFilter',t);renderConsts(s);});
   renderConsts(s);
-  const sn=(DATA.sector_news||{})[s.key]||[];
+  const sn=prioritySort('news',((DATA.sector_news||{})[s.key]||[]).filter(goodNews));
   $('smSecNews').innerHTML=sn.length?sn.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No sector news this cycle.</div>';
   $('smodal').classList.add('open');$('smodal').scrollTop=0;
 }
-function newsRow(n){return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${n.category}">${CATLABEL[n.category]||(n.category||'').replace(/_/g,' ')}</span><span class="meta-chip source">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
+function newsRow(n){const cat=newsCat(n);return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${cat}">${CATLABEL[cat]||(cat||'').replace(/_/g,' ')}</span><span class="meta-chip source">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
   `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
 function renderConsts(s){
   let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice().sort((a,b)=>qDelta(b)-qDelta(a));
@@ -1161,7 +1226,7 @@ function openTicker(s,tk){
   if(waitingChart)ensureCryptoChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
-  const news=(DATA.ticker_news||{})[tk]||[];
+  const news=prioritySort('news',((DATA.ticker_news||{})[tk]||[]).filter(goodNews));
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+

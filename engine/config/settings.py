@@ -503,7 +503,10 @@ NEWS_TRUSTED_SOURCES = {
         ("CoinDesk", "coindesk.com"), ("The Block", "theblock.co"),
         ("Decrypt", "decrypt.co"), ("Cointelegraph", "cointelegraph.com"),
         ("CryptoSlate", "cryptoslate.com"), ("Bitcoin Magazine", "bitcoinmagazine.com"),
-        ("Bankless", "bankless.com"), ("SEC", "sec.gov"), ("CFTC", "cftc.gov"),
+        ("Bankless", "bankless.com"), ("CoinGecko News", "coingecko.com"),
+        ("Bitcoin.com News", "news.bitcoin.com"), ("BeInCrypto", "beincrypto.com"),
+        ("Indodax Academy", "indodax.com"), ("Pluang", "pluang.com"),
+        ("Coinvestasi", "coinvestasi.com"), ("SEC", "sec.gov"), ("CFTC", "cftc.gov"),
     ],
 }
 
@@ -517,7 +520,14 @@ NEWS_SOURCE_TARGETS = {
     "APAC": ["asia.nikkei.com", "scmp.com", "businesstimes.com.sg",
              "channelnewsasia.com", "dealstreetasia.com", "techinasia.com"],
     "CRYPTO": ["coindesk.com", "theblock.co", "decrypt.co", "cointelegraph.com",
-               "cryptoslate.com", "sec.gov"],
+               "cryptoslate.com", "coingecko.com", "news.bitcoin.com",
+               "beincrypto.com", "coinvestasi.com", "indodax.com", "pluang.com",
+               "sec.gov"],
+    "CRYPTO_ID": ["coinvestasi.com", "indodax.com", "pluang.com",
+                  "coingecko.com", "news.bitcoin.com", "beincrypto.com"],
+    "CRYPTO_GLOBAL": ["coindesk.com", "theblock.co", "decrypt.co", "cointelegraph.com",
+                      "cryptoslate.com", "coingecko.com", "news.bitcoin.com",
+                      "beincrypto.com", "sec.gov"],
     "OFFICIAL": ["bi.go.id", "ojk.go.id", "idx.co.id", "federalreserve.gov",
                  "treasury.gov", "bls.gov", "eia.gov", "boj.or.jp", "ecb.europa.eu"],
 }
@@ -532,7 +542,9 @@ NEWS_SOURCE_QUERY_TOPICS = [
     ("ASEAN markets currencies economy", "US", "ECONOMY", "APAC"),
     ("China EV batteries nickel property markets", "US", "MARKETS_FINANCE", "APAC"),
     ("oil gold nickel coal commodities", "US", "MARKETS_FINANCE", "US"),
-    ("bitcoin ethereum crypto regulation ETF", "US", "CRYPTO", "CRYPTO"),
+    ("bitcoin ethereum crypto regulation ETF", "US", "CRYPTO", "CRYPTO_GLOBAL"),
+    ("bitcoin kripto exchange Indonesia aset digital", "ID", "CRYPTO", "CRYPTO_ID"),
+    ("stablecoin token blockchain ETF crypto exchange", "US", "CRYPTO", "CRYPTO_GLOBAL"),
     ("central bank policy Fed BI BOJ ECB", "US", "ECONOMY", "OFFICIAL"),
 ]
 
@@ -552,6 +564,8 @@ WIRE_TOPICS = {
         ("teknologi AI kecerdasan buatan Indonesia", "TECH"),
         ("GoTo Bukalapak digital ekonomi Indonesia", "TECH"),
         ("kripto bitcoin aset digital Indonesia", "CRYPTO"),
+        ("Bitcoin Ethereum bursa kripto Indonesia", "CRYPTO"),
+        ("Indodax Pluang Coinvestasi Bitcoin", "CRYPTO"),
     ],
     "US": [
         ("US economy growth jobs report", "ECONOMY"),
@@ -566,6 +580,8 @@ WIRE_TOPICS = {
         ("startup venture capital funding round", "TECH"),
         ("big tech Apple Microsoft Google Meta", "TECH"),
         ("bitcoin ethereum crypto market regulation", "CRYPTO"),
+        ("bitcoin ETF stablecoin crypto exchange", "CRYPTO"),
+        ("CoinGecko Bitcoin Ethereum altcoin news", "CRYPTO"),
     ],
 }
 

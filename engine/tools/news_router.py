@@ -27,7 +27,9 @@ from config import settings
 # Intelligence Wire taxonomy v3: Economy · Tech · Markets & Finance · Crypto.
 CATEGORY_KEYWORDS = {
     "CRYPTO":          ["bitcoin", "ethereum", "crypto", "blockchain", "token", "defi",
-                        "solana", "btc", "eth", "stablecoin", "altcoin", "web3", "binance"],
+                        "solana", "btc", "eth", "stablecoin", "altcoin", "web3", "binance",
+                        "kripto", "aset digital", "coinvestasi", "indodax", "pluang",
+                        "coingecko", "coindesk", "bitcoin.com", "beincrypto"],
     "TECH":            ["ai", "artificial intelligence", "startup", "venture", "funding",
                         "series ", "seed", "software", "chip", "semiconductor", "cloud",
                         "saas", "app", "data center", "nvidia", "openai", "google",
@@ -40,6 +42,16 @@ CATEGORY_KEYWORDS = {
                         "rupiah", "policy", "deficit", "budget", "recession", "ekonomi"],
 }
 DEFAULT_CATEGORY = "ECONOMY"
+CRYPTO_SOURCE_HINTS = {
+    "coindesk", "the block", "decrypt", "cointelegraph", "cryptoslate",
+    "bitcoin magazine", "bankless", "coingecko", "bitcoin.com", "beincrypto",
+    "coinvestasi", "indodax", "pluang",
+}
+CRYPTO_STRONG_TERMS = (
+    "bitcoin", "btc", "ethereum", "eth", "crypto", "cryptocurrency", "kripto",
+    "blockchain", "stablecoin", "altcoin", "defi", "web3", "token", "binance",
+    "solana", "xrp", "cardano", "dogecoin", "avalanche", "chainlink", "coingecko",
+)
 
 TRUSTED_BY_DOMAIN = {
     domain: (group, name)
@@ -57,7 +69,18 @@ SOURCE_TIER_SCORE = {
 }
 
 
-def _category(text: str) -> str:
+def _has_crypto(text: str, source: str = "") -> bool:
+    hay = _norm(" ".join([text or "", source or ""]))
+    src = _norm(source or "")
+    if any(h in src for h in CRYPTO_SOURCE_HINTS):
+        return True
+    return any((re.search(rf"\b{re.escape(t)}\b", hay) if len(t) <= 5 else t in hay)
+               for t in CRYPTO_STRONG_TERMS)
+
+
+def _category(text: str, source: str = "") -> str:
+    if _has_crypto(text, source):
+        return "CRYPTO"
     t = text.lower()
     best, score = DEFAULT_CATEGORY, 0
     for cat, kws in CATEGORY_KEYWORDS.items():
@@ -141,7 +164,7 @@ def google_news(query: str, geo: str = "US", n: int = None, category: str = None
             tier, boost = _trusted_meta(source, site)
             out.append({"title": t[:220], "url": link.group(1).strip(),
                         "source": source, "geo": geo,
-                        "category": category or _category(t),
+                        "category": category or _category(t, source),
                         "summary": summary[:400], "ts": ts,
                         "source_tier": tier, "source_score": boost,
                         "query_type": query_type,
@@ -159,7 +182,7 @@ def _from_curated(headlines: dict) -> list:
             if url and title:
                 items.append({"title": title[:220], "url": url,
                               "source": h.get("source", ""), "geo": "GL",
-                              "category": _category(title)})
+                              "category": _category(title, h.get("source", ""))})
     return items
 
 
@@ -189,6 +212,7 @@ NOISE_TITLE_PATTERNS = (
     "sector amp industry performance",
     "stock price news quote history",
     "stock price news quote amp history",
+    "stock price news quote and history",
     "stock price stock chart market cap news today",
     "stock price stock chart market cap amp news today",
     "money personal investing",
@@ -196,6 +220,11 @@ NOISE_TITLE_PATTERNS = (
     "stock price latest news reuters",
     "commodities trading gold stocks oil stocks silver natural gas",
     "legality of cryptocurrency by country or territory",
+    "indonesian statistic portal for economic business data research",
+    "pusat data ekonomi dan bisnis indonesia",
+    "persentase rumah tangga dengan laptop",
+    "pertumbuhan subscriber tertinggi",
+    "subscriber tertinggi",
 )
 
 NOISE_TITLE_REGEX = (
@@ -268,7 +297,8 @@ MARKET_ANCHOR_TERMS = (
     "dividend", "bond", "yield", "fund", "investor", "investment", "capital",
     "price", "prices", "target", "rating", "upgrade", "downgrade", "saham",
     "emiten", "ihsg", "bei", "bursa", "pendapatan", "laba", "akuisisi",
-    "investasi", "obligasi",
+    "investasi", "obligasi", "nasdaq", "s p 500", "s&p 500", "dow", "wall street",
+    "jci", "nikkei", "hang seng", "close", "record close",
 )
 
 SECTOR_ANCHOR_TERMS = {
@@ -306,7 +336,38 @@ def _normalize_item(it: dict) -> dict:
     for k in ("title", "source", "summary"):
         if isinstance(it.get(k), str):
             it[k] = _clean_html(it[k])
+    auto_cat = _category(" ".join([it.get("title", ""), it.get("summary", ""), it.get("query", "")]),
+                         it.get("source", ""))
+    # Category priority is deterministic: crypto-native content should never be
+    # buried under the broad markets bucket just because it was found by a market query.
+    if auto_cat == "CRYPTO":
+        it["category"] = "CRYPTO"
+    elif it.get("category") not in CATEGORY_KEYWORDS:
+        it["category"] = auto_cat
     return it
+
+
+def _has_anchor(txt: str, terms: tuple | list) -> bool:
+    return any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
+               for t in terms)
+
+
+def _quality_gate(it: dict) -> bool:
+    """Final display gate: keep broad discovery flexible but reject generic pages."""
+    title = _norm(it.get("title", ""))
+    if not title or len(title) < 16:
+        return False
+    txt = _norm(" ".join([it.get("title", ""), it.get("summary", ""), it.get("source", "")]))
+    cat = it.get("category")
+    if cat == "CRYPTO":
+        return _has_crypto(txt, it.get("source", ""))
+    if cat == "MARKETS_FINANCE" and not _has_anchor(txt, MARKET_ANCHOR_TERMS):
+        return False
+    if cat == "TECH":
+        tech_terms = tuple(CATEGORY_KEYWORDS["TECH"]) + ("teknologi", "kecerdasan buatan", "pusat data")
+        if not _has_anchor(txt, tech_terms + MARKET_ANCHOR_TERMS):
+            return False
+    return True
 
 
 def _query_terms(it: dict) -> list[str]:
@@ -358,7 +419,7 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
     source_l = _norm(it.get("source", ""))
     if any(s in source_l for s in LOW_CONF_SOURCES):
         score -= 14
-    if it.get("geo") == "ID":
+    if it.get("geo") == "ID" and it.get("category") != "CRYPTO":
         id_terms = ("indonesia", "rupiah", "ihsg", "idx", "bei", "saham", "emiten",
                     "bank indonesia", "ojk", "apbn", "jakarta", "bursa")
         if not any(t in txt for t in id_terms):
@@ -371,8 +432,13 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
 
 def _rank(items: list, cap: int, terms: list[str] = None, trusted_bias: int = 0) -> list:
     normalized = [_normalize_item(it) for it in items if it.get("url")]
-    ranked = [_score_item(it, terms, trusted_bias)
-              for it in normalized if not _is_noise_item(it)]
+    ranked = []
+    for it in normalized:
+        if _is_noise_item(it) or not _quality_gate(it):
+            continue
+        scored = _score_item(it, terms, trusted_bias)
+        if scored.get("score", 0) >= 18 or scored.get("source_score", 0) >= 35:
+            ranked.append(scored)
     ranked.sort(key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
     return _dedupe(ranked, cap)
 
@@ -523,26 +589,43 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     # --- per-sector news (richer, sector-tuned queries; recency-biased) ---
     # (us_query, id_query) — tuned to the actual trending angle of each sector
     SQ = {
-        "technology":   ("AI technology stocks Nvidia data center", "saham teknologi AI Indonesia"),
-        "financials":   ("bank stocks rates earnings", "saham bank Indonesia BBCA BBRI"),
-        "energy":       ("nickel coal mining energy stocks", "saham tambang batu bara nikel"),
-        "renewables":   ("solar renewable energy stocks clean", "energi terbarukan saham hijau Indonesia"),
-        "consumer":     ("consumer staples retail stocks", "saham konsumer ritel Indonesia"),
-        "infrastructure":("infrastructure construction stocks", "saham infrastruktur konstruksi Indonesia"),
-        "healthcare":   ("healthcare pharma biotech stocks", "saham farmasi kesehatan Indonesia"),
-        "logistics":    ("logistics shipping freight stocks", "saham logistik pelayaran Indonesia"),
-        "entertainment":("media streaming entertainment stocks", "saham media hiburan Indonesia"),
-        "property":     ("real estate property REIT stocks", "saham properti real estate Indonesia"),
-        "crypto":       ("bitcoin ethereum crypto market", "kripto bitcoin pasar"),
+        "technology":   (["AI technology stocks Nvidia data center", "semiconductor cloud capex software earnings"],
+                         ["saham teknologi AI Indonesia", "pusat data digital bank GOTO TLKM"]),
+        "financials":   (["bank stocks rates earnings credit", "JPMorgan Goldman Sachs Visa Mastercard financials"],
+                         ["saham bank Indonesia BBCA BBRI BMRI", "kredit NIM suku bunga perbankan"]),
+        "energy":       (["nickel coal mining energy stocks", "oil gas copper commodity producers"],
+                         ["saham tambang batu bara nikel", "ANTM INCO MDKA AMMN batubara"]),
+        "renewables":   (["solar renewable energy stocks clean power", "battery storage EV geothermal climate tech"],
+                         ["energi terbarukan saham hijau Indonesia", "panas bumi baterai EV PGEO BREN"]),
+        "consumer":     (["consumer staples retail stocks earnings", "restaurant food beverage pricing power"],
+                         ["saham konsumer ritel Indonesia", "AMRT ICBP INDF MYOR daya beli"]),
+        "infrastructure":(["infrastructure construction stocks capex", "data center tower toll road contractors"],
+                          ["saham infrastruktur konstruksi Indonesia", "jalan tol menara semen proyek IKN"]),
+        "healthcare":   (["healthcare pharma biotech stocks hospital", "drug approval medical device earnings"],
+                         ["saham farmasi kesehatan Indonesia", "rumah sakit farmasi KLBF MIKA HEAL"]),
+        "logistics":    (["logistics shipping freight stocks port", "supply chain airline cargo trucking"],
+                         ["saham logistik pelayaran Indonesia", "pelabuhan kargo transportasi SMDR ASSA"]),
+        "entertainment":(["media streaming entertainment stocks gaming", "advertising content subscribers Netflix Disney"],
+                         ["saham media hiburan Indonesia", "SCMA MNCN FILM MAPI iklan pelanggan"]),
+        "property":     (["real estate property REIT stocks mortgage", "housing office mall developer rates"],
+                         ["saham properti real estate Indonesia", "PANI CTRA BSDE PWON properti"]),
+        "crypto":       (["bitcoin ethereum crypto market ETF stablecoin", "CoinGecko Bitcoin altcoin regulation"],
+                         ["kripto bitcoin pasar aset digital Indonesia", "Indodax Pluang Coinvestasi bitcoin"]),
     }
     sector_news = {}
     for s in sectors:
-        usq, idq = SQ.get(s["key"], (f"{s['name']} stocks", f"saham {s['name']} Indonesia"))
+        usqs, idqs = SQ.get(s["key"], ([f"{s['name']} stocks"], [f"saham {s['name']} Indonesia"]))
         terms = [s["name"], s["key"]] + [c["ticker"] for c in s.get("constituents", [])[:8]]
-        items = (google_news(usq, "US", 5, query_type="sector") +
-                 google_news(idq, "ID", 5, query_type="sector"))
-        items += _targeted_source_news(usq, "US", "MARKETS_FINANCE", "US", terms, cap=6, max_sites=2)
-        items += _targeted_source_news(idq, "ID", "MARKETS_FINANCE", "ID", terms, cap=8, max_sites=5)
+        sec_cat = "CRYPTO" if s["key"] == "crypto" else ("TECH" if s["key"] == "technology" else "MARKETS_FINANCE")
+        items = []
+        for usq in usqs[:2]:
+            items += google_news(usq, "US", 4, category=sec_cat, query_type="sector")
+        for idq in idqs[:2]:
+            items += google_news(idq, "ID", 4, category=sec_cat, query_type="sector")
+        items += _targeted_source_news(usqs[0], "US", sec_cat, "CRYPTO_GLOBAL" if s["key"] == "crypto" else "US",
+                                       terms, cap=6, max_sites=3 if s["key"] == "crypto" else 2)
+        items += _targeted_source_news(idqs[0], "ID", sec_cat, "CRYPTO_ID" if s["key"] == "crypto" else "ID",
+                                       terms, cap=8, max_sites=4 if s["key"] == "crypto" else 5)
         items = _sector_rank(_recent(prev_sector.get(s["key"], []) + items), s, 14)   # ≤7d memory
         for it in items:
             it["sectors"] = [s["key"]]

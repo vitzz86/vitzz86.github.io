@@ -49,6 +49,11 @@ def _clean(s: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s or "")).strip()
 
 
+def _bad_title(title: str) -> bool:
+    t = (title or "").strip().lower()
+    return not t or t in {"private video", "deleted video"} or "video unavailable" in t
+
+
 def _iso_dur(s: str) -> int | None:
     m = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", s or "")
     if not m:
@@ -194,6 +199,9 @@ def collect(previous: list | None = None) -> list:
                 link = (e.get("link") or "")
                 if not vid or not pub:
                     continue
+                title = (e.get("title") or "").strip()
+                if _bad_title(title):
+                    continue
                 if settings.SKIP_SHORTS and "/shorts/" in link:   # drop Shorts
                     continue
                 pub_dt = dt.datetime(*pub[:6], tzinfo=dt.timezone.utc)
@@ -203,7 +211,7 @@ def collect(previous: list | None = None) -> list:
                 thumb = (mt[0].get("url") if mt else "") or f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg"
                 out.append({
                     "video_id": vid,
-                    "title": (e.get("title") or "").strip()[:200],
+                    "title": title[:200],
                     "channel": src["name"],
                     "channel_id": src["ref"] if src["kind"] == "channel" else "",
                     "category": src["category"],
@@ -251,6 +259,7 @@ def collect(previous: list | None = None) -> list:
     for v in (previous or []):
         if (v.get("video_id") and v.get("ts", 0) >= week_cut
                 and "/shorts/" not in (v.get("url") or "")
+                and not _bad_title(v.get("title", ""))
                 and v.get("channel") in valid_channels):   # drop sources removed from config
             by_id[v["video_id"]] = v
     for v in vids:                                 # fresh overlays previous (same id)
