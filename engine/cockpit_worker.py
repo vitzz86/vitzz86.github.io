@@ -210,8 +210,56 @@ REQUIRED_SHAPE = {
     "timestamp": str,
     "opening": dict,
     "intelligence_quadrants": dict,
+    "news": list,
+    "sector_news": dict,
+    "ticker_news": dict,
+    "videos": list,
+    "daily_brief": dict,
+    "intelligence_health": dict,
     "note_of_the_day": str,
 }
+
+NEWS_CATEGORIES = {"ECONOMY", "TECH", "MARKETS_FINANCE", "CRYPTO"}
+VIDEO_CATEGORIES = {"market_id", "market_us", "crypto"}
+
+
+def _expect(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError(f"contract violation: {message}")
+
+
+def _validate_brief(brief: dict) -> None:
+    _expect(isinstance(brief.get("sentiment"), dict), "daily_brief.sentiment missing")
+    _expect(isinstance(brief.get("synthesis"), str), "daily_brief.synthesis missing")
+    for key in ("must_watch", "must_read", "key_themes"):
+        _expect(isinstance(brief.get(key), list), f"daily_brief.{key} missing")
+    for key in ("news_digest", "video_digest"):
+        digest = brief.get(key)
+        _expect(isinstance(digest, dict), f"daily_brief.{key} missing")
+        for region in ("indonesia", "us"):
+            _expect(isinstance(digest.get(region), str) and digest.get(region).strip(),
+                    f"daily_brief.{key}.{region} missing")
+
+
+def _validate_intelligence(payload: dict) -> None:
+    for i, item in enumerate(payload["news"][:250]):
+        _expect(isinstance(item.get("title"), str) and item.get("title").strip(),
+                f"news[{i}].title missing")
+        _expect(isinstance(item.get("url"), str) and item.get("url").startswith("http"),
+                f"news[{i}].url missing")
+        _expect(item.get("category") in NEWS_CATEGORIES,
+                f"news[{i}].category invalid: {item.get('category')}")
+    for i, item in enumerate(payload["videos"][:250]):
+        _expect(isinstance(item.get("video_id"), str) and item.get("video_id").strip(),
+                f"videos[{i}].video_id missing")
+        _expect(item.get("category") in VIDEO_CATEGORIES,
+                f"videos[{i}].category invalid: {item.get('category')}")
+    health = payload["intelligence_health"]
+    _expect(isinstance(health.get("news"), dict), "intelligence_health.news missing")
+    _expect(isinstance(health.get("videos"), dict), "intelligence_health.videos missing")
+    _expect(isinstance(health["news"].get("wire_count"), int), "intelligence_health.news.wire_count missing")
+    _expect(isinstance(health["videos"].get("source_total"), int), "intelligence_health.videos.source_total missing")
+    _validate_brief(payload["daily_brief"])
 
 
 def validate(payload: dict) -> None:
@@ -233,6 +281,7 @@ def validate(payload: dict) -> None:
         arr = iq.get(key)
         if not isinstance(arr, list) or not arr or not all(isinstance(s, str) for s in arr):
             raise ValueError(f"contract violation: intelligence_quadrants.{key}")
+    _validate_intelligence(payload)
 
 
 def compile_payload(state: dict) -> dict:
