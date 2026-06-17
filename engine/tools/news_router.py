@@ -125,9 +125,9 @@ def google_news(query: str, geo: str = "US", n: int = None, category: str = None
             src = re.search(r"<source[^>]*>(.*?)</source>", block, re.S)
             if not title or not link:
                 continue
-            t = re.sub(r"<!\[CDATA\[|\]\]>", "", title.group(1)).strip()
+            t = _clean_html(title.group(1))
             # Google appends " - Source" to titles; split it out
-            source = src.group(1).strip() if src else ""
+            source = _clean_html(src.group(1)) if src else ""
             if not source and " - " in t:
                 t, source = t.rsplit(" - ", 1)
             pd = re.search(r"<pubDate>(.*?)</pubDate>", block, re.S)
@@ -178,6 +178,44 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
 
+NOISE_TITLE_PATTERNS = (
+    "top pro news",
+    "sector industry performance",
+    "sector amp industry performance",
+    "stock price news quote history",
+    "stock price news quote amp history",
+    "stock price stock chart market cap news today",
+    "stock price stock chart market cap amp news today",
+    "money personal investing",
+    "personal investing",
+    "commodities trading gold stocks oil stocks silver natural gas",
+    "legality of cryptocurrency by country or territory",
+)
+
+LOW_CONF_SOURCES = (
+    "24/7 wall st", "simplywall", "simply wall", "cryptorank",
+    "latest news from azerbaijan", "blockchain council",
+)
+
+QUERY_STOPWORDS = {
+    "stock", "stocks", "market", "markets", "news", "price", "prices", "shares",
+    "economy", "economic", "global", "outlook", "report", "today", "week",
+    "indonesia", "indonesian", "saham", "emiten", "bursa", "efek",
+}
+
+
+def _is_noise_item(it: dict) -> bool:
+    title = _norm(it.get("title", ""))
+    if not title:
+        return True
+    return any(p in title for p in NOISE_TITLE_PATTERNS)
+
+
+def _query_terms(it: dict) -> list[str]:
+    q = _norm(it.get("query", ""))
+    return [w for w in q.split() if len(w) > 3 and w not in QUERY_STOPWORDS][:8]
+
+
 def _dedupe_key(it: dict) -> tuple:
     url = (it.get("url") or "").strip()
     # Google News wrapper URLs are unique enough for click-through, but related wire
@@ -201,7 +239,7 @@ def _dedupe(items: list, cap: int) -> list:
 
 def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dict:
     txt = _norm(" ".join([it.get("title", ""), it.get("summary", ""), it.get("source", "")]))
-    terms = [_norm(t) for t in (terms or []) if t]
+    terms = [_norm(t) for t in (terms if terms is not None else _query_terms(it)) if t]
     relevance = 0
     for t in terms:
         if not t:
@@ -218,6 +256,14 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
     title_l = (it.get("title") or "").lower()
     if "opinion" in title_l or "op-ed" in title_l:
         score -= 8
+    source_l = _norm(it.get("source", ""))
+    if any(s in source_l for s in LOW_CONF_SOURCES):
+        score -= 14
+    if it.get("geo") == "ID":
+        id_terms = ("indonesia", "rupiah", "ihsg", "idx", "bei", "saham", "emiten",
+                    "bank indonesia", "ojk", "apbn", "jakarta", "bursa")
+        if not any(t in txt for t in id_terms):
+            score -= 18
     if not relevance and not it.get("source_score") and it.get("query_type") in {"ticker", "gap"}:
         score -= 18
     it["score"] = score
@@ -225,7 +271,8 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
 
 
 def _rank(items: list, cap: int, terms: list[str] = None, trusted_bias: int = 0) -> list:
-    ranked = [_score_item(dict(it), terms, trusted_bias) for it in items if it.get("url")]
+    ranked = [_score_item(dict(it), terms, trusted_bias)
+              for it in items if it.get("url") and not _is_noise_item(it)]
     ranked.sort(key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
     return _dedupe(ranked, cap)
 
@@ -316,7 +363,8 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
 
     def _trusted(job):
         q, geo, cat, group = job
-        return _targeted_source_news(q, geo, cat, group, q.split(), cap=10, max_sites=4)
+        max_sites = 7 if group == "ID" else 5
+        return _targeted_source_news(q, geo, cat, group, q.split(), cap=10, max_sites=max_sites)
 
     try:
         with cf.ThreadPoolExecutor(max_workers=5) as ex:
@@ -349,7 +397,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         items = (google_news(usq, "US", 5, query_type="sector") +
                  google_news(idq, "ID", 5, query_type="sector"))
         items += _targeted_source_news(usq, "US", "MARKETS_FINANCE", "US", terms, cap=6, max_sites=2)
-        items += _targeted_source_news(idq, "ID", "MARKETS_FINANCE", "ID", terms, cap=6, max_sites=2)
+        items += _targeted_source_news(idq, "ID", "MARKETS_FINANCE", "ID", terms, cap=8, max_sites=5)
         items = _merge_news(prev_sector.get(s["key"], []), items, 14, terms)   # ≤7d memory
         for it in items:
             it["sectors"] = [s["key"]]

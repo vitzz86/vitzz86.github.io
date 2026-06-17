@@ -452,7 +452,7 @@ TAVILY_ENDPOINT = "https://api.tavily.com/search"
 
 # Google News RSS search — keyless, per-entity discovery (any query, full index).
 GOOGLE_NEWS = "https://news.google.com/rss/search"
-GOOGLE_NEWS_GEO = {"ID": "hl=en-ID&gl=ID&ceid=ID:en", "US": "hl=en-US&gl=US&ceid=US:en"}
+GOOGLE_NEWS_GEO = {"ID": "hl=id&gl=ID&ceid=ID:id", "US": "hl=en-US&gl=US&ceid=US:en"}
 NEWS_PER_QUERY = 4          # items kept per index/sector/ticker query
 NEWS_WIRE_CAP = 220         # max items in the wire (~100 ID + ~100 US after dedupe)
 NEWS_TOPIC_PER_QUERY = 10   # items kept per broad wire-topic query (volume driver)
