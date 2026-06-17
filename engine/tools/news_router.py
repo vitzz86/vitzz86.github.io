@@ -12,6 +12,7 @@ Returns:
 from __future__ import annotations
 
 import concurrent.futures as cf
+import collections
 import datetime as dt
 import email.utils
 import json
@@ -529,6 +530,53 @@ def _latest_ts(items: list) -> int:
     return max((int(x.get("ts") or 0) for x in (items or [])), default=0)
 
 
+def _count(items: list, key: str, cap: int = None) -> dict:
+    c = collections.Counter(x.get(key) or "UNKNOWN" for x in items)
+    rows = c.most_common(cap) if cap else c.items()
+    return dict(rows)
+
+
+def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
+                    constituents: list, selected: list) -> dict:
+    now = _now()
+    fresh_tickers = {
+        tk for tk, items in ticker_news.items()
+        if _recent(items)
+    }
+    missing = [c["ticker"] for c in constituents if c["ticker"] not in fresh_tickers]
+    stale = []
+    for c in constituents:
+        latest = _latest_ts(ticker_news.get(c["ticker"], []))
+        if latest and (now - latest) > getattr(settings, "NEWS_TICKER_STALE_HOURS", 72) * 3600:
+            stale.append(c["ticker"])
+    sector_counts = {k: len(v or []) for k, v in sector_news.items()}
+    by_source = _count(wire, "source", 12)
+    audit = {
+        "wire_count": len(wire),
+        "geo": _count(wire, "geo"),
+        "category": _count(wire, "category"),
+        "query_type": _count(wire, "query_type"),
+        "top_sources": by_source,
+        "trusted_items": sum(1 for x in wire if x.get("source_tier")),
+        "sector_counts": sector_counts,
+        "sectors_below_3": [k for k, v in sector_counts.items() if v < 3],
+        "ticker_total": len(constituents),
+        "tickers_with_news": len(fresh_tickers),
+        "missing_tickers": missing[:60],
+        "missing_ticker_count": len(missing),
+        "stale_tickers": stale[:60],
+        "stale_ticker_count": len(stale),
+        "ticker_queries": len(selected),
+        "ticker_query_budget": settings.NEWS_TICKER_QUERY_BUDGET,
+        "window_days": 7,
+    }
+    print("[news:audit] "
+          f"wire={audit['wire_count']} · geo={audit['geo']} · category={audit['category']} · "
+          f"sectors_below_3={audit['sectors_below_3']} · "
+          f"missing_tickers={audit['missing_ticker_count']}/{audit['ticker_total']}")
+    return audit
+
+
 def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     previous = _load_previous()
     prev_wire = previous.get("news", [])
@@ -689,4 +737,6 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     print(f"[news] wire={len(wire)} (≤7d · {len(id_w)} ID / {len(us_w)} US) · "
           f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)} · "
           f"ticker_queries={len(selected)}/{len(cons)}")
-    return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news}
+    audit = _coverage_audit(wire, sector_news, ticker_news, cons, selected)
+    return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news,
+            "audit": audit}

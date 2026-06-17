@@ -289,6 +289,10 @@ def compile_payload(state: dict) -> dict:
         "sector_news": news["sector_news"],
         "ticker_news": news["ticker_news"],
         "videos": vids,
+        "intelligence_health": {
+            "news": news.get("audit", {}),
+            "videos": videos.audit(vids),
+        },
         "daily_brief": brief,
         "macro_analysis": ma["macro_analysis"],
         "alerts": ma["alerts"],

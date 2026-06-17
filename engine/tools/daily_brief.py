@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 import sys
 
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
@@ -76,8 +77,8 @@ def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
         "key_themes": themes,
         "must_watch": [{"video": v, "why": (v.get("summary") or "")[:180]} for v in videos[:4]],
         "must_read": [{"news": n, "why": (n.get("summary") or n.get("source") or "")} for n in news[:4]],
-        "news_digest": _regional_digest(news, "title", "geo"),
-        "video_digest": _regional_digest(videos, "title", "geo"),
+        "news_digest": _regional_digest(news, "title", "geo", telemetry),
+        "video_digest": _regional_digest(videos, "title", "geo", telemetry),
     }
 
 
@@ -86,6 +87,7 @@ DIGEST_TOPICS = (
     ("rupiah and Bank Indonesia policy", ("rupiah", "bank indonesia", "bi-rate", "suku bunga", "idr")),
     ("US rates and Fed policy", ("federal reserve", "fed", "rate", "rates", "warsh", "treasury")),
     ("US indices and stock-market breadth", ("s&p", "s p 500", "nasdaq", "dow", "wall street")),
+    ("BOJ and Japan rate policy", ("boj", "bank of japan", "japan rate", "japanese rate", "naikkan suku bunga")),
     ("AI, semiconductors, and technology capex", ("ai", "artificial intelligence", "nvidia", "semiconductor", "chip", "data center")),
     ("commodities, energy, and shipping", ("oil", "gold", "nickel", "coal", "commodity", "commodities", "hormuz", "shipping")),
     ("crypto markets and regulation", ("bitcoin", "ethereum", "crypto", "kripto", "stablecoin", "blockchain")),
@@ -107,18 +109,110 @@ def _human_list(items: list[str]) -> str:
     return ", ".join(items[:-1]) + f", and {items[-1]}"
 
 
+def _telemetry_row(telemetry: list | None, sym: str) -> dict | None:
+    for r in telemetry or []:
+        if r.get("symbol") == sym:
+            return r
+    return None
+
+
+def _fmt_pct(n) -> str:
+    try:
+        v = float(n)
+        return f"{v:+.2f}%"
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _indicator(label: str, row: dict | None, note: str = "") -> str:
+    if not row:
+        return ""
+    pct = _fmt_pct(row.get("delta_pct"))
+    return f"{label} {pct}{note}" if pct else ""
+
+
+def _tone(score: float) -> str:
+    if score >= 1.0:
+        return "bullish"
+    if score <= -1.0:
+        return "bearish"
+    return "mixed"
+
+
+def _regional_indicators(telemetry: list | None, region: str, topics: list[str]) -> tuple[str, list[str]]:
+    if region == "indonesia":
+        jci = _telemetry_row(telemetry, "^JKSE")
+        usdidr = _telemetry_row(telemetry, "USDIDR=X")
+        btc = _telemetry_row(telemetry, "BTC-USD")
+        score = 0
+        if jci:
+            score += 1 if float(jci.get("delta_pct") or 0) > 0 else -1 if float(jci.get("delta_pct") or 0) < 0 else 0
+        if usdidr:
+            fx = float(usdidr.get("delta_pct") or 0)
+            score += -1 if fx > 0 else 1 if fx < 0 else 0
+        fx_note = ""
+        if usdidr:
+            fx_note = " (rupiah weaker)" if float(usdidr.get("delta_pct") or 0) > 0 else " (rupiah stronger)" if float(usdidr.get("delta_pct") or 0) < 0 else ""
+        indicators = [_indicator("JCI", jci), _indicator("USD/IDR", usdidr, fx_note)]
+        if any("crypto" in t.lower() for t in topics):
+            indicators.append(_indicator("BTC", btc))
+        return _tone(score), [x for x in indicators if x][:4]
+
+    spx = _telemetry_row(telemetry, "^GSPC")
+    ndx = _telemetry_row(telemetry, "^IXIC")
+    dow = _telemetry_row(telemetry, "^DJI")
+    tnx = _telemetry_row(telemetry, "^TNX")
+    dxy = _telemetry_row(telemetry, "DX-Y.NYB")
+    brent = _telemetry_row(telemetry, "BZ=F")
+    gold = _telemetry_row(telemetry, "GC=F")
+    btc = _telemetry_row(telemetry, "BTC-USD")
+    equity_rows = [x for x in (spx, ndx, dow) if x]
+    score = sum(1 if float(x.get("delta_pct") or 0) > 0 else -1 if float(x.get("delta_pct") or 0) < 0 else 0
+                for x in equity_rows)
+    indicators = [_indicator("S&P 500", spx), _indicator("Nasdaq", ndx)]
+    topic_text = " ".join(topics).lower()
+    if "rates" in topic_text or "fed" in topic_text or "bonds" in topic_text:
+        indicators.append(_indicator("US 10Y", tnx))
+    if "commodities" in topic_text or "oil" in topic_text or "shipping" in topic_text:
+        indicators.append(_indicator("Brent", brent))
+    if "gold" in topic_text:
+        indicators.append(_indicator("Gold", gold))
+    if "crypto" in topic_text:
+        indicators.append(_indicator("BTC", btc))
+    if len([x for x in indicators if x]) < 3:
+        indicators.append(_indicator("DXY", dxy))
+    return _tone(score), [x for x in indicators if x][:4]
+
+
+def _item_text(it: dict, title_key: str) -> str:
+    return " ".join(str(it.get(k, "")) for k in (title_key, "summary", "source", "channel")).lower()
+
+
+def _topic_label(label: str, rows: list, title_key: str) -> str:
+    text = " ".join(_item_text(x, title_key) for x in rows)
+    if label == "BOJ and Japan rate policy":
+        pct = re.search(r"\b\d+(?:\.\d+)?\s*%", text)
+        return f"BOJ rate-policy coverage around {pct.group(0)}" if pct else "BOJ and Japan rate policy"
+    if label == "rupiah and Bank Indonesia policy" and re.search(r"\b17[,.]\d{3}\b", text):
+        return "rupiah pressure and Bank Indonesia policy"
+    if label == "commodities, energy, and shipping" and "hormuz" in text:
+        return "oil, shipping, and Strait of Hormuz risk"
+    return label
+
+
 def _digest_topics(rows: list, title_key: str) -> list[str]:
-    text = " ".join(str(x.get(title_key, "")) for x in rows).lower()
     scored = []
     for label, terms in DIGEST_TOPICS:
-        hits = sum(1 for term in terms if term in text)
-        if hits:
-            scored.append((hits, label))
+        row_hits = sum(1 for row in rows if any(term in _item_text(row, title_key) for term in terms))
+        term_hits = sum(_item_text(row, title_key).count(term) for row in rows for term in terms)
+        if row_hits:
+            scored.append((row_hits, term_hits, _topic_label(label, rows, title_key)))
     scored.sort(reverse=True)
-    return [label for _hits, label in scored[:4]]
+    recurring = [label for hits, _term_hits, label in scored if hits >= 2]
+    return (recurring or [label for _hits, _term_hits, label in scored])[:5]
 
 
-def _regional_digest(items: list, title_key: str, geo_key: str) -> dict:
+def _regional_digest(items: list, title_key: str, geo_key: str, telemetry: list | None = None) -> dict:
     def one(region: str) -> str:
         if region == "indonesia":
             rows = [x for x in items if x.get(geo_key) == "ID"]
@@ -126,12 +220,16 @@ def _regional_digest(items: list, title_key: str, geo_key: str) -> dict:
         else:
             rows = [x for x in items if x.get(geo_key) != "ID"]
             label = "US/global"
-        topics = _digest_topics(rows[:12], title_key)
+        topics = _digest_topics(rows[:16], title_key)
         if not rows:
             return f"{label}: no high-confidence items in the current 7-day window."
+        tone, indicators = _regional_indicators(telemetry, region, topics)
+        prefix = f"{label}: {tone} tone"
+        if indicators:
+            prefix += f" with {_human_list(indicators)}"
         if topics:
-            return f"{label}: coverage focuses on {_human_list(topics)}."
-        return f"{label}: coverage is concentrated in the latest market and business headlines."
+            return f"{prefix}; coverage focuses on {_human_list(topics)}."
+        return f"{prefix}; coverage is concentrated in the latest market and business headlines."
     return {"indonesia": one("indonesia"), "us": one("us")}
 
 
@@ -146,9 +244,11 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
     brief = None
     if summarize:
         vlist, nlist = videos[:12], news[:14]
-        vstr = "\n".join(f"{i}. [{v['category']}] {v['channel']}: {v['title']}"
+        def snippet(x):
+            return str(x.get("summary") or "").replace("\n", " ")[:260]
+        vstr = "\n".join(f"{i}. [{v['category']}/{v.get('geo','')}] {v['channel']}: {v['title']} — {snippet(v)}"
                          for i, v in enumerate(vlist)) or "none"
-        nstr = "\n".join(f"{i}. [{n.get('category','')}/{n.get('geo','')}] {n.get('source','')}: {n['title']}"
+        nstr = "\n".join(f"{i}. [{n.get('category','')}/{n.get('geo','')}] {n.get('source','')}: {n['title']} — {snippet(n)}"
                          for i, n in enumerate(nlist)) or "none"
         tstr = "\n".join(f"{r['label']}: {r['value']} ({r['delta_pct']:+.2f}%)" for r in telemetry)
         secstr = "; ".join(f"{s['name']} {s['change']:+.2f}%" for s in sectors)
@@ -167,7 +267,12 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
             "(by the given news index). score: 0=max bearish, 50=neutral, 100=max bullish. "
             "The news_digest and video_digest must summarize the full listed set by region: "
             "Indonesia in one complete sentence and US/global in one complete sentence each. "
-            "Do not list headlines. Do not use semicolon-separated headline strings. "
+            "Each sentence must start with a tone label (bullish, bearish, or mixed), include 2-4 key indicators "
+            "from telemetry with up/down percentages when relevant, then name 3-5 recurring topics or concrete events "
+            "that appear across multiple items, using title plus summary/description, not title alone. Include specific "
+            "catalysts and numbers when present, for example BOJ rate-hike coverage around 1%, Rupiah near 17,780, "
+            "Fed hold, Hormuz reopening, oil moves, or S&P/Nasdaq moves. Do not list headlines. "
+            "Do not use semicolon-separated headline strings. "
             "Describe the common topics and market implications in plain language. "
             "Indices are given as % day moves. Plain text inside JSON values, no markdown.",
             f"=== TELEMETRY ===\n{tstr}\n\n=== SECTORS ===\n{secstr}\n\n"
@@ -222,8 +327,8 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
     if brief is None:
         print("[daily_brief] deterministic fallback")
         brief = _deterministic(telemetry, sectors, news, videos, arbiter)
-    nd_fallback = _regional_digest(news, "title", "geo")
-    vd_fallback = _regional_digest(videos, "title", "geo")
+    nd_fallback = _regional_digest(news, "title", "geo", telemetry)
+    vd_fallback = _regional_digest(videos, "title", "geo", telemetry)
     brief["news_digest"] = {
         "indonesia": ((brief.get("news_digest") or {}).get("indonesia") or nd_fallback["indonesia"]),
         "us": ((brief.get("news_digest") or {}).get("us") or nd_fallback["us"]),

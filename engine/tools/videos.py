@@ -10,6 +10,7 @@ the on-expand summary. Degrades to an empty list if YouTube is unreachable.
 from __future__ import annotations
 
 import concurrent.futures as cf
+import collections
 import datetime as dt
 import re
 import sys
@@ -21,6 +22,7 @@ from config import settings
 FEED = "https://www.youtube.com/feeds/videos.xml?"
 WATCH = "https://www.youtube.com/watch?v="
 EMBED = "https://www.youtube.com/embed/"
+LAST_AUDIT = {}
 
 
 def _get(url: str, timeout: int = 20) -> str:
@@ -252,7 +254,6 @@ def collect(previous: list | None = None) -> list:
     # subset of feeds. Merge this run's fresh items with the previous payload's
     # still-fresh items (≤window) so a transient feed failure never wipes content —
     # coverage fills in over a few runs and persists until items age out.
-    import collections
     week_cut = int(dt.datetime.now(dt.timezone.utc).timestamp()) - settings.VIDEO_WEEK_DAYS * 86400
     valid_channels = {s["name"] for s in settings.VIDEO_SOURCES}
     by_id = {}
@@ -273,8 +274,46 @@ def collect(previous: list | None = None) -> list:
     fresh_ids = {v["video_id"] for v in vids}
     present = {v["channel"] for v in out}
     missing = [s["name"] for s in settings.VIDEO_SOURCES if s["name"] not in present]
+    source_counts = collections.Counter(v.get("channel") or "UNKNOWN" for v in out)
+    category_counts = collections.Counter(v.get("category") or "UNKNOWN" for v in out)
+    geo_counts = collections.Counter(v.get("geo") or "UNKNOWN" for v in out)
+    fresh_by_source = collections.Counter(v.get("channel") or "UNKNOWN" for v in vids)
+    global LAST_AUDIT
+    LAST_AUDIT = {
+        "video_count": len(out),
+        "fresh_this_run": len(fresh_ids),
+        "source_total": len(settings.VIDEO_SOURCES),
+        "sources_present": len(present),
+        "missing_sources": missing,
+        "category": dict(category_counts),
+        "geo": dict(geo_counts),
+        "top_sources": dict(source_counts.most_common(12)),
+        "fresh_by_source": dict(fresh_by_source.most_common(12)),
+        "fetch_per_run": getattr(settings, "VIDEO_FETCH_PER_RUN", len(settings.VIDEO_SOURCES)),
+        "window_days": settings.VIDEO_WEEK_DAYS,
+    }
     print(f"[videos] {len(out)} videos (merged, ≤{settings.VIDEO_WEEK_DAYS}d) · "
           f"{len(fresh_ids)} fresh this run · {len(present)}/{len(settings.VIDEO_SOURCES)} sources")
     if missing:
         print(f"[videos] stale/missing (prioritized next run): {missing}")
     return out
+
+
+def audit(items: list | None = None) -> dict:
+    if LAST_AUDIT:
+        return dict(LAST_AUDIT)
+    rows = items or []
+    present = {v.get("channel") for v in rows if v.get("channel")}
+    return {
+        "video_count": len(rows),
+        "fresh_this_run": 0,
+        "source_total": len(settings.VIDEO_SOURCES),
+        "sources_present": len(present),
+        "missing_sources": [s["name"] for s in settings.VIDEO_SOURCES if s["name"] not in present],
+        "category": dict(collections.Counter(v.get("category") or "UNKNOWN" for v in rows)),
+        "geo": dict(collections.Counter(v.get("geo") or "UNKNOWN" for v in rows)),
+        "top_sources": dict(collections.Counter(v.get("channel") or "UNKNOWN" for v in rows).most_common(12)),
+        "fresh_by_source": {},
+        "fetch_per_run": getattr(settings, "VIDEO_FETCH_PER_RUN", len(settings.VIDEO_SOURCES)),
+        "window_days": settings.VIDEO_WEEK_DAYS,
+    }

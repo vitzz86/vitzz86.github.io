@@ -925,6 +925,7 @@ const DIGEST_TOPICS=[
   ['rupiah and Bank Indonesia policy',['rupiah','bank indonesia','bi rate','suku bunga','idr']],
   ['US rates and Fed policy',['federal reserve','fed','rate','rates','warsh','treasury']],
   ['US indices and stock-market breadth',['s p 500','nasdaq','dow','wall street']],
+  ['BOJ and Japan rate policy',['boj','bank of japan','japan rate','japanese rate','naikkan suku bunga']],
   ['AI, semiconductors, and technology capex',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
   ['commodities, energy, and shipping',['oil','gold','nickel','coal','commodity','commodities','hormuz','shipping']],
   ['crypto markets and regulation',['bitcoin','ethereum','crypto','kripto','stablecoin','blockchain']],
@@ -934,10 +935,49 @@ const DIGEST_TOPICS=[
   ['geopolitics and trade risk',['iran','tariff','trade','war','geopolitical','geopolitics']]
 ];
 function humanList(a){a=a.filter(Boolean);if(a.length<2)return a[0]||'';if(a.length===2)return `${a[0]} and ${a[1]}`;return `${a.slice(0,-1).join(', ')}, and ${a[a.length-1]}`;}
+function digestText(row){return normTitle([row.title,row.summary,row.source,row.channel].join(' '));}
+function topicLabel(label,rows){
+  const txt=rows.map(digestText).join(' ');
+  if(label==='BOJ and Japan rate policy'){
+    const pct=(txt.match(/\b\d+(?:\.\d+)?\s*%/)||[])[0];
+    return pct?`BOJ rate-policy coverage around ${pct}`:'BOJ and Japan rate policy';
+  }
+  if(label==='rupiah and Bank Indonesia policy'&&/\b17[,.]\d{3}\b/.test(txt))return 'rupiah pressure and Bank Indonesia policy';
+  if(label==='commodities, energy, and shipping'&&txt.includes('hormuz'))return 'oil, shipping, and Strait of Hormuz risk';
+  return label;
+}
 function digestTopics(rows){
-  const txt=normTitle(rows.map(x=>x.title||'').join(' '));
-  return DIGEST_TOPICS.map(([label,terms])=>[terms.reduce((n,t)=>n+(txt.includes(normTitle(t))?1:0),0),label])
-    .filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]).slice(0,4).map(x=>x[1]);
+  const scored=DIGEST_TOPICS.map(([label,terms])=>{
+    const rowHits=rows.reduce((n,row)=>n+(terms.some(t=>digestText(row).includes(normTitle(t)))?1:0),0);
+    const termHits=rows.reduce((n,row)=>n+terms.reduce((m,t)=>m+(digestText(row).split(normTitle(t)).length-1),0),0);
+    return [rowHits,termHits,topicLabel(label,rows)];
+  }).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]||b[1]-a[1]);
+  const recurring=scored.filter(x=>x[0]>=2).map(x=>x[2]);
+  return (recurring.length?recurring:scored.map(x=>x[2])).slice(0,5);
+}
+function telemetryRow(sym){return (DATA&&DATA.telemetry||[]).find(r=>r.symbol===sym);}
+function pctTxt(row){const v=Number(row&&row.delta_pct);return Number.isFinite(v)?`${v>=0?'+':''}${v.toFixed(2)}%`:'';}
+function indTxt(label,row,note=''){const p=pctTxt(row);return p?`${label} ${p}${note}`:'';}
+function toneFrom(score){return score>=1?'bullish':score<=-1?'bearish':'mixed';}
+function digestIndicators(region,topics){
+  if(region==='Indonesia'){
+    const jci=telemetryRow('^JKSE'),fx=telemetryRow('USDIDR=X'),btc=telemetryRow('BTC-USD');
+    let score=0;if(jci)score+=Number(jci.delta_pct)>0?1:Number(jci.delta_pct)<0?-1:0;
+    if(fx)score+=Number(fx.delta_pct)>0?-1:Number(fx.delta_pct)<0?1:0;
+    const fxNote=fx?(Number(fx.delta_pct)>0?' (rupiah weaker)':Number(fx.delta_pct)<0?' (rupiah stronger)':''):'';
+    const arr=[indTxt('JCI',jci),indTxt('USD/IDR',fx,fxNote)];
+    if(topics.some(t=>t.toLowerCase().includes('crypto')))arr.push(indTxt('BTC',btc));
+    return [toneFrom(score),arr.filter(Boolean).slice(0,4)];
+  }
+  const spx=telemetryRow('^GSPC'),ndx=telemetryRow('^IXIC'),dow=telemetryRow('^DJI'),tnx=telemetryRow('^TNX'),dxy=telemetryRow('DX-Y.NYB'),brent=telemetryRow('BZ=F'),gold=telemetryRow('GC=F'),btc=telemetryRow('BTC-USD');
+  const eq=[spx,ndx,dow].filter(Boolean);const score=eq.reduce((n,r)=>n+(Number(r.delta_pct)>0?1:Number(r.delta_pct)<0?-1:0),0);
+  const tt=topics.join(' ').toLowerCase();const arr=[indTxt('S&P 500',spx),indTxt('Nasdaq',ndx)];
+  if(tt.includes('rates')||tt.includes('fed')||tt.includes('bonds'))arr.push(indTxt('US 10Y',tnx));
+  if(tt.includes('commodities')||tt.includes('oil')||tt.includes('shipping'))arr.push(indTxt('Brent',brent));
+  if(tt.includes('gold'))arr.push(indTxt('Gold',gold));
+  if(tt.includes('crypto'))arr.push(indTxt('BTC',btc));
+  if(arr.filter(Boolean).length<3)arr.push(indTxt('DXY',dxy));
+  return [toneFrom(score),arr.filter(Boolean).slice(0,4)];
 }
 function rebuildPrioritySets(){
   MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()};MUST_READ={urls:new Set(),titles:new Set()};
@@ -957,17 +997,20 @@ function prioritySort(kind,items){
 function localDigest(kind){
   const rows=kind==='video_digest'?(VIDEOS||[]).filter(goodVideo):(WIRE||[]).filter(goodNews);
   const one=(label,arr)=>{
-    const ranked=prioritySort(kind==='video_digest'?'video':'news',arr).slice(0,12);
+    const ranked=prioritySort(kind==='video_digest'?'video':'news',arr).slice(0,16);
     if(!ranked.length)return '';
     const topics=digestTopics(ranked);
-    return topics.length?`${label}: coverage focuses on ${humanList(topics)}.`:`${label}: coverage is concentrated in the latest market and business headlines.`;
+    const [tone,indicators]=digestIndicators(label,topics);
+    const prefix=`${label}: ${tone} tone${indicators.length?` with ${humanList(indicators)}`:''}`;
+    return topics.length?`${prefix}; coverage focuses on ${humanList(topics)}.`:`${prefix}; coverage is concentrated in the latest market and business headlines.`;
   };
   return {indonesia:one('Indonesia',rows.filter(x=>x.geo==='ID')),
           us:one('US/global',rows.filter(x=>x.geo!=='ID'))};
 }
+function richDigest(d){return /\b(bullish|bearish|mixed) tone\b/i.test((d&&d.indonesia||'')+' '+(d&&d.us||''));}
 function digestHTML(kind){
   const baked=(BRIEF||{})[kind]||{};
-  const d=(baked.indonesia||baked.us)?baked:localDigest(kind);
+  const d=(baked.indonesia||baked.us)&&richDigest(baked)?baked:localDigest(kind);
   if(!d.indonesia&&!d.us)return '';
   const label=kind==='video_digest'?'VIDEO SYNTHESIS':'NEWS SYNTHESIS';
   const id=d.indonesia?`<div class="di"><b>Indonesia</b> ${esc(d.indonesia.replace(/^Indonesia:\s*/i,''))}</div>`:'';
