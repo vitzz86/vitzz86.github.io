@@ -675,7 +675,7 @@ function render(d){
   const jci=(d.telemetry||[]).find(r=>r.symbol==='^JKSE')||(d.telemetry||[])[0];
   if($('mktState')&&jci){
     const op=mktOpen(jci);
-    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dgray'}"></span>Market <b style="color:${op?'var(--green)':'var(--ink3)'}">${op?'OPEN':'CLOSED'}</b>`;
+    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dgray'}"></span>IDX <b style="color:${op?'var(--green)':'var(--ink3)'}">${op?'OPEN':'CLOSED'}</b>`;
   }
 
   /* index cards — green dot = trading now, grey dot = market closed */
@@ -812,6 +812,17 @@ function mktOpen(o){const n=Date.now()/1000;
   if(o&&o.mkt_start&&o.mkt_end)return n>=o.mkt_start&&n<=o.mkt_end;
   return (o||{}).state==='open';}
 
+function assetOpen(o){return !!(o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto'||mktOpen(o)));}
+function stateBadgeHTML(o){
+  const op=assetOpen(o),isCrypto=o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto');
+  const label=isCrypto?'● 24/7':(op?'● OPEN':'● CLOSED');
+  return `<span class="exch" style="color:${op?'var(--green)':'var(--ink3)'};border-color:${op?'var(--green)':'var(--ink3)'}">${label}</span>`;
+}
+function quoteStamp(o,hasLive){
+  if(o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto'))return 'live · CoinGecko';
+  if(hasLive)return assetOpen(o)?'live quote':'latest quote · market closed';
+  return wibStamp(DATA.timestamp);
+}
 function liveQuote(tk){return CRYPTO[tk]||LIVE[tk]||null;}
 function qDelta(row){const q=liveQuote(row.ticker);return q&&q.dp!=null?q.dp:row.delta_pct;}
 function qValue(row){const q=liveQuote(row.ticker);return q&&q.c!=null?q.c:row.value;}
@@ -1146,15 +1157,13 @@ function openTicker(s,tk){
   const waitingChart=c.country==='CR'&&CG_IDS[tk]&&!view.length;
   if(waitingChart)ensureCryptoChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
-  const op=live?true:mktOpen(c);
-  const stateBadge=op?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>'
-                     :'<span class="exch" style="color:var(--ink3);border-color:var(--ink3)">● CLOSED</span>';
+  const stateBadge=stateBadgeHTML(c);
   const news=(DATA.ticker_news||{})[tk]||[];
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
     `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
-    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
+    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
@@ -1235,7 +1244,7 @@ function startCrypto(){
       // live-refresh an open crypto ticker view
       if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],open=$('smTicker').querySelector('.tk');
         if(s&&s.key==='crypto'&&open){const tk=open.textContent.replace(/[^A-Z0-9]/g,'');if(CRYPTO[tk])openTicker(s,tk);}}
-      $('freshPill').innerHTML='<span class="d dgreen"></span>CRYPTO LIVE · '+ago(DATA.timestamp).toUpperCase();
+      $('freshPill').innerHTML='<span class="d dgreen"></span>CRYPTO 24/7 · '+ago(DATA.timestamp).toUpperCase();
     }catch(e){}
   }
   poll();setInterval(poll,60000);
@@ -1257,7 +1266,8 @@ function startFinnhub(){
     // refresh an open US ticker view with live numbers
     if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx];
       const open=$('smTicker').querySelector('.tk');if(open){const tk=open.textContent.replace(/[^A-Z0-9.]/g,'');if(LIVE[tk])openTicker(s,tk);}}
-    $('freshPill').innerHTML='<span class="d dgreen"></span>US LIVE · IDX '+ago(DATA.timestamp).toUpperCase();
+    const usOpen=(DATA.telemetry||[]).some(r=>['^GSPC','^IXIC','^DJI'].includes(r.symbol)&&mktOpen(r));
+    $('freshPill').innerHTML=`<span class="d ${usOpen?'dgreen':'dgray'}"></span>US ${usOpen?'OPEN':'CLOSED'} · IDX ${ago(DATA.timestamp).toUpperCase()}`;
   }
   poll();setInterval(poll,90000);
 }
