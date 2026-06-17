@@ -333,7 +333,7 @@ footer .g{color:var(--green);}
 .sbar .st i{display:block;height:100%;border-radius:999px;}
 .sbar .sv{width:24px;text-align:right;color:var(--ink);}
 .synth{font-size:11.5px;line-height:1.68;color:#c7c7cf;}
-.bcard{display:block;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:7px;cursor:pointer;}
+.bcard{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:7px;cursor:pointer;color:inherit;font-family:inherit;}
 .bcard:hover{border-color:#3a3a46;}
 .bcard .bct{font-size:11.5px;font-weight:500;line-height:1.35;color:var(--ink);}
 .bcard .bcm{font-family:var(--mono);font-size:8.5px;color:var(--ink3);margin-top:4px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
@@ -901,7 +901,7 @@ function expandIdx(i){
 }
 
 /* ---- intelligence hub: Daily Brief · News · Videos ---- */
-let hubPane='brief',dateRange='1w',vidCat='ALL';
+let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
 let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null;
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿'};
@@ -996,6 +996,7 @@ function syncHubUI(){
 }
 function buildHub(d){
   WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;
+  BRIEF_VIDEOS=((BRIEF||{}).must_watch||[]).map(m=>m.video||m||{}).filter(goodVideo);
   rebuildPrioritySets();
   if(!hubInit){
     hubInit=true;
@@ -1020,7 +1021,7 @@ function buildBrief(){
   const bar=(k,v)=>`<div class="sbar"><span class="sk">${k}</span><span class="st"><i style="width:${v}%;background:${col(v)}"></i></span><span class="sv">${v}</span></div>`;
   const win=b.generated_for?b.generated_for.replace('T',' · ')+':00':'Today';
   const watch=(b.must_watch||[]).map(m=>{const v=m.video||{};
-    return `<a class="bcard" href="${encodeURI(v.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
+    return `<button class="bcard bwatch" data-id="${esc(v.video_id||'')}" type="button"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</button>`;}).join('');
   const read=(b.must_read||[]).map(m=>{const n=m.news||{},cat=newsCat(n);
     return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
@@ -1031,6 +1032,9 @@ function buildBrief(){
     (watch?`<div class="bsec"><div class="bh">▶ MUST-WATCH TODAY</div>${watch}</div>`:'')+
     (read?`<div class="bsec"><div class="bh">⊳ MUST-READ TODAY</div>${read}</div>`:'')+
     (themes?`<div class="bsec"><div class="bh">◆ KEY THEMES TODAY</div>${themes}</div>`:'');
+  [...document.querySelectorAll('#paneBrief .bwatch')].forEach(el=>{
+    el.onclick=()=>{if(el.dataset.id)playMedia('news',el.dataset.id);};
+  });
 }
 
 function buildWire(){
@@ -1075,7 +1079,10 @@ function drawVideos(){
 let ytPlayer=null,ytApiReady=false,ytSource='news',ytIdx=-1,ytPaused=true,ytSpeed=1,ytTime=0;
 let _restoreVidTime=0,_restoreVidPlay=false,_pendingPlay=false;
 function ytQueueArr(){
-  return ((ytSource==='podcast'?(DATA||{}).podcasts:(DATA||{}).videos)||[]).filter(x=>ytSource==='podcast'?x.video_id:goodVideo(x));
+  if(ytSource==='podcast')return ((DATA||{}).podcasts||[]).filter(x=>x.video_id);
+  const byId=new Map();
+  [...((DATA||{}).videos||[]),...BRIEF_VIDEOS].forEach(v=>{if(goodVideo(v))byId.set(v.video_id,v);});
+  return [...byId.values()];
 }
 function loadYTApi(){
   if(window.YT&&window.YT.Player){ytApiReady=true;return;}
