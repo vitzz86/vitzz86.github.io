@@ -597,6 +597,12 @@ function liveGreeting(){const h=new Date().getHours();return h<11?"Good morning"
 function ago(iso){const m=Math.round((Date.now()-new Date(iso).getTime())/60000);if(m<60)return m+'m ago';const h=Math.round(m/60);return h<48?h+'h ago':Math.round(h/24)+'d ago';}
 function wibStamp(iso){const d=iso?new Date(iso):new Date();if(isNaN(d))return '';
   return d.toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})+' WIB';}
+function checkedAgo(ms){if(!ms)return 'not checked yet';const m=Math.max(0,Math.round((Date.now()-ms)/60000));return m<1?'just now':m<60?m+'m ago':Math.round(m/60)+'h ago';}
+function updateDataAge(){
+  if(!$('stamp'))return;
+  const base=DATA&&DATA.timestamp?'compiled '+ago(DATA.timestamp):'compiled --';
+  $('stamp').textContent=base+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
+}
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES'};
 const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
 const COLP=n=>n>=0?'var(--green)':'var(--red)';
@@ -606,6 +612,7 @@ const SECTOR_ICON={
   property:'🏢',crypto:'₿'
 };
 let DATA=null;
+let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false;
 
 function tzLine(tz,label){
   const now=new Date();
@@ -653,7 +660,7 @@ function render(d){
   renderMoods();
   const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
-  $('stamp').textContent='compiled '+ago(d.timestamp);
+  updateDataAge();
   $('freshPill').innerHTML='<span class="d dgreen"></span>UPDATED '+ago(d.timestamp).toUpperCase();
 
   /* top alert + active alerts */
@@ -1434,12 +1441,40 @@ $('mbStop').onclick=()=>stopVideo();
    poll every 5 min so a new payload (baked every 30 min) shows within ~5 min with
    no manual reload. Soft re-render keeps players & restored state alive. */
 function fetchData(){return fetch('data.json?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();});}
-fetchData()
-  .then(d=>{render(d);startClock();startCrypto();startFinnhub();loadSpotifyApi();restoreVideo();})
-  .catch(e=>{console.error('payload fetch failed',e);$('topAlert').textContent='Payload unreachable — showing shell.';});
-setInterval(()=>{fetchData().then(d=>render(d)).catch(()=>{});},5*60*1000);
-setInterval(()=>{$('stamp').textContent='compiled '+ago(DATA.timestamp);
-  $('freshPill').innerHTML='<span class="d dgreen"></span>UPDATED '+ago(DATA.timestamp).toUpperCase();},60000);
+function applyPayload(d,initial){
+  const prev=DATA&&DATA.timestamp,next=d&&d.timestamp;
+  render(d);
+  if(!initial&&prev&&next&&prev!==next){
+    topAlerts.unshift('Dashboard data refreshed — '+wibStamp(next));
+    topAlertIdx=0;showTopAlert();
+  }
+}
+function refreshPayload(opts={}){
+  if(payloadRefreshBusy)return Promise.resolve(false);
+  payloadRefreshBusy=true;
+  return fetchData().then(d=>{
+    payloadLastCheck=Date.now();payloadLastOk=true;
+    const changed=!DATA||!DATA.timestamp||d.timestamp!==DATA.timestamp;
+    if(changed||opts.force)applyPayload(d,!!opts.initial);
+    else updateDataAge();
+    return changed;
+  }).catch(e=>{
+    payloadLastCheck=Date.now();payloadLastOk=false;updateDataAge();
+    console.warn('payload refresh failed',e);
+    if(opts.initial){
+      $('topAlert').textContent='Payload unreachable — showing shell.';
+      $('freshPill').innerHTML='<span class="d dgray"></span>REFRESH ERROR';
+    }
+    return false;
+  }).finally(()=>{payloadRefreshBusy=false;});
+}
+refreshPayload({initial:true,force:true}).then(()=>{
+  if(DATA){startClock();startCrypto();startFinnhub();loadSpotifyApi();restoreVideo();}
+});
+setInterval(()=>{refreshPayload();},5*60*1000);
+addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPayload();});
+addEventListener('focus',()=>{if(Date.now()-payloadLastCheck>60000)refreshPayload();});
+setInterval(updateDataAge,60000);
 setInterval(saveState,5000);            // sample playback position + persist active state
 addEventListener('beforeunload',saveState);
 </script>
