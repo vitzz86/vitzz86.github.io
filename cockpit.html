@@ -849,7 +849,7 @@ function drawSectors(){
       :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(m.change)}">${sign(m.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(m.change)}"></i></div></div>`;
     return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${s.signal}">${s.signal}</span></div>`+
       `<div class="agg" style="color:${COLP(m.change)}">${sign(m.change)}</div>`+body+
-      `<div class="thm"><span>${esc(s.theme)}</span><span>›</span></div></button>`;
+      `<div class="thm"><span></span><span>›</span></div></button>`;
   }).join('');
   [...document.querySelectorAll('.seccard')].forEach(b=>b.onclick=()=>openSector(+b.dataset.i));
 }
