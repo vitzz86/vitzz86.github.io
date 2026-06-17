@@ -14,6 +14,7 @@ links) when no LLM key is configured.
 from __future__ import annotations
 
 import json
+import re
 import sys
 
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
@@ -40,6 +41,21 @@ _SYSTEM = (
     "the NEWS/VIDEO that drove the point AND the ticker(s) it moved. Never invent a "
     "source, symbol or index. Plain text inside JSON values."
 )
+
+
+def _sentence_clip(text: str, limit: int) -> str:
+    """Keep prose readable: never end a stored sentence mid-word or mid-thought."""
+    txt = re.sub(r"\s+", " ", (text or "").strip())
+    if len(txt) <= limit:
+        return txt
+    cut = txt[:limit].rstrip()
+    # Prefer the last complete sentence inside the limit.
+    m = list(re.finditer(r"[.!?](?:\s|$)", cut))
+    if m and m[-1].end() >= max(120, int(limit * 0.55)):
+        return cut[:m[-1].end()].strip()
+    # Fallback: clean word boundary with ellipsis rather than a raw truncation.
+    cut = cut.rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return cut + "..."
 
 
 def _parse_json(raw: str) -> dict | None:
@@ -100,7 +116,7 @@ def _fallback(telemetry, sectors, tel_by_sym, news=None) -> dict:
     # alerts from the freshest macro/markets headlines (real article links)
     for n in (news or [])[:3]:
         al.append({"title": n["title"][:120],
-                   "desc": (n.get("summary") or "")[:240],
+                   "desc": _sentence_clip(n.get("summary") or "", 420),
                    "sources": [{"name": n.get("source") or "Source", "url": n["url"]}]})
     # top up with the biggest sector moves if we have headroom
     for s in sorted(sectors, key=lambda s: abs(s.get("change", 0.0)), reverse=True):
@@ -109,7 +125,7 @@ def _fallback(telemetry, sectors, tel_by_sym, news=None) -> dict:
         cons = s.get("constituents") or []
         lead = cons[0] if cons else None
         al.append({"title": f"{s['name']} {s['change']:+.2f}%",
-                   "desc": (s.get("ai") or f"{s['name']} sector aggregate moved {s['change']:+.2f}%.")[:240],
+                   "desc": _sentence_clip(s.get("ai") or f"{s['name']} sector aggregate moved {s['change']:+.2f}%.", 420),
                    "sources": [{"name": lead["ticker"], "url": lead["url"]}] if lead else []})
     return {"macro_analysis": ma, "alerts": al}
 
@@ -141,14 +157,14 @@ def compile_macro_alerts(telemetry, sectors, news, videos, signals="", summarize
                 for it in (obj.get("macro_analysis") or [])[:6]:
                     pt = str(it.get("point", "")).strip()
                     if pt:
-                        ma.append({"point": pt[:300],
+                        ma.append({"point": _sentence_clip(pt, 700),
                                    "sources": _resolve_refs(it.get("refs"), tel_by_sym, cons_by_tk, nlist, vlist)})
                 al = []
                 for it in (obj.get("alerts") or [])[:5]:
                     ti = str(it.get("title", "")).strip()
                     if ti:
                         al.append({"title": ti[:120],
-                                   "desc": str(it.get("desc", "")).strip()[:240],
+                                   "desc": _sentence_clip(str(it.get("desc", "")).strip(), 460),
                                    "sources": _resolve_refs(it.get("refs"), tel_by_sym, cons_by_tk, nlist, vlist)})
                 if ma or al:
                     result = {"macro_analysis": ma, "alerts": al}

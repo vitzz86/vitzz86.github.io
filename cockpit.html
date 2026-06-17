@@ -34,7 +34,7 @@ a{color:inherit;text-decoration:none;}
 .spills{display:flex;gap:14px;flex:0 0 auto;}
 .spill{display:flex;align-items:center;gap:5px;color:var(--ink2);font-size:10px;}
 .spill .d{width:6px;height:6px;border-radius:50%;}
-.dgreen{background:var(--green);box-shadow:0 0 5px var(--green);}.damber{background:var(--amber);box-shadow:0 0 5px var(--amber);}.dred{background:var(--red);box-shadow:0 0 5px var(--red);}
+.dgreen{background:var(--green);box-shadow:0 0 5px var(--green);}.damber{background:var(--amber);box-shadow:0 0 5px var(--amber);}.dgray{background:var(--ink3);box-shadow:0 0 4px var(--ink3);}
 .alertbar{flex:1;min-width:0;display:flex;align-items:center;gap:8px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:5px;height:22px;padding:0 10px;color:#f6c453;font-size:10px;overflow:hidden;}
 .alertbar .nx{margin-left:auto;color:var(--ink3);cursor:pointer;flex:0 0 auto;}
 .tright{display:flex;align-items:center;gap:12px;flex:0 0 auto;color:var(--ink2);font-size:10px;}
@@ -123,7 +123,7 @@ a{color:inherit;text-decoration:none;}
 .idxcard .tic{color:var(--ink3);font-size:13px;}
 .mdot{font-size:8px;margin-right:4px;}
 .mdot.live{color:var(--green);animation:livepulse 2s ease-in-out infinite;}
-.mdot.shut{color:var(--red);}
+.mdot.shut{color:var(--ink3);}
 @keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 
 /* expanded index */
@@ -654,10 +654,10 @@ function render(d){
   const jci=(d.telemetry||[]).find(r=>r.symbol==='^JKSE')||(d.telemetry||[])[0];
   if($('mktState')&&jci){
     const op=mktOpen(jci);
-    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dred'}"></span>Market <b style="color:${op?'var(--green)':'var(--red)'}">${op?'OPEN':'CLOSED'}</b>`;
+    $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dgray'}"></span>Market <b style="color:${op?'var(--green)':'var(--ink3)'}">${op?'OPEN':'CLOSED'}</b>`;
   }
 
-  /* index cards — green dot = trading now, red dot = market closed */
+  /* index cards — green dot = trading now, grey dot = market closed */
   $('idxScroll').innerHTML=(d.telemetry||[]).map((r,i)=>{
     const up=r.delta_pct>=0,op=mktOpen(r);
     const dot=`<span class="mdot ${op?'live':'shut'}" title="${op?'Market open':'Market closed'}">●</span>`;
@@ -818,7 +818,7 @@ function expandIdx(i){
   const hi=Math.max(...view),lo=Math.min(...view);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateTxt=mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
-                           :'<span style="color:var(--red)">● CLOSED</span>';
+                           :'<span style="color:var(--ink3)">● CLOSED</span>';
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
     `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
@@ -1080,7 +1080,7 @@ function openTicker(s,tk){
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const op=live?true:mktOpen(c);
   const stateBadge=op?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>'
-                     :'<span class="exch" style="color:var(--red);border-color:var(--red)">● CLOSED</span>';
+                     :'<span class="exch" style="color:var(--ink3);border-color:var(--ink3)">● CLOSED</span>';
   const news=(DATA.ticker_news||{})[tk]||[];
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
