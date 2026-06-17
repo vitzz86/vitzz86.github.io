@@ -180,6 +180,11 @@ def _norm(s: str) -> str:
 
 NOISE_TITLE_PATTERNS = (
     "top pro news",
+    "bloomberg businessweek",
+    "crypto bloomberg com",
+    "markets bloomberg com",
+    "technology bloomberg com",
+    "stocks bloomberg com",
     "sector industry performance",
     "sector amp industry performance",
     "stock price news quote history",
@@ -188,14 +193,97 @@ NOISE_TITLE_PATTERNS = (
     "stock price stock chart market cap amp news today",
     "money personal investing",
     "personal investing",
+    "stock price latest news reuters",
     "commodities trading gold stocks oil stocks silver natural gas",
     "legality of cryptocurrency by country or territory",
 )
+
+NOISE_TITLE_REGEX = (
+    r"^watch\s+",
+    r"^about\s+[a-z0-9.()\-]+\s*$",
+    r"^about\s+.+\s+reuters$",
+    r"^[a-z0-9.()\-]+\s+reuters$",
+    r"^\([a-z0-9.()\-]+\)\s+stock price.+reuters$",
+)
+
+SECTOR_RELEVANCE_TERMS = {
+    "technology": [
+        "ai", "artificial intelligence", "semiconductor", "chip", "data center",
+        "cloud", "software", "digital", "fintech", "nvidia", "openai", "teknologi",
+        "kecerdasan buatan", "pusat data",
+    ],
+    "financials": [
+        "bank", "banks", "banking", "lending", "loan", "credit", "rate", "rates",
+        "net interest", "jpmorgan", "goldman", "bbca", "bbri", "bmri", "suku bunga",
+        "perbankan", "kredit",
+    ],
+    "energy": [
+        "coal", "nickel", "copper", "oil", "gas", "mining", "miner", "commodity",
+        "commodities", "tambang", "batubara", "batu bara", "nikel", "energi",
+    ],
+    "renewables": [
+        "renewable", "renewables", "clean energy", "solar", "wind", "geothermal",
+        "battery", "ev", "electric vehicle", "climate tech", "carbon", "grid",
+        "energi terbarukan", "panas bumi", "surya", "hijau", "pgeo", "essa", "batr",
+    ],
+    "consumer": [
+        "consumer", "retail", "staples", "fmcg", "ecommerce", "restaurant", "food",
+        "beverage", "ritel", "konsumer", "konsumsi", "makanan", "minuman",
+    ],
+    "infrastructure": [
+        "infrastructure", "construction", "toll road", "cement", "contractor",
+        "capex", "infrastruktur", "konstruksi", "jalan tol", "semen",
+    ],
+    "healthcare": [
+        "healthcare", "health", "pharma", "biotech", "medical", "hospital", "drug",
+        "kesehatan", "farmasi", "rumah sakit", "obat",
+    ],
+    "logistics": [
+        "logistics", "shipping", "freight", "port", "transport", "airline",
+        "supply chain", "logistik", "pelayaran", "pelabuhan", "transportasi",
+    ],
+    "entertainment": [
+        "media", "streaming", "gaming", "film", "advertising", "entertainment",
+        "consumer services", "hiburan", "iklan", "game",
+    ],
+    "property": [
+        "property", "real estate", "reit", "housing", "mortgage", "developer",
+        "properti", "perumahan", "apartemen",
+    ],
+    "crypto": [
+        "bitcoin", "ethereum", "crypto", "cryptocurrency", "blockchain", "token",
+        "stablecoin", "defi", "etf", "binance", "solana", "xrp", "kripto",
+    ],
+}
 
 LOW_CONF_SOURCES = (
     "24/7 wall st", "simplywall", "simply wall", "cryptorank",
     "latest news from azerbaijan", "blockchain council",
 )
+
+MARKET_ANCHOR_TERMS = (
+    "stock", "stocks", "share", "shares", "equity", "market", "markets",
+    "sector", "industry", "earnings", "revenue", "profit", "margin", "guidance",
+    "ipo", "deal", "m&a", "merger", "acquisition", "buyout", "valuation",
+    "dividend", "bond", "yield", "fund", "investor", "investment", "capital",
+    "price", "prices", "target", "rating", "upgrade", "downgrade", "saham",
+    "emiten", "ihsg", "bei", "bursa", "pendapatan", "laba", "akuisisi",
+    "investasi", "obligasi",
+)
+
+SECTOR_ANCHOR_TERMS = {
+    "technology": ("capex", "chips", "compute", "server", "model", "platform"),
+    "financials": ("loan", "loans", "deposit", "deposits", "credit", "nim"),
+    "energy": ("supply", "demand", "production", "export", "inventory", "smelter"),
+    "renewables": ("capacity", "project", "projects", "power", "electricity", "tariff", "policy"),
+    "consumer": ("sales", "demand", "pricing", "brand", "store", "stores"),
+    "infrastructure": ("project", "projects", "contract", "contracts", "construction", "capex"),
+    "healthcare": ("trial", "drug", "therapy", "hospital", "approval", "patients"),
+    "logistics": ("freight", "shipping", "shipment", "shipments", "transport", "port", "cargo", "trucking"),
+    "entertainment": ("streaming", "subscriber", "subscribers", "advertising", "content", "gaming"),
+    "property": ("reit", "rent", "rental", "office", "housing", "mortgage", "mall"),
+    "crypto": ("price", "trading", "trader", "regulation", "regulator", "etf", "stablecoin"),
+}
 
 QUERY_STOPWORDS = {
     "stock", "stocks", "market", "markets", "news", "price", "prices", "shares",
@@ -208,7 +296,17 @@ def _is_noise_item(it: dict) -> bool:
     title = _norm(it.get("title", ""))
     if not title:
         return True
-    return any(p in title for p in NOISE_TITLE_PATTERNS)
+    if any(p in title for p in NOISE_TITLE_PATTERNS):
+        return True
+    return any(re.search(p, title) for p in NOISE_TITLE_REGEX)
+
+
+def _normalize_item(it: dict) -> dict:
+    it = dict(it)
+    for k in ("title", "source", "summary"):
+        if isinstance(it.get(k), str):
+            it[k] = _clean_html(it[k])
+    return it
 
 
 def _query_terms(it: dict) -> list[str]:
@@ -238,6 +336,7 @@ def _dedupe(items: list, cap: int) -> list:
 
 
 def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dict:
+    it = _normalize_item(it)
     txt = _norm(" ".join([it.get("title", ""), it.get("summary", ""), it.get("source", "")]))
     terms = [_norm(t) for t in (terms if terms is not None else _query_terms(it)) if t]
     relevance = 0
@@ -271,10 +370,56 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
 
 
 def _rank(items: list, cap: int, terms: list[str] = None, trusted_bias: int = 0) -> list:
-    ranked = [_score_item(dict(it), terms, trusted_bias)
-              for it in items if it.get("url") and not _is_noise_item(it)]
+    normalized = [_normalize_item(it) for it in items if it.get("url")]
+    ranked = [_score_item(it, terms, trusted_bias)
+              for it in normalized if not _is_noise_item(it)]
     ranked.sort(key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
     return _dedupe(ranked, cap)
+
+
+def _sector_terms(sector: dict) -> list[str]:
+    key = sector.get("key", "")
+    terms = list(SECTOR_RELEVANCE_TERMS.get(key, []))
+    terms += [sector.get("name", ""), key]
+    for c in sector.get("constituents", [])[:12]:
+        name = c.get("name", "").split(" (")[0]
+        terms += [c.get("ticker", ""), name, name.split()[0] if name else ""]
+    return [_norm(t) for t in terms if _norm(t)]
+
+
+def _sector_relevant(it: dict, sector: dict) -> bool:
+    raw_txt = " ".join([it.get("title", ""), it.get("summary", ""), it.get("source", "")])
+    txt = _norm(raw_txt)
+    title = _norm(it.get("title", ""))
+    terms = _sector_terms(sector)
+    constituent_hit = False
+    for c in sector.get("constituents", [])[:20]:
+        name = _norm(c.get("name", "").split(" (")[0])
+        first = name.split()[0] if name else ""
+        ticker = str(c.get("ticker", "")).strip()
+        if (ticker and re.search(rf"\b{re.escape(ticker)}\b", raw_txt)) or \
+           (name and name in txt) or (first and len(first) > 3 and re.search(rf"\b{re.escape(first)}\b", txt)):
+            constituent_hit = True
+            break
+    if sector.get("key") != "crypto" and re.search(r"\bs p 500 target\b|\byear end s p 500\b", title):
+        return False
+    if sector.get("key") != "consumer" and "stock market today" in title:
+        return constituent_hit
+    if title.startswith("why your summer tomatoes cost"):
+        return constituent_hit
+    sector_hit = any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
+                     for t in terms)
+    if not sector_hit:
+        return False
+    anchor_terms = MARKET_ANCHOR_TERMS + tuple(SECTOR_ANCHOR_TERMS.get(sector.get("key", ""), ()))
+    anchor_hit = any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
+                     for t in anchor_terms)
+    return anchor_hit or constituent_hit
+
+
+def _sector_rank(items: list, sector: dict, cap: int) -> list:
+    ranked = _rank(items, cap * 3, _sector_terms(sector))
+    return [it for it in ranked if _sector_relevant(it, sector)][:cap]
 
 
 def _targeted_source_news(query: str, geo: str, category: str, target_group: str,
@@ -398,7 +543,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
                  google_news(idq, "ID", 5, query_type="sector"))
         items += _targeted_source_news(usq, "US", "MARKETS_FINANCE", "US", terms, cap=6, max_sites=2)
         items += _targeted_source_news(idq, "ID", "MARKETS_FINANCE", "ID", terms, cap=8, max_sites=5)
-        items = _merge_news(prev_sector.get(s["key"], []), items, 14, terms)   # ≤7d memory
+        items = _sector_rank(_recent(prev_sector.get(s["key"], []) + items), s, 14)   # ≤7d memory
         for it in items:
             it["sectors"] = [s["key"]]
         sector_news[s["key"]] = items[:8]

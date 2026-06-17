@@ -575,7 +575,8 @@ body{padding-bottom:40px;}
 <script>
 if('scrollRestoration' in history)history.scrollRestoration='manual';scrollTo(0,0);
 const $=id=>document.getElementById(id);
-const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML;};
+const unent=s=>{const d=document.createElement('textarea');d.innerHTML=s==null?'':String(s);return d.value;};
+const esc=s=>{const d=document.createElement('div');d.textContent=unent(s);return d.innerHTML;};
 const fmt=n=>Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
 const sign=n=>(n>=0?'+':'')+Number(n).toFixed(2)+'%';
 function spark(arr,w,h,col){
