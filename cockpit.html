@@ -1034,6 +1034,38 @@ function fdate(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return '
 function durLabel(sec){sec=Number(sec||0);if(!sec)return '';const h=Math.floor(sec/3600),m=Math.round((sec%3600)/60);
   return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}m`;}
 function goodVideo(v){const t=(v&&v.title||'').trim().toLowerCase();return !!(v&&v.video_id&&t&&t!=='private video'&&t!=='deleted video'&&!t.includes('video unavailable'));}
+const WHY_TOPICS=[
+  ['rupiah, Bank Indonesia, or IHSG signals that can move Indonesian risk appetite',['rupiah','bank indonesia','bi ','suku bunga','ihsg','jci','saham']],
+  ['Fed, rates, or yield signals that can drive global liquidity and equity multiples',['fed','federal reserve','rates','yield','treasury','warsh']],
+  ['AI, semiconductor, or data-center developments shaping tech leadership and capex',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
+  ["commodity, energy, or shipping moves that matter for inflation and Indonesia's resource exposure",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
+  ['crypto market or regulatory shifts that can affect Bitcoin and digital-asset sentiment',['bitcoin','btc','ethereum','crypto','stablecoin','token','kalshi','strategy']],
+  ['BOJ, Japan, or Asia policy signals with potential regional spillover',['boj','bank of japan','japan','nikkei']],
+  ['earnings, stock movers, or corporate actions that can affect market breadth',['earnings','revenue','profit','stock movers','shares','deal','ipo']],
+  ['geopolitical or trade-risk headlines that can shift risk appetite quickly',['iran','tariff','trade war','geopolitical','war']]
+];
+const WHY_NOISE=['referral','sign-up','signup','promo code','sponsor','subscribe','discord','telegram','patreon','not financial advice','trade $','get $'];
+function cleanWhy(s){
+  s=String(s||'').replace(/https?:\/\/\S+/gi,' ').replace(/<[^>]+>/g,' ');
+  s=s.replace(/[╔╗╚╝═║╦╩╠╣]{3,}.*/g,' ').replace(/[\[\]{}<>|*_`~]+/g,' ');
+  s=s.replace(/\s+/g,' ').trim().replace(/^[\s\-:;.]+|[\s\-:;.]+$/g,'');
+  const parts=s.split(/(?<=[.!?])\s+/).filter(x=>x.trim().length>34);
+  s=(parts[0]||s).trim();
+  if(s.length>210)s=s.slice(0,210).replace(/\s+\S*$/,'').trim();
+  return s&&/[.!?]$/.test(s)?s:(s?s+'.':'');
+}
+function fallbackWhy(item,kind){
+  const txt=normTitle([item.title,item.summary,item.source,item.channel].join(' '));
+  const verb=kind==='video'?'Watch':'Read';
+  for(const [label,terms] of WHY_TOPICS)if(terms.some(t=>txt.includes(normTitle(t))))return `${verb} this because it highlights ${label}.`;
+  return `${verb} this because it is one of the freshest high-priority items in today's market intelligence flow.`;
+}
+function cardWhy(m,item,kind){
+  let why=cleanWhy(m.why||item.summary||'');
+  const low=why.toLowerCase();
+  if(why.length<35||WHY_NOISE.some(t=>low.includes(t))||/https?:\/\//i.test(why))why=fallbackWhy(item,kind);
+  return cleanWhy(why);
+}
 
 let hubInit=false;
 function syncHubUI(){
@@ -1070,10 +1102,11 @@ function buildBrief(){
   const col=v=>v>=60?'var(--green)':v<=40?'var(--red)':'var(--amber)';
   const bar=(k,v)=>`<div class="sbar"><span class="sk">${k}</span><span class="st"><i style="width:${v}%;background:${col(v)}"></i></span><span class="sv">${v}</span></div>`;
   const win=b.generated_for?b.generated_for.replace('T',' · ')+':00':'Today';
-  const watch=(b.must_watch||[]).map(m=>{const v=m.video||{};
-    return `<button class="bcard bwatch" data-id="${esc(v.video_id||'')}" type="button"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</button>`;}).join('');
+  const watch=(b.must_watch||[]).map(m=>{const v=m.video||{},why=cardWhy(m,v,'video');
+    return `<button class="bcard bwatch" data-id="${esc(v.video_id||'')}" type="button"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div><div class="bcw">${esc(why)}</div></button>`;}).join('');
   const read=(b.must_read||[]).map(m=>{const n=m.news||{},cat=newsCat(n);
-    return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div>${m.why?`<div class="bcw">${esc(m.why)}</div>`:''}</a>`;}).join('');
+    const why=cardWhy(m,n,'news');
+    return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div><div class="bcw">${esc(why)}</div></a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
   el.innerHTML=
     `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+

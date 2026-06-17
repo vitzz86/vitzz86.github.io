@@ -70,16 +70,18 @@ def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
         tag = "BULLISH" if ch > 0.3 else ("BEARISH" if ch < -0.3 else "WATCH")
         themes.append({"title": s["name"], "tag": tag,
                        "text": (s.get("ai") or "; ".join(s.get("themes", [])[:1]))[:300]})
-    return {
+    videos = _rank_videos(videos)
+    news = _rank_news(news)
+    return _finalize_cards({
         "sentiment": {"score": score, "label": label, "indonesia": idn,
                       "us": us, "global": glob, "crypto": cr},
         "synthesis": arbiter or "Synthesis pending the next scheduled window.",
         "key_themes": themes,
-        "must_watch": [{"video": v, "why": (v.get("summary") or "")[:180]} for v in videos[:4]],
-        "must_read": [{"news": n, "why": (n.get("summary") or n.get("source") or "")} for n in news[:4]],
+        "must_watch": [{"video": v, "why": _fallback_reason(v, "video")} for v in videos[:4]],
+        "must_read": [{"news": n, "why": _fallback_reason(n, "news")} for n in news[:4]],
         "news_digest": _regional_digest(news, "title", "geo", telemetry),
         "video_digest": _regional_digest(videos, "title", "geo", telemetry),
-    }
+    })
 
 
 DIGEST_TOPICS = (
@@ -107,6 +109,122 @@ def _human_list(items: list[str]) -> str:
     if len(items) == 2:
         return f"{items[0]} and {items[1]}"
     return ", ".join(items[:-1]) + f", and {items[-1]}"
+
+
+PROMO_REASON_PATTERNS = (
+    r"https?://\S+",
+    r"\b(referral|sign[- ]?up|promo code|use code|sponsor|sponsored|affiliate)\b.*",
+    r"\b(subscribe|like and subscribe|join our|follow us|newsletter|discord|telegram|patreon)\b.*",
+    r"\bnot financial advice\b.*",
+    r"[╔╗╚╝═║╦╩╠╣]{3,}.*",
+)
+PROMO_REASON_TERMS = (
+    "trade $", "get $", "referral", "subscribe", "sign-up", "signup",
+    "promo code", "discord", "telegram", "patreon", "officially live in the united states",
+)
+RATIONALE_TOPICS = (
+    ("rupiah, Bank Indonesia, or IHSG signals that can move Indonesian risk appetite",
+     ("rupiah", "bank indonesia", "bi ", "suku bunga", "ihsg", "jci", "saham")),
+    ("Fed, rates, or yield signals that can drive global liquidity and equity multiples",
+     ("fed", "federal reserve", "rates", "yield", "treasury", "warsh")),
+    ("AI, semiconductor, or data-center developments shaping tech leadership and capex",
+     ("ai", "artificial intelligence", "nvidia", "semiconductor", "chip", "data center")),
+    ("commodity, energy, or shipping moves that matter for inflation and Indonesia's resource exposure",
+     ("oil", "brent", "gold", "nickel", "coal", "commodity", "hormuz", "shipping")),
+    ("crypto market or regulatory shifts that can affect Bitcoin and digital-asset sentiment",
+     ("bitcoin", "btc", "ethereum", "crypto", "stablecoin", "token", "kalshi", "strategy")),
+    ("BOJ, Japan, or Asia policy signals with potential regional spillover",
+     ("boj", "bank of japan", "japan", "nikkei")),
+    ("earnings, stock movers, or corporate actions that can affect market breadth",
+     ("earnings", "revenue", "profit", "stock movers", "shares", "deal", "ipo", "m&a")),
+    ("geopolitical or trade-risk headlines that can shift risk appetite quickly",
+     ("iran", "tariff", "trade war", "geopolitical", "war")),
+)
+
+
+def _plain_text(s: str) -> str:
+    s = re.sub(r"<[^>]+>", " ", str(s or ""))
+    for pat in PROMO_REASON_PATTERNS:
+        s = re.sub(pat, " ", s, flags=re.I)
+    s = re.sub(r"[\[\]{}<>|*_`~]+", " ", s)
+    s = re.sub(r"\s+", " ", s).strip(" -:;,.")
+    return s
+
+
+def _one_sentence(s: str, max_len: int = 210) -> str:
+    s = _plain_text(s)
+    if not s:
+        return ""
+    parts = re.split(r"(?<=[.!?])\s+", s)
+    sent = next((p.strip() for p in parts if len(p.strip()) >= 35), parts[0].strip())
+    sent = re.sub(r"\s+", " ", sent).strip(" -:;,.")
+    if len(sent) > max_len:
+        sent = sent[:max_len].rsplit(" ", 1)[0].strip(" -:;,.")
+    return sent + ("." if sent and sent[-1] not in ".!?" else "")
+
+
+def _is_noisy_reason(s: str) -> bool:
+    t = s.lower()
+    if len(s.strip()) < 35:
+        return True
+    if any(term in t for term in PROMO_REASON_TERMS):
+        return True
+    return bool(re.search(r"https?://|[╔╗╚╝═║╦╩╠╣]{3,}", s))
+
+
+def _fallback_reason(item: dict, kind: str) -> str:
+    txt = " ".join(str(item.get(k, "")) for k in ("title", "summary", "source", "channel")).lower()
+    label = "Watch" if kind == "video" else "Read"
+    for phrase, terms in RATIONALE_TOPICS:
+        if any(term in txt for term in terms):
+            return f"{label} this because it highlights {phrase}."
+    return f"{label} this because it is one of the freshest high-priority items in today's market intelligence flow."
+
+
+def _clean_why(raw: str, item: dict, kind: str) -> str:
+    why = _one_sentence(raw)
+    if _is_noisy_reason(why):
+        why = _fallback_reason(item, kind)
+    return _one_sentence(why, 220)
+
+
+def _video_score(v: dict) -> int:
+    txt = " ".join(str(v.get(k, "")) for k in ("title", "summary", "channel")).lower()
+    score = int(v.get("score") or 0)
+    score += {"market_id": 30, "market_us": 28, "crypto": 12}.get(v.get("category"), 10)
+    for _phrase, terms in RATIONALE_TOPICS:
+        if any(term in txt for term in terms):
+            score += 14
+    if any(term in txt for term in PROMO_REASON_TERMS):
+        score -= 35
+    if re.search(r"\b(beginners?|how to trade|perps?|referral|sign[- ]?up)\b", txt):
+        score -= 20
+    return score
+
+
+def _rank_videos(videos: list) -> list:
+    return sorted(videos or [], key=lambda v: (_video_score(v), int(v.get("ts") or 0)), reverse=True)
+
+
+def _rank_news(news: list) -> list:
+    return sorted(news or [], key=lambda n: (int(n.get("score") or 0), int(n.get("ts") or 0)), reverse=True)
+
+
+def _finalize_cards(brief: dict) -> dict:
+    for m in brief.get("must_watch") or []:
+        v = m.get("video") or {}
+        m["why"] = _clean_why(m.get("why") or v.get("summary") or "", v, "video")
+    for m in brief.get("must_read") or []:
+        n = m.get("news") or {}
+        m["why"] = _clean_why(m.get("why") or n.get("summary") or "", n, "news")
+    return brief
+
+
+def _brief_has_noisy_reasons(brief: dict) -> bool:
+    for m in (brief.get("must_watch") or []) + (brief.get("must_read") or []):
+        if _is_noisy_reason(_one_sentence(m.get("why") or "")):
+            return True
+    return False
 
 
 def _telemetry_row(telemetry: list | None, sym: str) -> dict | None:
@@ -237,15 +355,18 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
                   summarize=None, previous=None) -> dict:
     wk = _window_key()
     if (previous and previous.get("generated_for") == wk and previous.get("must_read")
-            and previous.get("news_digest") and previous.get("video_digest")):
+            and previous.get("news_digest") and previous.get("video_digest")
+            and not _brief_has_noisy_reasons(previous)):
         print(f"[daily_brief] window {wk} unchanged — reusing cached brief")
-        return previous
+        return _finalize_cards(previous)
 
     brief = None
+    videos = _rank_videos(videos)
+    news = _rank_news(news)
     if summarize:
         vlist, nlist = videos[:12], news[:14]
         def snippet(x):
-            return str(x.get("summary") or "").replace("\n", " ")[:260]
+            return _one_sentence(x.get("summary") or x.get("title") or "", 260)
         vstr = "\n".join(f"{i}. [{v['category']}/{v.get('geo','')}] {v['channel']}: {v['title']} — {snippet(v)}"
                          for i, v in enumerate(vlist)) or "none"
         nstr = "\n".join(f"{i}. [{n.get('category','')}/{n.get('geo','')}] {n.get('source','')}: {n['title']} — {snippet(n)}"
@@ -264,7 +385,9 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
             '"must_watch":[{"i":video_index,"why":"1 sentence"}],'
             '"must_read":[{"i":news_index,"why":"1 sentence"}]}. '
             "Provide 3-5 key_themes, 3-5 must_watch (by the given video index), 3-5 must_read "
-            "(by the given news index). score: 0=max bearish, 50=neutral, 100=max bullish. "
+            "(by the given news index). Every must_watch.why and must_read.why must be exactly one useful sentence "
+            "explaining why it matters for markets or the user's portfolio; never repeat sponsor copy, referral links, "
+            "subscribe prompts, generic channel descriptions, or raw source names. score: 0=max bearish, 50=neutral, 100=max bullish. "
             "The news_digest and video_digest must summarize the full listed set by region: "
             "Indonesia in one complete sentence and US/global in one complete sentence each. "
             "Each sentence must start with a tone label (bullish, bearish, or mixed), include 2-4 key indicators "
@@ -285,16 +408,16 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
                 for it in (obj.get("must_watch") or [])[:5]:
                     i = it.get("i")
                     if isinstance(i, int) and 0 <= i < len(vlist):
-                        mw.append({"video": vlist[i], "why": (it.get("why") or "").strip()})
+                        mw.append({"video": vlist[i], "why": _clean_why(it.get("why") or "", vlist[i], "video")})
                 mr = []
                 for it in (obj.get("must_read") or [])[:5]:
                     i = it.get("i")
                     if isinstance(i, int) and 0 <= i < len(nlist):
-                        mr.append({"news": nlist[i], "why": (it.get("why") or "").strip()})
+                        mr.append({"news": nlist[i], "why": _clean_why(it.get("why") or "", nlist[i], "news")})
                 if not mw:
-                    mw = [{"video": v, "why": (v.get("summary") or "")[:160]} for v in videos[:4]]
+                    mw = [{"video": v, "why": _fallback_reason(v, "video")} for v in videos[:4]]
                 if not mr:
-                    mr = [{"news": n, "why": (n.get("summary") or n.get("source") or "")} for n in news[:4]]
+                    mr = [{"news": n, "why": _fallback_reason(n, "news")} for n in news[:4]]
                 sent = obj.get("sentiment") or {}
                 brief = {
                     "sentiment": {
@@ -337,6 +460,7 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
         "indonesia": ((brief.get("video_digest") or {}).get("indonesia") or vd_fallback["indonesia"]),
         "us": ((brief.get("video_digest") or {}).get("us") or vd_fallback["us"]),
     }
+    brief = _finalize_cards(brief)
 
     brief["generated_for"] = wk
     brief["generated_at"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
