@@ -18,6 +18,13 @@ def collect() -> dict:
     from tools import yquote
 
     quotes = yquote.fetch([sym for sym, _, _ in settings.TICKERS])
+    try:
+        from tools import crypto_quotes
+        for sym, row in crypto_quotes.simple([sym for sym, _, kind in settings.TICKERS
+                                              if kind == "crypto"]).items():
+            quotes.setdefault(sym, {}).update(row)
+    except Exception as e:  # noqa: BLE001
+        print(f"[market_telemetry] CoinGecko crypto overlay failed: {e}")
     rows, anomaly_bits = [], []
     for symbol, label, kind in settings.TICKERS:
         r = quotes.get(symbol)
@@ -35,7 +42,7 @@ def collect() -> dict:
             "state": "open" if r["open"] else "closed",
             "mkt_start": r.get("mkt_start"),
             "mkt_end": r.get("mkt_end"),
-            "spark": r["spark"],
+            "spark": r.get("spark", []),
             "intraday": r.get("intraday", []),
             "url": ("https://www.coingecko.com/en/coins/bitcoin"
                     if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),

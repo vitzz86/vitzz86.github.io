@@ -48,6 +48,22 @@ def _batch_prices(symbols: list) -> dict:
 def collect() -> list:
     symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]]
     prices = _batch_prices(symbols)
+    crypto_symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]
+                      if c[4] == "CR" and c[2] in CG_IDS]
+    if crypto_symbols:
+        try:
+            from tools import crypto_quotes
+            for sym, row in crypto_quotes.simple(crypto_symbols).items():
+                prices.setdefault(sym, {}).update(row)
+            # Yahoo sometimes drops migrated tokens (notably MATIC); fill only missing charts.
+            for sym in crypto_symbols:
+                p = prices.setdefault(sym, {})
+                if not p.get("intraday"):
+                    p["intraday"] = crypto_quotes.chart(sym, 1)
+                if not p.get("spark"):
+                    p["spark"] = crypto_quotes.chart(sym, 180, "daily")[-130:]
+        except Exception as e:  # noqa: BLE001
+            print(f"[sectors] CoinGecko crypto overlay failed: {e}")
 
     out = []
     for sec in settings.SECTORS:

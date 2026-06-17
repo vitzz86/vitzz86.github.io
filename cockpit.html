@@ -689,20 +689,7 @@ function render(d){
   }).join('');
   [...document.querySelectorAll('.idxcard')].forEach(c=>c.onclick=()=>expandIdx(+c.dataset.i));
 
-  /* sectors */
-  $('secCount').textContent=(d.sectors||[]).length+' sectors · click any card for deep dive';
-  $('secGrid').innerHTML=(d.sectors||[]).map((s,i)=>{
-    const split=(s.idChange!=null&&s.usChange!=null);
-    const tot=split?(Math.abs(s.idChange)+Math.abs(s.usChange)||1):1;
-    const body=split
-      ?`<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(s.idChange)}">${sign(s.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.idChange)/tot*100}%;background:${COLP(s.idChange)}"></i></div></div>`+
-       `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(s.usChange)}">${sign(s.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(s.usChange)/tot*100}%;background:${COLP(s.usChange)}"></i></div></div>`
-      :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(s.change)}">${sign(s.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(s.change)}"></i></div></div>`;
-    return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${s.signal}">${s.signal}</span></div>`+
-      `<div class="agg" style="color:${COLP(s.change)}">${sign(s.change)}</div>`+body+
-      `<div class="thm"><span>${esc(s.theme)}</span><span>›</span></div></button>`;
-  }).join('');
-  [...document.querySelectorAll('.seccard')].forEach(b=>b.onclick=()=>openSector(+b.dataset.i));
+  drawSectors();
 
   /* macro analysis (bullets + sources when baked; paragraph fallback) */
   const macro=Array.isArray(d.macro_analysis)?d.macro_analysis:null;
@@ -824,6 +811,36 @@ function drawMovers(){
 function mktOpen(o){const n=Date.now()/1000;
   if(o&&o.mkt_start&&o.mkt_end)return n>=o.mkt_start&&n<=o.mkt_end;
   return (o||{}).state==='open';}
+
+function liveQuote(tk){return CRYPTO[tk]||LIVE[tk]||null;}
+function qDelta(row){const q=liveQuote(row.ticker);return q&&q.dp!=null?q.dp:row.delta_pct;}
+function qValue(row){const q=liveQuote(row.ticker);return q&&q.c!=null?q.c:row.value;}
+function sectorMetrics(s){
+  const rows=s.constituents||[];
+  const vals=rows.map(qDelta).filter(Number.isFinite);
+  const avg=a=>a.length?round2(a.reduce((x,y)=>x+y,0)/a.length):0;
+  const id=rows.filter(r=>r.country==='ID').map(qDelta).filter(Number.isFinite);
+  const us=rows.filter(r=>r.country==='US').map(qDelta).filter(Number.isFinite);
+  return {change:avg(vals),idChange:id.length?avg(id):null,usChange:us.length?avg(us):null};
+}
+function round2(n){return Math.round((Number(n)||0)*100)/100;}
+function drawSectors(){
+  if(!DATA)return;
+  $('secCount').textContent=(DATA.sectors||[]).length+' sectors · click any card for deep dive';
+  $('secGrid').innerHTML=(DATA.sectors||[]).map((s,i)=>{
+    const m=sectorMetrics(s);
+    const split=(m.idChange!=null&&m.usChange!=null);
+    const tot=split?(Math.abs(m.idChange)+Math.abs(m.usChange)||1):1;
+    const body=split
+      ?`<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(m.idChange)}">${sign(m.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.idChange)/tot*100}%;background:${COLP(m.idChange)}"></i></div></div>`+
+       `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(m.usChange)}">${sign(m.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.usChange)/tot*100}%;background:${COLP(m.usChange)}"></i></div></div>`
+      :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(m.change)}">${sign(m.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(m.change)}"></i></div></div>`;
+    return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${s.signal}">${s.signal}</span></div>`+
+      `<div class="agg" style="color:${COLP(m.change)}">${sign(m.change)}</div>`+body+
+      `<div class="thm"><span>${esc(s.theme)}</span><span>›</span></div></button>`;
+  }).join('');
+  [...document.querySelectorAll('.seccard')].forEach(b=>b.onclick=()=>openSector(+b.dataset.i));
+}
 
 /* ---- index expand ---- */
 const TF={'24h':0,'1W':5,'1M':22,'3M':65,'6M':130};   // 24h=intraday; rest slice the daily series
@@ -1084,14 +1101,15 @@ function openSector(i){
   smIdx=i;smShowAll=false;smGeo='ALL';const s=DATA.sectors[i];if(!s)return;
   $('smConstPanel').style.display='';$('smTicker').style.display='none';
   $('smIco').textContent=SECTOR_ICON[s.key]||s.icon;$('smName').textContent=s.name;
-  const agg=$('smAgg');agg.textContent=(s.change>=0?'↗ ':'↘ ')+sign(s.change);
-  agg.style.color=COLP(s.change);agg.style.background=s.change>=0?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
+  const m=sectorMetrics(s);
+  const agg=$('smAgg');agg.textContent=(m.change>=0?'↗ ':'↘ ')+sign(m.change);
+  agg.style.color=COLP(m.change);agg.style.background=m.change>=0?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
   const cell=(k,v)=>`<div class="c"><div class="k">${k}</div><div class="v"${typeof v==='number'?` style="color:${COLP(v)}"`:''}>${typeof v==='number'?sign(v):v}</div></div>`;
-  $('smStats').innerHTML=(s.idChange!=null
-    ?cell('ID PERFORMANCE',s.idChange)+cell('US PERFORMANCE',s.usChange)
-    :cell('AGGREGATE',s.change)+cell('ASSETS',String(s.constituents.length)))
+  $('smStats').innerHTML=(m.idChange!=null
+    ?cell('ID PERFORMANCE',m.idChange)+cell('US PERFORMANCE',m.usChange)
+    :cell('AGGREGATE',m.change)+cell('ASSETS',String(s.constituents.length)))
     +cell('CONSTITUENTS',String(s.constituents.length))+cell('SIGNAL',s.signal);
-  $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,s.change>=0?'#22c55e':'#ef4444');
+  $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,m.change>=0?'#22c55e':'#ef4444');
   $('smThemes').innerHTML=(s.themes||[]).map(t=>`<li>${esc(t)}</li>`).join('');
   $('smAi').textContent=s.ai||'';
   const hasSplit=(s.idChange!=null);
@@ -1106,23 +1124,26 @@ function openSector(i){
 function newsRow(n){return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${n.category}">${CATLABEL[n.category]||(n.category||'').replace(/_/g,' ')}</span><span class="meta-chip source">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
   `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
 function renderConsts(s){
-  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo);
+  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice().sort((a,b)=>qDelta(b)-qDelta(a));
   const full=list;
   if(!smShowAll)list=list.slice(0,6);
   $('smConsts').innerHTML=list.map((c,i)=>{
+    const dp=qDelta(c);
     return `<div class="crow" data-tk="${esc(c.ticker)}" style="cursor:pointer">`+
       `<span class="fl">${FLAG[c.country]||''}</span><span class="tk"><i class="tdot ${c.tier}"></i>${esc(c.ticker)}</span>`+
       `<span class="cn">${esc(c.name)}</span><span class="cap">${esc(c.mktcap)}</span>`+
-      `<span class="cd" style="color:${COLP(c.delta_pct)}">${sign(c.delta_pct)}</span></div>`;
+      `<span class="cd" style="color:${COLP(dp)}">${sign(dp)}</span></div>`;
   }).join('')||'<div style="color:var(--ink3);font-size:11px;padding:6px 0;">No tickers for this filter.</div>';
   [...document.querySelectorAll('#smConsts .crow')].forEach(r=>r.onclick=()=>openTicker(s,r.dataset.tk));
   $('smShowAll').textContent=full.length<=6?'':(smShowAll?'▲ Show top 6':`▼ Show all ${full.length}`);
 }
 function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
-  const live=LIVE[tk]||CRYPTO[tk];const dp=live?live.dp:c.delta_pct;
+  const live=liveQuote(tk);const dp=qDelta(c);
   const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
   if(!view.length)view=tfView(c.spark,'1W');
+  const waitingChart=c.country==='CR'&&CG_IDS[tk]&&!view.length;
+  if(waitingChart)ensureCryptoChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const op=live?true:mktOpen(c);
   const stateBadge=op?'<span class="exch" style="color:var(--green);border-color:var(--green)">● LIVE</span>'
@@ -1131,10 +1152,10 @@ function openTicker(s,tk){
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${(live?live.c:c.value)?fmt(live?live.c:c.value):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${live?'live':esc(wibStamp(DATA.timestamp))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `<div class="smchart">${spark(view,420,110,col)}</div>`+
+    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
     `<a class="ylink" href="${encodeURI(c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
@@ -1158,14 +1179,58 @@ function updateIdxCard(symbol,price,dp){
 const CRYPTO={};
 const CG_IDS={BTC:'bitcoin',ETH:'ethereum',SOL:'solana',BNB:'binancecoin',XRP:'ripple',
   ADA:'cardano',DOGE:'dogecoin',AVAX:'avalanche-2',LINK:'chainlink',MATIC:'polygon-ecosystem-token'};
+const CG_ALIASES={MATIC:['polygon-ecosystem-token','matic-network']};
+const CRYPTO_CHART_LOADING={};
+function cryptoSector(){return (DATA&&DATA.sectors||[]).find(s=>s.key==='crypto');}
+function refreshOpenSectorUI(){
+  drawSectors();
+  const s=DATA&&DATA.sectors&&DATA.sectors[smIdx];
+  if(s&&$('smodal').classList.contains('open')&&$('smTicker').style.display==='none')renderConsts(s);
+}
+async function ensureCryptoChart(s,tk){
+  if(CRYPTO_CHART_LOADING[tk])return;
+  const c=s.constituents.find(x=>x.ticker===tk),id=CG_IDS[tk];if(!c||!id)return;
+  CRYPTO_CHART_LOADING[tk]=true;
+  try{
+    let intr=[],sp=[];
+    for(const coinId of (CG_ALIASES[tk]||[id])){
+      const [day,hist]=await Promise.all([
+        fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=1`),
+        fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=180&interval=daily`)
+      ]);
+      const d1=await day.json(),d180=await hist.json();
+      intr=(d1.prices||[]).map(p=>round2(p[1])).filter(Number.isFinite);
+      sp=(d180.prices||[]).map(p=>round2(p[1])).filter(Number.isFinite);
+      if(intr.length||sp.length)break;
+    }
+    if(intr.length)c.intraday=intr;
+    if(sp.length)c.spark=sp.slice(-130);
+    if(intr.length){
+      c.value=intr[intr.length-1];
+      if(!CRYPTO[tk]&&intr[0])c.delta_pct=round2((intr[intr.length-1]-intr[0])/intr[0]*100);
+    }
+    if($('smTicker').style.display!=='none'){
+      const open=$('smTicker').querySelector('.tk');
+      const openTk=open?open.textContent.replace(/[^A-Z0-9]/g,''):'';
+      if(openTk===tk)openTicker(s,tk);
+    }
+  }catch(e){
+    console.warn('CoinGecko chart unavailable for '+tk);
+  }finally{
+    CRYPTO_CHART_LOADING[tk]=false;
+  }
+}
 function startCrypto(){
-  const ids=Object.values(CG_IDS).join(',');
-  const idToTk=Object.fromEntries(Object.entries(CG_IDS).map(([t,i])=>[i,t]));
+  const ids=[...new Set(Object.values(CG_IDS).concat(...Object.values(CG_ALIASES)))].join(',');
+  const idToTk=Object.fromEntries(Object.entries(CG_IDS).flatMap(([t,i])=>[[i,t],...((CG_ALIASES[t]||[]).map(a=>[a,t]))]));
   async function poll(){
     try{const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
       const d=await r.json();
       for(const [id,o] of Object.entries(d)){const tk=idToTk[id];if(tk&&o.usd!=null)CRYPTO[tk]={c:o.usd,dp:o.usd_24h_change};}
       if(d.bitcoin)updateIdxCard('BTC-USD',d.bitcoin.usd,d.bitcoin.usd_24h_change);
+      const cs=cryptoSector();
+      if(cs)for(const c of cs.constituents){const q=CRYPTO[c.ticker];if(q){c.value=q.c;c.delta_pct=q.dp;c.state='open';}}
+      refreshOpenSectorUI();
       // live-refresh an open crypto ticker view
       if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],open=$('smTicker').querySelector('.tk');
         if(s&&s.key==='crypto'&&open){const tk=open.textContent.replace(/[^A-Z0-9]/g,'');if(CRYPTO[tk])openTicker(s,tk);}}
@@ -1187,6 +1252,7 @@ function startFinnhub(){
         const q=await r.json();if(q&&q.c)LIVE[sym]={c:q.c,dp:q.dp};}catch(e){}
       await new Promise(r=>setTimeout(r,1100));   // ~55/min, under the 60/min cap
     }
+    refreshOpenSectorUI();
     // refresh an open US ticker view with live numbers
     if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx];
       const open=$('smTicker').querySelector('.tk');if(open){const tk=open.textContent.replace(/[^A-Z0-9.]/g,'');if(LIVE[tk])openTicker(s,tk);}}
