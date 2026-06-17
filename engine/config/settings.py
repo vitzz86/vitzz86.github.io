@@ -420,7 +420,7 @@ PODCAST_CATEGORIES = [
 ]
 PODCAST_WEEK_DAYS = 7        # drop episodes older than this
 PODCAST_PER_SHOW = 6         # newest N (non-Shorts) episodes kept per show within the window
-PODCAST_FETCH_PER_RUN = 10   # fetch the stalest N feeds/run (rest maintained by accumulation)
+PODCAST_FETCH_PER_RUN = 99   # API key is active: fetch all Knowledge Hub sources each run
 PODCAST_MIN_DURATION_S = 300 # Knowledge Hub: drop anything under 5 min (clips/Shorts noise; needs API key)
 PODCAST_FALLBACK = [
     {"show": "Endgame", "host": "Gita Wirjawan",
