@@ -14,6 +14,8 @@ from __future__ import annotations
 import concurrent.futures as cf
 import datetime as dt
 import email.utils
+import json
+import os
 import re
 import sys
 import urllib.parse
@@ -38,6 +40,21 @@ CATEGORY_KEYWORDS = {
                         "rupiah", "policy", "deficit", "budget", "recession", "ekonomi"],
 }
 DEFAULT_CATEGORY = "ECONOMY"
+
+TRUSTED_BY_DOMAIN = {
+    domain: (group, name)
+    for group, rows in settings.NEWS_TRUSTED_SOURCES.items()
+    for name, domain in rows
+}
+TRUSTED_BY_NAME = {
+    name.lower(): (group, domain)
+    for group, rows in settings.NEWS_TRUSTED_SOURCES.items()
+    for name, domain in rows
+}
+SOURCE_TIER_SCORE = {
+    "tier1_global": 45, "official": 45, "indonesia": 40,
+    "apac_sea": 35, "crypto": 30, "us_equity": 20,
+}
 
 
 def _category(text: str) -> str:
@@ -78,12 +95,25 @@ def _clean_html(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def google_news(query: str, geo: str = "US", n: int = None, category: str = None) -> list:
+def _trusted_meta(source: str, site: str = "") -> tuple[str, int]:
+    site = (site or "").lower()
+    source_l = (source or "").lower()
+    if site in TRUSTED_BY_DOMAIN:
+        group, _name = TRUSTED_BY_DOMAIN[site]
+        return group, SOURCE_TIER_SCORE.get(group, 0)
+    for name, (group, _domain) in TRUSTED_BY_NAME.items():
+        if name and (name in source_l or source_l in name):
+            return group, SOURCE_TIER_SCORE.get(group, 0)
+    return "", 0
+
+
+def google_news(query: str, geo: str = "US", n: int = None, category: str = None,
+                site: str = "", query_type: str = "discovery") -> list:
     """Keyless Google News RSS search for any query, region-targeted.
     category: force a taxonomy label (else auto-classified from the headline)."""
     n = n or settings.NEWS_PER_QUERY
     geoq = settings.GOOGLE_NEWS_GEO.get(geo, settings.GOOGLE_NEWS_GEO["US"])
-    q = query + " when:7d"        # Google News recency operator → last 7 days only
+    q = query + (f" site:{site}" if site else "") + " when:7d"
     url = f"{settings.GOOGLE_NEWS}?q={urllib.parse.quote(q)}&{geoq}"
     out = []
     try:
@@ -108,10 +138,14 @@ def google_news(query: str, geo: str = "US", n: int = None, category: str = None
             # it adds real prose beyond the title; otherwise leave blank for the client.
             if summary and (summary[:40].lower() == t[:40].lower() or len(summary) < 60):
                 summary = ""
+            tier, boost = _trusted_meta(source, site)
             out.append({"title": t[:220], "url": link.group(1).strip(),
                         "source": source, "geo": geo,
                         "category": category or _category(t),
-                        "summary": summary[:400], "ts": ts})
+                        "summary": summary[:400], "ts": ts,
+                        "source_tier": tier, "source_score": boost,
+                        "query_type": query_type,
+                        "query": query, "target_site": site})
     except Exception as e:  # noqa: BLE001
         print(f"[news] google query failed '{query}': {e}")
     return out
@@ -136,23 +170,113 @@ def _recent(items: list, cap: int = None) -> list:
     """Keep items from the last 7 days, newest first (today prioritized)."""
     now = _now()
     fresh = [it for it in items if it.get("ts") and (now - it["ts"]) <= WEEK]
-    fresh.sort(key=lambda it: it["ts"], reverse=True)
+    fresh.sort(key=lambda it: (it.get("score", 0), it["ts"]), reverse=True)
     return fresh[:cap] if cap else fresh
 
 
+def _norm(s: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
+
+
+def _dedupe_key(it: dict) -> tuple:
+    url = (it.get("url") or "").strip()
+    # Google News wrapper URLs are unique enough for click-through, but related wire
+    # copies need title/source collapse too.
+    return (url, _norm(it.get("title", ""))[:90], _norm(it.get("source", ""))[:40])
+
+
 def _dedupe(items: list, cap: int) -> list:
-    seen, out = set(), []
+    seen_url, seen_title, out = set(), set(), []
     for it in items:
-        key = it["title"].lower()[:70]
-        if it.get("url") and key not in seen:
-            seen.add(key)
+        url, title, source = _dedupe_key(it)
+        title_key = (title, source)
+        if it.get("url") and url not in seen_url and title_key not in seen_title:
+            seen_url.add(url)
+            seen_title.add(title_key)
             out.append(it)
         if len(out) >= cap:
             break
     return out
 
 
+def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dict:
+    txt = _norm(" ".join([it.get("title", ""), it.get("summary", ""), it.get("source", "")]))
+    terms = [_norm(t) for t in (terms or []) if t]
+    relevance = 0
+    for t in terms:
+        if not t:
+            continue
+        if len(t) <= 5:
+            relevance += 18 if re.search(rf"\b{re.escape(t)}\b", txt) else 0
+        elif t in txt:
+            relevance += 12
+    age = max(0, _now() - int(it.get("ts") or 0))
+    fresh = 25 if age <= 86400 else 15 if age <= 3 * 86400 else 5
+    query_bonus = {"trusted": 20, "official": 18, "gap": 10, "ticker": 8,
+                   "sector": 7, "topic": 5, "index": 5}.get(it.get("query_type"), 0)
+    score = int(it.get("source_score", 0)) + trusted_bias + relevance + fresh + query_bonus
+    title_l = (it.get("title") or "").lower()
+    if "opinion" in title_l or "op-ed" in title_l:
+        score -= 8
+    if not relevance and not it.get("source_score") and it.get("query_type") in {"ticker", "gap"}:
+        score -= 18
+    it["score"] = score
+    return it
+
+
+def _rank(items: list, cap: int, terms: list[str] = None, trusted_bias: int = 0) -> list:
+    ranked = [_score_item(dict(it), terms, trusted_bias) for it in items if it.get("url")]
+    ranked.sort(key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
+    return _dedupe(ranked, cap)
+
+
+def _targeted_source_news(query: str, geo: str, category: str, target_group: str,
+                          terms: list[str], cap: int = 12, max_sites: int = 4) -> list:
+    sites = settings.NEWS_SOURCE_TARGETS.get(target_group, [])
+    if not sites:
+        return []
+    jobs = [(query, geo, category, site) for site in sites[:max_sites]]
+
+    def one(job):
+        q, g, cat, site = job
+        qt = "official" if target_group == "OFFICIAL" else "trusted"
+        return google_news(q, g, settings.NEWS_TRUSTED_PER_QUERY, category=cat,
+                           site=site, query_type=qt)
+
+    out = []
+    try:
+        with cf.ThreadPoolExecutor(max_workers=6) as ex:
+            for items in ex.map(one, jobs):
+                out += items
+    except Exception as e:  # noqa: BLE001
+        print(f"[news] trusted source pass failed '{query}': {e}")
+    return _rank(out, cap, terms, trusted_bias=8)
+
+
+def _load_previous() -> dict:
+    try:
+        if os.path.exists(settings.DATA_JSON_PATH):
+            with open(settings.DATA_JSON_PATH, encoding="utf-8") as f:
+                return json.load(f)
+    except Exception as e:  # noqa: BLE001
+        print(f"[news] previous payload unavailable: {e}")
+    return {}
+
+
+def _merge_news(old: list, new: list, cap: int, terms: list[str] = None) -> list:
+    return _rank(_recent((old or []) + (new or [])), cap, terms)
+
+
+def _latest_ts(items: list) -> int:
+    return max((int(x.get("ts") or 0) for x in (items or [])), default=0)
+
+
 def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
+    previous = _load_previous()
+    prev_wire = previous.get("news", [])
+    prev_sector = previous.get("sector_news", {}) or {}
+    prev_ticker = previous.get("ticker_news", {}) or {}
+
     # --- per-index / instrument news ---
     idx_terms = {
         "^JKSE": ("Jakarta Composite IHSG", "ID"), "^IXIC": ("Nasdaq composite", "US"),
@@ -167,7 +291,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     for r in telemetry:
         q = idx_terms.get(r["symbol"])
         if q:
-            wire += google_news(q[0], q[1], 3)
+            wire += google_news(q[0], q[1], 3, query_type="index")
 
     # broad per-geo topic fan across the Economy/Tech/Markets/Crypto taxonomy — this is
     # the volume driver that lifts the wire to ~100 items per region (threaded).
@@ -176,7 +300,8 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
 
     def _topic(job):
         q, geo, cat = job
-        return google_news(q, geo, settings.NEWS_TOPIC_PER_QUERY, category=cat)
+        return google_news(q, geo, settings.NEWS_TOPIC_PER_QUERY, category=cat,
+                           query_type="topic")
 
     try:
         with cf.ThreadPoolExecutor(max_workers=8) as ex:
@@ -184,6 +309,23 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
                 wire += items
     except Exception as e:  # noqa: BLE001
         print(f"[news] topic fan failed: {e}")
+
+    # Trusted-source pass: compact targeted `site:` queries against high-signal sources.
+    # This boosts quality without multiplying every ticker/sector query by every outlet.
+    trusted_jobs = list(getattr(settings, "NEWS_SOURCE_QUERY_TOPICS", []))
+
+    def _trusted(job):
+        q, geo, cat, group = job
+        return _targeted_source_news(q, geo, cat, group, q.split(), cap=10, max_sites=4)
+
+    try:
+        with cf.ThreadPoolExecutor(max_workers=5) as ex:
+            for items in ex.map(_trusted, trusted_jobs):
+                wire += items
+    except Exception as e:  # noqa: BLE001
+        print(f"[news] trusted topic fan failed: {e}")
+
+    wire += _from_curated(headlines)
 
     # --- per-sector news (richer, sector-tuned queries; recency-biased) ---
     # (us_query, id_query) — tuned to the actual trending angle of each sector
@@ -203,38 +345,72 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     sector_news = {}
     for s in sectors:
         usq, idq = SQ.get(s["key"], (f"{s['name']} stocks", f"saham {s['name']} Indonesia"))
-        items = google_news(usq, "US", 5) + google_news(idq, "ID", 5)
-        items = _recent(_dedupe(items, 14))   # ≤7 days, newest first
+        terms = [s["name"], s["key"]] + [c["ticker"] for c in s.get("constituents", [])[:8]]
+        items = (google_news(usq, "US", 5, query_type="sector") +
+                 google_news(idq, "ID", 5, query_type="sector"))
+        items += _targeted_source_news(usq, "US", "MARKETS_FINANCE", "US", terms, cap=6, max_sites=2)
+        items += _targeted_source_news(idq, "ID", "MARKETS_FINANCE", "ID", terms, cap=6, max_sites=2)
+        items = _merge_news(prev_sector.get(s["key"], []), items, 14, terms)   # ≤7d memory
         for it in items:
             it["sectors"] = [s["key"]]
         sector_news[s["key"]] = items[:8]
         wire += items[:5]
 
-    # --- per-ticker news (threaded; every constituent) ---
-    cons = [(c["ticker"], c["name"].split(" (")[0], c["country"])
-            for s in sectors for c in s["constituents"]]
+    # --- per-ticker news (gap/stale/priority budget; previous 7d memory is preserved) ---
+    cons = []
+    for s in sectors:
+        for c in s["constituents"]:
+            cons.append({"sector": s["key"], "ticker": c["ticker"],
+                         "name": c["name"].split(" (")[0], "country": c["country"],
+                         "tier": c.get("tier") or c.get("mktcap"),
+                         "delta_pct": float(c.get("delta_pct") or 0.0)})
+
+    now = _now()
+    stale_s = getattr(settings, "NEWS_TICKER_STALE_HOURS", 72) * 3600
+
+    def priority(c):
+        existing = _recent(prev_ticker.get(c["ticker"], []))
+        latest = _latest_ts(existing)
+        gap = 1 if not existing else 0
+        stale = 1 if latest and (now - latest) > stale_s else 0
+        tier = {"mega": 35, "large": 25, "mid": 12, "small": 4}.get(c.get("tier"), 8)
+        move = min(25, abs(c.get("delta_pct", 0.0)) * 8)
+        return gap * 100 + stale * 55 + tier + move
 
     def fetch(t):
-        tk, name, country = t
-        q = f"{tk} {name.split()[0]} saham" if country == "ID" else f"{tk} {name.split()[0]} stock"
-        return tk, google_news(q, country, 3)
+        tk, name, country = t["ticker"], t["name"], t["country"]
+        if country == "CR":
+            q = f"{name} {tk} crypto price regulation ETF"
+            geo = "US"
+        elif country == "ID":
+            q = f"{tk} {name.split()[0]} saham emiten"
+            geo = "ID"
+        else:
+            q = f"{tk} {name.split()[0]} stock earnings shares"
+            geo = "US"
+        terms = [tk, name.split()[0], name, t["sector"]]
+        return tk, _rank(google_news(q, geo, 3, query_type="ticker"), 4, terms)
 
-    ticker_news = {}
+    selected = sorted(cons, key=priority, reverse=True)[:settings.NEWS_TICKER_QUERY_BUDGET]
+    ticker_news = {tk: _recent(items, settings.NEWS_TICKER_KEEP_PER_TICKER)
+                   for tk, items in prev_ticker.items()}
     try:
         with cf.ThreadPoolExecutor(max_workers=8) as ex:
-            for tk, items in ex.map(fetch, cons):
-                items = _recent(items, 4)        # ≤7d, newest first, top 4
-                if items:
-                    ticker_news[tk] = items
+            for tk, items in ex.map(fetch, selected):
+                merged = _merge_news(ticker_news.get(tk, []), items,
+                                     settings.NEWS_TICKER_KEEP_PER_TICKER, [tk])
+                if merged:
+                    ticker_news[tk] = merged
     except Exception as e:  # noqa: BLE001
         print(f"[news] ticker fetch pool failed: {e}")
 
     # balance roughly 50/50 ID/US so neither region starves the wire
-    fresh = _recent(wire)                       # ≤7d, newest first
+    fresh = _rank(_recent(prev_wire + wire), settings.NEWS_WIRE_CAP * 2)  # ≤7d memory
     half = settings.NEWS_WIRE_CAP // 2
     id_w = _dedupe([x for x in fresh if x.get("geo") == "ID"], half)
     us_w = _dedupe([x for x in fresh if x.get("geo") != "ID"], settings.NEWS_WIRE_CAP - half)
-    wire = sorted(id_w + us_w, key=lambda x: x.get("ts", 0), reverse=True)
+    wire = sorted(id_w + us_w, key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
     print(f"[news] wire={len(wire)} (≤7d · {len(id_w)} ID / {len(us_w)} US) · "
-          f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)}")
+          f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)} · "
+          f"ticker_queries={len(selected)}/{len(cons)}")
     return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news}

@@ -456,6 +456,85 @@ GOOGLE_NEWS_GEO = {"ID": "hl=en-ID&gl=ID&ceid=ID:en", "US": "hl=en-US&gl=US&ceid
 NEWS_PER_QUERY = 4          # items kept per index/sector/ticker query
 NEWS_WIRE_CAP = 220         # max items in the wire (~100 ID + ~100 US after dedupe)
 NEWS_TOPIC_PER_QUERY = 10   # items kept per broad wire-topic query (volume driver)
+NEWS_TRUSTED_PER_QUERY = 4  # source-targeted Google News pulls stay small/rate-safe
+NEWS_TICKER_QUERY_BUDGET = 60       # gap/stale/priority ticker queries per run
+NEWS_TICKER_KEEP_PER_TICKER = 5     # keep best direct stories per ticker in 7d memory
+NEWS_TICKER_STALE_HOURS = 72        # tickers older than this are refreshed before covered names
+
+# Trusted-source registry for the news engine. Google News is still the discovery
+# layer; these domains/source names receive targeted `site:` passes + ranking boost.
+NEWS_TRUSTED_SOURCES = {
+    "tier1_global": [
+        ("Reuters", "reuters.com"), ("Bloomberg", "bloomberg.com"),
+        ("CNBC", "cnbc.com"), ("Yahoo Finance", "finance.yahoo.com"),
+        ("MarketWatch", "marketwatch.com"), ("Financial Times", "ft.com"),
+        ("Wall Street Journal", "wsj.com"), ("Barron's", "barrons.com"),
+        ("Investing.com", "investing.com"), ("TradingView", "tradingview.com"),
+        ("Morningstar", "morningstar.com"),
+    ],
+    "us_equity": [
+        ("Seeking Alpha", "seekingalpha.com"), ("Motley Fool", "fool.com"),
+        ("PR Newswire", "prnewswire.com"), ("GlobeNewswire", "globenewswire.com"),
+    ],
+    "apac_sea": [
+        ("Nikkei Asia", "asia.nikkei.com"), ("South China Morning Post", "scmp.com"),
+        ("The Business Times", "businesstimes.com.sg"), ("The Straits Times", "straitstimes.com"),
+        ("Channel NewsAsia", "channelnewsasia.com"), ("DealStreetAsia", "dealstreetasia.com"),
+        ("Tech in Asia", "techinasia.com"), ("KrAsia", "kr-asia.com"),
+        ("e27", "e27.co"), ("Momentum Works", "momentum.asia"),
+    ],
+    "indonesia": [
+        ("CNBC Indonesia", "cnbcindonesia.com"), ("Bloomberg Technoz", "bloombergtechnoz.com"),
+        ("Kontan", "kontan.co.id"), ("Bisnis Indonesia", "bisnis.com"),
+        ("Investor Daily", "investor.id"), ("Katadata", "katadata.co.id"),
+        ("Antara News", "antaranews.com"), ("IDX Channel", "idxchannel.com"),
+        ("Detik Finance", "finance.detik.com"), ("Kompas Money", "money.kompas.com"),
+        ("Tempo Bisnis", "tempo.co"), ("Jakarta Globe", "jakartaglobe.id"),
+    ],
+    "official": [
+        ("Bank Indonesia", "bi.go.id"), ("OJK", "ojk.go.id"),
+        ("IDX", "idx.co.id"), ("BPS", "bps.go.id"), ("Kemenkeu", "kemenkeu.go.id"),
+        ("ESDM", "esdm.go.id"), ("Federal Reserve", "federalreserve.gov"),
+        ("US Treasury", "treasury.gov"), ("BLS", "bls.gov"), ("EIA", "eia.gov"),
+        ("BOJ", "boj.or.jp"), ("ECB", "ecb.europa.eu"), ("IMF", "imf.org"),
+        ("World Bank", "worldbank.org"),
+    ],
+    "crypto": [
+        ("CoinDesk", "coindesk.com"), ("The Block", "theblock.co"),
+        ("Decrypt", "decrypt.co"), ("Cointelegraph", "cointelegraph.com"),
+        ("CryptoSlate", "cryptoslate.com"), ("Bitcoin Magazine", "bitcoinmagazine.com"),
+        ("Bankless", "bankless.com"), ("SEC", "sec.gov"), ("CFTC", "cftc.gov"),
+    ],
+}
+
+# Targeted source passes are deliberately compact: trusted source discovery should
+# improve quality without turning the 30-min cron into a crawler.
+NEWS_SOURCE_TARGETS = {
+    "ID": ["cnbcindonesia.com", "bloombergtechnoz.com", "kontan.co.id", "bisnis.com",
+           "katadata.co.id", "antaranews.com", "idxchannel.com"],
+    "US": ["reuters.com", "bloomberg.com", "cnbc.com", "finance.yahoo.com",
+           "marketwatch.com", "investing.com", "barrons.com"],
+    "APAC": ["asia.nikkei.com", "scmp.com", "businesstimes.com.sg",
+             "channelnewsasia.com", "dealstreetasia.com", "techinasia.com"],
+    "CRYPTO": ["coindesk.com", "theblock.co", "decrypt.co", "cointelegraph.com",
+               "cryptoslate.com", "sec.gov"],
+    "OFFICIAL": ["bi.go.id", "ojk.go.id", "idx.co.id", "federalreserve.gov",
+                 "treasury.gov", "bls.gov", "eia.gov", "boj.or.jp", "ecb.europa.eu"],
+}
+
+NEWS_SOURCE_QUERY_TOPICS = [
+    ("Bank Indonesia rupiah suku bunga IHSG", "ID", "ECONOMY", "ID"),
+    ("Indonesia stocks banking commodities rupiah", "ID", "MARKETS_FINANCE", "ID"),
+    ("Indonesia startup AI digital economy", "ID", "TECH", "ID"),
+    ("Federal Reserve rates inflation jobs yields", "US", "ECONOMY", "US"),
+    ("Nasdaq S&P 500 Nvidia earnings yields", "US", "MARKETS_FINANCE", "US"),
+    ("AI semiconductors data centers big tech", "US", "TECH", "US"),
+    ("ASEAN markets currencies economy", "US", "ECONOMY", "APAC"),
+    ("China EV batteries nickel property markets", "US", "MARKETS_FINANCE", "APAC"),
+    ("oil gold nickel coal commodities", "US", "MARKETS_FINANCE", "US"),
+    ("bitcoin ethereum crypto regulation ETF", "US", "CRYPTO", "CRYPTO"),
+    ("central bank policy Fed BI BOJ ECB", "US", "ECONOMY", "OFFICIAL"),
+]
 
 # Intelligence Wire taxonomy (v3): Economy · Tech · Markets & Finance · Crypto.
 # Broad per-geo topic queries fan the wire out to ~100 items/region. (query, category).
