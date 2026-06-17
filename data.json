@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-06-17T00:32:02Z",
+  "timestamp": "2026-06-17T01:02:12Z",
   "opening": {
     "greeting": "Good morning, Vito. Let's process the boards.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Clear sky, 26°C.",
-      "jakarta": "Clear sky, 27°C.",
+      "bsd": "Clear sky, 28°C.",
+      "jakarta": "Clear sky, 28°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
     "verse_of_the_day": "He gives power to the weak. He increases the strength of him who has no might. — Isaiah 40:29",
@@ -454,8 +454,8 @@
       "symbol": "^N225",
       "label": "Nikkei 225",
       "kind": "index",
-      "value": 69385.49,
-      "delta_pct": -0.03,
+      "value": 69311.78,
+      "delta_pct": -0.13,
       "prev_close": 69404.5,
       "state": "open",
       "mkt_start": 1781654400,
@@ -579,11 +579,13 @@
         64217.2695,
         66020.0391,
         69317.5,
-        69385.4922
+        69404.5,
+        69311.7812
       ],
       "intraday": [
-        69338.4375,
-        69385.4922
+        69391.1875,
+        69402.0469,
+        69311.7812
       ],
       "url": "https://finance.yahoo.com/quote/^N225"
     },
@@ -745,9 +747,9 @@
       "symbol": "BTC-USD",
       "label": "Bitcoin / USD",
       "kind": "crypto",
-      "value": 65666.97,
-      "delta_pct": -0.07,
-      "prev_close": 65710.09,
+      "value": 65641.98,
+      "delta_pct": 0.06,
+      "prev_close": 65605.45,
       "state": "open",
       "mkt_start": 1781654400,
       "mkt_end": 1781740740,
@@ -881,11 +883,12 @@
         64421.3242,
         65710.3984,
         66289.5,
-        65666.9688
+        65641.9766
       ],
       "intraday": [
-        65664.2969,
-        65666.9688
+        65664.2891,
+        65644.6719,
+        65641.9766
       ],
       "url": "https://www.coingecko.com/en/coins/bitcoin"
     },
@@ -893,8 +896,8 @@
       "symbol": "GC=F",
       "label": "Gold Spot",
       "kind": "commodity",
-      "value": 4358.0,
-      "delta_pct": 0.08,
+      "value": 4352.6,
+      "delta_pct": -0.04,
       "prev_close": 4354.4,
       "state": "open",
       "mkt_start": 1781582400,
@@ -1024,7 +1027,7 @@
         4090.3,
         4215.0,
         4328.0,
-        4358.0
+        4352.6001
       ],
       "intraday": [
         4343.8999,
@@ -1065,8 +1068,9 @@
         4355.0,
         4356.2998,
         4350.7998,
-        4357.7998,
-        4358.0
+        4356.7998,
+        4353.3999,
+        4352.6001
       ],
       "url": "https://finance.yahoo.com/quote/GC=F"
     },
@@ -1074,8 +1078,8 @@
       "symbol": "BZ=F",
       "label": "Brent Crude",
       "kind": "commodity",
-      "value": 79.5,
-      "delta_pct": 0.68,
+      "value": 79.53,
+      "delta_pct": 0.72,
       "prev_close": 78.96,
       "state": "open",
       "mkt_start": 1781582400,
@@ -1205,7 +1209,7 @@
         90.38,
         87.33,
         83.17,
-        79.5
+        79.53
       ],
       "intraday": [
         82.93,
@@ -1246,8 +1250,9 @@
         79.57,
         79.55,
         79.54,
-        79.5,
-        79.5
+        79.51,
+        79.53,
+        79.53
       ],
       "url": "https://finance.yahoo.com/quote/BZ=F"
     },
@@ -1255,8 +1260,8 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 75.83,
-      "delta_pct": 0.74,
+      "value": 75.88,
+      "delta_pct": 0.81,
       "prev_close": 75.27,
       "state": "open",
       "mkt_start": 1781582400,
@@ -1386,7 +1391,7 @@
         87.71,
         84.88,
         80.75,
-        75.83
+        75.88
       ],
       "intraday": [
         80.69,
@@ -1427,8 +1432,9 @@
         75.93,
         75.8,
         75.86,
-        75.83,
-        75.83
+        75.84,
+        75.88,
+        75.88
       ],
       "url": "https://finance.yahoo.com/quote/CL=F"
     },
@@ -1839,8 +1845,8 @@
       "symbol": "DX-Y.NYB",
       "label": "US Dollar Index",
       "kind": "fx",
-      "value": 99.51,
-      "delta_pct": -0.03,
+      "value": 99.52,
+      "delta_pct": -0.02,
       "prev_close": 99.54,
       "state": "open",
       "mkt_start": 1781582400,
@@ -1970,7 +1976,8 @@
         99.86,
         99.75,
         99.63,
-        99.508
+        99.54,
+        99.52
       ],
       "intraday": [
         99.773,
@@ -2011,8 +2018,9 @@
         99.549,
         99.54,
         99.551,
-        99.511,
-        99.508
+        99.504,
+        99.516,
+        99.52
       ],
       "url": "https://finance.yahoo.com/quote/DX-Y.NYB"
     },
@@ -2347,27 +2355,27 @@
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI surged 4.12% to 6255, diverging sharply from US tech-led declines.",
-      "Nasdaq fell 1.15% and S&P 500 dropped 0.57%, reflecting AI capex caution."
+      "JCI surges 4.12% as foreign inflows return, decoupling from Nasdaq's 1.15% decline.",
+      "USD/IDR holds steady at 17,715, anchoring Jakarta's rally versus US equity volatility."
     ],
     "economic": [
-      "BI holds rupiah stable at 17715, lowering Indonesia's cost of capital.",
-      "Falling US 10Y yield at 4.43% supports domestic asset attractiveness."
+      "Fed Chair Warsh withholding dot signals a pause, weakening the dollar and stabilizing the rupiah.",
+      "Nickel proxy INCO jumps 7.75% on EV demand, while coal proxy ITMG dips 0.43%."
     ],
     "tech_ai": [
-      "Japan's chip export surge boosts SEA semiconductor and nickel demand.",
-      "AI infrastructure shift threatens traditional PE bets in law and accounting."
+      "AI-native cloud startup Railway secures $100 million to challenge AWS, reshaping SEA venture benchmarks.",
+      "SpaceX valuation balloons to $2.6 trillion, signaling structural tech shifts beyond traditional markets."
     ],
     "political": [
-      "President Prabowo ensures stable fuel and LPG subsidies, securing bankability.",
-      "Downstreaming policy certainty drives foreign re-entry into Indonesian commodities."
+      "President Steinmeier's IEU-CEPA optimism strengthens Indonesia-Germany ties, boosting bankability for infrastructure.",
+      "Rupiah stability lowers capital costs for domestic climate projects, reinforcing policy credibility."
     ]
   },
-  "arbiter_brief": "Jakarta's 4.12% surge decouples from Wall Street's tech retreat as foreign capital rotates into cheap domestic value plays. Stable rupiah and falling US yields lower Indonesia's cost of capital, while Prabowo's subsidy and downstreaming policy anchors confidence. The nickel proxy INCO's 7.75% jump confirms a selective commodity bid, not a structural shift.",
+  "arbiter_brief": "Jakarta's 4.12% surge decouples from US tech weakness as Fed Chair Warsh's dot hold weakens the dollar and stabilizes USD/IDR at 17,715, anchoring foreign inflows into commodity cyclicals like nickel. However, VIX at 16.41 warns of US valuation spillover risk; local tech IPOs face scrutiny until AI-native plays prove their premium. For now, JCI rides FX stability and commodity momentum, but the real test comes when Warsh's silence breaks.",
   "executive_brief": [
-    "Rotate foreign capital into Indonesian commodity and value plays today.",
-    "Monitor US tech regulatory friction for further spillover into SEA markets.",
-    "Leverage stable rupiah and falling yields to lock in domestic project financing."
+    "Ride JCI's decoupling rally by rotating into nickel and green metal proxies, not coal.",
+    "Monitor VIX above 16 for US tech spillover risk that could hit local IPO valuations.",
+    "Leverage rupiah stability to lock in infrastructure financing under IEU-CEPA tailwinds."
   ],
   "sectors": [
     {
@@ -5533,12 +5541,12 @@
         91.69,
         94.3
       ],
-      "ai": "Indonesian banks surged on strong Q3 earnings and NIM stabilization, with BMRI and BBNI leading on loan growth recovery. US financials followed on dovish Fed signals. Buy BBRI and BBCA for core exposure, as domestic rate cuts and infrastructure spending will sustain margin expansion and credit demand into 2025.",
+      "ai": "Indonesia financials surged on strong earnings momentum and dovish BI policy signals; overweight BMRI and BBCA for structural NIM expansion and digital adoption, with BBRI as a laggard catch-up trade. US banks rallied on rate-cut optimism but face margin compression—rotate into ID names for higher beta and domestic liquidity tailwinds.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesian bank NIMs are bottoming as deposit cost repricing lags loan yield adjustments, driving sequential margin recovery through H1 2025.",
-        "Government infrastructure push and downstreaming capex are accelerating corporate loan demand, benefiting state-owned lenders like BMRI and BBRI disproportionately.",
-        "US financials benefit from a steepening yield curve and lower regulatory capital requirements, boosting net interest income and buyback capacity for JPM and SCHW."
+        "Structural NIM expansion in Indonesian banks driven by BI's rate hold and loan repricing, with BMRI and BBCA leading on low-cost deposit franchises and digital cost efficiencies.",
+        "Dovish BI policy and government infrastructure spending create durable loan growth catalysts for BBNI and BBRI, especially in corporate and MSME segments.",
+        "US bank outperformance is cyclical and rate-sensitive; Indonesia's financials offer superior risk-reward via domestic demand resilience and lower exposure to commercial real estate stress."
       ],
       "constituents": [
         {
@@ -8570,12 +8578,12 @@
         114.22,
         116.16
       ],
-      "ai": "Indonesia mining surged 4.54% today on a broad-based rally led by nickel and tin plays, signaling strong domestic demand and policy tailwinds. ANTM and INCO jumped on nickel price recovery and downstream processing optimism, while AMMN and MDKA benefited from gold and copper exposure. This sector rotation favors Indonesia over US peers, reinforcing a structural shift toward resource nationalism and EV battery supply chain localization.",
+      "ai": "Indonesia's mining & energy surge (+4.54%) signals a structural re-rating on China stimulus and domestic nickel/coal demand, with ANTM and AMMN leading. Position into downstream processing plays and coal exporters for Q4 upside, as US weakness is transient.",
       "volume": "20 tickers",
       "themes": [
-        "Nickel downstreaming and EV battery supply chain integration remain the dominant structural driver, as Indonesia's ban on raw ore exports forces domestic processing capacity expansion, benefiting ANTM",
-        "Gold and copper price resilience, supported by global monetary easing and geopolitical uncertainty, underpins sustained demand for AMMN and MDKA, which have strong operational leverage.",
-        "Tin supply constraints from Myanmar and Indonesia's export quota system create a durable price floor for TINS, as electronics and solar demand grow structurally."
+        "Nickel downstreaming is a durable driver as Indonesia's ban on raw ore exports forces global battery supply chains to invest in local HPAL smelters, benefiting ANTM and INCO.",
+        "Coal demand remains resilient due to Indonesia's domestic market obligation and rising power plant needs, supporting ADRO and SMMT despite global ESG headwinds.",
+        "State-owned enterprise restructuring and foreign direct investment into mineral processing create a structural catalyst for TINS and MDKA, as government prioritizes value-added exports."
       ],
       "constituents": [
         {
@@ -14644,12 +14652,12 @@
         91.54,
         92.8
       ],
-      "ai": "Indonesia consumer stocks surged 4.26% today, led by UNVR +7.03% and MYOR +6.40%, signaling a sharp rotation into domestic-demand plays as US consumer names flatlined. This ALERT suggests investors are front-running a potential rate hold by BI and expecting resilient household spending into year-end. Prioritize exposure to staples and discretionary names with strong local distribution networks.",
+      "ai": "Indonesia consumer stocks surged 4.26% on broad-based buying, led by UNVR +7% and MYOR +6.4%, signaling rotation into defensive staples amid global uncertainty. This rally is durable as domestic consumption remains resilient, supported by stable inflation and rising middle-class spending. Position into top movers for near-term momentum.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's rising middle class and urbanization continue to drive premiumization in FMCG, favoring brands with deep rural and semi-urban penetration like UNVR and ICBP.",
-        "Regulatory stability under the new government and BI's accommodative monetary stance support consumer confidence and credit growth, benefiting retailers like AMRT and food producers MYOR.",
-        "Structural under-penetration of processed foods and tobacco alternatives in Indonesia offers durable volume growth for GGRM and HMSP, despite excise headwinds."
+        "Rising middle-class income and urbanization continue to drive premiumization in FMCG, benefiting leaders like UNVR and ICBP.",
+        "Government subsidies and stable food inflation sustain purchasing power, underpinning volume growth for staples such as MYOR and INDF.",
+        "Tobacco stocks (GGRM, HMSP) gain from pricing power and resilient demand despite regulatory headwinds, offering defensive yield."
       ],
       "constituents": [
         {
@@ -17681,12 +17689,12 @@
         100.44,
         101.34
       ],
-      "ai": "Indonesia's infrastructure sector shows strong local outperformance, led by TOWR's telecom tower surge and KIJA's property gains, signaling robust domestic demand. Watch for sustained momentum in digital infrastructure and toll roads, as US exposure drags. Position for selective local plays, avoiding US-linked names.",
+      "ai": "Indonesia's infrastructure sector outperformed with a +1.81% gain, led by TOWR's +13.37% surge. Watch for continued momentum driven by government spending and digitalization, but monitor US rate sensitivity.",
       "volume": "20 tickers",
       "themes": [
-        "Digital infrastructure demand is a durable driver, as TOWR's 13.37% surge reflects accelerating telecom tower leasing from 5G rollout and data center expansion in Indonesia.",
-        "Urbanization and toll road expansion underpin KIJA and JSMR gains, with government infrastructure spending and private sector participation creating long-term growth in connectivity and logistics.",
-        "Commodity-linked infrastructure like VMC and MLM benefits from US construction resilience, but Indonesia's domestic focus on digital and transport offers more stable, policy-supported returns."
+        "Government's accelerated infrastructure spending under the new administration will sustain demand for construction and telecom assets.",
+        "Rapid digitalization and data center expansion in Indonesia create durable tailwinds for tower operators like TOWR and TLKM.",
+        "US interest rate sensitivity remains a key risk, but local currency stability and domestic demand provide a buffer for sector outperformance."
       ],
       "constituents": [
         {
@@ -26786,12 +26794,12 @@
         78.47,
         79.52
       ],
-      "ai": "Indonesia's entertainment sector surged 3.33% today, led by ARCI's 16.92% spike, signaling strong local demand for digital content and live events. Capitalize on this momentum by overweighting MNCN and ACES, as rising middle-class spending and mobile-first consumption drive structural growth.",
+      "ai": "Indonesia's entertainment sector surged on strong local demand signals, led by ARCI's +16.92% and MNCN's +2.80%, while US names like RBLX and TTWO rallied on gaming optimism. The ALERT signal flags accelerating momentum; overweight Indonesian media plays for structural domestic consumption growth, as US exposure hedges via gaming giants offer asymmetric upside on global ad recovery.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's young, mobile-first population is accelerating digital content consumption, creating durable demand for streaming, gaming, and social media platforms.",
-        "Government infrastructure investments in broadband and 5G rollout are lowering access barriers, expanding the addressable market for entertainment and media services.",
-        "Rising disposable incomes and formalization of the economy are boosting consumer services spending, particularly in e-commerce, food delivery, and out-of-home entertainment."
+        "Indonesia's rising middle class and digital penetration are structurally boosting local media and entertainment consumption, favoring domestic players like MNCN and ARCI over US peers.",
+        "Global gaming demand is durably supported by younger demographics and expanding mobile ecosystems, benefiting RBLX and TTWO as core holdings for long-term engagement monetization.",
+        "Consumer services are pivoting to hybrid models (physical + digital) in Indonesia, with FAST and ACES capturing durable growth from formal retail and e-commerce integration."
       ],
       "constituents": [
         {
@@ -32739,7 +32747,7 @@
       "name": "Crypto & Digital Assets",
       "icon": "₿",
       "theme": "BTC dominance · L1 rotation",
-      "change": 0.47,
+      "change": -0.27,
       "idChange": null,
       "usChange": null,
       "signal": "NORMAL",
@@ -32873,7 +32881,7 @@
         82.4,
         84.39,
         85.62,
-        84.64
+        84.71
       ],
       "ai": "Watch crypto as aggregate dips 1.18% with mixed altcoin signals; MATIC's 2.57% gain suggests selective rotation into layer-2 plays, but BTC and ETH weakness flags caution. For Indonesia, monitor regulatory clarity on digital asset exchanges and potential retail adoption catalysts, as local sentiment may diverge from global trends.",
       "volume": "10 tickers",
@@ -32883,310 +32891,6 @@
         "Regulatory divergence between global tightening and Indonesia's pro-innovation stance positions local crypto markets as a potential safe-haven for capital seeking less restrictive environments."
       ],
       "constituents": [
-        {
-          "ticker": "ETH",
-          "name": "Ethereum",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$420B",
-          "tier": "mega",
-          "delta_pct": 3.85,
-          "spark": [
-            2090.5493,
-            2088.7629,
-            2103.5676,
-            2019.4974,
-            1940.6213,
-            1946.9407,
-            2048.5273,
-            2086.0098,
-            1966.043,
-            1997.9177,
-            1992.1943,
-            1953.9741,
-            1948.201,
-            1969.0223,
-            1973.7372,
-            1957.8059,
-            1855.5028,
-            1852.9695,
-            2054.6279,
-            2026.7926,
-            1930.7618,
-            1965.0505,
-            1939.0667,
-            2027.2689,
-            1982.7689,
-            2126.5054,
-            2071.6055,
-            1978.7512,
-            1969.4554,
-            1936.6047,
-            1992.9382,
-            2037.1205,
-            2051.5732,
-            2073.1362,
-            2092.5635,
-            2097.0867,
-            2177.4763,
-            2351.176,
-            2318.0535,
-            2203.6716,
-            2137.4238,
-            2146.4971,
-            2076.6899,
-            2053.0483,
-            2152.146,
-            2155.7043,
-            2168.0215,
-            2059.5784,
-            1991.272,
-            1992.6946,
-            1982.5597,
-            2023.5149,
-            2104.7083,
-            2138.7371,
-            2056.8525,
-            2053.3853,
-            2065.3516,
-            2108.9956,
-            2107.7615,
-            2241.8066,
-            2190.3354,
-            2189.144,
-            2245.1487,
-            2285.3901,
-            2192.2012,
-            2370.7148,
-            2323.3086,
-            2359.437,
-            2348.645,
-            2421.0718,
-            2351.1006,
-            2264.917,
-            2315.2124,
-            2327.9705,
-            2376.0881,
-            2331.5139,
-            2315.6902,
-            2318.8291,
-            2369.729,
-            2303.064,
-            2289.4197,
-            2253.4158,
-            2256.2512,
-            2295.0938,
-            2316.2319,
-            2321.6357,
-            2346.397,
-            2361.1826,
-            2350.802,
-            2291.1077,
-            2306.9722,
-            2326.7273,
-            2369.0439,
-            2339.3608,
-            2274.6436,
-            2257.5764,
-            2280.9348,
-            2223.3289,
-            2179.752,
-            2127.6453,
-            2128.5161,
-            2109.9639,
-            2126.9834,
-            2131.4106,
-            2064.637,
-            2115.9514,
-            2097.9939,
-            2111.3704,
-            2070.8582,
-            2022.1982,
-            2007.5527,
-            2011.9785,
-            2019.4583,
-            2004.3416,
-            2003.2212,
-            1857.7163,
-            1811.7323,
-            1769.5806,
-            1580.8608,
-            1568.7677,
-            1686.3962,
-            1690.1486,
-            1637.7067,
-            1620.1377,
-            1672.2806,
-            1665.1278,
-            1680.2146,
-            1724.6133,
-            1794.9612,
-            1790.77
-          ],
-          "value": 1790.77,
-          "turnover": 16540227914752.0,
-          "state": "open",
-          "mkt_start": 1781654400,
-          "mkt_end": 1781740740,
-          "intraday": [
-            1792.49,
-            1791.25,
-            1790.77
-          ],
-          "url": "https://www.coingecko.com/en/coins/ethereum"
-        },
-        {
-          "ticker": "SOL",
-          "name": "Solana",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$95B",
-          "tier": "large",
-          "delta_pct": 2.96,
-          "spark": [
-            87.6398,
-            87.0441,
-            86.7018,
-            82.9155,
-            79.2542,
-            78.3484,
-            84.3225,
-            88.1608,
-            86.0051,
-            86.4288,
-            85.1976,
-            81.5669,
-            82.3932,
-            84.6351,
-            85.2111,
-            82.791,
-            77.7533,
-            79.0365,
-            87.9156,
-            85.9091,
-            81.9515,
-            84.3662,
-            83.5777,
-            86.6345,
-            87.0198,
-            90.8343,
-            88.6911,
-            84.6818,
-            83.18,
-            81.6246,
-            84.9362,
-            85.8382,
-            86.5649,
-            86.8678,
-            88.1533,
-            88.0707,
-            92.2518,
-            96.2237,
-            94.706,
-            90.0657,
-            88.9178,
-            89.8536,
-            87.4654,
-            86.1283,
-            91.4241,
-            90.8224,
-            91.7082,
-            86.4439,
-            83.0188,
-            82.0156,
-            81.4224,
-            82.4441,
-            83.1065,
-            81.1953,
-            78.9513,
-            80.3685,
-            80.8084,
-            81.8545,
-            80.1516,
-            85.648,
-            82.5817,
-            83.2977,
-            84.8285,
-            84.9488,
-            81.5352,
-            86.6566,
-            83.7746,
-            84.9193,
-            88.9942,
-            88.8742,
-            86.2027,
-            83.5809,
-            85.333,
-            86.0295,
-            86.9158,
-            86.1411,
-            86.2319,
-            86.1512,
-            86.9704,
-            84.8178,
-            84.039,
-            83.0269,
-            83.0238,
-            83.7235,
-            84.2766,
-            83.8996,
-            84.0899,
-            86.3192,
-            89.145,
-            88.4048,
-            91.9498,
-            93.1455,
-            96.427,
-            97.3502,
-            94.2843,
-            91.0855,
-            92.1487,
-            89.2004,
-            86.5365,
-            85.173,
-            85.2969,
-            84.2086,
-            86.0419,
-            87.1562,
-            84.3071,
-            85.6585,
-            85.2497,
-            85.0105,
-            83.5865,
-            82.3681,
-            81.9854,
-            81.9325,
-            82.5473,
-            82.2983,
-            81.087,
-            74.1429,
-            71.6124,
-            68.7189,
-            63.4869,
-            62.1898,
-            66.3106,
-            66.795,
-            64.9621,
-            63.161,
-            66.822,
-            66.7493,
-            68.8728,
-            71.1662,
-            73.9793,
-            73.3
-          ],
-          "value": 73.3,
-          "turnover": 131923637094.0,
-          "state": "open",
-          "mkt_start": 1781654400,
-          "mkt_end": 1781740740,
-          "intraday": [
-            73.44,
-            73.32,
-            73.3
-          ],
-          "url": "https://www.coingecko.com/en/coins/solana"
-        },
         {
           "ticker": "MATIC",
           "name": "Polygon",
@@ -33205,165 +32909,13 @@
           "url": "https://www.coingecko.com/en/coins/polygon-ecosystem-token"
         },
         {
-          "ticker": "XRP",
-          "name": "XRP",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$130B",
-          "tier": "large",
-          "delta_pct": 2.23,
-          "spark": [
-            1.4242,
-            1.4322,
-            1.4361,
-            1.3995,
-            1.368,
-            1.3621,
-            1.4075,
-            1.51,
-            1.4749,
-            1.4867,
-            1.4744,
-            1.4216,
-            1.4064,
-            1.4294,
-            1.4317,
-            1.3931,
-            1.3516,
-            1.3489,
-            1.4337,
-            1.402,
-            1.3559,
-            1.3772,
-            1.3517,
-            1.391,
-            1.3606,
-            1.4302,
-            1.4031,
-            1.3636,
-            1.3564,
-            1.3414,
-            1.3618,
-            1.3864,
-            1.3849,
-            1.3846,
-            1.3989,
-            1.4073,
-            1.4476,
-            1.5436,
-            1.5185,
-            1.4639,
-            1.4473,
-            1.4455,
-            1.4066,
-            1.3849,
-            1.4319,
-            1.4154,
-            1.4142,
-            1.3601,
-            1.325,
-            1.3328,
-            1.3273,
-            1.3226,
-            1.3403,
-            1.3478,
-            1.3187,
-            1.3179,
-            1.3156,
-            1.3255,
-            1.3212,
-            1.3815,
-            1.3424,
-            1.3441,
-            1.3566,
-            1.3554,
-            1.325,
-            1.3767,
-            1.3618,
-            1.3917,
-            1.4526,
-            1.477,
-            1.4347,
-            1.3947,
-            1.4249,
-            1.4318,
-            1.43,
-            1.4391,
-            1.4337,
-            1.4242,
-            1.4316,
-            1.4009,
-            1.3807,
-            1.3693,
-            1.3674,
-            1.3847,
-            1.3932,
-            1.3876,
-            1.392,
-            1.4131,
-            1.4247,
-            1.3871,
-            1.4183,
-            1.4201,
-            1.4728,
-            1.4768,
-            1.4361,
-            1.4263,
-            1.4841,
-            1.4337,
-            1.414,
-            1.4009,
-            1.3892,
-            1.3606,
-            1.3654,
-            1.3721,
-            1.3337,
-            1.3575,
-            1.35,
-            1.3494,
-            1.3277,
-            1.3062,
-            1.3135,
-            1.3283,
-            1.3383,
-            1.3313,
-            1.2949,
-            1.2099,
-            1.2003,
-            1.1666,
-            1.0964,
-            1.0935,
-            1.1547,
-            1.1682,
-            1.1373,
-            1.0972,
-            1.1416,
-            1.1321,
-            1.15,
-            1.1858,
-            1.2382,
-            1.2124
-          ],
-          "value": 1.21,
-          "turnover": 1606974629.0,
-          "state": "open",
-          "mkt_start": 1781654400,
-          "mkt_end": 1781740740,
-          "intraday": [
-            1.2142,
-            1.213,
-            1.2124
-          ],
-          "url": "https://www.coingecko.com/en/coins/ripple"
-        },
-        {
           "ticker": "AVAX",
           "name": "Avalanche",
           "exchange": "CRYPTO",
           "country": "CR",
           "mktcap": "$15B",
           "tier": "mid",
-          "delta_pct": 1.65,
+          "delta_pct": 0.29,
           "spark": [
             9.2275,
             9.0895,
@@ -33497,12 +33049,13 @@
             6.89
           ],
           "value": 6.89,
-          "turnover": 1674551332.0,
+          "turnover": 1941627796.0,
           "state": "open",
           "mkt_start": 1781654400,
           "mkt_end": 1781740740,
           "intraday": [
             6.9,
+            6.89,
             6.89
           ],
           "url": "https://www.coingecko.com/en/coins/avalanche-2"
@@ -33514,7 +33067,7 @@
           "country": "CR",
           "mktcap": "$11B",
           "tier": "mid",
-          "delta_pct": 1.12,
+          "delta_pct": 0.27,
           "spark": [
             8.9133,
             8.8324,
@@ -33645,323 +33198,20 @@
             7.9774,
             8.1662,
             8.2952,
-            8.261
+            8.288
           ],
-          "value": 8.26,
-          "turnover": 1761719580.0,
+          "value": 8.29,
+          "turnover": 1767477530.0,
           "state": "open",
           "mkt_start": 1781654400,
           "mkt_end": 1781740740,
           "intraday": [
             8.27,
-            8.263,
-            8.261
+            8.287,
+            8.284,
+            8.288
           ],
           "url": "https://www.coingecko.com/en/coins/chainlink"
-        },
-        {
-          "ticker": "BTC",
-          "name": "Bitcoin",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$1.3T",
-          "tier": "mega",
-          "delta_pct": -0.12,
-          "spark": [
-            69281.9688,
-            70264.7266,
-            70120.7812,
-            68793.9609,
-            66991.9688,
-            66221.8438,
-            68857.8438,
-            69767.625,
-            68788.1875,
-            68843.1562,
-            67494.2188,
-            66425.3203,
-            66957.5234,
-            68005.4219,
-            68003.7656,
-            67659.3906,
-            64616.7383,
-            64080.043,
-            67960.125,
-            67453.7734,
-            65881.7969,
-            66995.8594,
-            65738.1016,
-            68775.8516,
-            68293.6484,
-            72710.5781,
-            70841.125,
-            68136.4922,
-            67272.5938,
-            65969.7812,
-            68402.3828,
-            69926.9219,
-            70204.8828,
-            70493.4609,
-            70968.2656,
-            71214.625,
-            72789.9141,
-            74861.0859,
-            73922.4766,
-            71245.5781,
-            69912.7891,
-            70522.5859,
-            68711.5234,
-            67845.2109,
-            70914.8594,
-            70517.8594,
-            71309.8828,
-            68791.625,
-            66338.375,
-            66319.6953,
-            65954.9219,
-            66691.4453,
-            68233.3125,
-            68078.5547,
-            66888.5703,
-            66931.1016,
-            67290.5156,
-            68981.8984,
-            68859.8281,
-            71940.7031,
-            71123.3594,
-            71767.8281,
-            72979.0469,
-            73054.2734,
-            70753.4062,
-            74484.6406,
-            74181.6094,
-            74805.0781,
-            75152.1328,
-            77126.875,
-            75726.2109,
-            73856.3516,
-            75872.5234,
-            76352.7734,
-            78203.1016,
-            78268.9531,
-            77455.3125,
-            77612.0156,
-            78657.5391,
-            77366.625,
-            76350.6719,
-            75776.1328,
-            76304.3203,
-            78179.0,
-            78657.25,
-            78538.2266,
-            79827.9062,
-            80927.0547,
-            81427.5312,
-            80009.9922,
-            80186.7656,
-            80664.3672,
-            82138.9297,
-            81728.2969,
-            80477.4922,
-            79277.1172,
-            81051.25,
-            79065.6797,
-            78131.4375,
-            77429.3516,
-            76954.1719,
-            76750.9062,
-            77457.7734,
-            77539.1719,
-            75488.2422,
-            76673.3672,
-            76981.125,
-            77279.9297,
-            75825.7344,
-            74344.7031,
-            73536.5547,
-            73372.5234,
-            73754.8359,
-            73579.6875,
-            71319.7734,
-            66703.6562,
-            64014.3672,
-            63801.5742,
-            60922.668,
-            60867.4141,
-            63239.5195,
-            63090.5898,
-            61643.7812,
-            61449.2891,
-            63561.0547,
-            63543.1992,
-            64421.3242,
-            65710.3984,
-            66289.5,
-            65632.7812
-          ],
-          "value": 65628.71,
-          "turnover": 1526301098010931.0,
-          "state": "open",
-          "mkt_start": 1781654400,
-          "mkt_end": 1781740740,
-          "intraday": [
-            65664.2969,
-            65640.8203,
-            65628.7109
-          ],
-          "url": "https://www.coingecko.com/en/coins/bitcoin"
-        },
-        {
-          "ticker": "BNB",
-          "name": "BNB",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$95B",
-          "tier": "large",
-          "delta_pct": -1.87,
-          "spark": [
-            647.3503,
-            640.2537,
-            635.9545,
-            619.5703,
-            607.1871,
-            613.7109,
-            619.0839,
-            633.3452,
-            614.638,
-            626.5707,
-            617.5621,
-            604.5238,
-            607.1599,
-            625.6635,
-            625.8981,
-            614.4067,
-            595.8651,
-            584.1098,
-            629.0726,
-            625.9132,
-            613.9695,
-            617.2464,
-            618.1072,
-            637.2396,
-            633.8309,
-            657.8168,
-            647.6259,
-            627.2734,
-            620.0663,
-            612.0389,
-            634.5004,
-            641.8792,
-            651.4783,
-            652.135,
-            655.882,
-            657.8316,
-            673.7012,
-            679.3548,
-            668.7809,
-            652.0591,
-            639.2662,
-            642.1833,
-            630.1338,
-            626.6013,
-            638.5368,
-            638.2528,
-            647.3281,
-            628.9947,
-            613.2924,
-            610.7012,
-            605.6762,
-            608.5535,
-            617.0492,
-            610.623,
-            583.1368,
-            588.1,
-            593.2837,
-            601.5356,
-            600.3857,
-            620.8987,
-            601.1722,
-            602.8275,
-            605.9915,
-            607.3914,
-            592.2141,
-            615.0513,
-            614.0372,
-            622.6653,
-            635.5834,
-            643.4501,
-            630.3224,
-            616.5245,
-            629.2552,
-            631.7922,
-            637.9318,
-            638.7263,
-            636.403,
-            628.6573,
-            636.1115,
-            626.9642,
-            624.311,
-            617.3298,
-            615.0667,
-            615.3311,
-            617.8276,
-            617.4824,
-            622.6591,
-            630.3912,
-            647.5737,
-            637.022,
-            649.0093,
-            649.7374,
-            663.6635,
-            669.9736,
-            664.5411,
-            671.3828,
-            677.9398,
-            672.1113,
-            656.2161,
-            648.7941,
-            643.0562,
-            639.45,
-            648.8193,
-            657.3499,
-            649.4689,
-            655.7097,
-            656.0983,
-            662.3038,
-            655.5964,
-            648.1592,
-            637.4938,
-            642.2873,
-            717.9338,
-            708.5842,
-            692.1308,
-            650.43,
-            620.0994,
-            603.5347,
-            572.1069,
-            574.5108,
-            603.629,
-            601.6277,
-            592.8506,
-            586.1738,
-            605.0416,
-            603.5066,
-            609.5438,
-            616.0859,
-            617.4219,
-            604.6
-          ],
-          "value": 604.6,
-          "turnover": 650783004621.0,
-          "state": "open",
-          "mkt_start": 1781654400,
-          "mkt_end": 1781740740,
-          "intraday": [
-            605.11,
-            604.61,
-            604.6
-          ],
-          "url": "https://www.coingecko.com/en/coins/binancecoin"
         },
         {
           "ticker": "DOGE",
@@ -33970,7 +33220,7 @@
           "country": "CR",
           "mktcap": "$28B",
           "tier": "mid",
-          "delta_pct": -1.93,
+          "delta_pct": 0.22,
           "spark": [
             0.0983,
             0.0967,
@@ -34101,19 +33351,785 @@
             0.0879,
             0.0888,
             0.0881,
-            0.0871
+            0.0873
           ],
           "value": 0.09,
-          "turnover": 52915549.0,
+          "turnover": 60441033.0,
           "state": "open",
           "mkt_start": 1781654400,
           "mkt_end": 1781740740,
           "intraday": [
             0.0871,
-            0.0871,
-            0.0871
+            0.0873,
+            0.0873,
+            0.0873
           ],
           "url": "https://www.coingecko.com/en/coins/dogecoin"
+        },
+        {
+          "ticker": "BTC",
+          "name": "Bitcoin",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$1.3T",
+          "tier": "mega",
+          "delta_pct": 0.1,
+          "spark": [
+            69281.9688,
+            70264.7266,
+            70120.7812,
+            68793.9609,
+            66991.9688,
+            66221.8438,
+            68857.8438,
+            69767.625,
+            68788.1875,
+            68843.1562,
+            67494.2188,
+            66425.3203,
+            66957.5234,
+            68005.4219,
+            68003.7656,
+            67659.3906,
+            64616.7383,
+            64080.043,
+            67960.125,
+            67453.7734,
+            65881.7969,
+            66995.8594,
+            65738.1016,
+            68775.8516,
+            68293.6484,
+            72710.5781,
+            70841.125,
+            68136.4922,
+            67272.5938,
+            65969.7812,
+            68402.3828,
+            69926.9219,
+            70204.8828,
+            70493.4609,
+            70968.2656,
+            71214.625,
+            72789.9141,
+            74861.0859,
+            73922.4766,
+            71245.5781,
+            69912.7891,
+            70522.5859,
+            68711.5234,
+            67845.2109,
+            70914.8594,
+            70517.8594,
+            71309.8828,
+            68791.625,
+            66338.375,
+            66319.6953,
+            65954.9219,
+            66691.4453,
+            68233.3125,
+            68078.5547,
+            66888.5703,
+            66931.1016,
+            67290.5156,
+            68981.8984,
+            68859.8281,
+            71940.7031,
+            71123.3594,
+            71767.8281,
+            72979.0469,
+            73054.2734,
+            70753.4062,
+            74484.6406,
+            74181.6094,
+            74805.0781,
+            75152.1328,
+            77126.875,
+            75726.2109,
+            73856.3516,
+            75872.5234,
+            76352.7734,
+            78203.1016,
+            78268.9531,
+            77455.3125,
+            77612.0156,
+            78657.5391,
+            77366.625,
+            76350.6719,
+            75776.1328,
+            76304.3203,
+            78179.0,
+            78657.25,
+            78538.2266,
+            79827.9062,
+            80927.0547,
+            81427.5312,
+            80009.9922,
+            80186.7656,
+            80664.3672,
+            82138.9297,
+            81728.2969,
+            80477.4922,
+            79277.1172,
+            81051.25,
+            79065.6797,
+            78131.4375,
+            77429.3516,
+            76954.1719,
+            76750.9062,
+            77457.7734,
+            77539.1719,
+            75488.2422,
+            76673.3672,
+            76981.125,
+            77279.9297,
+            75825.7344,
+            74344.7031,
+            73536.5547,
+            73372.5234,
+            73754.8359,
+            73579.6875,
+            71319.7734,
+            66703.6562,
+            64014.3672,
+            63801.5742,
+            60922.668,
+            60867.4141,
+            63239.5195,
+            63090.5898,
+            61643.7812,
+            61449.2891,
+            63561.0547,
+            63543.1992,
+            64421.3242,
+            65710.3984,
+            66289.5,
+            65672.3516
+          ],
+          "value": 65672.35,
+          "turnover": 1634468678582170.0,
+          "state": "open",
+          "mkt_start": 1781654400,
+          "mkt_end": 1781740740,
+          "intraday": [
+            65664.2891,
+            65644.6719,
+            65643.9922,
+            65672.3516
+          ],
+          "url": "https://www.coingecko.com/en/coins/bitcoin"
+        },
+        {
+          "ticker": "ETH",
+          "name": "Ethereum",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$420B",
+          "tier": "mega",
+          "delta_pct": 0.05,
+          "spark": [
+            2090.5493,
+            2088.7629,
+            2103.5676,
+            2019.4974,
+            1940.6213,
+            1946.9407,
+            2048.5273,
+            2086.0098,
+            1966.043,
+            1997.9177,
+            1992.1943,
+            1953.9741,
+            1948.201,
+            1969.0223,
+            1973.7372,
+            1957.8059,
+            1855.5028,
+            1852.9695,
+            2054.6279,
+            2026.7926,
+            1930.7618,
+            1965.0505,
+            1939.0667,
+            2027.2689,
+            1982.7689,
+            2126.5054,
+            2071.6055,
+            1978.7512,
+            1969.4554,
+            1936.6047,
+            1992.9382,
+            2037.1205,
+            2051.5732,
+            2073.1362,
+            2092.5635,
+            2097.0867,
+            2177.4763,
+            2351.176,
+            2318.0535,
+            2203.6716,
+            2137.4238,
+            2146.4971,
+            2076.6899,
+            2053.0483,
+            2152.146,
+            2155.7043,
+            2168.0215,
+            2059.5784,
+            1991.272,
+            1992.6946,
+            1982.5597,
+            2023.5149,
+            2104.7083,
+            2138.7371,
+            2056.8525,
+            2053.3853,
+            2065.3516,
+            2108.9956,
+            2107.7615,
+            2241.8066,
+            2190.3354,
+            2189.144,
+            2245.1487,
+            2285.3901,
+            2192.2012,
+            2370.7148,
+            2323.3086,
+            2359.437,
+            2348.645,
+            2421.0718,
+            2351.1006,
+            2264.917,
+            2315.2124,
+            2327.9705,
+            2376.0881,
+            2331.5139,
+            2315.6902,
+            2318.8291,
+            2369.729,
+            2303.064,
+            2289.4197,
+            2253.4158,
+            2256.2512,
+            2295.0938,
+            2316.2319,
+            2321.6357,
+            2346.397,
+            2361.1826,
+            2350.802,
+            2291.1077,
+            2306.9722,
+            2326.7273,
+            2369.0439,
+            2339.3608,
+            2274.6436,
+            2257.5764,
+            2280.9348,
+            2223.3289,
+            2179.752,
+            2127.6453,
+            2128.5161,
+            2109.9639,
+            2126.9834,
+            2131.4106,
+            2064.637,
+            2115.9514,
+            2097.9939,
+            2111.3704,
+            2070.8582,
+            2022.1982,
+            2007.5527,
+            2011.9785,
+            2019.4583,
+            2004.3416,
+            2003.2212,
+            1857.7163,
+            1811.7323,
+            1769.5806,
+            1580.8608,
+            1568.7677,
+            1686.3962,
+            1690.1486,
+            1637.7067,
+            1620.1377,
+            1672.2806,
+            1665.1278,
+            1680.2146,
+            1724.6133,
+            1794.9612,
+            1791.59
+          ],
+          "value": 1791.59,
+          "turnover": 25846358630287.0,
+          "state": "open",
+          "mkt_start": 1781654400,
+          "mkt_end": 1781740740,
+          "intraday": [
+            1792.49,
+            1792.3,
+            1790.9399,
+            1791.59
+          ],
+          "url": "https://www.coingecko.com/en/coins/ethereum"
+        },
+        {
+          "ticker": "BNB",
+          "name": "BNB",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$95B",
+          "tier": "large",
+          "delta_pct": 0.03,
+          "spark": [
+            647.3503,
+            640.2537,
+            635.9545,
+            619.5703,
+            607.1871,
+            613.7109,
+            619.0839,
+            633.3452,
+            614.638,
+            626.5707,
+            617.5621,
+            604.5238,
+            607.1599,
+            625.6635,
+            625.8981,
+            614.4067,
+            595.8651,
+            584.1098,
+            629.0726,
+            625.9132,
+            613.9695,
+            617.2464,
+            618.1072,
+            637.2396,
+            633.8309,
+            657.8168,
+            647.6259,
+            627.2734,
+            620.0663,
+            612.0389,
+            634.5004,
+            641.8792,
+            651.4783,
+            652.135,
+            655.882,
+            657.8316,
+            673.7012,
+            679.3548,
+            668.7809,
+            652.0591,
+            639.2662,
+            642.1833,
+            630.1338,
+            626.6013,
+            638.5368,
+            638.2528,
+            647.3281,
+            628.9947,
+            613.2924,
+            610.7012,
+            605.6762,
+            608.5535,
+            617.0492,
+            610.623,
+            583.1368,
+            588.1,
+            593.2837,
+            601.5356,
+            600.3857,
+            620.8987,
+            601.1722,
+            602.8275,
+            605.9915,
+            607.3914,
+            592.2141,
+            615.0513,
+            614.0372,
+            622.6653,
+            635.5834,
+            643.4501,
+            630.3224,
+            616.5245,
+            629.2552,
+            631.7922,
+            637.9318,
+            638.7263,
+            636.403,
+            628.6573,
+            636.1115,
+            626.9642,
+            624.311,
+            617.3298,
+            615.0667,
+            615.3311,
+            617.8276,
+            617.4824,
+            622.6591,
+            630.3912,
+            647.5737,
+            637.022,
+            649.0093,
+            649.7374,
+            663.6635,
+            669.9736,
+            664.5411,
+            671.3828,
+            677.9398,
+            672.1113,
+            656.2161,
+            648.7941,
+            643.0562,
+            639.45,
+            648.8193,
+            657.3499,
+            649.4689,
+            655.7097,
+            656.0983,
+            662.3038,
+            655.5964,
+            648.1592,
+            637.4938,
+            642.2873,
+            717.9338,
+            708.5842,
+            692.1308,
+            650.43,
+            620.0994,
+            603.5347,
+            572.1069,
+            574.5108,
+            603.629,
+            601.6277,
+            592.8506,
+            586.1738,
+            605.0416,
+            603.5066,
+            609.5438,
+            616.0859,
+            617.4219,
+            604.55
+          ],
+          "value": 604.55,
+          "turnover": 805933053056.0,
+          "state": "open",
+          "mkt_start": 1781654400,
+          "mkt_end": 1781740740,
+          "intraday": [
+            605.11,
+            604.45,
+            604.55,
+            604.55
+          ],
+          "url": "https://www.coingecko.com/en/coins/binancecoin"
+        },
+        {
+          "ticker": "XRP",
+          "name": "XRP",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$130B",
+          "tier": "large",
+          "delta_pct": -0.1,
+          "spark": [
+            1.4242,
+            1.4322,
+            1.4361,
+            1.3995,
+            1.368,
+            1.3621,
+            1.4075,
+            1.51,
+            1.4749,
+            1.4867,
+            1.4744,
+            1.4216,
+            1.4064,
+            1.4294,
+            1.4317,
+            1.3931,
+            1.3516,
+            1.3489,
+            1.4337,
+            1.402,
+            1.3559,
+            1.3772,
+            1.3517,
+            1.391,
+            1.3606,
+            1.4302,
+            1.4031,
+            1.3636,
+            1.3564,
+            1.3414,
+            1.3618,
+            1.3864,
+            1.3849,
+            1.3846,
+            1.3989,
+            1.4073,
+            1.4476,
+            1.5436,
+            1.5185,
+            1.4639,
+            1.4473,
+            1.4455,
+            1.4066,
+            1.3849,
+            1.4319,
+            1.4154,
+            1.4142,
+            1.3601,
+            1.325,
+            1.3328,
+            1.3273,
+            1.3226,
+            1.3403,
+            1.3478,
+            1.3187,
+            1.3179,
+            1.3156,
+            1.3255,
+            1.3212,
+            1.3815,
+            1.3424,
+            1.3441,
+            1.3566,
+            1.3554,
+            1.325,
+            1.3767,
+            1.3618,
+            1.3917,
+            1.4526,
+            1.477,
+            1.4347,
+            1.3947,
+            1.4249,
+            1.4318,
+            1.43,
+            1.4391,
+            1.4337,
+            1.4242,
+            1.4316,
+            1.4009,
+            1.3807,
+            1.3693,
+            1.3674,
+            1.3847,
+            1.3932,
+            1.3876,
+            1.392,
+            1.4131,
+            1.4247,
+            1.3871,
+            1.4183,
+            1.4201,
+            1.4728,
+            1.4768,
+            1.4361,
+            1.4263,
+            1.4841,
+            1.4337,
+            1.414,
+            1.4009,
+            1.3892,
+            1.3606,
+            1.3654,
+            1.3721,
+            1.3337,
+            1.3575,
+            1.35,
+            1.3494,
+            1.3277,
+            1.3062,
+            1.3135,
+            1.3283,
+            1.3383,
+            1.3313,
+            1.2949,
+            1.2099,
+            1.2003,
+            1.1666,
+            1.0964,
+            1.0935,
+            1.1547,
+            1.1682,
+            1.1373,
+            1.0972,
+            1.1416,
+            1.1321,
+            1.15,
+            1.1858,
+            1.2382,
+            1.2148
+          ],
+          "value": 1.21,
+          "turnover": 2107441571.0,
+          "state": "open",
+          "mkt_start": 1781654400,
+          "mkt_end": 1781740740,
+          "intraday": [
+            1.2142,
+            1.214,
+            1.2135,
+            1.2148
+          ],
+          "url": "https://www.coingecko.com/en/coins/ripple"
+        },
+        {
+          "ticker": "SOL",
+          "name": "Solana",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$95B",
+          "tier": "large",
+          "delta_pct": -0.15,
+          "spark": [
+            87.6398,
+            87.0441,
+            86.7018,
+            82.9155,
+            79.2542,
+            78.3484,
+            84.3225,
+            88.1608,
+            86.0051,
+            86.4288,
+            85.1976,
+            81.5669,
+            82.3932,
+            84.6351,
+            85.2111,
+            82.791,
+            77.7533,
+            79.0365,
+            87.9156,
+            85.9091,
+            81.9515,
+            84.3662,
+            83.5777,
+            86.6345,
+            87.0198,
+            90.8343,
+            88.6911,
+            84.6818,
+            83.18,
+            81.6246,
+            84.9362,
+            85.8382,
+            86.5649,
+            86.8678,
+            88.1533,
+            88.0707,
+            92.2518,
+            96.2237,
+            94.706,
+            90.0657,
+            88.9178,
+            89.8536,
+            87.4654,
+            86.1283,
+            91.4241,
+            90.8224,
+            91.7082,
+            86.4439,
+            83.0188,
+            82.0156,
+            81.4224,
+            82.4441,
+            83.1065,
+            81.1953,
+            78.9513,
+            80.3685,
+            80.8084,
+            81.8545,
+            80.1516,
+            85.648,
+            82.5817,
+            83.2977,
+            84.8285,
+            84.9488,
+            81.5352,
+            86.6566,
+            83.7746,
+            84.9193,
+            88.9942,
+            88.8742,
+            86.2027,
+            83.5809,
+            85.333,
+            86.0295,
+            86.9158,
+            86.1411,
+            86.2319,
+            86.1512,
+            86.9704,
+            84.8178,
+            84.039,
+            83.0269,
+            83.0238,
+            83.7235,
+            84.2766,
+            83.8996,
+            84.0899,
+            86.3192,
+            89.145,
+            88.4048,
+            91.9498,
+            93.1455,
+            96.427,
+            97.3502,
+            94.2843,
+            91.0855,
+            92.1487,
+            89.2004,
+            86.5365,
+            85.173,
+            85.2969,
+            84.2086,
+            86.0419,
+            87.1562,
+            84.3071,
+            85.6585,
+            85.2497,
+            85.0105,
+            83.5865,
+            82.3681,
+            81.9854,
+            81.9325,
+            82.5473,
+            82.2983,
+            81.087,
+            74.1429,
+            71.6124,
+            68.7189,
+            63.4869,
+            62.1898,
+            66.3106,
+            66.795,
+            64.9621,
+            63.161,
+            66.822,
+            66.7493,
+            68.8728,
+            71.1662,
+            73.9793,
+            73.31
+          ],
+          "value": 73.31,
+          "turnover": 157210186656.0,
+          "state": "open",
+          "mkt_start": 1781654400,
+          "mkt_end": 1781740740,
+          "intraday": [
+            73.44,
+            73.3,
+            73.25,
+            73.31
+          ],
+          "url": "https://www.coingecko.com/en/coins/solana"
         },
         {
           "ticker": "ADA",
@@ -34122,7 +34138,7 @@
           "country": "CR",
           "mktcap": "$22B",
           "tier": "mid",
-          "delta_pct": -5.74,
+          "delta_pct": -6.01,
           "spark": [
             0.2724,
             0.2703,
@@ -34253,16 +34269,18 @@
             0.1718,
             0.1828,
             0.1786,
-            0.1723
+            0.1718
           ],
           "value": 0.17,
-          "turnover": 81878234.0,
+          "turnover": 81640630.0,
           "state": "open",
           "mkt_start": 1781654400,
           "mkt_end": 1781740740,
           "intraday": [
             0.1723,
-            0.1723
+            0.1719,
+            0.1716,
+            0.1718
           ],
           "url": "https://www.coingecko.com/en/coins/cardano"
         }
@@ -34279,6 +34297,24 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781654239
+    },
+    {
+      "title": "Nasdaq and S&amp;P 500 slip while Dow hits record close - Reuters",
+      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxONEpZcjB1UUpuN05zN283anhrUE9FaHJWOGRPTnF6VWdLcEkwT3U5OWhjM05VckRjMFpnS2dDR2dtdXNDc0pYdkhxdXpnbExoM2loNmRsN29qLXVEYUdpZEI2cEpISFJXZkJXeGNzV292S0tCUVhZd2lRX1hlNFdaOXp2dEJ2LUh1dm9reFE3VlFnZE5salNHUXlmS3A4WlkwNVZ5aHhZZ29ENnExMEVkQjVB?oc=5",
+      "source": "Reuters",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781652196
+    },
+    {
+      "title": "Stock market today: Dow, S&amp;P 500, Nasdaq futures edge up as Wall Street braces for Fed rate decision - Yahoo Finance UK",
+      "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNUzVYb0RXVU5FcnJubG9KMVcwQnMxM1RzRVBtdVBFRlI4bFBjbGxqcFFJLXVsLTJ0SWJJNkVmZVUyMFFpaVlXdUdoT0k2RmlvWlRaYXFpczBLNXFBVkZlX1hGUEliQkV5dWNCOWh1d1dDUVNpV3p1NTR6VV8tcGY4azVoT0EtU0s5YWJCTkxZVjNZdDlhMTJKWWg4Y2pSNENvcmFQMWlBcG1GTzZtd1NpbmtsMzBpQUtDYWFhQnRudHg0dlQ2dnhvcmNFeklwY1FVamlMWTNQZHYwQmxmenc?oc=5",
+      "source": "Yahoo Finance UK",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for Fed rate decision Yahoo Finance UK",
+      "ts": 1781650601
     },
     {
       "title": "Fed rate cut unlikely; would be 'like throwing oil on the fire' of inflation, expert says - WBFF",
@@ -34311,27 +34347,6 @@
       ]
     },
     {
-      "title": "Hyperliquid, Uniswap, and Worldcoin tokens rally despite broader crypto market cooling. - Pluang",
-      "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPOXlFMVVLWHM3ejVLTHN5WlN3N2tZQTlwNEZRVDRtQlM1Z0pRNklWQlY2VWJRbGMwbklaVnVOWmZUTjFISGdGSnVrY3hwLTdUTkRGTnEzVVp5OTRpWGFYcURQNU92SXRZelFYTGpkT1ZHbElnQzlfNm5HQm9mUlN2NHVIc0M5M3c?oc=5",
-      "source": "Pluang",
-      "geo": "ID",
-      "category": "CRYPTO",
-      "summary": "",
-      "ts": 1781643295,
-      "sectors": [
-        "crypto"
-      ]
-    },
-    {
-      "title": "Nasdaq and S&amp;P 500 slip while Dow hits record close - Reuters",
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxONEpZcjB1UUpuN05zN283anhrUE9FaHJWOGRPTnF6VWdLcEkwT3U5OWhjM05VckRjMFpnS2dDR2dtdXNDc0pYdkhxdXpnbExoM2loNmRsN29qLXVEYUdpZEI2cEpISFJXZkJXeGNzV292S0tCUVhZd2lRX1hlNFdaOXp2dEJ2LUh1dm9reFE3VlFnZE5salNHUXlmS3A4WlkwNVZ5aHhZZ29ENnExMEVkQjVB?oc=5",
-      "source": "Reuters",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781643068
-    },
-    {
       "title": "Nvidia’s Jensen Huang says society needs ‘new social norms’ in the age of AI - South China Morning Post",
       "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOZ2FaTTdDVlBZaU9aTXprbTE2ek9hTnQybnJMT2x4VURKcXlyYlRNbUZtSXdRSmdrejNhWkUxSE41ZDVRTG9vbHRoUTlENHViUE1VbE5Fb0Y3RHcySFBXV0RtcG14cGhPS19UeWtJdFdjUmxEbTc0cWhaMG10R1lub3BYVUdfWnZxLThxbk1JTUlhS0pVTzktM0tkbUtVM09EQmdlZTM2V01heWFGeTBXVkVzSG1PT24xOFFRdVVJZEZNWVVaS1VzNm1ZOVfSAcwBQVVfeXFMTmdhWk03Q1ZQWWlPWk16a20xNnpPYU50Mm5yTE9seFVESnF5cmJUTW1GbUl3UUpna3ozYVpFMUhONWQ1UUxvb2x0aFE5RDR1YlBNVWxORW9GN0R3MkhQV1dEbXBteHBoT0tfVHlrSXRXY1JsRG03NHFoWjBtdEdZbm9wWFVHX1p2cS04cW5NSU1JYUtKVU85LTNLZG1LVTNPREJnZWUzNldNYXlhRnkwV1ZFc0htT09uMThRUXVVSWRGTVlVWktVczZtWTlX?oc=5",
       "source": "South China Morning Post",
@@ -34339,6 +34354,15 @@
       "category": "TECH",
       "summary": "",
       "ts": 1781642850
+    },
+    {
+      "title": "Stock Market Today: Dow Ends Shy Of 52,000; SpaceX Slashes Its Gain; Lumentum Tumbles - Investor's Business Daily",
+      "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOd3JDbnpPT1A2a211OTByMHJqdG8ybFREYXVnRzVDRXk1TWgzdk1ndGFycWlkZ1IxUzFhUE93ZkZKLTJNZ2pBZVlEOVZIMEVrWndZdV83c2NwU2o5MndqMWV4RzF1RHRHc1RsUTlkcjBmZzh0cWM4RE82SjdXRkdwRlpocXRtMU4zaDB4Q0tfTEFmb3NzZTVuRWw2YlJNdVFBSzNHdVFGMlBXelVNREZWSQ?oc=5",
+      "source": "Investor's Business Daily",
+      "geo": "US",
+      "category": "TECH",
+      "summary": "",
+      "ts": 1781642760
     },
     {
       "title": "Nvidia Latest Big Borrower: AI Data Centers, Suppliers Racking Up Debt - Investor's Business Daily",
@@ -34351,6 +34375,15 @@
       "sectors": [
         "technology"
       ]
+    },
+    {
+      "title": "Goldman Sachs Raises Q4 Brent, WTI Crude Price Forecast Amid Longer Hormuz Disruption - EnergyNow.com",
+      "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOQUlGQlRESnUzSGQ5b0ZOLWRBMUZTV0F3cXIwYXdFTFFkV21UeW1WT3A2VkprdnFrWlgyZ3F5ZU9kVEtHUnlVbFptS2VMbkNEVk55UXBnOVotQ0ZReENyOTIyUzlfMjVjQktaS3RUUmVfLUlhcjF0WFl6cW91ZFNvYURpZTNia0JUbU81ZUtvd2VMWXRRNnd3N0dBLVQ5MlExRHJKUGtKNk5zRnU5bFdKVEp0V1V0Zw?oc=5",
+      "source": "EnergyNow.com",
+      "geo": "US",
+      "category": "TECH",
+      "summary": "",
+      "ts": 1781640589
     },
     {
       "title": "Kevin Warsh set to lead his first Federal Reserve interest rate meeting. Here's what to expect. - CBS News",
@@ -34389,6 +34422,15 @@
       "ts": 1781629426
     },
     {
+      "title": "WGC: Central Banks Plan to Boost Gold Allocations as US Dollar Outlook Declines - Investing News Network",
+      "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5leW91VkJfQTN0LVhJbUM5M0tEWTB1VW0xVmVkdG9iMjhVRm5MdERUWXZuUGJSYVNCTklRMGVHQkx4Mk55aU1uaUp1ODdxYUxpcnZHOVZZNE50aUpRSUZKLUpEZWxKcnJvQmtDWVhaTjBGOG9i?oc=5",
+      "source": "Investing News Network",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781628840
+    },
+    {
       "title": "Bond markets seeing the forest for the trees - RBC Wealth Management",
       "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQNm9uRF85Q1diR2NhcnlFaTZGSC1FTThfa1VWZE1yQW1yNkVSalZfUUVpbUlnYXFIV1VoNTI1aHpWVUxQakczUjZtUEJjRlYzU0l6d0d5MTNRWHRRakJ6R3JEQmtqN3lnTlV4U21kU2tpYzJCWDFINllPb3ptZV9oaGtfdENEMWdpMmdDS1RCWndoZVJWOHVLT1hpYw?oc=5",
       "source": "RBC Wealth Management",
@@ -34414,18 +34456,6 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781624707
-    },
-    {
-      "title": "Is Vanguard’s S&amp;P 500 Value ETF A Buy, Sell, Or Hold? | VOOV - 24/7 Wall St.",
-      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPTHBDT2tNczZWeW1xWWdOSWdkeE51ZUhtY3VFRTc2YUtnTnZNeXBoMFZMQTFHWmhhX1d6WjJicEZqdWVVUm1mSDVDbnhYT09KRngzZ3Z3RDd2Mjk1M2hTdWYwLU1BZVR6OXU5dHNWRS1YNHpYR1NEc0h6V0NPa1BkSlg1T0NHdlNxc0psOGRvZWtmNkNwU093YUpjRUxkdw?oc=5",
-      "source": "24/7 Wall St.",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "Is Vanguard’s S&P 500 Value ETF A Buy, Sell, Or Hold? | VOOV 24/7 Wall St.",
-      "ts": 1781624545,
-      "sectors": [
-        "consumer"
-      ]
     },
     {
       "title": "Age-Based Roblox Kids and Select Accounts Now Globally Available - Roblox",
@@ -34465,6 +34495,15 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781617049
+    },
+    {
+      "title": "Legality of Cryptocurrency by Country or Territory: 2026 Guide - Blockchain Council",
+      "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQNU45YXMySkgxNnhnNlc5U2d0b0NiZ2NzRUdVOHlUNGl6dFNuYmthYnBJN1ZydjdjZ0tQMmg3eDRhR1RyZzBQeW1xeGc3dmIxYmY1MmNfOGJZSnBpUVo1dEp1NVJwZVFkbGlrTFkydng4YWJEOGFfenlZLUpTODlaajhKM0xnb2JMdFpBbjJub212QzR5aml1a1lDeThITHJmUEdv?oc=5",
+      "source": "Blockchain Council",
+      "geo": "US",
+      "category": "CRYPTO",
+      "summary": "",
+      "ts": 1781614402
     },
     {
       "title": "Stock Market News for Jun 16, 2026 - Yahoo Finance",
@@ -34530,15 +34569,6 @@
       "ts": 1781600452
     },
     {
-      "title": "Kevin Warsh faces rate hike pressure at first FOMC meeting - qz.com",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPRFprLUVobTN4emtDZ1pwQ05NUjB2R0tfcHpXUXpBNFNVQVZBcWpnLW9ySGtURDZuTC1MSDBpa0dlaVZDa2V5bU9ySzN0NmxjeDRJY1lZUkhEZHRFSUVCM2s2aUdpc1QtdC1fN1RRZkM4dnhMUWk1RHkxeXJaYndyVGFDOA?oc=5",
-      "source": "qz.com",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781600159
-    },
-    {
       "title": "Streaming And Digital Media Stocks One CTV Bet Three Ways - simplywall.st",
       "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxNQ19qUUJnRFExVG4wUXJLVTFwbl9ZeUpHekd2YW8wa2k4TDBqMGVtenRfb094b2NvaDJWTmY5c1FOUTVaRF9ycFNuaVRmX2NYYlFGQU55UXRuS3hWVURXUXRkU1ZaY2tZWmg4WDZMeGxRYjFScmhOUnBKbERQN2ZoM2lhQTAxTnMxYVNfZFh4T2Jua2VXbWtPZ0RVNUNuNTI2bENEUzd5dlJOWGlfWnh3VHBFMW44ZkFIX09rN1Rn?oc=5",
       "source": "simplywall.st",
@@ -34581,13 +34611,16 @@
       ]
     },
     {
-      "title": "Global big tech companies such as Google, Amazon, Microsoft, and Meta have declared \"脫 Nvidia\" by sc.. - 매일경제",
-      "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFB4TjFZRm1JbVpCQkRTVF9kS2lsNU9sejRXdnl6b1dXX1NTc0JKWDRzZ0Q0ZjlCU0duc0lydm5ETHBXQmdjc2cydFhWZw?oc=5",
-      "source": "매일경제",
-      "geo": "US",
+      "title": "OpenAI (Pre-IPO) Stock Price: OPENAI Stock Chart, Market Cap &amp; News Today - CoinGecko",
+      "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBtSkgwR1ViWlV0a1dfUUxwZ2hHTFFhUjhwdU12eEVOVFlwblI0ZDVkTV9JZDE4bGROdkd2SWJmdDZxXzViOGNYWmdjT2l5WEowR1M1aFE0amNaTEE5MFlz?oc=5",
+      "source": "CoinGecko",
+      "geo": "ID",
       "category": "TECH",
       "summary": "",
-      "ts": 1781583743
+      "ts": 1781585912,
+      "sectors": [
+        "crypto"
+      ]
     },
     {
       "title": "5 Best Entertainment Stocks for 2026 and How to Invest - The Motley Fool",
@@ -34609,15 +34642,6 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781573131
-    },
-    {
-      "title": "Oil prices fall 5% to 3-month low on hopes Strait of Hormuz will open - Reuters",
-      "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOWENYY18wZzkzMHJkZWJ5NFh3OVNGUGZtTHlIalhVRTJ3QmlVYXJ6dHJrd3EyUGN2RkFILXlzS2JzRlZMV1FUeE14Nm13TnJXMkhkUW1UZFhyUHd2TXkzelJjdndCSjJxa3BJUDBnT3pHMTNkVGpwekFENUtTdExyVlUwV1V0eUlMaHhzUWRTSnpnY1RLbGpzOEFNdHp6ajFwUUtTYjFuZTBEZUQ3N0RIX0w2TTV6OXpHazRrRg?oc=5",
-      "source": "Reuters",
-      "geo": "US",
-      "category": "TECH",
-      "summary": "",
-      "ts": 1781572440
     },
     {
       "title": "AI Wars Why Microsoft, Google and Amazon Are All Fighting Over Power - Crude Oil Prices Today | OilPrice.com",
@@ -34674,6 +34698,15 @@
       "ts": 1781557500
     },
     {
+      "title": "US Bonds Rally as Traders Trim Fed Rate-Hike Bets on Iran Deal - Yahoo Finance",
+      "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPb2RiOV9PMWhTVXpmemx1N21KLWhnWVdQMzRnZ2pxamFndHc0Z3h0b3FfdExSeTc5MkluSjFzZS1CY0dRXzFFX2lUV2xINWV2OXM0TUh2ZmdLSjFZWlNNelFsWG5DOXRqd2ZhM1ZFeXJENVotak1pWHBUc2hHT3NUUlJBY3RyZmN3TE5aTnBZSHBwcVUyS0pndXFiM1ZHeXM?oc=5",
+      "source": "Yahoo Finance",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781557290
+    },
+    {
       "title": "How SpaceX's IPO made millions for JPMorgan, Goldman Sachs, &amp; other big banks - Yahoo Finance",
       "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQcE9TNV94czAwTVZ1NVBicjJ2NDNNVHJfcjZ3ZGd4LTBBYTctZzZvNmxLUFNnaWtHU25hemhRdXMwOERBRDU1RkVqZlBKNlozN1Q1ZHNGNWUwaWlSSmpySzB3SlR2S2dyT29lS0s2dTM2dkRqZDQ1RHp0eVVEd3prY0J3cV9ub004X0Eya3pKczJUS3RnVU40S2dVdG5LNjlYempPNEltMWFfNml3dHBXRVA1S3MyVDNsSnVSMg?oc=5",
       "source": "Yahoo Finance",
@@ -34690,15 +34723,6 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781552460
-    },
-    {
-      "title": "SpaceX Trading Volume Exceeds Apple, Microsoft, Tesla, Meta And Google Stocks Combined - Benzinga",
-      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQbkpYY01wNGp6TWY3LWoyakJRVVdFQWtPUW12QkxmUF9OVl9rYUR5Q1VYcFlfcklwN2ZGX2RQWjBnNUhhUGMzNWJmS1plWjBSOEttTTltUlpETFdCdHhkMk8xOEpYQlhra2hhOXlCUHMwVlVCOXNxUS1UQ09rWmFZVEZSVDRwZ1pWVUNldkx5ZkFKLU0zNjlYYmpWWnduSkJDMmF4a013UkQ1cTlKUVZmU2lUUS1SZkVMcTJSWUgtSzQtbzR4WGhNZHFNNGNDd1ZJSktn?oc=5",
-      "source": "Benzinga",
-      "geo": "US",
-      "category": "TECH",
-      "summary": "",
-      "ts": 1781551010
     },
     {
       "title": "Gold Rallies on US-Iran Peace Progress and Falling Oil Prices, Easing Rate-Hike Fears - CryptoRank",
@@ -34740,6 +34764,33 @@
       ]
     },
     {
+      "title": "The US-Israel Wars on Iran: Follow the Money - CounterPunch.org",
+      "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNTlQ2UmhiRnJpRDRrRHBXWmVVMkNzbU9XYkRNbnlLNHFaVGlNU3lXQ25qa25VaDNSbDN5eVktdkI3X1BRYUVuQnZSZ3BabF9GOThqZUJXX19GM0hCUGJOUVFQTmtETUk4Z2tRMFBhdkUzSE0wZE1VdWZlSmloN0tGTTZQeGhvZVBfb2NTdg?oc=5",
+      "source": "CounterPunch.org",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781533525
+    },
+    {
+      "title": "2026 Midyear Investment Outlook - invesco.com",
+      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFA1WWR2QjlGNjM0TktVWi1GMU55TG9nRzExU2NPT25FVlJqYXY0N3pERFU4cUFUS3VWMU5mX2V2STlyNEZFZWs4QWhJTjJpdU5yQ1RzOVVyTmUwVUJzM3lEdzlBVzNhb1hyWHZnNjhyWHBYeTliRXJieg?oc=5",
+      "source": "invesco.com",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781532242
+    },
+    {
+      "title": "Bitcoin ETF Surge, XRP Inflows, SpaceX IPO &amp; Coinbase AI News - StealthEX",
+      "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNYnZ2TlFwZjE0RU5Nc1RCYXJ2dlVmSWpwUm9oWFJRMmlTUFk4OXZVdzhxSDlEcmNXWHdjT2hJMzBrZVUtVndZV3BJUkhKREdmejBqbUdpZVRLUklCam9fWnRPV3NNVjRNU3lwX2VlYk1PWm0yTjg0VUFkZy1ILWNMcW1PbnllVnNnVnFQQg?oc=5",
+      "source": "StealthEX",
+      "geo": "US",
+      "category": "CRYPTO",
+      "summary": "",
+      "ts": 1781532187
+    },
+    {
       "title": "The Weekly Notable Startup Funding Report: 6/15/26 - AlleyWatch",
       "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPOU1jLWswX0p0c01VNGJva0xPZ2hBV0FITWN4UjN4Z1JycVdObzZwc2VQaHUzNW9MQWxMcEdsQ1duVEV1QnA1eGNDTi1zNUdOdmRLTnpzN0IwRmFJVU42ZWlRVUFKeVp4eE5PLV9fdXZUZHlhNjFPeXlsdW44cjdXTHZnVHNLOW5PV1M0YWpB?oc=5",
       "source": "AlleyWatch",
@@ -34756,6 +34807,15 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781529372
+    },
+    {
+      "title": "Invesco Releases 2026 Midyear Investment Outlook Focused on Resilient Economy - PR Newswire",
+      "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxQM3dCLU5IRWx2S2ZNOHduSTlaZ2JzQUIzZUNUd25GdGpycVdocUtQT2E5dHplWjlIc3hCdDByck5uMmRQSm00VU9xTWduR0ZCU1c2ZUZxWHU1Yk54U2EwLUNTQWhBSFV2dlExZFZIclNtRlg1S0ktRmI0aW9iS1VwRll3QktWTENFdlBqR2ZrNEgyZEhnY3ZYWUhLVndUeDQyT1VLQnl2X3V1UUdTRVJJTVhnYkdKTTZ4VEJaOUdfWnFFUzV1NUN4RlN3NU41QQ?oc=5",
+      "source": "PR Newswire",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781528400
     },
     {
       "title": "Bitcoin Price Will Be 'Much Higher By 2030,' Says Coinbase CEO Brian Armstrong — How High Can It Go? - Yahoo Finance",
@@ -34854,15 +34914,6 @@
       ]
     },
     {
-      "title": "Japan Moves to Classify Crypto as Stocks — XRP Set to be Among the Big Winners - CryptoRank",
-      "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQVnlGMm96ZU1VUi1pTGJ1VUh0R0lybWhtbHhDYklNYnhVcFVDOWwzVFQ1WGZBV2dnMndLWDlZbE50X1ZHT0F4c1NiWm1CUE90Mm10LV9qUW54OVQ4aVBySTVITTF2N1pwcDROX203aTJ0V2R6OTBmckd3SHdzN2plSy1OMFJpVGtIQWNnMXhRc0xZWXZoZHRUNnpScmVlQjRoelBaRXJEYXBiNlUtMVF6MFJDMzc?oc=5",
-      "source": "CryptoRank",
-      "geo": "US",
-      "category": "CRYPTO",
-      "summary": "",
-      "ts": 1781519804
-    },
-    {
       "title": "A Lawmaker’s Remedy to Calm the Stock Market - Magz TEMPO",
       "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQVFp3OTdFVjRXR3dSQUwzRmtRY3R2Sjd5MnM2aVVJT2NmZWJ6bkU4WVlvYUZkSFdwY0w2eVRjS0ZJYmNwaUdQUHJpb0FkX1BuaWVDSW01czVtdHZGMVgzOXVJcm5FT3ZaMU93VUhXQWxIbVpwT2MtOXJRVnJCMVI3ZUI5NDQ5NXpWUGE3UVhlR2JyM2U0?oc=5",
       "source": "Magz TEMPO",
@@ -34897,6 +34948,18 @@
       "category": "MARKETS_FINANCE",
       "summary": "",
       "ts": 1781518881
+    },
+    {
+      "title": "Should You Invest in the Vanguard Consumer Staples Index Fund ETF Shares (VDC)? - Yahoo Finance Singapore",
+      "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQYlQ2cENobkE4Y0tRQVBUeU5rUHhxRWFFM1pqeEJac2pkdGQ5a3ZLRm4xcmloekU2SEJJVW8td3NQcGJTTlZ0XzZQWUpBaFhzM2V3amc2dWJVUGE5QUEwZFZUOVpLbG9QWmdtMmJxNWpBdGkxVnFEeWN1R205YmdRTHhUcnBvNTdVTEhSWmQteUc?oc=5",
+      "source": "Yahoo Finance Singapore",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781518802,
+      "sectors": [
+        "consumer"
+      ]
     },
     {
       "title": "Japan considers 20% tax and new rules for BTC, ETH, XRP - Bitget",
@@ -34986,25 +35049,13 @@
       "ts": 1781509930
     },
     {
-      "title": "Elon Musk Becomes World’s First Trillionaire on SpaceX’s First Day of Trading - The New York Times",
-      "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBZcWVuUGwzMTNybzJfS1pSQWxFRDByb1JhYzJqQ3lKc0JQd00yNXduRGR6NE4zMm9uT2xPTFFsb3FPd3Fyd2ZLd3RJTS0tNkpjRGNvSE1rLVVTeXU4M2JzU2ZNYmlLTHl5RDAyTURvUzFIbldCRVE5bg?oc=5",
-      "source": "The New York Times",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781506800
-    },
-    {
       "title": "Weekly market commentary - blackrock.com",
-      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNUVRpWnpzel9vdWlfUTRyMGZwLVhXN2dmVDBNclBHRzhhNWx4MnVDSFBZNl8wZmxuZzlpZjZPTC0zMTZMRU9Udl9zWTB1X0FFR2ZBMGFQaWgydTVSY21qTzBkUWoyaTlGUHFJeVZybVZnb3d3YWoyRkZHeDVyLWszMmFPLUNZUmh0WUh3UG9ZejBFanRudmt5VV9YNmVSa1hmeWp2TE1CUWgtdw?oc=5",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQLWJDTjBBalYwVHVpc0VxV1BwRE1xeUt1RWlLQ1VJdnJQRXNnb3p6MnFNbjRBV0s0TnlldW4wSVIycFRQeVNISWJ3VV9wMWdjX1ZndE1Tc24tNzc0anNYWjl0SVBsRDhSa0dVTWlyVVYxX0w5b2JhTFB0Tm9Vb2FwYVZubTU1SVJlcy0zMEpXOEM4ZlhiSU1QazdVQVlldw?oc=5",
       "source": "blackrock.com",
       "geo": "US",
       "category": "ECONOMY",
       "summary": "",
-      "ts": 1781506800,
-      "sectors": [
-        "financials"
-      ]
+      "ts": 1781506800
     },
     {
       "title": "Trump warns France in exclusive interview with The Post: Kill tech tax or face 100% wine tariffs: ‘I have no choice’ - New York Post",
@@ -35133,15 +35184,6 @@
       "ts": 1781433000
     },
     {
-      "title": "Crypto Gains as T. Rowe Price ETF Nears Listing, Perps Rules Shift, and Hormuz Talks Wobble - Binance",
-      "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9QRGQwMUdfdWUyc0hzam5JVjZwbmVyMC00dUE5N1c2SHpjc191SVJFZW0ycDhfM0tDWnJDOFk0c2ZrdWVTMXh0eE9ZeE5VdUY5OWxzdzV5S2RoaTR3SGk3ZHU4RHY?oc=5",
-      "source": "Binance",
-      "geo": "US",
-      "category": "CRYPTO",
-      "summary": "",
-      "ts": 1781429405
-    },
-    {
       "title": "The economy keeps adding jobs. Why are so many people having trouble finding one? - Business Insider",
       "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxQbWVjRUVlUVBhVHM5WXFHX2RFd21qSFMtMDEzSjZfWWpueFlEZXh3Tm90a2tDLTM4alZiTUh3aVJ1aUZXSDFlVVBoZnVfdHNGTXdnN0pfYXRtMkRyM3pIQmdTNnFpaGxoSlFOOG9UZU9SNW9PcXpkdk16QWtPbFhjMUZtQkM?oc=5",
       "source": "Business Insider",
@@ -35158,6 +35200,24 @@
       "category": "TECH",
       "summary": "",
       "ts": 1781427466
+    },
+    {
+      "title": "Latest Crypto Video News - CoinDesk",
+      "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE1VT0hYcGRYZkc5c0w4aWNLX05Ha1V5R0pNNVF3eV94V0ZvTDN1REdhS0lyd25JU0szZUpGMUN2YXEtQ0gyQ0E?oc=5",
+      "source": "CoinDesk",
+      "geo": "US",
+      "category": "CRYPTO",
+      "summary": "",
+      "ts": 1781420400
+    },
+    {
+      "title": "Why the US economy keeps defying the odds - BBC",
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE8wU3NMbFVscjM1QUo0REs2bEdYWWI2UGFqZ0dYOW9nSExMeVVraEhUbnlZQ3dLMUw5WG11bHdNUWozS00taDhicDFGTFNNQXdzVkx1RHN0V3lWUQ?oc=5",
+      "source": "BBC",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781414057
     },
     {
       "title": "US Government Sold $646 billion of Treasury Securities this Week. 2nd Wave of Inflation Approaches 10-Year Treasury Yield - Wolf Street",
@@ -35181,13 +35241,13 @@
       ]
     },
     {
-      "title": "Danske Bank Opens Bitcoin and Ethereum Access After 8-Year Restriction - CoinMarketCap",
-      "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNanowN1hEaUVKeXNfS1otZ1hsT0YzX19aX1hleldyUEtuTkY0aFFJbUExT3Bmc0V6Y2x6aTRyUXlEVk5KYVdtMjhwQXlHMjl4UFZpeVNRLVoyVUJoMDRSckhQcjFTU1VlZ01LZmZSSDNxZC01UVFQWlVZRWc0SHdOMzZmM0pPdElUSGhBaU55QTY5NGUxbHoxQjRhYllWUVVoMXhsUklsSVFGZnJKUEYxdTd3?oc=5",
-      "source": "CoinMarketCap",
+      "title": "Mag 7? MANGOS? SpaceX forces name rethink on Wall Street’s tech-stock moniker - WTVB",
+      "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxOZVZpQ1l1dUFXSkFMckVxV2tVZ0I4Nk1XSDBGSkJYUllsNTIwYVVaS0xVVDRldkM4OU43X2toRy1Mdlo3ZWRpcmJlNTdEeE5xak1vT1ZyWldDcUZ5N05QSDYyVUdrcXg2c2t6c3VKTllJNEVmVUk0cFdoY3MwS1I3MFBqTHI3Vk1IUVJoNmpYc3JweVZlRVpJbjU2b1UyV2ZobUdSZHpRSGU?oc=5",
+      "source": "WTVB",
       "geo": "US",
-      "category": "CRYPTO",
+      "category": "TECH",
       "summary": "",
-      "ts": 1781338277
+      "ts": 1781334000
     },
     {
       "title": "Best Consumer Discretionary Stocks for 2026 and How to Invest in Them - The Motley Fool",
@@ -35214,6 +35274,15 @@
       ]
     },
     {
+      "title": "Crypto Market Up 0.3%: Bitcoin At $63K, TRUMP Gains 27% - Coin Gabbar",
+      "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPYkZ5RlZkZnVldFFhQ3cxYXM4bEozdWMzQlBOcEoxa3Z0X01kZDBxSXpfTFJ5dlRLV2VLY0NqT2sydWhJLXVuQ3cxWHNCRDBuSTdxU0dvWmp5aGVWem1wWU1BTE5JaEpKTFhOYTBfcElLWTNNU3lDVGJXV2RIYkVyVkRaSlVtTUR4bTZETks0Ry1Iakstdl9DSDFEZmsyOXNSTnJZb3A1bHF0VVFY?oc=5",
+      "source": "Coin Gabbar",
+      "geo": "US",
+      "category": "CRYPTO",
+      "summary": "",
+      "ts": 1781316900
+    },
+    {
       "title": "OpenAI's Altman to visit Naver after Nvidia CEO's trip - upi.com",
       "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxOZnVmb1hKTFItenV6VWJCTEROY0hBOGZRbUlhT3ZLQjF6Y1BhMTlVTGx4QVNDdnhMV1czaW5fTEhRZEo2THp0YmJ0OEpmaVRFb2Z1NXFsS256X3Y1eHZCTmpTYVRIZHFvbkp1S2RpSWpQR05jSm5HbkZ1d0dxUkJmX2tqbklJbGNUNHdWdVJR0gGTAUFVX3lxTE1NS0JPQUtGV0tuYnNvTUpJSWhmWDFVU0RQTkpWdUpaVUtCRVFiWGMzSmRFUUdrZlZ0THpIWVoxb3Baa0ZzS0hBdm50RXNjaW5HQWNMODhtUm03Sk5lWlBjcDZzU05NYUt3amNhLW9xSUxUVk5WODBUTGNhaE55Wl8tV0ktcGJTNk8xc3RiMGxNZklvVQ?oc=5",
       "source": "upi.com",
@@ -35230,15 +35299,6 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781304235
-    },
-    {
-      "title": "Purchase agreements for Arkansas solar facilities powering Facebook, Instagram secured - The Arkansas Democrat-Gazette",
-      "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQMmhIYUF6Z0pnTmRjZ2FWc09zSVFuQnJuLWpoeE0zRENiR21LZlRCQ2VwSkUtUnh4MUxiazVkR3JiMnRKTVJlZnAwaVlvY3ZpUXJJZHBXNDdIWDJrNF9rZV9LOTFzZ0VieUJ2LW1GWGwyVVYwa0cxVmlMQ1FKLUdFRTdRQnl2VzNXZFFQb081cjlLbHJMbVE?oc=5",
-      "source": "The Arkansas Democrat-Gazette",
-      "geo": "US",
-      "category": "TECH",
-      "summary": "",
-      "ts": 1781302920
     },
     {
       "title": "S&amp;P 500, Nasdaq, Dow End Higher On SpaceX Strong Debut And US-Iran Peace Signals — SPCX, SHEL, ROKU, XOM, HOOD In Focus - Yahoo Finance",
@@ -35266,6 +35326,15 @@
       "category": "TECH",
       "summary": "",
       "ts": 1781298120
+    },
+    {
+      "title": "Is the Canadian Dollar Still a Petrocurrency in Today's Market - Kavout",
+      "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNWGs2M0g5bDNDNVJvRUc1aDRoMkVXcm5TTUs3eXFaWExsU2pscUI1Ql9GQXctSHo0eHhQWERDS3QzaHB1N3pkVWQ2TTFkcGdfZXFKeHZMTEJIQjg4RHE1X1d6YUd2bzRscjN6LTVDczFrbE5qS0J6RFAtMUc2WUk4NHBnQi1fSFdCcEt2ZVN1RUtqVVZHN0N2OVAwdkhkdw?oc=5",
+      "source": "Kavout",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781293045
     },
     {
       "title": "Bitcoin's latest plunge revives the debate over owning it—and whether it's just 'crypto being crypto' - CNBC",
@@ -35307,6 +35376,24 @@
       "ts": 1781280526
     },
     {
+      "title": "The U.S. Dollar Is the World’s Reserve Currency. Why Does That Matter? - Peter G. Peterson Foundation",
+      "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQVWhJVF8wUGZ1Y0kxTHRpeTlnM1Q3ZEticmtaajdRX1V2UFBScVlETHJjaFY3RTQ0OVM1UzJaSGI5YU50dlhIREFYT3ZrRFpUazdkbTJHVnliWGRuWFkxZG1XNzdiX0dreHNVdkw5ZlJVSnZIV1dpOHZoblpRZVFlRWhCOVZBcmlkNXdaVDhjMFlZejNrTTBPWUhPS2k?oc=5",
+      "source": "Peter G. Peterson Foundation",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781279727
+    },
+    {
+      "title": "Hedge funds sold Apple, other Big Tech stocks to free up cash ahead of SpaceX IPO, JPMorgan data shows - MacDailyNews",
+      "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNZFkzUi1ENkhzMWRSTzJjWVhCTUdHN0ZaMDVpNnZnS0QzS3VYQ0dYVi1ablY3aEV1VjdPdG5pVnU2MV8ycFlLM1lra0pGZFcwN1FWZE5aQnRQVHJQR0RkSnNJUFlIVmoyOHpiM0h6bnhHcXNmNE0zbHJHSE5QYXp0enJ2dlpnek9qUEQySWgtNlprbEhrYkxmakZBQ0FubEtELWF1RWJNZmxjWW50Q1ZhRkhpR3hRaGJONkxmSW9Rb291cDVwbjNxd3dqeEt5LTg0TnAw0gHYAUFVX3lxTE5YamZSLThOM1ZfSzNReWlmVEdzRzFTbUd4dkJSV2ctc2dzNXdJY3Q3YndRVWpnMTdOVXM2aVZOT3RiYlVDMThoZmtRcGFKemZkQUM0Vzl0d3BURmt4UExhYzRCaTRIdjkzM2xKODVGbUZYX3NMMHg3VUZNMkQ5OFFXeE9IazIyaUdvRmxsZVgtcGZyQmNFZGd5aHBJbFNDQ0Z2ZHF1ZzBUQ0Z3ODllN0NycnotVHNzYmJlVE13YXUxaUxQRzRoZlVNMFN2aTZkUk5ZMU9NWEZ2dQ?oc=5",
+      "source": "MacDailyNews",
+      "geo": "US",
+      "category": "TECH",
+      "summary": "",
+      "ts": 1781279710
+    },
+    {
       "title": "A War of Words Sends Brent Crude to a Two-Month Low - Crude Oil Prices Today | OilPrice.com",
       "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQRHQ0T2NPNGhGT1RwV21PaVBWUjkyMS1GVDRydFFrOWRTQ09WUkY5ZEhxal82UE4tQjVWcTZ1WEVfMlE4UTVoRS14TnpWdW10RWl1bDVrM2ZkYmtSQ014M1R4YWpfUXF1d0IxTHVLdWlUT2k4c1RPYjloTFd3a3cxVVB6M21ueVFZZVZIVGRMTHA5RG5fcEV1SlBn0gGfAUFVX3lxTE9zYlhrM1JXNjFoczhHcktJWVNqclBORVZXWlVQejUzS24wUzBMcldrUjNQZmNvNHU2d3BmUDgwZ29hZW5pZk9YOEdYN0puWk9OX0NLV2o1U3RnUnhoTVBtOGNRSW1MQWRocXl2b09YOEo4RXF2WFMxMlhYdmhpb3VGQ1RGVktNa29GaVloMFJXclNjejNVazREWGM4MG5BVQ?oc=5",
       "source": "Crude Oil Prices Today | OilPrice.com",
@@ -35338,15 +35425,6 @@
       "sectors": [
         "energy"
       ]
-    },
-    {
-      "title": "SpaceX (SPCX): Rocket Company Launches Historic IPO - Nasdaq",
-      "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQVlhfeF9fY2FBOEVCN2lIcS1SYV9Ld0Q1LURBM2ZpZVlUbW5HMEhmdFdZS2d0d25WcDQzalN5YjAzMTFGUl9lVHAxQ2Y4T1NzVExITUZIeVFsZEkwTlNYRklPbEQ3cHBBclFydEtQU0xoVkhWMUdpX2w1V1dWcUEwTUs5WWx3dw?oc=5",
-      "source": "Nasdaq",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781273700
     },
     {
       "title": "Looking Beyond the Headline: Encouraging Signs in Indiana’s Labor Market - News at IU",
@@ -35424,36 +35502,6 @@
       "ts": 1781262840
     },
     {
-      "title": "The S&amp;P 500 already made a big call on SpaceX stock and index fund investors need to know it - CNBC",
-      "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNeGNSMG5feEpHcDk4Y3BIUUFtMWx2cGdWSHJpRFRLaW1BdzJPX0JRWFRlSEVBcVpaRHhyZ1J6N3VKa1JWNmVtMHhCSXY5VHg1TW1CcS0tZTJXNDhJTXJzQVhCU1BhVWpFLTNDQkp1QnVOYTdqbFZSazJjek5mUnJjLXRR0gGHAUFVX3lxTE1HVzhjbk50ZF9aTkxNNVdtT2JUcXlvcWt5ekR4MWZQU3oxbW5FRzM1U1FHSUlwSERSQWJYNHNhXzRUeW05WDlhQlBwN0I4TGlDdHBOR2dJUk9wQ3dWLXpNU05YcVV0YnVrUzlqTmNYQW5qeTVvemhKb1BkcDJnUkp4V0NFdTdTTQ?oc=5",
-      "source": "CNBC",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "The S&P 500 already made a big call on SpaceX stock and index fund investors need to know it CNBC",
-      "ts": 1781262001
-    },
-    {
-      "title": "Opinion: 5 Days Until the Fed Picks Wall Street over Main Street — Again - 24/7 Wall St.",
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPclQ0TS03aDV0TmxyNEdUcHlzTlJKRGxlQ1k2bHhXMm9UdXBaZUFCSG1lUjl4TmVCa2N3SDJsejhwcTY2RV9NWTY1ZloxcV9JejJ6dTJPU2JrV0xiQU1yaDBacHhVWExCSXI4WEQ0dU1naFd4bjFqV3lWcF9iU3BtbU04RS1VRlU2a0lZMWIxTkRHZTdEZlFheEhtTzgtaHU4Xzg1cVlxckxEUlNha0Y3clQ4WQ?oc=5",
-      "source": "24/7 Wall St.",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781260671
-    },
-    {
-      "title": "These four consumer staples stocks stand out for both value and performance (XLP:NYSEARCA) - Seeking Alpha",
-      "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQcmQ2bnBGTkxrSENmWF8xVjZuaUpCM3lRWVFwSDFzekhDMUxkenhNd1RNTU9mZ2p5VGJNQTFmWGsxQ1A1UWZZcGtsRTVKTE1NanVlaTMzQUhURFdTSE1URmVxQkZsSlQxemhPd2pPdFFMR3g3enFXMF9Ha2lmUUQ3RTgxX1QzYThVTjVFNlNsY3VJdHhxN3VTamFQa3g5cGpqNzdwR0FESW5oYW0xSzMtX2s1Zw?oc=5",
-      "source": "Seeking Alpha",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781259608,
-      "sectors": [
-        "consumer"
-      ]
-    },
-    {
       "title": "IBM Drives Indonesia's Digital Economy Transformation with Agentic AI - VOI.ID",
       "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5aaWhkejNqM0hSUmtyTzAxbmNCRW9vSzFYM0puY0ZCZVpaZ3dOMU9ybkV4Ym9pci1FXy11R3JMTXFiLXE5YkVlNk1YMNIBQkFVX3lxTFBiMUJSRW1sZFFaWEtHWFVXOFI3NFRXQzk3RUV3c0RVOW9FdFgyeWpEdzd6UF9BcXFFT05kU2xWWXk3QQ?oc=5",
       "source": "VOI.ID",
@@ -35470,42 +35518,6 @@
       "category": "ECONOMY",
       "summary": "",
       "ts": 1781248213
-    },
-    {
-      "title": "Oil prices slump to 2-month low as Trump calls off planned strikes on Iran - Business Standard",
-      "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxQMDJzMDBXZ2FzdnBPQ1MzV2pFRmhJb2dKblB0aHdoSG1WXzJoWGhIVGlla0JNS2ZjeHBiNC1XSXdxVFBRS05neXMxU1QwangxbnVuTVBtWmd3Ry1xRm80Qkh2MGNabUR2cFl6ams1R0FEbnBzaHc2M05uNmlYcmhlV3MtaU16dkxzSFRicHFxRGMtMmF0WjlEMldRUUwyWE9hSFducV92aDJ4MWRrVWlGR3p2Qm5vWUNjVzNUc2VJc2Vod1laNXQ4TmxLZ011eXNYamt5ekJod0VoVWVSU1hPRWVR0gHnAUFVX3lxTE4ybVJYWnVwb2dQclZ5RFZqa2hpLURIdlN4ZmFoRmlmd0NoZGdKbjJfQVNHRldIb09mYWlYZW9yQjAxMlY4Tzc5bWIxWWd5MUs4d2lsYm9va0lER0VObjdlUzgtQmZFbU4tZ3E5VUdZdW1adkNfbmZJQzk0eDliQmlTQmU4SnFFcnl2R2ZEeXpFdnplTU1ETkktSGxhTGJKMHQtU1BaZk1MaWhUd3lvZVNvSUpveGZxclp1STQyN3FBQVNaQ1B6Nzc3Zy14U2Zsd0RmeExoYnUzNDUtRmZINm5hTWVRUURubw?oc=5",
-      "source": "Business Standard",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781247851
-    },
-    {
-      "title": "S&amp;P 500 Snapshot: Late Week Rally Pushes Index into Green - Advisor Perspectives",
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQOXBiUW9MUGFOMEJyZ3dhbHcxQzh3YTZySTdZVnhQcnFiY1hRcDFya1B4dnRRMlZFaTZUN1ZjWXgtQldEa3FmOHFYZ3FuazViOHIxMDlLS2hPODBzUjAzSGxoNDhlelRKclV1SDlFQVZ2WWx5dmJ0d0J2ekRhVHZmTExtNmFFRk5vNmt4TkZieU5vRXJhaVJOMEdvRlRpcTk1Z2E1ZWM5YkUtc25sbGdReHYwampHRnN3WVE?oc=5",
-      "source": "Advisor Perspectives",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "S&P 500 Snapshot: Late Week Rally Pushes Index into Green Advisor Perspectives",
-      "ts": 1781247600
-    },
-    {
-      "title": "Treasury Yields Snapshot: June 12, 2026 - Advisor Perspectives",
-      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPRXVWS3k0OWQ3enlkUndUSldhMVNQdW4tWFBQSjRxLUQtYl8zVVNNQXJWU0xINlo2ZVJfNjNkOE9mLXFCdkFUUXVrSDYyc2RoMnp1NERReWtDeDdmR0xCdDRMT1gxclJYTmlYTWRjN1g2NE43ZEp1ekJoNUVWNGI4QmhkdmtxUE8zZzZQRF9wdndJenFNUm1EZHVwNUxIQWZ1?oc=5",
-      "source": "Advisor Perspectives",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781247600
-    },
-    {
-      "title": "How Is the Economy Doing Right Now? - NerdWallet",
-      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1nRU1VZTZjeXA1TTdRU1g5d1Zha0RvU1phVU1LaGIwVmN6Wk5wTk5WRG5fTHMxZUZCZkdrb0oyVk1DU1VhM05Felp2WXNmbHktdzEwSTNYOTlTWmNtMmYyMjV6RkFTYUYwSVEtRWZn?oc=5",
-      "source": "NerdWallet",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781247600
     },
     {
       "title": "BI Says Strengthening Monetary Policy Triggers Return of Foreign Capital - VOI.ID",
@@ -35909,13 +35921,13 @@
     ],
     "consumer": [
       {
-        "title": "Is Vanguard’s S&amp;P 500 Value ETF A Buy, Sell, Or Hold? | VOOV - 24/7 Wall St.",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPTHBDT2tNczZWeW1xWWdOSWdkeE51ZUhtY3VFRTc2YUtnTnZNeXBoMFZMQTFHWmhhX1d6WjJicEZqdWVVUm1mSDVDbnhYT09KRngzZ3Z3RDd2Mjk1M2hTdWYwLU1BZVR6OXU5dHNWRS1YNHpYR1NEc0h6V0NPa1BkSlg1T0NHdlNxc0psOGRvZWtmNkNwU093YUpjRUxkdw?oc=5",
-        "source": "24/7 Wall St.",
+        "title": "Should You Invest in the Vanguard Consumer Staples Index Fund ETF Shares (VDC)? - Yahoo Finance Singapore",
+        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQYlQ2cENobkE4Y0tRQVBUeU5rUHhxRWFFM1pqeEJac2pkdGQ5a3ZLRm4xcmloekU2SEJJVW8td3NQcGJTTlZ0XzZQWUpBaFhzM2V3amc2dWJVUGE5QUEwZFZUOVpLbG9QWmdtMmJxNWpBdGkxVnFEeWN1R205YmdRTHhUcnBvNTdVTEhSWmQteUc?oc=5",
+        "source": "Yahoo Finance Singapore",
         "geo": "US",
-        "category": "ECONOMY",
-        "summary": "Is Vanguard’s S&P 500 Value ETF A Buy, Sell, Or Hold? | VOOV 24/7 Wall St.",
-        "ts": 1781624545,
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781518802,
         "sectors": [
           "consumer"
         ]
@@ -36281,13 +36293,13 @@
     ],
     "crypto": [
       {
-        "title": "Hyperliquid, Uniswap, and Worldcoin tokens rally despite broader crypto market cooling. - Pluang",
-        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPOXlFMVVLWHM3ejVLTHN5WlN3N2tZQTlwNEZRVDRtQlM1Z0pRNklWQlY2VWJRbGMwbklaVnVOWmZUTjFISGdGSnVrY3hwLTdUTkRGTnEzVVp5OTRpWGFYcURQNU92SXRZelFYTGpkT1ZHbElnQzlfNm5HQm9mUlN2NHVIc0M5M3c?oc=5",
-        "source": "Pluang",
+        "title": "OpenAI (Pre-IPO) Stock Price: OPENAI Stock Chart, Market Cap &amp; News Today - CoinGecko",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBtSkgwR1ViWlV0a1dfUUxwZ2hHTFFhUjhwdU12eEVOVFlwblI0ZDVkTV9JZDE4bGROdkd2SWJmdDZxXzViOGNYWmdjT2l5WEowR1M1aFE0amNaTEE5MFlz?oc=5",
+        "source": "CoinGecko",
         "geo": "ID",
-        "category": "CRYPTO",
+        "category": "TECH",
         "summary": "",
-        "ts": 1781643295,
+        "ts": 1781585912,
         "sectors": [
           "crypto"
         ]
@@ -36353,6 +36365,18 @@
         ]
       },
       {
+        "title": "Why I'd Buy Ethereum Over Bitcoin Right Now - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOVGtkODE1Z1dTWGY0dXVhMUpLR2Ixc3hwSUpKMkxzS3FoUjRnNlE3UjFKemdXa1RWY3dFNzdaNGFWNnpTRE12aFEwZFZFOWY1MExkMTY2V29WZmc1d3BPREZBcGl2RFJ0eXdiSmdKbThUakRLcXRtLU40bXo3U0c5LUU5MFRpV2lYd1FWTTZCTlNLLTg?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "US",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781364906,
+        "sectors": [
+          "crypto"
+        ]
+      },
+      {
         "title": "How to Complete a P2P Express Order on KuCoin - KuCoin",
         "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTE1lQkFpLS1MUnRiZUdPM1p2YmFkZkxKY21td2tuUUFiVWVmU1NmZ3lmd1NRLWUwYWtia2RsT0VvMk1RSld5aGt1YmpkWWZfbEU2SHhKMnZzaFkzVHFF?oc=5",
         "source": "KuCoin",
@@ -36360,18 +36384,6 @@
         "category": "ECONOMY",
         "summary": "",
         "ts": 1781281485,
-        "sectors": [
-          "crypto"
-        ]
-      },
-      {
-        "title": "Bitcoin, Ethereum, XRP, Dogecoin Jump After Trump Sparks Optimism On Iran Deal: Analyst Says SpaceX IPO Would Be 'Tricky' For The Markets - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNWkZHZkdfejhraHI0eThNWXhCY0g3Ylk1NEVZUUlwMDFRaGdXUFNHazFUYi1tZVRWWjVmRkc5Sk5mQzQ5ai1SdmwydTVOcDlXNnJQRlFNQ0I5RDM1LVBWaEF2RnFnX21yOV9NTXowa1h5ZzhNZ2xuWkNEdEdxWWktSlJMb3AyLWt4dHpBS0FPS1dpdjJaTHBJV29BYVBOMXJo?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "US",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781229540,
         "sectors": [
           "crypto"
         ]
@@ -36439,24 +36451,24 @@
         "ts": 1781358064
       },
       {
-        "title": "Meta Stock Slumps Further As Bulls And Bears Debate Tech Giant's AI 'Evolution' - Investor's Business Daily",
-        "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1keXRGaTJaWTVORVI1VXVRdmpsX2g2NkNrNks3clZBR0t4YkVYemlmVkhDMEdwUzR3N3VXYkVlLWtMMVRVWmNpQnNldXZMUDJFNHI4elB3YXBIWjJyOXRXMWVfSGlEOGdYZDI2amVvTVE2dE5QRU1tdXJ3LV9BQQ?oc=5",
-        "source": "Investor's Business Daily",
+        "title": "Stock Info - Meta Investor Relations",
+        "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1oTThJa1BCdG1wSkdydDQ0SEpwYWpES25PSEVQaUFYU0tveUxMU2ZZc1FhX2w3Tjk2MUJNSjBES2MxNF9yS1ZTcllBWjRET2Zt?oc=5",
+        "source": "Meta Investor Relations",
         "geo": "US",
         "category": "TECH",
         "summary": "",
-        "ts": 1781211180
+        "ts": 1781074800
       }
     ],
     "GOOGL": [
       {
-        "title": "Alphabet (GOOGL) Stock Quotes, Company News And Chart Analysis - Investor's Business Daily",
-        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQZ3RHcWtkOUszb3lIUjQ3ZndGU05XWDlWeU5IQVJJMEJsUjh6NnFUaFdwVGR0QjVadkFOcm9IbkVsejNxUlJieEdzekQ4TXRsQmQ0ejVZMkpHRkw4TnQwWnB5MnJDLTBrSXBzTTVzdlpOc1ZnNEZpcDdBVWhDNG5wcF9NTVZHYVcxR3hCMVpvVU9OeVJhMko0Ym1qMDNiM1R2Wk9qREoyeUVOdGcwNjh2Qg?oc=5",
-        "source": "Investor's Business Daily",
+        "title": "GOOG Stock Quote Price and Forecast - CNN",
+        "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9tN3FRTUJqdzR0OHRfby0zMld6YVhBbml5OFV4SlVRejVlVDhnVDd1YVVReGw2UWFvR2YzeEdxV0I1bUFQRXRjeWhyMkZHLW9N?oc=5",
+        "source": "CNN",
         "geo": "US",
-        "category": "TECH",
+        "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781279460
+        "ts": 1781424083
       },
       {
         "title": "Should You Buy Alphabet Stock Down 10% From Its All-Time Highs? - The Motley Fool",
@@ -36479,15 +36491,6 @@
     ],
     "AAPL": [
       {
-        "title": "Prediction: Apple Stock Will Go On a Bull Run in the Second Half of 2026 - The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOWFlhandrRkIyMjMyR2hPc1Bqbk9fZ3RQU250SWJhNHBxYU9NbHpwZ3hrYU0wS2Y5d3g1aW1HVUJQemlsNy13R3RhRHhFZ3pyX19ONFgtTnpyUjh4WU00ZGZ6TXo4c29wVk9vMWNOY1VkWGRpd01ZOTYwdGU0VEpLZEFFYktocmlFbXp0REtZLUhRV3QwTFd5Qw?oc=5",
-        "source": "The Motley Fool",
-        "geo": "US",
-        "category": "TECH",
-        "summary": "",
-        "ts": 1781634180
-      },
-      {
         "title": "Apple Stock Is Down After WWDC. There’s More to Its AI Strategy Than Meets the Eye. - Barron's",
         "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBlRXFZOHVxdkVPcVJSX1pyRkpGdDFjMmNfUzhUVV9DVDlXQkhYOWhEckllYzBScnlzMXowWndzRmFFZlNmdUZLRkRaVWVDcXQ1TktMMUlvdzluR0d6eDluWTlZQjB3YmRUY0VMQWg5MXZja29fN2c?oc=5",
         "source": "Barron's",
@@ -36504,17 +36507,15 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781365360
-      }
-    ],
-    "GOTO": [
+      },
       {
-        "title": "Foreign trading net sell of 1.50 billion shares, GOTO leads top buy - IDNFinancials.com",
-        "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxQc3lVbFRDLWhSM3Mtd2htaUdpYnlYbVVvNk05MDVab1o1RndkMmFqQjVLaW9uV0lHUjhzWXRXWjdQU1hnNDJqVVd3bGR3enFUYnVUUmlLaTVVbmhPa21nb2c0SXR5enQ3bXl3WXhhQlBoamxLWS15Zk5OZnZYOXVZcUJiaFBOWmdYNTdkX3FfMUE3ZGFKRi04WEs3WWpQOVZFeGtDYVEtbWFYTzg?oc=5",
-        "source": "IDNFinancials.com",
-        "geo": "ID",
+        "title": "Does Apple Stock Have More Upside? - Trefis",
+        "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPaEpLczNNa2FlN21FOXlBc18wTDItTVdsWGZnSngyUkc1NHVveWRCVUVscExXREpYZEZidEpOaTdSdURyQ3FOeWVsdVM2NURITFV5dXduSENXWHNILWxBd0hXeTlyUnZCa25CREZPTmliZTJpSlpEVVgwV2ZHQlFLWEdIN2pDZk1QVkJRUW54WHdlRlFIbnRLWTZn?oc=5",
+        "source": "Trefis",
+        "geo": "US",
         "category": "TECH",
         "summary": "",
-        "ts": 1781052300
+        "ts": 1781218221
       }
     ],
     "AMZN": [
@@ -37353,13 +37354,13 @@
     ],
     "SLB": [
       {
-        "title": "Why SLB (SLB) Stock Is Down Today - StockStory",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQRlU4RjlVRFFJTHpuNlpKb3VKQy1LVUlrcVBKN3E1UFRzYUctd3E5NlYtSXc5STZpZGVGX0FIVVF5V0FWV214Rlk3ckVkdjJHa09TQktVSl9vQ1hyY1JqTEx6ZnhNMUlMa2ZmRkVIOTFJXzRxcE1IZHZOdG1JTC1mc0tSMktJYmNhSEVmTG44MmZEUGF0?oc=5",
-        "source": "StockStory",
+        "title": "Why SLB (SLB) Stock Is Down Today - The Globe and Mail",
+        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxNWjZrS1hRNUpxZG9nYURPTXhHbDJKVlZVdXNUYnZ1UzBSUW5xUUlDeEl2d1EzNHk1UFNEX0N4ZUJuMElVQjR3WE5ES2tjdDc3b0F3ZE5ocko0ZGFwR1RyTHA1RnlEUXBLdmd2bGo3cjFSWVl0a3NQblA4Uk0waTVpM0dVMUV2ZVFkRmtKUmhpRHdUbjFGTlZLRTIzM19vcDctODJSaHJKZ0NENnpCN2Z4RGk1R0V4Zw?oc=5",
+        "source": "The Globe and Mail",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "TECH",
         "summary": "",
-        "ts": 1781539763
+        "ts": 1781539200
       },
       {
         "title": "Is SLB (SLB) the Best Turnaround Stock to Buy in 2026? - Yahoo Finance",
@@ -37545,13 +37546,13 @@
         "ts": 1781179692
       },
       {
-        "title": "Rep. Maria Elvira Salazar Buys Brookfield Renewable Partners L.P. (NYSE:BEP) Stock - MarketBeat",
-        "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQS01VSUpNQTlEZUxIb1VvRjF6ZWxlLVkyV1Nqc2hPblYwOVRWd09uXzJvdkZNSUVvWlZLLVNaSVVxY18yQU1DZkFNS0VBX3NnUkVVMGREUlpiTzR1SDY1bnkzc3h1YzRHSWlFaWlKWTlrbEZHb282LThDLWN6UDRZY1NmakE3UTNod1RMbGFranp6NW9NTnZmdnNMWVAwZHVaWnJtNktjVlU1MWVCMTNCTGFOQ3N4SmFRcEhvVGR3bzdLZGI4aTByQWl3?oc=5",
-        "source": "MarketBeat",
+        "title": "Brookfield Renewable Partners Adds New Series 19 and 20 Preferred Units Through June 2026 Amendments - The Globe and Mail",
+        "url": "https://news.google.com/rss/articles/CBMikgJBVV95cUxPRWJtcGVfWnFhZ1k5SktYWjNJa0RVSF9zLUhGbG1WckR0WjBPdUFsYTVSbmpBQlJNZmllSFlLUkhNdDlEMW53TE5Ga1BucHlZdmU1YzVKSFh2c2habTVQSkZyUTZaQjhCQk9jVTJDZ1ZvTDBXQ01FaVkxa3hJWVBFeWFRVmNGSnZQczd5WFlzdURpRVB3OUJGTnYzbE1UTzNrWUl4RmNuMTRyOTJib016Mmw0c0tiWmRTT001LWNhRnRFUDJkM2tKdTF0RWdTSlpkMVdOX1FHRTBWblVRYm5qZTNSZWQtZHo3LUJsbHdnSWNRbnZpNjd0dE9TX2xzaktQSDBkZFFMZlRlX08wSlFoVnBR?oc=5",
+        "source": "The Globe and Mail",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "TECH",
         "summary": "",
-        "ts": 1781071833
+        "ts": 1781173920
       }
     ],
     "CWEN": [
@@ -37614,13 +37615,13 @@
     ],
     "PLUG": [
       {
-        "title": "Plug Power Inc (PLUG) Stock Price, Quote, News &amp; History - Benzinga",
-        "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTFBmZ01VcEJjU0FVMmNMZHpDNUUzR0gwQ3V2bTMwQkcwNHpHQnJTXzIwU0twLS1kZ1lLZU9WSWdWR2pnRHpIbGdKOS00Zw?oc=5",
-        "source": "Benzinga",
+        "title": "Plug Power Is Undergoing a Massive Transformation: Here Are 3 Things Investors Need to Know - The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPY2xSYjBFcjVZVjRLaFdGSktHOElPQkFpdmJwcGc4UnUwMGFZcHRoRzdGTlhGbnFXLUdHV2Y2UEtjS2d6LURianA0UU9MQmttR0pJS0N2OUpDNlYxZEljbUVRVWRPSzR5ek9rV3pNZEdXYkpDVjJzR3p4cndUeHhWM3VrMldqcFNZTEUyemhtc0QzSDRZYl9n?oc=5",
+        "source": "The Motley Fool",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "ECONOMY",
         "summary": "",
-        "ts": 1781308740
+        "ts": 1781370900
       },
       {
         "title": "Plug Power (PLUG) Stock Valuation Check After A Volatile Year Of Mixed Returns - Yahoo Finance",
@@ -37846,6 +37847,15 @@
     ],
     "WMT": [
       {
+        "title": "Walmart Inc (WMT) Stock Price, Trades &amp; News - GuruFocus",
+        "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE9OMUVkSm9VanNRZnJTdHR4blAwQkM5YVRXUWsyX3huMjJZcEZMeE9IRTY2c2Zzd2hoZVVsUmtENGRFN2tqeHlycEZUeUJUaDBsWFplU1NB?oc=5",
+        "source": "GuruFocus",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781609605
+      },
+      {
         "title": "Walmart (WMT) – Among the 14 Best S&amp;P 500 Stocks to Buy Now According to Analysts - Yahoo Finance",
         "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQQmV0QWF6bTBoX0QxOXNJcXBrZ01oQ3BBekRLbzUzdjRFMUxSaVh4YkxvRElPa29xUWJJUWozM3hCY0ZvRzkzcVFOTnVOdTdRdmcxdGQyZXkzXzRKeW92UXQ0WFZ2RFhua2J2anRSNFBSRTRlNERKR2EzRWlvWkVDcnA4eXVWeW1kSjdtQXNidHg3dTFS?oc=5",
         "source": "Yahoo Finance",
@@ -37862,15 +37872,6 @@
         "category": "MARKETS_FINANCE",
         "summary": "",
         "ts": 1781553613
-      },
-      {
-        "title": "Walmart (WMT) Stock Valuation Split Between Community Optimism And Cash Flow Caution - simplywall.st",
-        "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPTC14QzQ1SFNwTjBkbWZwd2RzQURVVmcyN2J2dDRINkZGRGN2THFYb0c4aU1COWVJY1JHRVY4QU9DV2U0VUxQajFtdE9CNkNQTlFDODU1MWtvLXF5VTh5Qy1ITkhEbVduY0FSODhyU1pZVk54VGxNY3BCbDBSdGFHOGFCSl9GOXZxMWJMVWRwNW5UZ1JtY3N2QUVra0pZTzQzODBreXdodjh2clhub29VODU1RE5Sd3ZIalhlcHVab2gyU1ZfVWdEMFpuRTVEcFBf0gHWAUFVX3lxTFAtSjNmY3ptN0Y3WkUtVzRZbUtwbVlkeEpfNmg1bG1FRVNTWHBJSzhaeGJxMUpCUllIZnlsSHR3T29JWGpSSGlsMWowOVBSNVlDbzZhV2lSbGxNUnV2aFhOV1BQSlEtckh3c1d6a3ViZVZERUltaDhaNHB1UXNDVE1jdW4wTUZBS3B0WnplTEUxS25DYkZZd09zRlRZSDlvUHRMeS11d1dBaVUzOFplaHF3dkJMZVZ2X0hXTkdUcXkzXy1hMnl4YVJlT0xUZ1dmQ0p5cmV1NlE?oc=5",
-        "source": "simplywall.st",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781551126
       }
     ],
     "CL": [
@@ -38194,13 +38195,42 @@
         "ts": 1781551057
       },
       {
-        "title": "American Tower Corp (AMT) Stock Price, Quote, News &amp; History - Benzinga",
-        "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1NbnZpdTRsczRUVW94c2ZzUWVmaHZ5a09wdzQ3SnFLMFNyeVlWdktvZHhJZGxDWmxsZ1FnZk5DTkxoQWxTaFVhWmlB?oc=5",
-        "source": "Benzinga",
+        "title": "AMT News | AMERICAN TOWER CORP (NYSE:AMT) - ChartMill",
+        "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1aX3FSSWJkSzU1QzZRWFUtak12Z21IYXI5UXhuMEZBYl8xcFN2eWJMRmFuRnpGTlBJa1NubVB0Zjl1VW1aQWpwWXk3RW5nLXVDS2VLNFFhcllPQQ?oc=5",
+        "source": "ChartMill",
+        "geo": "US",
+        "category": "ECONOMY",
+        "summary": "",
+        "ts": 1781222640
+      }
+    ],
+    "CCI": [
+      {
+        "title": "Crown Castle (CCI) Stock After Fiber Exit And Buyback Reset How Fair Is The New Tower Valuation - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQX3hqcVV1TnBPczZ5R2ZUNVJBV1UxWVpFdklDRHYxck9WY0ZMNndzTkNodnpuaEwybkxIaEtRMFF1YWRBQ0ZBTnNKOUJPYmwteDUzMUVGYWJsNW5jU01GdHR2YzQ2QzdTdzVDNlJHNXdudlc4REFJdzRCWXFqU0dKV1A4eEVXODJ2WjNNYVdBd01rVlBvZTFseg?oc=5",
+        "source": "Yahoo Finance",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781307480
+        "ts": 1781381332
+      },
+      {
+        "title": "Is Crown Castle Inc. (CCI) A Good Stock To Buy Now? - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOUDlRYzNoZkJvZzUwdk8zSWJadzVscGgtemgwYWJSekw1Nk9JMkJ1MmxXU0JxX1B4R2FFdU5GY2tzb3FXa2N3WFJtNkxCYlBqMC1RYm0zdVdWR3ljNy1aYkVoV2JTZnBQTXVBYTk0TTFQNDZBVUl1Y1dGMXpNc3BJVkFQRFh2dmJRc2hwUXZMZGp5QTJ1?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781288253
+      },
+      {
+        "title": "Crown Castle (CCI) Valuation After Q1 2026 Beat And Progress Toward Pure Tower REIT Focus - simplywall.st",
+        "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNdHotdlBYZUFqY2xLazh6Njhrd1lYNXY1TnBjdG9sa2FtT3Y1aVg2TFhWbGdWQVFJXzVNZ2xiczFaSEF6NVVyaWs0N0hCUkJadXpKUmlGS1daRzRfZk9aZW83WndKcThFUEN1dU9mZ1RmcnBjMUlZSEFYM0h6QkhvaXBIYTlzMXpEMnlNT0tkX0Y4YkxYOU5zbkVxTm5raFdrU0JpbFZERVpsNzJvVVRleUJXQzUzZE5QakxtNEllTFE1NzdDV1BJMnZkUdIB0AFBVV95cUxPbTJaU01jemtJZktCMHpBbW9hUG5CaEhvcUpVSGZqdlhRdVRLRm9LNE9pQndHd1hMdUdJQ0piTU9nMXhjejhPbEVTaDl6aHo3YmdqUW1SSlBqQzNoOUZNRGtneFhYUHhaV3otQlVaRlFCb0gybDdjRENaTmlsczloRkxfanNINnhoTGx6TnJ0YThQQnVrd25CTW93WEhKS0dZTzVxUVYyUVVzcTVVT05PLUpJNFI0bURndGlrLUUwTlRfSnVFVlpWZkFVbUl5NDYw?oc=5",
+        "source": "simplywall.st",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781188577
       }
     ],
     "PWR": [
@@ -38261,35 +38291,6 @@
         "ts": 1781129702
       }
     ],
-    "URI": [
-      {
-        "title": "United Rentals (URI) Stock After 57% Yearly Surge Is It Time To Reassess Valuation - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNcVI4MjJUVXdUTEFrY3NSaTgxaXFQTl9mZnNER1ptZHRsY1BUdzBlMkROSG01VGFodkFzTnppWlZTMDZiTkswQnJVNkRETkxjYkNLQ3FwcFhRVlFFX3hfQU5rcDVzSHNUd01vVXJKM3g5cldTd004dUhZVlR5eW5KRFlRTE1qUWdoazZWUWxaVTNIVFQxRktz?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781550548
-      },
-      {
-        "title": "Epoch Investment Partners Inc. Sells 5,884 Shares of United Rentals, Inc. $URI - MarketBeat",
-        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPYWU5NDl0QkV4WnM3bnZfTUUxODJISzNheVBKNnNxTDlteXJhai1FdmNhWXJnMmZaZS01M3dUZW9OOFFXeDl2elhHZnZEQVQ2cE5jN3RORndKcERjSWxhUU5DcWU2QWFOeE1tclQxQ2VXQjBSRll5d18zMTFKTFVUS3lvWVhLTXgtcUkxSVZMYThxQlN0eWgtTXNNUnlXWVBhVkRqWnRSdXRNMWhyaHB4bk5pTXA2VWZpQlk5dWI1Q09BZm1SMmh0UGE5My05UUU?oc=5",
-        "source": "MarketBeat",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781428285
-      },
-      {
-        "title": "United Rentals Inc (URI) Shares Fall 3.5% -- What GF Score of 94 Tells Investors - GuruFocus",
-        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxNS2VuS0hmR3JPaHRrT20yQ0pFeGVQY1J6anBtaGNLTG9QcFBLZHNEWFgtWjBYR3JNNkdoMjB2c2hjSjd4MHVMRENOeTA3elNqb19ydW9DMlNlbENEZWhCOGVGTjFoX01hLXc2czhmR1lNVTJveWk1SlNJS2RUZ0NmajdKOUJUbHoydVZWNDQwUmhsSkE1LU1UWk9kTVRMZEVrbGRvUHQ2S28zYWRFQjhPMWhYMlhERDg1UzZnUnpNWkNtZw?oc=5",
-        "source": "GuruFocus",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781139087
-      }
-    ],
     "ABBV": [
       {
         "title": "AbbVie Stock Will Hit $300 on This Date - 24/7 Wall St.",
@@ -38321,15 +38322,6 @@
     ],
     "MRK": [
       {
-        "title": "Merck &amp; Co Inc (MRK) Stock Price, Trades &amp; News - GuruFocus",
-        "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE0zdG5ydjkxdFk5RFVsWGZnODNmOGZ1QkVpR0U3dlJhaUJPOWFBQ1FjOVp3alQ5WEl4bkNoV3lNcjh3dGlvaTk3Y0lRSE9QNkxHT1lLa1N3?oc=5",
-        "source": "GuruFocus",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781624487
-      },
-      {
         "title": "MRK Stock Quote Price and Forecast - CNN",
         "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFA4WjVRVFNCUXZaSGtKVkd5dTlHNXVvLXBzWTRPZy11N3VsUTRVMHpXakxlSlpCNnZhekxJT2FDSVFyTklCODYyMkN0UHRkRjQ?oc=5",
         "source": "CNN",
@@ -38346,6 +38338,15 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781295108
+      },
+      {
+        "title": "Assessing Merck (MRK) Valuation After Recent Trading Dip And Oncology Pipeline Expectations - simplywall.st",
+        "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxPOHdyQW41UmtYMW9TRGNYTHhsNEVEWm8tNVF2c1NwTEdFVDFHT3g4NGpmV29hUW4wVmhJNm5XTGxNS2xpeFFjb0JlZEU3YlA3amR6cG5ONU9pRkx5T2dPN1RWc0RGQnRtTFVVWHhhZ0QwY295Q2YzWlBRWTh2TXJMaUVZTmFzZFhUSWlwZmRzZUlXUDgtSGhlODFMWHI5U25JRHpvSWlpVnVnUXhiRHhNUVVOTWRqUG54WGZKazB3eVZHa05oc0Q1bW1CZmRXaTdkU3fSAdcBQVVfeXFMUGhKOEI0R2Q2d1UtZlNlNGFjcHlja2ZyMHV4TVpiT0JmNWZsdXEwUnBJNUV0d21iSGZKekVDdjJRZUtmSmZnalg0RWhwM0lkUHRINjRFYlVYZmZ4cXlLdzlKRGdYeVBOVW9UZ2dfdkNwY2Y2ei02UjlBUktvNDQ0VEJwS0JlSFRaaURiTU91a2l1Z1RXVHFmOUw4ZmktVWtWeVhsaUZYV3daak0xaVpqUVlqU0xtSHlGbzhoZzFUczZCNGw2WFRvbmphRlNwblM3M1cwVnNqZW8?oc=5",
+        "source": "simplywall.st",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781163033
       }
     ],
     "PFE": [
@@ -38379,13 +38380,13 @@
     ],
     "DHR": [
       {
-        "title": "Danaher Corporation’s (DHR) Recovery Fell Short of Investor Expectations - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxNaGt6RWlsOVQ3T2xGSGxYT3VpRkJVXzlneGgwRUxONWtTSmxkNnJteVZ3U29UYkFwMmVQclFraDE0VDRCc25oZFFhVlVZYjN6ekxad05OZUgtS29yNmR4N2pGeU82Z0FUVEZQZmpkb09DZHRUdWdiUVZJc2xyR1dtcDMyTDktNGw3SFdRZGNTUU1CRnZHMlFMTm5GTU92bHlGV2ZabA?oc=5",
+        "title": "Is Now The Time To Look At Buying Danaher Corporation (NYSE:DHR)? - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQa1NGRHA2blVPbmZEV2tzM3pneE5lSTBsLTR3TWQ2SHhrbzVTc0gySnl6V0NQMGVOQUtwR3FxVWpQT0QtUEhwalYteS1WTXdWMXM5cXZJQXpYVUZCN1ZUSldHQk8zZHFkT2dlT3hSdGZxd1ZxUVVGSW9UU0VYQ2RQc1JHUHJRNHRyRWJ6RUdXYm1Qc041NWxsMA?oc=5",
         "source": "Yahoo Finance",
         "geo": "US",
         "category": "ECONOMY",
         "summary": "",
-        "ts": 1781534896
+        "ts": 1781186415
       },
       {
         "title": "Is It Time To Reassess Danaher (DHR) After Recent Share Price Recovery? - simplywall.st",
@@ -38620,9 +38621,9 @@
         "ts": 1781342736
       },
       {
-        "title": "Here's Why Investors Should Bet on Expeditors Stock at Present - TradingView",
-        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOcjE1bHlFLXhTZkdvVzRBbXFldFdRNzJ3cVFoOEc5eFFfdGotTXFHQVkxMVZSWUx2VlBkbnNhbE5jV1FiX1BkTWdYUFRGRTVtT1FEWXYxU0VRRU5ITmc5ejBwZUdvZ3p3M0w3dFZhdVdqd2VnMVpiUTNIc3ZpWGQ5XzFjc25FQWlmQXd0dHV6R3RadXJHWjVYY2MtdmNYaXFUb3h5WUNYeFVBa0FQVTFzbnNacS1wbjFjY1E?oc=5",
-        "source": "TradingView",
+        "title": "Here's Why Investors Should Bet on Expeditors Stock at Present - Eastern Progress",
+        "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNZ3hLX0wtMXRfR3RkSFJJN3Z4VVF3ZnRNSHJJOHpLTC1SblVtaW1oUXl4S2Flc1ZWYnRTakxPUnlHcC1TdmZ4a2dqYkRfMnhzRnpySS1kMnpjZnppSDYxMElqeUxqSUNHSURoOWEyVkVtUzNUN0JxMHVDbjJselg0VzB1ZmI2OUdVNzJ6UTRSc0tDdXRyTzdyeWNnS01kNFM3WV9jU3lRazhzSTBGZXQyZEVMNVViakJMQzdwR0tBQjZXelJoRmpGMVlMajdRYTlTZ2xSSDMycU9FUlE?oc=5",
+        "source": "Eastern Progress",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
@@ -38863,13 +38864,13 @@
         "ts": 1781623866
       },
       {
-        "title": "RBLX Stock Quote Price and Forecast - CNN",
-        "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE0wOC1MeGpVZlNQQkpTNnp4bjdNV0FoUXllNjhSUVFhQS1MZk1hUHZpN2NyUUxmY1ZzZEVPd1ZZSDNjbnotd091M1dPMkctSGYz?oc=5",
-        "source": "CNN",
+        "title": "RBLX Court Deadline: Roblox Corporation Investors are Notified of the Important August 7 Deadline in the Pending Securities Fraud Class Action Lawsuit - PR Newswire",
+        "url": "https://news.google.com/rss/articles/CBMirgJBVV95cUxON1lxV0IwRTBROWZVam5LYVdENUw3VllmT2pPMlR6NGc3ejlDQ2tBWHBaUUpVSEtjNzdmRlpTeHNnRklTQ2N0NWtjTzdrdjB6ZEdFVWl3MjQ1Vk9STzFMWGJUQjVVTmZrcUdiUEhsNjNTeDBxd0kycktNSDZCVjZieW90WlJSa0hscEhHaVlydDdxTElORHF4ekFzcTQ0UlJFQ2VMX093U3FwZ2RiZmxFUERiYTdCS2J2MFhFZ0I0NHZtemFzcXVDMHFYdVBUcWJabk9Sb01rZmVESXZFRWFVNUhyLWRDbzRpaEl3VV92cXJNUEIyNjJDMWs3WGFaYXFlaE5hTU9mTWt3dFBqSWpwX0loT211cXV2Mkd3ZU9wd2M5RzA2OHF1aEY2a1c3Zw?oc=5",
+        "source": "PR Newswire",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "ECONOMY",
         "summary": "",
-        "ts": 1781424102
+        "ts": 1781604420
       },
       {
         "title": "ROBLOX CORPORATION (RBLX) INVESTOR ALERT Investors With - GlobeNewswire",
@@ -39196,12 +39197,12 @@
     "EQR": [
       {
         "title": "EQR.N - | Stock Price &amp; Latest News - Reuters",
-        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxORXJRS2JUVHloQkVBM01rLW1oUm1vczhJdDVwd2djeGRhc1VJQnpGX3dMVGc0MXJ5OWpSN1kwQVdRVUFMbXJ3WnZUVzFOeDVJQ0VvVW5ySWx6T001N1pwUXpVVmJuRjQzbXg0OElpYk5MUDNwWWt1SDFNTk0tMlUzNWNrVVlJUXU2VlZEYXFSN0V3RVpMRDNBSGliQWM4bHJpQjJsNlRn?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQRDhhWjl3N3ZBaWNrNEM1MmtPM0tqYkd5ajVGVWV2bG15dkhES1FsbUJMZ2puZHpjZmVOMWF4bkR6UTN6MThhT3pNM3JUaHo0RGVnQnlDSERfUHpnc3JrbFgtcTdxUlJuSXVna0xod3JjZ1BLVEltS0RoRjFRTk1FdzZ6N2thN1NlNjUycmk4M3F5T1pCYmMyTlRUaDNuSHRy?oc=5",
         "source": "Reuters",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781623591
+        "ts": 1781617183
       },
       {
         "title": "Equity Residential Stock: Is EQR Underperforming the Real Estate Sector? - Yahoo Finance",
@@ -39253,13 +39254,13 @@
     ],
     "AVB": [
       {
-        "title": "REIT Consolidation Gathers Pace as Small and Mid-Cap Firms Become Attractive Targets - GuruFocus",
-        "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxNMzc4OFpDUjFiS1Y2bVFKc0hmVTROQUo0SEZxdFU1MVR6R3NtODdpS0JYdVAxN19sckpYWm9QRWhJVS1TM3VVYWRmLU1veUJTZUk0S2pRZjNLNWhsRGtZY2lRa21GN3dBalgwMm8wSHJCZGZ2XzNRcUZRbVc4WnYxOVFLb0RJdGVtam1QVEx1YTVOQkdYd05GQnpRSk1ZYlMyZVYweGdSX3lmM0dZQXNJQzZqWEI1MW91RnkyTmZ5QQ?oc=5",
-        "source": "GuruFocus",
+        "title": "Avalonbay Communities Inc. stock outperforms competitors on strong trading day - MarketWatch",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQWERfcmtOazJCNVRrTHUwOXVTNG4wQlphV29ESWRMX3lyR3dXVDNIN1Y1TFB0VlVNRDdmRXZjREZaN0hzTFhtMzJhZFpESGF4OGotQXZEaUsxbWJsY2VwdjNjWVFjcjVYaGFtR0tXUUtpVzJDUFdpaHRjMndjSzYtWEVxclVZZHlhVTI5dUtia1AtMnVIYndZY09MYS1yWHFNb1ZmWnRZb0V2UkRaUHpzbkJwSVExYzVTbFNsZ0Z3ODA4emVBRDg1a0F0QXQxeE53eWFv?oc=5",
+        "source": "MarketWatch",
         "geo": "US",
-        "category": "ECONOMY",
+        "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781608023
+        "ts": 1781298060
       },
       {
         "title": "Assessing AvalonBay Communities (AVB) Valuation After Recent Share Price Momentum And Modest Undervaluation Estimate - simplywall.st",
@@ -39427,71 +39428,13 @@
         "ts": 1781573455
       },
       {
-        "title": "Invitation Homes Announces Cash Dividend - Business Wire",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNUlBrd1I1cUF1c0NxeHhCVmN0MTNTTV9YaHREQktNcWUtVHZ5SW9CZ0IxVTVycDNrdGRRaTFFVHVWMXR4S1lSTkxnek52Vmh3bEZZN0FwLUZjSldkQmZGZnVxamw4ZVZsUWp0a1IySU1DVk80Qzl6WnozY2E0ZHBUQ3lieFQxU0VpWjJiZjAxLU9iclNZd2tiZ3lad01UZw?oc=5",
-        "source": "Business Wire",
+        "title": "Precision Trading with Invitation Homes Inc. (INVH) Risk Zones - Stock Traders Daily",
+        "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNQnIzblVmVWVFNlVQek9DVTZoZVZ3UVAteDE2Vi0tQ3Z6VDRFVEgwcW1NcUtyTGp6N2dINFhOUTI2ZUVtbnNZaXZYeTBEWGczV1dweE9ZRVprV3hrekJqSnUtSzFNYjl6V3NxMmF4UzkxdDBfTEh6ejY5bFdhT2RrZFhXLXVnRnZLWXZUZWlUa3l0NVBVb1VxSThhUlkwcU95TGhEM0hKZVhaTjhlRkxoODRsbWVYd28xNU5wTjlpMHlZZFoyakcwWm51dm1vcy1JNzBFeE1R?oc=5",
+        "source": "Stock Traders Daily",
         "geo": "US",
-        "category": "MARKETS_FINANCE",
+        "category": "TECH",
         "summary": "",
-        "ts": 1781261100
-      }
-    ],
-    "ETH": [
-      {
-        "title": "Tom Lee's BitMine Adds $139 Million in Ethereum Ahead of Preferred Share Trading Start - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOQVF1NnJ3SVB4ZHZXekR4UGRGN0J1bGVmQk1kOFlmWHQyTDFuamRSbXItel9kSEJZY0ZXYkJ4UThxRFBMbTFSS1hCY0F4UVFpYUZJVDRkaFIzX1hHcEo4d0FRM3BqMUtMV1VLNHN1TGJBY3Z4YzRFS3B2QTVWRUZ5MFR4TkxZYlpTaG5rVlNyNFpLVC1T?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781534210
-      },
-      {
-        "title": "Ethereum news: Tom Lee's Bitmine (BMNR) buys 76,881 ETH as preferred equity sale fuels expansion - CoinDesk",
-        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNS1E2MmhiWDFYSlVaUWZxRkczQnc3RlFQU05Qam41WlFvZUdqNjN5V1hQYTljcUw3V1hnSHlzNGVMczI4ZkZPZHVrREJqdGRBUnU3RDNwa0t1ckZZVTdVTVROdHEtdDJ1cUFlNkdqS0dNRU9ybEc2T2kzaHI0bHFrY3FiUWhwWjJiRXY2Zk90ckpKaWpEalVueEFBM0E4MEg5OXpLcThKYXhmaVBzWkFoUHlfbU9RcnhzTjlGZU15ZkozVTdZNmxTd0V1UVRGam45blM0QnpRZHpsdw?oc=5",
-        "source": "CoinDesk",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781528862
-      },
-      {
-        "title": "Ethereum(ETH) Stock Price Today | Quotes &amp; News - Moomoo",
-        "url": "https://news.google.com/rss/articles/CBMinAJBVV95cUxQSHk2NkdId2cwb1l0bGtjazA1MWpXSk8wOVZWMDFkWjI4YURPdy1lNlNUcmx2RzBxUWs2REo1OXk0VFVEc3lKdHIyUTQ3VkNiai1PUjNQa21hZXpCLW1rRmxyVlFrNkdzMi1jWXIzdHZWcWJUc3JwV2lsRGw0TkVWNVRnYU1IRDZOYmdFMDhTcXg4SlBsbTdKRzFNOWQ5Vld4bndMaE5BdFFzOWZ1czN5dkVTQTlRUk1KaDlUbmtPQXNlWExtM1hQYm04bkV1Tl9tSEJLU1ZoeFQ2a1BXM3JBeUtpd1cwZG1DYzZMMXdHSmNQc0dGb2puOWtUQmF2Z2R2SFlXbWNKWEV1Z1lJT1JUWWRjM0hNSTZVWWdfZQ?oc=5",
-        "source": "Moomoo",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781500954
-      }
-    ],
-    "SOL": [
-      {
-        "title": "Solana Price Prediction: SOL Just Posted Its Best Week of 2026, Can the Momentum Hold? - AOL.com",
-        "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNS1VJN1cxRDJSaG5meGNRNmNfbVlsVjNESzNQajJXV0p6d0NOZUpIU28xaHR2RlFLdkVKbnFnaHV2ZWhKamhoRWVDdHdCZ2toZFltTW5FX3VuLS1rYnJ6LWdnQkpJUGkwT2NfUUQ3b3Y2WjBQRzF4bWpFc3NYVU1XLXNn?oc=5",
-        "source": "AOL.com",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781401834
-      },
-      {
-        "title": "A Tokenized SpaceX Stock Will Be Available on Solana the Same Day the IPO Begins Trading - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOTUJMMm1IR0t1X2U3SzRVSFBuTWFhamJwdW90QUFTNHpKOV8tZnNXWENqdVd6MjNQa1NxMlEyNnFpQTgyRVR4S1g4TkdTTkhQTkJQdTNrM2tCdkJXdlptQ3RzTE5nb2hESTMtV082aFBZZjJuVE15UVFiWERnZXdSZU5YaTVONWdraDRzX0tPd3ZRZ2xPMU96VURkT3JhaEJqekFpMVhYMA?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781198880
-      },
-      {
-        "title": "SpaceX stock is coming to Solana on the same day it lists on Nasdaq - CoinDesk",
-        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQTEhfb2paS2lyZTlJRzVNeFA3TnUzYVdVUEEybi03b2ZaWW1pT1JlMVBGUEduNU42bDZnWW1KeW1EZFdCUWFaNlU2V0dPUDhIQW1XXzQ5R1Ztbm5wd2t4cHJ2RnVmaXNRbUNtTG92OGQzS2V5dmNWVHlrcnozVFdwWC0wb1ZCamtweHVLdFN4NjE5MFREOFJTQURBOE5sa1BFdmFJSGR0UTFJa0Yz?oc=5",
-        "source": "CoinDesk",
-        "geo": "CR",
-        "category": "CRYPTO",
-        "summary": "",
-        "ts": 1781198250
+        "ts": 1781088482
       }
     ],
     "MATIC": [
@@ -39521,35 +39464,6 @@
         "category": "CRYPTO",
         "summary": "",
         "ts": 1781125320
-      }
-    ],
-    "XRP": [
-      {
-        "title": "The Contrarian Case for Ripple Over XRP: Should You Buy While It's Trading Near $1? - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOa0h3ektRbWpHTE9GNnpzMFVUNjNQWE1vT3Z5aWFTRWhuSk9lbkdONnFWano1T3Ftb0wxSlRPai1kaVktU1JVUkRVNUl2WWlUR3Aya3dpRjVIT2RfNE5lTGhhcElCY09fQm5qczF0UkhOUWRZWTAyN3o0NTFpekRsYU9mdW4wdmlsQTFYNmVteG1FaXg3dGFvWEZMeXg?oc=5",
-        "source": "Yahoo Finance",
-        "geo": "CR",
-        "category": "ECONOMY",
-        "summary": "",
-        "ts": 1781296380
-      },
-      {
-        "title": "Ripple's XRP Is About to Get a New Upgrade. Here's What That Means for the Price of XRP - The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPQ05rNVhjV3lUeVZoTFFfT0w4Q0NVUFNSUGJtcVFMZU1IMHl2NGRiQU5qOHJRQUE3NUx2Qnc2N3plQTM5WTlFOUVHRGluZTBJQzZzMDdUdWQ1TFR3V2RnSXhFb3liU3ZqNHJSc1dNMHdLb0lXbGtESTBZcHJNNG1iY2d6UEdrSWRpVEhtbzA4MERjdkNwVEpKLQ?oc=5",
-        "source": "The Motley Fool",
-        "geo": "CR",
-        "category": "ECONOMY",
-        "summary": "",
-        "ts": 1781208840
-      },
-      {
-        "title": "Ripple(XRP) Stock Price Today | Quotes &amp; News - Moomoo",
-        "url": "https://news.google.com/rss/articles/CBMingJBVV95cUxPQ1Rpa1I1Umh6azBRclozQzdTVENEMmhpZGozb3dlUndybDRyZlVQdEVEaV9BVWdPZlJISUUzaWJZZURRS2lPTm52Wjl2M0NJSmdXMTVNWGhUdC1WY3M0a3pndVB4cVlHVjFzRXlLMHNtRl8tWHRhMDBfUEUtdkhDYU1NbVd5amFvNWZrcVlPcGplQ0tyTGRGbFNnZmtmZEtaM0NRWVBqbHVjdDJwMjRXOGN6WUhHbWxUbGRPWVljcGFBdVdwXzZOSHRHeG10bE5DLVlWWXpwUjZLQ2J3clZocnc2VlhDUzdQemltWVFsdy1SVTR5ek4zV29GSENwX213OXlFTnF5R1N0ODQ5RkNERjZlRGtFZjI0d29OZGFB?oc=5",
-        "source": "Moomoo",
-        "geo": "CR",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781187713
       }
     ],
     "AVAX": [
@@ -39610,24 +39524,53 @@
         "ts": 1781418660
       }
     ],
-    "BTC": [
+    "DOGE": [
       {
-        "title": "MicroStrategy's new Bitcoin buy worth $100M sends MSTR stock soaring 7% - Seeking Alpha",
-        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQaEpfWWROcVczM1pqd19CbEFtYldEUFJMZjVQcXU3dXpNWjVncThYWG0ydE1CU3J3QTNZTlNNWUhhMWZ4VVhaWTFqYzV2SThqd1ZPTGpCUHdaeGljTkxmM3hrOUxMbDBwanRCRDYyZTBLMDNNb0dDRFNMUWFia2NremxtUWFDXy1nakRJVEpuRlpkOVQwZjU5R0ZWVUh2WkxCdm5GSmh5bXBhQQ?oc=5",
-        "source": "Seeking Alpha",
+        "title": "Dogecoin nears breakout with 8% recovery and new merchant support from MoonPay. - Pluang",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQT2pDd3RQbU9JcmVnbU95dkZMZGx6M3diTk14MktSdDNYSWFmaHEyY25mSnVRbUo3amJGSTRJM1JNbzZtQnUtdGZnVW1vUkVXZUliZHhFWE1fVXEwSXBRQm0xZGRybjlpd21iY3BVWHBXbW5fU0llcER2RHdKam9FT0VBSFF2c3RTalFaZnpEcy1sODV1eTV6WE1oXzZuRVNP?oc=5",
+        "source": "Pluang",
         "geo": "CR",
-        "category": "CRYPTO",
+        "category": "ECONOMY",
         "summary": "",
-        "ts": 1781528364
+        "ts": 1781516488
       },
       {
-        "title": "Strategy Stock MSTR Offers Bitcoin Exposure At 18% Discount - Bitcoin Magazine",
-        "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPQ3RIMm1YeVpkQnV5YU1UdlRqUEl1T1lUeGhFZzA0MEU2VENPenBTNy1nZnQzdlJ5aVlLQ1V1VU5tTW5TdFhpWm9YRGpEMm5mTkEybndQeHl2dDlEdXotZUl5cmVzeWZ6cFJmUWcyRlR1cnBsZUZSaDhXaWlraUM0cUg1Nl9Cb1BoTUViYjFyek1OZlpGaXdNNlR3?oc=5",
-        "source": "Bitcoin Magazine",
+        "title": "Can Dogecoin Really Turn You Into a Millionaire? - The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxONTNFRGJkV0VONzctdi1nVm5xS2ZTcXpvbE5xNUNOcnloOFJyblp3SWM4QTMxcWhoa1BUZzMtc1ZacEdjN2NxVi1MRGpYYkhrcDItdjRHejAzc1owVDFiWGZWcEIydk5rV3lIU3F4Yzd2NmZjbnZNSTQ5N295c1BrajdmQVY2Y2I0QTJxVmxzaVdGUEYx?oc=5",
+        "source": "The Motley Fool",
+        "geo": "CR",
+        "category": "TECH",
+        "summary": "",
+        "ts": 1781355720
+      },
+      {
+        "title": "Is Dogecoin the Smartest Crypto Buy Under $1? - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPMmxhNkYyYUpuek5rSThsZ3BiemFDeWliV3V0U2FTU2QxZVRJNWdRcng4Zm5TY1RnZ19XMWZnXzJMOW5BUnpCRTYwNzVRWDlKMkZIV0dFckZ4ZUF4Vjk3LWpwN29BQ0ZoaWdVeHpWdmV2ZnlmMHBNUnlwWjhBUmk4cjM4T3RwNXFKbDdVbmpmQ1ktZmlEMVBrRFVrajR2R2JQ?oc=5",
+        "source": "Yahoo Finance",
         "geo": "CR",
         "category": "CRYPTO",
         "summary": "",
-        "ts": 1781272300
+        "ts": 1781115600
+      }
+    ],
+    "BTC": [
+      {
+        "title": "Crypto Market Update: Bitcoin Price Rebounds on US-Iran Deal - Investing News Network",
+        "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9PU3pBdGY0NWJMSWFUTFRDUGx3RklNQlNENWdlQjBiNG9meUo5andqSHFER0lkNlhEaFVwOXpLYWZseVJ1YVZsU2Q4RzBWT1RoeUhTM19YaFljM2ZHcm5yMHYxTlc?oc=5",
+        "source": "Investing News Network",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781557500
+      },
+      {
+        "title": "Popular Bitcoin Miner Bitdeer Sells All Its Bitcoin After New Equity Raise - Stocktwits",
+        "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPRzQ2NUFWeHFnMHFsV3JBdFh6MU9NNU1PZ1RzcmZyckRtZm1xRUpjY0lmbUJsVDY0OEZLdjZzVlBpZzdqZ2N1bzN5X3RncGlYRmZqOHlPZWUzM3VEbzBHZjdFd1JudklmYXlwSjhmcktPTUpPZXE4c0xEdEVRX1NadVV2MmZJbExxQi0xOHZ3bHRROEN3OXlVYkZITUx3eXZManE5NEE3WFlGUXNnTUJpeFh5Tkl5QjBYUGp2Ug?oc=5",
+        "source": "Stocktwits",
+        "geo": "CR",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781234856
       },
       {
         "title": "Nasdaq Listed Fold Sells Bitcoin to Clear Debt and Stock Rallies 140% - Yahoo Finance",
@@ -39637,6 +39580,35 @@
         "category": "CRYPTO",
         "summary": "",
         "ts": 1781100672
+      }
+    ],
+    "ETH": [
+      {
+        "title": "Tom Lee's BitMine Adds $139 Million in Ethereum Ahead of Preferred Share Trading Start - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOQVF1NnJ3SVB4ZHZXekR4UGRGN0J1bGVmQk1kOFlmWHQyTDFuamRSbXItel9kSEJZY0ZXYkJ4UThxRFBMbTFSS1hCY0F4UVFpYUZJVDRkaFIzX1hHcEo4d0FRM3BqMUtMV1VLNHN1TGJBY3Z4YzRFS3B2QTVWRUZ5MFR4TkxZYlpTaG5rVlNyNFpLVC1T?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781534210
+      },
+      {
+        "title": "Ethereum news: Tom Lee's Bitmine (BMNR) buys 76,881 ETH as preferred equity sale fuels expansion - CoinDesk",
+        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNS1E2MmhiWDFYSlVaUWZxRkczQnc3RlFQU05Qam41WlFvZUdqNjN5V1hQYTljcUw3V1hnSHlzNGVMczI4ZkZPZHVrREJqdGRBUnU3RDNwa0t1ckZZVTdVTVROdHEtdDJ1cUFlNkdqS0dNRU9ybEc2T2kzaHI0bHFrY3FiUWhwWjJiRXY2Zk90ckpKaWpEalVueEFBM0E4MEg5OXpLcThKYXhmaVBzWkFoUHlfbU9RcnhzTjlGZU15ZkozVTdZNmxTd0V1UVRGam45blM0QnpRZHpsdw?oc=5",
+        "source": "CoinDesk",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781528862
+      },
+      {
+        "title": "Ethereum(ETH) Stock Price Today | Quotes &amp; News - Moomoo",
+        "url": "https://news.google.com/rss/articles/CBMinAJBVV95cUxQSHk2NkdId2cwb1l0bGtjazA1MWpXSk8wOVZWMDFkWjI4YURPdy1lNlNUcmx2RzBxUWs2REo1OXk0VFVEc3lKdHIyUTQ3VkNiai1PUjNQa21hZXpCLW1rRmxyVlFrNkdzMi1jWXIzdHZWcWJUc3JwV2lsRGw0TkVWNVRnYU1IRDZOYmdFMDhTcXg4SlBsbTdKRzFNOWQ5Vld4bndMaE5BdFFzOWZ1czN5dkVTQTlRUk1KaDlUbmtPQXNlWExtM1hQYm04bkV1Tl9tSEJLU1ZoeFQ2a1BXM3JBeUtpd1cwZG1DYzZMMXdHSmNQc0dGb2puOWtUQmF2Z2R2SFlXbWNKWEV1Z1lJT1JUWWRjM0hNSTZVWWdfZQ?oc=5",
+        "source": "Moomoo",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781500954
       }
     ],
     "BNB": [
@@ -39668,33 +39640,62 @@
         "ts": 1781190906
       }
     ],
-    "DOGE": [
+    "XRP": [
       {
-        "title": "Dogecoin nears breakout with 8% recovery and new merchant support from MoonPay. - Pluang",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQT2pDd3RQbU9JcmVnbU95dkZMZGx6M3diTk14MktSdDNYSWFmaHEyY25mSnVRbUo3amJGSTRJM1JNbzZtQnUtdGZnVW1vUkVXZUliZHhFWE1fVXEwSXBRQm0xZGRybjlpd21iY3BVWHBXbW5fU0llcER2RHdKam9FT0VBSFF2c3RTalFaZnpEcy1sODV1eTV6WE1oXzZuRVNP?oc=5",
-        "source": "Pluang",
-        "geo": "CR",
-        "category": "ECONOMY",
-        "summary": "",
-        "ts": 1781516488
-      },
-      {
-        "title": "Can Dogecoin Really Turn You Into a Millionaire? - The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxONTNFRGJkV0VONzctdi1nVm5xS2ZTcXpvbE5xNUNOcnloOFJyblp3SWM4QTMxcWhoa1BUZzMtc1ZacEdjN2NxVi1MRGpYYkhrcDItdjRHejAzc1owVDFiWGZWcEIydk5rV3lIU3F4Yzd2NmZjbnZNSTQ5N295c1BrajdmQVY2Y2I0QTJxVmxzaVdGUEYx?oc=5",
-        "source": "The Motley Fool",
+        "title": "Here's What to Do If XRP Drops Below $1 During the Summer - The Globe and Mail",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNM2d6SW1aUkxYUW83ZjNVRnplRXM1SGVQRDI1VlIzZjFYWnRFMjdlS3BJLWllSHMwbWE4a0ZyY01WSGtmSHZKdGh2V20tYjlEcV93a0NYNDZQVGZUNzhEYWF2aHc2RGFlbDRsTVFtYWM0WGFtXzVJMkQwd0JlZkM2SlRXXy03TXAyYlVwWmFubDg4cTBLTUR0M29yUW9obUJzbkZ3bEFNVThCbUgxX2pzdlk3cFRvdTNBa3VqLXRXZmZCb3k1aThjNE1UU3k2RGFwTVpqbjBVVQ?oc=5",
+        "source": "The Globe and Mail",
         "geo": "CR",
         "category": "TECH",
         "summary": "",
-        "ts": 1781355720
+        "ts": 1781346240
       },
       {
-        "title": "Is Dogecoin the Smartest Crypto Buy Under $1? - Yahoo Finance",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPMmxhNkYyYUpuek5rSThsZ3BiemFDeWliV3V0U2FTU2QxZVRJNWdRcng4Zm5TY1RnZ19XMWZnXzJMOW5BUnpCRTYwNzVRWDlKMkZIV0dFckZ4ZUF4Vjk3LWpwN29BQ0ZoaWdVeHpWdmV2ZnlmMHBNUnlwWjhBUmk4cjM4T3RwNXFKbDdVbmpmQ1ktZmlEMVBrRFVrajR2R2JQ?oc=5",
+        "title": "The Contrarian Case for Ripple Over XRP: Should You Buy While It's Trading Near $1? - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOa0h3ektRbWpHTE9GNnpzMFVUNjNQWE1vT3Z5aWFTRWhuSk9lbkdONnFWano1T3Ftb0wxSlRPai1kaVktU1JVUkRVNUl2WWlUR3Aya3dpRjVIT2RfNE5lTGhhcElCY09fQm5qczF0UkhOUWRZWTAyN3o0NTFpekRsYU9mdW4wdmlsQTFYNmVteG1FaXg3dGFvWEZMeXg?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "CR",
+        "category": "ECONOMY",
+        "summary": "",
+        "ts": 1781296380
+      },
+      {
+        "title": "Ripple's XRP Is About to Get a New Upgrade. Here's What That Means for the Price of XRP - The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPQ05rNVhjV3lUeVZoTFFfT0w4Q0NVUFNSUGJtcVFMZU1IMHl2NGRiQU5qOHJRQUE3NUx2Qnc2N3plQTM5WTlFOUVHRGluZTBJQzZzMDdUdWQ1TFR3V2RnSXhFb3liU3ZqNHJSc1dNMHdLb0lXbGtESTBZcHJNNG1iY2d6UEdrSWRpVEhtbzA4MERjdkNwVEpKLQ?oc=5",
+        "source": "The Motley Fool",
+        "geo": "CR",
+        "category": "ECONOMY",
+        "summary": "",
+        "ts": 1781208840
+      }
+    ],
+    "SOL": [
+      {
+        "title": "Solana Price Prediction: SOL Just Posted Its Best Week of 2026, Can the Momentum Hold? - AOL.com",
+        "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNS1VJN1cxRDJSaG5meGNRNmNfbVlsVjNESzNQajJXV0p6d0NOZUpIU28xaHR2RlFLdkVKbnFnaHV2ZWhKamhoRWVDdHdCZ2toZFltTW5FX3VuLS1rYnJ6LWdnQkpJUGkwT2NfUUQ3b3Y2WjBQRzF4bWpFc3NYVU1XLXNn?oc=5",
+        "source": "AOL.com",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781401834
+      },
+      {
+        "title": "A Tokenized SpaceX Stock Will Be Available on Solana the Same Day the IPO Begins Trading - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOTUJMMm1IR0t1X2U3SzRVSFBuTWFhamJwdW90QUFTNHpKOV8tZnNXWENqdVd6MjNQa1NxMlEyNnFpQTgyRVR4S1g4TkdTTkhQTkJQdTNrM2tCdkJXdlptQ3RzTE5nb2hESTMtV082aFBZZjJuVE15UVFiWERnZXdSZU5YaTVONWdraDRzX0tPd3ZRZ2xPMU96VURkT3JhaEJqekFpMVhYMA?oc=5",
         "source": "Yahoo Finance",
         "geo": "CR",
         "category": "CRYPTO",
         "summary": "",
-        "ts": 1781115600
+        "ts": 1781198880
+      },
+      {
+        "title": "SpaceX stock is coming to Solana on the same day it lists on Nasdaq - CoinDesk",
+        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQTEhfb2paS2lyZTlJRzVNeFA3TnUzYVdVUEEybi03b2ZaWW1pT1JlMVBGUEduNU42bDZnWW1KeW1EZFdCUWFaNlU2V0dPUDhIQW1XXzQ5R1Ztbm5wd2t4cHJ2RnVmaXNRbUNtTG92OGQzS2V5dmNWVHlrcnozVFdwWC0wb1ZCamtweHVLdFN4NjE5MFREOFJTQURBOE5sa1BFdmFJSGR0UTFJa0Yz?oc=5",
+        "source": "CoinDesk",
+        "geo": "CR",
+        "category": "CRYPTO",
+        "summary": "",
+        "ts": 1781198250
       }
     ],
     "ADA": [
@@ -39771,6 +39772,48 @@
       "summary": "#SmartInvesting starts with Real Insights Memasuki pertengahan pekan, saatnya melihat arah market terbaru dan peluang teknikal yang mulai terbentuk. Simak update hari ini bersama Mirae Asset Sekuritas Indonesia. Morning Meeting akan membahas: • Market Highlight – ringkasan sentimen & pergerakan utama • Market Update – Martha Christina • Technical Analysis – Nafan Aji Gusta, CTA, CSA See full report #SmartInvesting dimulai dari tools yang tepat. Gunakan M-STOCK, aplikasi investasi untuk analisis,"
     },
     {
+      "video_id": "ANDegDSNt1o",
+      "title": "US Draft Deal Includes Financial Incentives for Iran | Balance of Power 6/16/2026",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=ANDegDSNt1o",
+      "embed": "https://www.youtube.com/embed/ANDegDSNt1o",
+      "thumb": "https://i.ytimg.com/vi/ANDegDSNt1o/hqdefault.jpg",
+      "published": "2026-06-16T23:32:16Z",
+      "ts": 1781652736,
+      "summary": "\"Balance of Power: Late Edition\" focuses on the intersection of politics and global business. On today's show, Senator Elizabeth Warren (D-MA), says she is optimistic Congress can pass bipartisan housing legislation and get it to President Trump's desk. Senator Ron Johnson (R-WI), says he has not seen the full Iran memorandum of understanding and remains skeptical Tehran can be trusted, while arguing the US should keep monitoring Iran and retain the option of further strikes if it moves toward i"
+    },
+    {
+      "video_id": "r4mpe0UcUzk",
+      "title": "Sen. Johnson: US Must Keep Iran ‘In a Box’",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=r4mpe0UcUzk",
+      "embed": "https://www.youtube.com/embed/r4mpe0UcUzk",
+      "thumb": "https://i.ytimg.com/vi/r4mpe0UcUzk/hqdefault.jpg",
+      "published": "2026-06-16T22:46:27Z",
+      "ts": 1781649987,
+      "summary": "Senator Ron Johnson (R-WI), a member of the Senate Homeland Security and Finance Committees, says he has not seen the full Iran memorandum of understanding and remains skeptical Tehran can be trusted, while arguing the US should keep monitoring Iran and retain the option of further strikes if it moves toward its nuclear program. He also defends President Trump’s energy policy and says he is generally supportive of reauthorizing FISA Section 702, but wants stronger protections for civil liberties"
+    },
+    {
+      "video_id": "rCJJw4fYnp8",
+      "title": "The Close 6/16/2026",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=rCJJw4fYnp8",
+      "embed": "https://www.youtube.com/embed/rCJJw4fYnp8",
+      "thumb": "https://i.ytimg.com/vi/rCJJw4fYnp8/hqdefault.jpg",
+      "published": "2026-06-16T22:33:47Z",
+      "ts": 1781649227,
+      "summary": "Bloomberg Television brings you the latest news and analysis leading up to the final minutes and seconds before and after the closing bell on Wall Street. Today's guests are Charles Schwab Chief Investment Strategist Liz Ann Sonders, NYU Stern Finance Professor Aswath Damodaran, Wedbush Securities SVP Equity Research Alicia Reese, Harrison Street Co-Founder & Global CEO Chris Merrill, Man Group Chief Market Strategist Kristina Hooper, JP Morgan Head of Global Rates Strategy Jay Barry, LA Host Co"
+    },
+    {
       "video_id": "yInoTSwy2AQ",
       "title": "SpaceX Overtakes Amazon in Third Trading Day, Take-Two Soars, La-Z-Boy Rises After Earnings |...",
       "channel": "Bloomberg Stock Movers",
@@ -39827,6 +39870,20 @@
       "summary": "Rob Thummel and Ben Cook discuss the energy market's outlook following a tentative U.S.-Iran memorandum of understanding. Ben says there are reasons for concern over hiccups associated with future discussion and supplies will continue to be a challenge. Rob talks about the outlook for crude oil and what could result in higher oil prices. They point out that even with a full reopening of the Strait of Hormuz, it could still take several months until we get to a full restoration of transit activit"
     },
     {
+      "video_id": "1mYm1gw4S5k",
+      "title": "Senator Warren on Iran Deal, Fed's Warsh and SpaceX IPO",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=1mYm1gw4S5k",
+      "embed": "https://www.youtube.com/embed/1mYm1gw4S5k",
+      "thumb": "https://i.ytimg.com/vi/1mYm1gw4S5k/hqdefault.jpg",
+      "published": "2026-06-16T21:54:23Z",
+      "ts": 1781646863,
+      "summary": "US Senator Elizabeth Warren, a Massachusetts Democrat, says President Donald Trump \"can't point to where we're better off\" after the war in Iran. Speaking on \"Balance of Power: Evening Edition,\" Senator Warren also discusses Defense Secretary Pete Hegseth's military budget request, her criticisms of Kevin Warsh as chair of the Federal Reserve, the state of housing and the SpaceX IPO. -------- More on Bloomberg Television and Markets Like this video? Subscribe and turn on notifications so you don"
+    },
+    {
       "video_id": "tQHOpofGCME",
       "title": "Warsh’s Opening Act at the Fed",
       "channel": "Morgan Stanley",
@@ -39841,6 +39898,20 @@
       "summary": "Our Global Head of Macro Strategy Matthew Hornbach and our Chief U.S. Economist Michael Gapen discuss the signals investors will be seeking from the new Fed Chair leading his first monetary policy meeting and possible implications for markets. Never miss a Morgan Stanley video. Subscribe to our YouTube channel now: https://mgstn.ly/4rf2Txj _________________________________________________________________________ Or you can subscribe to Thoughts on the Market directly on Apple or Spotify. Apple P"
     },
     {
+      "video_id": "nCSII5fCHsw",
+      "title": "SpaceX Soars in 3rd Day of Trading, Set to Overtake Amazon| Bloomberg Businessweek Daily 6/16/2026",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=nCSII5fCHsw",
+      "embed": "https://www.youtube.com/embed/nCSII5fCHsw",
+      "thumb": "https://i.ytimg.com/vi/nCSII5fCHsw/hqdefault.jpg",
+      "published": "2026-06-16T21:17:31Z",
+      "ts": 1781644651,
+      "summary": "Today, Mandeep Singh, Bloomberg Intelligence global head of technology research, talks SpaceX's growth as the aerospace company soars in its third day of trading. Then, Nick Wadhams, Bloomberg national security reporter, breaks down the deal between the US and Iran that gives economic incentives to bringing the conflict to a close. Plus, Bloomberg macro strategist Simon White discusses the rise of debt backed by GPUs. Then, Bloomberg's Ira Jersey joins Greg Peters, Co-Chief Investment Officer at"
+    },
+    {
       "video_id": "XczE1_bS8Wk",
       "title": "Kevin Warsh's Fed is not expected to make any change to rates for a while: CNBC Fed Survey",
       "channel": "CNBC Television",
@@ -39853,6 +39924,20 @@
       "published": "2026-06-16T21:15:29Z",
       "ts": 1781644529,
       "summary": "Amid heightened anticipation, Kevin Warsh will head his first meeting as Federal Reserve chairman but is expected do very little, at least initially, according to the latest CNBC Fed Survey. CNBC's Steve Liesman has the details."
+    },
+    {
+      "video_id": "v38LY7Dnb9w",
+      "title": "US, Iran Prepare to Sign Deal | Balance of Power 6/16/2026",
+      "channel": "Bloomberg Television",
+      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
+      "category": "market_us",
+      "geo": "US",
+      "url": "https://www.youtube.com/watch?v=v38LY7Dnb9w",
+      "embed": "https://www.youtube.com/embed/v38LY7Dnb9w",
+      "thumb": "https://i.ytimg.com/vi/v38LY7Dnb9w/hqdefault.jpg",
+      "published": "2026-06-16T21:10:03Z",
+      "ts": 1781644203,
+      "summary": "On the early edition of Balance of Power, Bloomberg Washington Correspondents Joe Mathieu and Kailey Leinz discuss the latest from the G7 Summit in France. On today's show, former Israeli Ambassador to the United States Michael Oren, Stonecourt Capital Partner Rick Davis, Harvard Kennedy School Ash Center Visiting Democracy Fellow Jeanne Sheehan Zaino and Democratic Congresswoman Jennifer McClellan of Virginia. Chapters: 00:00:00 - Balance of Power: Early Edition 00:04:22 - Trump Says Iran Will "
     },
     {
       "video_id": "BYo_k2D8oi8",
@@ -39909,6 +39994,20 @@
       "published": "2026-06-16T20:45:33Z",
       "ts": 1781642733,
       "summary": "Believers in Elon Musk's astronomic vision for SpaceX are storming options on the stock as punters place cheap bets on massive moves and total premium surpasses trading in monster index ETFs. CNBC's Oliver Renick has the details."
+    },
+    {
+      "video_id": "at3WIe_ugrI",
+      "title": "Why BlackRock Thinks Bitcoin Goes to $750k (XRP & TAO news)",
+      "channel": "Altcoin Daily",
+      "channel_id": "UCbLhGKVY-bJPcawebgtNfbw",
+      "category": "crypto",
+      "geo": "CR",
+      "url": "https://www.youtube.com/watch?v=at3WIe_ugrI",
+      "embed": "https://www.youtube.com/embed/at3WIe_ugrI",
+      "thumb": "https://i.ytimg.com/vi/at3WIe_ugrI/hqdefault.jpg",
+      "published": "2026-06-16T20:20:21Z",
+      "ts": 1781641221,
+      "summary": "Limited Time: 🟡 Trade SpaceX w/ Zero Fees ($60,000 reward pool): https://www.weex.com/events/promo/spacex-608?vipCode=oz5p ✅ Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily 🧢 Altcoin Daily Merch: https://m046hz-bk.myshopify.com 🔵 Get access to BEST features on Coinbase: https://advanced.coinbase.com/join/U5FN8P5 🔴 Altcoin Daily in Spanish: https://www.youtube.com/@AltcoinDailyenEspanol 👉🔒 Get Ledger Wallet: Best Way to Keep your Crypto Safe! https://www"
     },
     {
       "video_id": "Ij6o2TQnU0Y",
@@ -40093,20 +40192,6 @@
       "summary": "GIANT News For Bitcoin, Ethereum, & Altcoins (Clarity Act Moves Forward?) ⭐ Follow Altcoin Daily on 𝕏: https://twitter.com/AltcoinDaily 🟡 50% deposit bonus on first $100 on WEEX: https://www.weex.com/events/welcome-event?vipCode=oz5p&qrType=activity 🟠 Become a channel member & get access to perks: https://www.youtube.com/channel/UCbLhGKVY-bJPcawebgtNfbw/join 🧢 Altcoin Daily Merch: https://m046hz-bk.myshopify.com ✅ Bitunix (no kyc, $10,000 bonus): https://www.bitunix.com/register?vipCode=AltcoinD"
     },
     {
-      "video_id": "fMBI5JqYPWs",
-      "title": "US, Iran Prepare for Deal Signing With Both Claiming Victory",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=fMBI5JqYPWs",
-      "embed": "https://www.youtube.com/embed/fMBI5JqYPWs",
-      "thumb": "https://i.ytimg.com/vi/fMBI5JqYPWs/hqdefault.jpg",
-      "published": "2026-06-16T16:14:12Z",
-      "ts": 1781626452,
-      "summary": "The US and Iran are preparing to formally sign their interim peace deal in Switzerland on Friday, with both sides claiming victory and oil traders and shippers unsure over how quickly the Strait of Hormuz will be reopened. The text of the so-called memorandum of understanding — a 14-point document that should lead to a two-month ceasefire extension and the start of negotiations over Iran’s nuclear program — has yet to be published. A senior US official said it’s possible that happens in the next"
-    },
-    {
       "video_id": "eXpPy1XkzyU",
       "title": "Dave & Buster's Sinks, Western Digital Rises, SpaceX Gains on Cursor Takeover Days After IPO |...",
       "channel": "Bloomberg Stock Movers",
@@ -40149,34 +40234,6 @@
       "summary": "Linkin Park have made history by becoming the first female-fronted band to headline Download Festival in a major moment for the alternative music scene. Speaking to BBC News' Mel Ramsay, they talk about how the group has evolved, what they look for in a new collaborator, and why this era feels different. They also reflect on their journey over the past few years, from uncertainty about the band’s future to returning to some of the biggest stages in the world. Plus, they discuss their new music, "
     },
     {
-      "video_id": "H2nsutW3leE",
-      "title": "RBC CEO on AI, Jobs, SpaceX IPO, US Trade, Energy Demand",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=H2nsutW3leE",
-      "embed": "https://www.youtube.com/embed/H2nsutW3leE",
-      "thumb": "https://i.ytimg.com/vi/H2nsutW3leE/hqdefault.jpg",
-      "published": "2026-06-16T15:58:22Z",
-      "ts": 1781625502,
-      "summary": "Royal Bank of Canada Chief Executive Officer Dave McKay talks about SpaceX going public, how artificial intelligence is being used at the bank, the US trade war with Canada, how he views markets and the investment climate in Canada. He spoke to Lisa Abramowicz on Tuesday at a Bloomberg Newsmakers event in Toronto. -------- More on Bloomberg Television and Markets Like this video? Subscribe and turn on notifications so you don't miss any videos from Bloomberg Markets & Finance: https://tinyurl.co"
-    },
-    {
-      "video_id": "rnMu7rqSiE4",
-      "title": "Bloomberg Surveillance 6/16/2026",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=rnMu7rqSiE4",
-      "embed": "https://www.youtube.com/embed/rnMu7rqSiE4",
-      "thumb": "https://i.ytimg.com/vi/rnMu7rqSiE4/hqdefault.jpg",
-      "published": "2026-06-16T15:55:39Z",
-      "ts": 1781625339,
-      "summary": "Jonathan Ferro, Lisa Abramowicz and Annmarie Hordern speak daily with leaders and decision makers from Wall Street to Washington and beyond. No other program better positions investors and executives for the trading day. Chapters: 00:00:00 - Bloomberg Surveillance starts 00:05:25 - Market Rebound Driven by Sector Rotation: Truist's Lerner 00:17:26 - Coates on US-Iran Peace Deal Details 00:29:45 - Dan Ives on US-Anthropic Talks, AI M&A, Open AI Losses 00:39:52 - Former Fed Governor Duke Expects D"
-    },
-    {
       "video_id": "xiDdPoL4M5U",
       "title": "THE AI BUBBLE’S FIRST CRACK  #news #kitconews",
       "channel": "Kitco News",
@@ -40191,20 +40248,6 @@
       "summary": "David Woo warns that regulatory risk could be the first crack in the AI bubble, with major consequences for the US dollar. Is AI the market risk investors are underestimating? Watch the full interview here: https://youtu.be/xBcugR2fM84 __________________________________________________________________ Like, share, and subscribe to Kitco News—and turn on alerts to stay current with expert interviews, market insights, and breaking news coverage. FOLLOW US: X: https://x.com/kitconewsnow Instagram: "
     },
     {
-      "video_id": "tUClxFLe9QA",
-      "title": "RBC President and CEO Dave McKay | Bloomberg Newsmakers",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=tUClxFLe9QA",
-      "embed": "https://www.youtube.com/embed/tUClxFLe9QA",
-      "thumb": "https://i.ytimg.com/vi/tUClxFLe9QA/hqdefault_live.jpg",
-      "published": "2026-06-16T15:19:39Z",
-      "ts": 1781623179,
-      "summary": "Royal Bank of Canada President and CEO Dave McKay joins Bloomberg TV's Co-Host of Surveillance Lisa Ambramowicz on June 16th at 10:30 am ET for a fireside chat from our bureau in Toronto, Canada."
-    },
-    {
       "video_id": "iYmy8Ci44ok",
       "title": "Ebola outbreak in DR of Congo could take year to end, Red Cross says | BBC News",
       "channel": "BBC News",
@@ -40217,34 +40260,6 @@
       "published": "2026-06-16T15:15:13Z",
       "ts": 1781622913,
       "summary": "The Red Cross said it could take a year to end the Ebola outbreak in the Democratic Republic of Congo. A dozen of healthcare workers sang songs of praise on Friday, as they escorted a patient, who has recovered from the disease, out of a hospital in the north-east of the country. More than 780 people have been infected with the desease and more than 180 have died. Subscribe to our channel here: https://bbc.in/bbcnews For the latest news download the BBC News app or visit BBC.com/news #DRCongo #E"
-    },
-    {
-      "video_id": "tIrfmVLa2o4",
-      "title": "Trump Says That Russia Should Make a Deal With Ukraine",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=tIrfmVLa2o4",
-      "embed": "https://www.youtube.com/embed/tIrfmVLa2o4",
-      "thumb": "https://i.ytimg.com/vi/tIrfmVLa2o4/hqdefault.jpg",
-      "published": "2026-06-16T15:09:53Z",
-      "ts": 1781622593,
-      "summary": "US President Donald Trump, speaking at the Group of Seven leaders meeting in Evian, France, calls on Russia to make a deal with Ukraine. Trump says he met Ukrainian President Volodymyr Zelenskyy earlier in the day. -------- More on Bloomberg Television and Markets Like this video? Subscribe and turn on notifications so you don't miss any videos from Bloomberg Markets & Finance: https://tinyurl.com/ysu5b8a9 Visit http://www.bloomberg.com for business news & analysis, up-to-the-minute market data,"
-    },
-    {
-      "video_id": "YPHSeySBv3g",
-      "title": "The Future of Forward Guidance Under Fed Chair Warsh",
-      "channel": "Bloomberg Television",
-      "channel_id": "UCIALMKvObZNtJ6AmdCLP7Lg",
-      "category": "market_us",
-      "geo": "US",
-      "url": "https://www.youtube.com/watch?v=YPHSeySBv3g",
-      "embed": "https://www.youtube.com/embed/YPHSeySBv3g",
-      "thumb": "https://i.ytimg.com/vi/YPHSeySBv3g/hqdefault.jpg",
-      "published": "2026-06-16T15:09:24Z",
-      "ts": 1781622564,
-      "summary": "Torsten Slok, chief economist at Apollo, looks at potential changes to Federal Reserve communication under Chair Kevin Warsh. -------- More on Bloomberg Television and Markets Like this video? Subscribe and turn on notifications so you don't miss any videos from Bloomberg Markets & Finance: https://tinyurl.com/ysu5b8a9 Visit http://www.bloomberg.com for business news & analysis, up-to-the-minute market data, features, profiles and more. Connect with Bloomberg Television on: X: https://twitter.co"
     },
     {
       "video_id": "x3b2Qks6OYg",
@@ -40749,20 +40764,6 @@
       "published": "2026-06-12T23:52:14Z",
       "ts": 1781308334,
       "summary": "Bloomberg Daybreak Weekend with Host Nathan Hager take a look at some of the stories we'll be tracking in the coming week. In the US – a look ahead to the next FOMC decision, along with a focus on 3 stocks for the week ahead. In the UK – a look ahead to a high stakes UK election and Bank of England decision. In Asia – a look ahead to a monetary policy decision from the Bank of Japan. See omnystudio.com/listener (https://omnystudio.com/listener) for privacy information. Bloomberg Daybreak deliver"
-    },
-    {
-      "video_id": "buiJPqv7TZc",
-      "title": "Elon Musk’s SpaceX Is Coming For Your Bitcoin. Here's the Mechanism.",
-      "channel": "Altcoin Daily",
-      "channel_id": "UCbLhGKVY-bJPcawebgtNfbw",
-      "category": "crypto",
-      "geo": "CR",
-      "url": "https://www.youtube.com/watch?v=buiJPqv7TZc",
-      "embed": "https://www.youtube.com/embed/buiJPqv7TZc",
-      "thumb": "https://i.ytimg.com/vi/buiJPqv7TZc/hqdefault.jpg",
-      "published": "2026-06-12T23:46:04Z",
-      "ts": 1781307964,
-      "summary": "Limited Time: 🟡 Trade SpaceX w/ Zero Fees ($60,000 reward pool): https://www.weex.com/events/promo/spacex-608?vipCode=oz5p ✅ Bitunix (no kyc) - Claim $10k bonus: https://www.bitunix.com/register?vipCode=AltcoinDaily 🧢 Altcoin Daily Merch: https://m046hz-bk.myshopify.com 🔵 Get access to BEST features on Coinbase: https://advanced.coinbase.com/join/U5FN8P5 🔴 Altcoin Daily in Spanish: https://www.youtube.com/@AltcoinDailyenEspanol 👉🔒 Get Ledger Wallet: Best Way to Keep your Crypto Safe! https://www"
     },
     {
       "video_id": "XuszwfUzTlc",
@@ -41378,57 +41379,46 @@
   },
   "macro_analysis": [
     {
-      "point": "The Fed's hawkish hold stance, as indicated by multiple sources, is reinforcing a stronger USD and higher US yields, which typically pressures EM currencies like the IDR. However, the IDR is flat today, suggesting the market has already priced in this expectation and is instead focusing on domestic ",
+      "point": "JCI / IHSG at 6,254.97, +4.12% on the session.",
       "sources": [
         {
-          "name": "WBFF",
-          "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOWFQtaHcxTHRfRDdYTFpaNk1aTThWSVVUQUJwaWRKelA2SHBRektTT19iSzZtUVFkWXA1SWdYNFBXT21wczljVDVJdzBYSWRrUXVTZUd5azRKWlRZdmNPcU9pdWo2YWVtMG8zWGVMc2xsMmoteXk5V1BRSDRXdmRJOUpPamxHZUcwdnVvVWdCX3pGY1NHeFBPRzcwVkoxb281NEF5Z2tZVTBUVUUtR2M1NUVqX2F1M0d0dUdGQW9TMDhMb19SblphUkN3OXZnYlJpOVJBT0ZKRVJqay1iREtCNTlwQTI?oc=5"
-        },
-        {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxQcXJpVzBLMDczTDEwc3dKakFabks2a1F0dHNfUktLUE9Rcks5b2JHMnBzTVBheFl3OWU2dl80MTNPeUd2bGVmZVVhaUhKMWVENC1QTTVIb1FoWHpMVmo2SFAzenBTakpUdEMxSlI5eVRPVGNEdjEwZnNQTjRDd1N4Vmgza0FseEtCRG00dm82QlVmQXZOMmdjQXl6THYwYWF5U29NbjRQMG1PMkl2VWdkRjhEaENROUNNb2VOSk9JTm42WVlONHJjenUxMjA0bTk2TkxMUUFDYmxQeUdaUWxtdjFYa3lCZTczM0ZtcGhFWjQ?oc=5"
-        },
-        {
-          "name": "CBS News",
-          "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPcTI3WXJ5dzJrVDEyUTQtZ3hjelJSTHhpaDdxSDQxVE1EV0M1Wjd0SVA4Qm9PczU2T2ppbmNLdGltM2xQSjlFS3p4T2trYUJxWkUtZ201UkhTZ2tnU1hvdzcwLTYtZ2M0Q0JDSTI5b3FhNnRrTXZZSFRFYmJYYjFycVV3eTJyNUMtS2c?oc=5"
-        },
-        {
-          "name": "IDX Channel",
-          "url": "https://www.youtube.com/watch?v=scAadsrUSgo"
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
         }
       ]
     },
     {
-      "point": "The surge in INCO by 7.75% is a clear signal of renewed interest in Indonesia's nickel downstreaming story, likely tied to President Prabowo's reaffirmation of energy security and downstreaming policies. This is a direct catalyst for the Mining & Energy sector's 2.12% gain, as investors price in sus",
+      "point": "S&P 500 at 7,511.35, -0.57% on the session.",
       "sources": [
         {
-          "name": "CEPR",
-          "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBhVHkydjFuSWZrbDQ4QzJaU3dlMGljcWJCRFl0dWtfTFQ4UHJHLUlObzBmX25QdC1waFRld1FoVnRPb1hqaFMxb2V5d3FfNjJoSEZBdi1nM0x3cHRmUlE1MkpkUzBBNHkxcXhPRC1mS01adWJob2tfaldkZw?oc=5"
+          "name": "S&P 500",
+          "url": "https://finance.yahoo.com/quote/^GSPC"
         }
       ]
     },
     {
-      "point": "The Dow's record close and the S&P 500's resilience, despite a Nasdaq dip, suggest a rotation into value and cyclicals, which is supportive for Indonesia's commodity-heavy index. The JCI's 4.12% rally far outpaces US markets, indicating strong domestic buying pressure that is decoupling from global ",
-      "sources": []
-    },
-    {
-      "point": "The key risk to watch is the potential for a renewed trade war escalation, as highlighted by the CEPR study on third-country impacts. If US-Iran tensions or broader trade conflicts intensify, it could disrupt global supply chains and commodity flows, directly impacting Indonesia's export-dependent s",
+      "point": "Nasdaq at 26,376.34, -1.15% on the session.",
       "sources": [
         {
-          "name": "CEPR",
-          "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBhVHkydjFuSWZrbDQ4QzJaU3dlMGljcWJCRFl0dWtfTFQ4UHJHLUlObzBmX25QdC1waFRld1FoVnRPb1hqaFMxb2V5d3FfNjJoSEZBdi1nM0x3cHRmUlE1MkpkUzBBNHkxcXhPRC1mS01adWJob2tfaldkZw?oc=5"
-        },
+          "name": "Nasdaq",
+          "url": "https://finance.yahoo.com/quote/^IXIC"
+        }
+      ]
+    },
+    {
+      "point": "USD/IDR at 17,715.00, +0.00% on the session.",
+      "sources": [
         {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxQcXJpVzBLMDczTDEwc3dKakFabks2a1F0dHNfUktLUE9Rcks5b2JHMnBzTVBheFl3OWU2dl80MTNPeUd2bGVmZVVhaUhKMWVENC1QTTVIb1FoWHpMVmo2SFAzenBTakpUdEMxSlI5eVRPVGNEdjEwZnNQTjRDd1N4Vmgza0FseEtCRG00dm82QlVmQXZOMmdjQXl6THYwYWF5U29NbjRQMG1PMkl2VWdkRjhEaENROUNNb2VOSk9JTm42WVlONHJjenUxMjA0bTk2TkxMUUFDYmxQeUdaUWxtdjFYa3lCZTczM0ZtcGhFWjQ?oc=5"
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
         }
       ]
     }
   ],
   "alerts": [
     {
-      "title": "Nickel proxy INCO surges on downstreaming policy reaffirmation",
-      "desc": "INCO.JK jumped 7.75% as President Prabowo's comments on energy security and downstreaming provided a strong catalyst for nickel stocks, signaling continued government support for the sector.",
+      "title": "The impact of trade wars on firms in third countries - CEPR",
+      "desc": "",
       "sources": [
         {
           "name": "CEPR",
@@ -41437,46 +41427,32 @@
       ]
     },
     {
-      "title": "JCI rallies 4.12% on domestic buying campaign",
-      "desc": "The Jakarta Composite Index surged as the #BUYINDONESIA campaign drove broad-based buying, with Financials leading at +2.95%, decoupling from mixed US market performance.",
+      "title": "Nasdaq and S&amp;P 500 slip while Dow hits record close - Reuters",
+      "desc": "",
       "sources": [
         {
-          "name": "IDX Channel",
-          "url": "https://www.youtube.com/watch?v=scAadsrUSgo"
+          "name": "Reuters",
+          "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxONEpZcjB1UUpuN05zN283anhrUE9FaHJWOGRPTnF6VWdLcEkwT3U5OWhjM05VckRjMFpnS2dDR2dtdXNDc0pYdkhxdXpnbExoM2loNmRsN29qLXVEYUdpZEI2cEpISFJXZkJXeGNzV292S0tCUVhZd2lRX1hlNFdaOXp2dEJ2LUh1dm9reFE3VlFnZE5salNHUXlmS3A4WlkwNVZ5aHhZZ29ENnExMEVkQjVB?oc=5"
         }
       ]
     },
     {
-      "title": "Fed rate hold expected, IDR flat as market prices in",
-      "desc": "Multiple sources confirm the Fed is expected to hold rates steady, with rate hike talks heating up, but the IDR remained flat as the market had already priced in this hawkish stance.",
+      "title": "Stock market today: Dow, S&amp;P 500, Nasdaq futures edge up as Wall Street braces for Fed rate decision - Yahoo Finance",
+      "desc": "Stock market today: Dow, S&P 500, Nasdaq futures edge up as Wall Street braces for Fed rate decision Yahoo Finance UK",
       "sources": [
         {
-          "name": "WBFF",
-          "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOWFQtaHcxTHRfRDdYTFpaNk1aTThWSVVUQUJwaWRKelA2SHBRektTT19iSzZtUVFkWXA1SWdYNFBXT21wczljVDVJdzBYSWRrUXVTZUd5azRKWlRZdmNPcU9pdWo2YWVtMG8zWGVMc2xsMmoteXk5V1BRSDRXdmRJOUpPamxHZUcwdnVvVWdCX3pGY1NHeFBPRzcwVkoxb281NEF5Z2tZVTBUVUUtR2M1NUVqX2F1M0d0dUdGQW9TMDhMb19SblphUkN3OXZnYlJpOVJBT0ZKRVJqay1iREtCNTlwQTI?oc=5"
-        },
-        {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMi8AFBVV95cUxQcXJpVzBLMDczTDEwc3dKakFabks2a1F0dHNfUktLUE9Rcks5b2JHMnBzTVBheFl3OWU2dl80MTNPeUd2bGVmZVVhaUhKMWVENC1QTTVIb1FoWHpMVmo2SFAzenBTakpUdEMxSlI5eVRPVGNEdjEwZnNQTjRDd1N4Vmgza0FseEtCRG00dm82QlVmQXZOMmdjQXl6THYwYWF5U29NbjRQMG1PMkl2VWdkRjhEaENROUNNb2VOSk9JTm42WVlONHJjenUxMjA0bTk2TkxMUUFDYmxQeUdaUWxtdjFYa3lCZTczM0ZtcGhFWjQ?oc=5"
+          "name": "Yahoo Finance UK",
+          "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxNUzVYb0RXVU5FcnJubG9KMVcwQnMxM1RzRVBtdVBFRlI4bFBjbGxqcFFJLXVsLTJ0SWJJNkVmZVUyMFFpaVlXdUdoT0k2RmlvWlRaYXFpczBLNXFBVkZlX1hGUEliQkV5dWNCOWh1d1dDUVNpV3p1NTR6VV8tcGY4azVoT0EtU0s5YWJCTkxZVjNZdDlhMTJKWWg4Y2pSNENvcmFQMWlBcG1GTzZtd1NpbmtsMzBpQUtDYWFhQnRudHg0dlQ2dnhvcmNFeklwY1FVamlMWTNQZHYwQmxmenc?oc=5"
         }
       ]
     },
     {
-      "title": "US 10Y yield falls 0.92% despite hawkish Fed expectations",
-      "desc": "The US 10-year yield declined, suggesting bond markets are looking past near-term rate hikes and focusing on longer-term growth concerns, which could support EM debt flows.",
+      "title": "Financials +2.95%",
+      "desc": "Indonesia financials surged on strong earnings momentum and dovish BI policy signals; overweight BMRI and BBCA for structural NIM expansion and digital adoption, with BBRI as a laggard catch-up trade. US banks rallied on rate-cut optimism b",
       "sources": [
         {
-          "name": "RBC Wealth Management",
-          "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQNm9uRF85Q1diR2NhcnlFaTZGSC1FTThfa1VWZE1yQW1yNkVSalZfUUVpbUlnYXFIV1VoNTI1aHpWVUxQakczUjZtUEJjRlYzU0l6d0d5MTNRWHRRakJ6R3JEQmtqN3lnTlV4U21kU2tpYzJCWDFINllPb3ptZV9oaGtfdENEMWdpMmdDS1RCWndoZVJWOHVLT1hpYw?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "Coal proxy ITMG slips 0.43% amid trade war risks",
-      "desc": "ITMG.JK edged lower as the CEPR study on trade war impacts on third countries raised concerns about potential disruptions to coal demand and export routes.",
-      "sources": [
-        {
-          "name": "CEPR",
-          "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBhVHkydjFuSWZrbDQ4QzJaU3dlMGljcWJCRFl0dWtfTFQ4UHJHLUlObzBmX25QdC1waFRld1FoVnRPb1hqaFMxb2V5d3FfNjJoSEZBdi1nM0x3cHRmUlE1MkpkUzBBNHkxcXhPRC1mS01adWJob2tfaldkZw?oc=5"
+          "name": "BMRI",
+          "url": "https://finance.yahoo.com/quote/BMRI.JK"
         }
       ]
     }
