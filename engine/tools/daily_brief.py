@@ -125,22 +125,29 @@ PROMO_REASON_TERMS = (
     "watch this because", "read this because",
 )
 RATIONALE_TOPICS = (
-    ("Indonesia flow is sensitive to Rupiah, Bank Indonesia, and IHSG direction, so this helps frame local risk appetite.",
+    ("Rupiah, Bank Indonesia, and IHSG signals frame local liquidity and foreign-flow risk for Indonesian equities.",
      ("rupiah", "bank indonesia", "bi", "ihsg", "jci", "saham")),
-    ("Rates remain the discount-rate anchor for equities, so this helps explain pressure on multiples, bonds, and the Rupiah.",
+    ("Fed, rate, and yield signals set the discount-rate backdrop, making this important for Nasdaq multiples, banks, and the Rupiah.",
      ("fed", "federal reserve", "rates", "yield", "treasury", "warsh", "suku bunga")),
-    ("AI and semiconductor capex are still leading the tech cycle, making this useful for tracking market leadership.",
+    ("AI and semiconductor capex are driving market leadership, so this helps separate durable demand from bubble-risk headlines.",
      ("ai", "artificial intelligence", "nvidia", "semiconductor", "chip", "data center")),
-    ("Energy and commodity moves feed inflation expectations and Indonesia's resource exposure, so this is worth watching.",
+    ("Oil, gold, nickel, and shipping moves feed inflation and Indonesia's commodity exposure, so they can quickly change sector leadership.",
      ("oil", "brent", "gold", "nickel", "coal", "commodity", "hormuz", "shipping")),
-    ("Digital-asset sentiment can turn quickly around Bitcoin, stablecoins, and regulation, so this keeps crypto risk in view.",
+    ("Bitcoin, stablecoin, and crypto-regulation headlines can swing digital-asset beta and broader risk appetite quickly.",
      ("bitcoin", "btc", "ethereum", "crypto", "stablecoin", "token", "kalshi", "strategy")),
-    ("Japan and BOJ policy can spill into Asian yields and FX, making this relevant for regional positioning.",
+    ("BOJ and Japan policy are regional-rate catalysts, making this useful for Nikkei, Asian FX, and Indonesia spillover risk.",
      ("boj", "bank of japan", "japan", "nikkei")),
-    ("Earnings and corporate actions reveal whether the market move is broadening or staying concentrated in a few names.",
+    ("Earnings, guidance, and stock-mover breadth show whether index moves are broadening beyond a few large names.",
      ("earnings", "revenue", "profit", "stock movers", "shares", "ipo", "m&a", "merger", "acquisition")),
-    ("Geopolitical and trade headlines can quickly reset risk appetite, oil expectations, and defensive positioning.",
+    ("Geopolitical and trade headlines can reset oil expectations and global risk appetite, which matters for defensive positioning.",
      ("iran", "tariff", "trade war", "geopolitical", "war")),
+)
+GENERIC_REASON_TERMS = (
+    "indonesia flow is sensitive", "rates remain the discount-rate anchor",
+    "ai and semiconductor capex are still leading", "energy and commodity moves feed",
+    "digital-asset sentiment can turn quickly", "japan and boj policy can spill",
+    "earnings and corporate actions reveal", "geopolitical and trade headlines can quickly",
+    "fresh high-priority item",
 )
 
 
@@ -174,6 +181,11 @@ def _is_noisy_reason(s: str) -> bool:
     return bool(re.search(r"https?://|[╔╗╚╝═║╦╩╠╣]{3,}", s))
 
 
+def _needs_reason_rewrite(s: str) -> bool:
+    t = s.lower()
+    return _is_noisy_reason(s) or any(term in t for term in GENERIC_REASON_TERMS)
+
+
 def _term_match(text: str, term: str) -> bool:
     term = str(term or "").lower().strip()
     if not term:
@@ -192,18 +204,18 @@ def _topic_score(text: str, phrase: str, terms: tuple[str, ...], item: dict) -> 
     category = item.get("category")
     geo = item.get("geo")
     if category == "crypto" or category == "CRYPTO":
-        if phrase.startswith("Digital-asset"):
+        if phrase.startswith("Bitcoin"):
             score += 30
     if category == "market_id" or geo == "ID":
-        if phrase.startswith("Indonesia flow"):
+        if phrase.startswith("Rupiah"):
             score += 20
     if category == "market_us" and (
-        phrase.startswith("Rates") or phrase.startswith("Earnings") or
+        phrase.startswith("Fed") or phrase.startswith("Earnings") or
         phrase.startswith("Geopolitical") or phrase.startswith("AI") or
-        phrase.startswith("Energy") or phrase.startswith("Japan")
+        phrase.startswith("Oil") or phrase.startswith("BOJ")
     ):
         score += 6
-    if phrase.startswith("Japan"):
+    if phrase.startswith("BOJ"):
         score += 25
     return score
 
@@ -219,7 +231,7 @@ def _fallback_reason(item: dict, kind: str) -> str:
 
 def _clean_why(raw: str, item: dict, kind: str) -> str:
     why = _one_sentence(raw)
-    if _is_noisy_reason(why):
+    if _needs_reason_rewrite(why):
         why = _fallback_reason(item, kind)
     return _one_sentence(why, 220)
 
@@ -307,9 +319,9 @@ def _balanced_read_cards(existing: list, news: list, size: int = 4) -> list:
         return None
 
     for fn in (
-        lambda n: n.get("geo") == "ID",
-        lambda n: n.get("geo") != "ID",
-        lambda n: n.get("category") in {"MARKETS_FINANCE", "TECH"},
+        lambda n: n.get("geo") == "ID" and n.get("category") != "CRYPTO",
+        lambda n: n.get("geo") != "ID" and n.get("category") != "CRYPTO",
+        lambda n: n.get("category") == "TECH",
         lambda n: n.get("category") == "CRYPTO",
     ):
         card = pick(fn)
@@ -338,10 +350,14 @@ def _brief_quality(brief: dict) -> dict:
     watch = brief.get("must_watch") or []
     read = brief.get("must_read") or []
     noisy = sum(1 for m in watch + read if _is_noisy_reason(_one_sentence(m.get("why") or "")))
+    generic = sum(1 for m in watch + read
+                  if any(term in _one_sentence(m.get("why") or "").lower()
+                         for term in GENERIC_REASON_TERMS))
     return {
         "must_watch_count": len(watch),
         "must_read_count": len(read),
         "noisy_reason_count": noisy,
+        "generic_reason_count": generic,
         "watch_categories": dict(collections.Counter((m.get("video") or {}).get("category") or "UNKNOWN" for m in watch)),
         "read_geo": dict(collections.Counter((m.get("news") or {}).get("geo") or "UNKNOWN" for m in read)),
         "read_categories": dict(collections.Counter((m.get("news") or {}).get("category") or "UNKNOWN" for m in read)),
@@ -516,7 +532,9 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
             "Provide 3-5 key_themes, 3-5 must_watch (by the given video index), 3-5 must_read "
             "(by the given news index). Every must_watch.why and must_read.why must be exactly one useful sentence "
             "explaining why it matters for markets or the user's portfolio; never repeat sponsor copy, referral links, "
-            "subscribe prompts, generic channel descriptions, or raw source names. score: 0=max bearish, 50=neutral, 100=max bullish. "
+            "subscribe prompts, generic channel descriptions, raw source names, or reusable template language. "
+            "Each why sentence must mention at least one concrete catalyst from the title or summary, such as BOJ, Warsh, "
+            "Iran/Hormuz, BMW, Bitcoin, Rupiah, IHSG, Nvidia, yields, or oil. score: 0=max bearish, 50=neutral, 100=max bullish. "
             "The news_digest and video_digest must summarize the full listed set by region: "
             "Indonesia in one complete sentence and US/global in one complete sentence each. "
             "Each sentence must start with a tone label (bullish, bearish, or mixed), include 2-4 key indicators "

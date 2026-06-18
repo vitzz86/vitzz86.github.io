@@ -1035,16 +1035,16 @@ function durLabel(sec){sec=Number(sec||0);if(!sec)return '';const h=Math.floor(s
   return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}m`;}
 function goodVideo(v){const t=(v&&v.title||'').trim().toLowerCase();return !!(v&&v.video_id&&t&&t!=='private video'&&t!=='deleted video'&&!t.includes('video unavailable'));}
 const WHY_TOPICS=[
-  ['Indonesia flow is sensitive to Rupiah, Bank Indonesia, and IHSG direction, so this helps frame local risk appetite.',['rupiah','bank indonesia','bi','ihsg','jci','saham']],
-  ['Rates remain the discount-rate anchor for equities, so this helps explain pressure on multiples, bonds, and the Rupiah.',['fed','federal reserve','rates','yield','treasury','warsh','suku bunga']],
-  ['AI and semiconductor capex are still leading the tech cycle, making this useful for tracking market leadership.',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
-  ["Energy and commodity moves feed inflation expectations and Indonesia's resource exposure, so this is worth watching.",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
-  ['Digital-asset sentiment can turn quickly around Bitcoin, stablecoins, and regulation, so this keeps crypto risk in view.',['bitcoin','btc','ethereum','crypto','stablecoin','token','kalshi','strategy']],
-  ['Japan and BOJ policy can spill into Asian yields and FX, making this relevant for regional positioning.',['boj','bank of japan','japan','nikkei']],
-  ['Earnings and corporate actions reveal whether the market move is broadening or staying concentrated in a few names.',['earnings','revenue','profit','stock movers','shares','ipo','m&a','merger','acquisition']],
-  ['Geopolitical and trade headlines can quickly reset risk appetite, oil expectations, and defensive positioning.',['iran','tariff','trade war','geopolitical','war']]
+  ['Rupiah, Bank Indonesia, and IHSG signals frame local liquidity and foreign-flow risk for Indonesian equities.',['rupiah','bank indonesia','bi','ihsg','jci','saham']],
+  ['Fed, rate, and yield signals set the discount-rate backdrop, making this important for Nasdaq multiples, banks, and the Rupiah.',['fed','federal reserve','rates','yield','treasury','warsh','suku bunga']],
+  ['AI and semiconductor capex are driving market leadership, so this helps separate durable demand from bubble-risk headlines.',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
+  ["Oil, gold, nickel, and shipping moves feed inflation and Indonesia's commodity exposure, so they can quickly change sector leadership.",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
+  ['Bitcoin, stablecoin, and crypto-regulation headlines can swing digital-asset beta and broader risk appetite quickly.',['bitcoin','btc','ethereum','crypto','stablecoin','token','kalshi','strategy']],
+  ['BOJ and Japan policy are regional-rate catalysts, making this useful for Nikkei, Asian FX, and Indonesia spillover risk.',['boj','bank of japan','japan','nikkei']],
+  ['Earnings, guidance, and stock-mover breadth show whether index moves are broadening beyond a few large names.',['earnings','revenue','profit','stock movers','shares','ipo','m&a','merger','acquisition']],
+  ['Geopolitical and trade headlines can reset oil expectations and global risk appetite, which matters for defensive positioning.',['iran','tariff','trade war','geopolitical','war']]
 ];
-const WHY_NOISE=['referral','sign-up','signup','promo code','sponsor','subscribe','discord','telegram','patreon','not financial advice','trade $','get $','watch this because','read this because'];
+const WHY_NOISE=['referral','sign-up','signup','promo code','sponsor','subscribe','discord','telegram','patreon','not financial advice','trade $','get $','watch this because','read this because','indonesia flow is sensitive','rates remain the discount-rate anchor','ai and semiconductor capex are still leading','energy and commodity moves feed','digital-asset sentiment can turn quickly','japan and boj policy can spill','earnings and corporate actions reveal','geopolitical and trade headlines can quickly','fresh high-priority item'];
 function termHit(text,term){
   text=String(text||'').toLowerCase();
   term=String(term||'').toLowerCase().trim();
@@ -1056,10 +1056,10 @@ function topicScore(txt,label,terms,item){
   let hits=terms.reduce((n,t)=>n+(termHit(txt,t)?1:0),0);
   if(!hits)return 0;
   let score=hits*10,cat=item.category,geo=item.geo;
-  if(cat==='crypto'||cat==='CRYPTO')score+=label.startsWith('Digital-asset')?30:0;
-  if(cat==='market_id'||geo==='ID')score+=label.startsWith('Indonesia flow')?20:0;
-  if(cat==='market_us'&&(/^(Rates|Earnings|Geopolitical|AI|Energy|Japan)/.test(label)))score+=6;
-  if(label.startsWith('Japan'))score+=25;
+  if(cat==='crypto'||cat==='CRYPTO')score+=label.startsWith('Bitcoin')?30:0;
+  if(cat==='market_id'||geo==='ID')score+=label.startsWith('Rupiah')?20:0;
+  if(cat==='market_us'&&(/^(Fed|Earnings|Geopolitical|AI|Oil|BOJ)/.test(label)))score+=6;
+  if(label.startsWith('BOJ'))score+=25;
   return score;
 }
 function cleanWhy(s){
@@ -1100,7 +1100,7 @@ function balancedReadCards(cards){
   const out=[],used=new Set(),sources=new Set();
   const add=n=>{if(n&&!used.has(n.url)){used.add(n.url);sources.add(n.source);out.push(byUrl.get(n.url)||{news:n,why:fallbackWhy(n,'news')});}};
   const pick=fn=>ranked.find(n=>!used.has(n.url)&&fn(n)&&(out.length<2||!sources.has(n.source)));
-  [n=>n.geo==='ID',n=>n.geo!=='ID',n=>['MARKETS_FINANCE','TECH'].includes(n.category),n=>n.category==='CRYPTO'].forEach(fn=>add(pick(fn)));
+  [n=>n.geo==='ID'&&n.category!=='CRYPTO',n=>n.geo!=='ID'&&n.category!=='CRYPTO',n=>n.category==='TECH',n=>n.category==='CRYPTO'].forEach(fn=>add(pick(fn)));
   ranked.forEach(n=>{if(out.length<4)add(n);});
   return out.slice(0,4);
 }
