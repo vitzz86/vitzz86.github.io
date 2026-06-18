@@ -324,7 +324,7 @@ def compile_payload(state: dict) -> dict:
     has_llm = bool(settings.DEEPSEEK_API_KEY or settings.OPENROUTER_API_KEY)
     summarize = (lambda s, u: call_deepseek(s, u)) if has_llm else None
 
-    sec = sectors.collect(previous_sectors)
+    sec = sectors.collect(previous_sectors, telemetry=state["telemetry"])
     _deepseek_sector_intel(sec, has_llm, previous_sectors)   # DeepSeek ai + structural themes
     news = news_router.enrich(state.get("headlines", {}), sec, state["telemetry"])
     vids = videos.collect(previous=previous_videos)

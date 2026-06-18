@@ -58,7 +58,7 @@ def _previous_rows(previous_sectors: list | None) -> dict:
     return rows
 
 
-def collect(previous_sectors: list | None = None) -> list:
+def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
     symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]]
     prices = _batch_prices(symbols)
     crypto_symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]
@@ -113,9 +113,11 @@ def collect(previous_sectors: list | None = None) -> list:
 
         try:
             from tools import fundamentals
+            risk_benchmarks = fundamentals.risk_benchmarks_from_telemetry(telemetry)
             fundamentals.enrich(rows, _previous_rows(previous_sectors),
                                 refresh_hours=getattr(settings, "FUNDAMENTAL_REFRESH_HOURS", 24),
-                                workers=getattr(settings, "FUNDAMENTAL_WORKERS", 6))
+                                workers=getattr(settings, "FUNDAMENTAL_WORKERS", 6),
+                                risk_benchmarks=risk_benchmarks)
         except Exception as e:  # noqa: BLE001
             print(f"[sectors] fundamental scoring failed: {e}")
 

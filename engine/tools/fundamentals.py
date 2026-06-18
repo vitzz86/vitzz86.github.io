@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 4
+SCORE_SCHEMA_VERSION = 5
 
 
 def _now_iso() -> str:
@@ -116,7 +116,51 @@ def _daily_returns(vals: list[float]) -> list[float]:
     return out
 
 
-def _risk_stats(row: dict, mode: str) -> dict:
+def _risk_context(row: dict, mode: str, benchmarks: dict | None = None) -> dict:
+    benchmarks = benchmarks or {}
+    key = "CR" if mode == "crypto" else (row.get("country") or "US")
+    ctx = dict(benchmarks.get(key) or benchmarks.get("US") or {})
+    rf = _num(ctx.get("risk_free_rate"))
+    if rf is None:
+        rf = _num(ctx.get("hurdle_rate"))
+        if rf is not None:
+            ctx["risk_free_label"] = ctx.get("hurdle_label") or ctx.get("risk_free_label")
+            ctx["risk_free_source"] = ctx.get("hurdle_source") or ctx.get("risk_free_source")
+    if rf is None and key != "US":
+        us = benchmarks.get("US") or {}
+        rf = _num(us.get("risk_free_rate")) or _num(us.get("hurdle_rate"))
+        if rf is not None:
+            ctx["risk_free_label"] = us.get("risk_free_label") or us.get("hurdle_label")
+            ctx["risk_free_source"] = us.get("risk_free_source") or us.get("hurdle_source")
+            ctx["risk_free_symbol"] = us.get("risk_free_symbol")
+    if rf is None:
+        rf = 0.0
+        ctx.setdefault("risk_free_label", "0% fallback")
+        ctx.setdefault("risk_free_source", "fallback")
+    ctx["risk_free_rate"] = rf
+    ctx.setdefault("risk_free_label", "Risk-free rate")
+    hurdle = _num(ctx.get("hurdle_rate"))
+    ctx["hurdle_rate"] = hurdle if hurdle is not None else rf
+    ctx.setdefault("hurdle_label", ctx.get("risk_free_label", "Risk-free rate"))
+    return ctx
+
+
+def _risk_signal(sharpe, sortino, max_dd) -> str:
+    s = _num(sharpe)
+    so = _num(sortino)
+    dd = _num(max_dd)
+    if s is None and so is None:
+        return "Insufficient risk history"
+    if (s is not None and s >= 1.0) and (so is None or so >= 1.2) and (dd is None or dd >= -25):
+        return "Attractive risk-adjusted"
+    if (s is not None and s >= 0.35) and (dd is None or dd >= -40):
+        return "Fair risk-adjusted"
+    if s is not None and s < 0:
+        return "Weak risk-adjusted"
+    return "High volatility / size carefully"
+
+
+def _risk_stats(row: dict, mode: str, risk_context: dict | None = None) -> dict:
     pairs = _spark_pairs(row)
     vals = [p[1] for p in pairs]
     if len(vals) < 12:
@@ -124,17 +168,27 @@ def _risk_stats(row: dict, mode: str) -> dict:
 
     rets = _daily_returns(vals)
     periods = 365 if mode == "crypto" else 252
-    sharpe = sortino = None
+    ctx = risk_context or {}
+    rf = _num(ctx.get("risk_free_rate")) or 0.0
+    daily_rf = (1 + rf / 100) ** (1 / periods) - 1 if rf > -99 else 0.0
+    sharpe = sortino = annual_return = annual_excess = annual_vol = downside_vol = None
     if len(rets) >= 10:
-        mean = statistics.fmean(rets)
+        excess = [r - daily_rf for r in rets]
+        mean = statistics.fmean(excess)
         stdev = statistics.pstdev(rets)
         if stdev:
             sharpe = round((mean / stdev) * math.sqrt(periods), 2)
-        downside = [r for r in rets if r < 0]
+            annual_vol = round(stdev * math.sqrt(periods) * 100, 2)
+        downside = [r for r in excess if r < 0]
         if len(downside) >= 2:
             down_dev = statistics.pstdev(downside)
             if down_dev:
                 sortino = round((mean / down_dev) * math.sqrt(periods), 2)
+                downside_vol = round(down_dev * math.sqrt(periods) * 100, 2)
+        if vals[0] > 0:
+            years = max((len(vals) - 1) / periods, 1 / periods)
+            annual_return = round(((vals[-1] / vals[0]) ** (1 / years) - 1) * 100, 2)
+            annual_excess = round(annual_return - rf, 2)
 
     peak_i = max(range(len(vals)), key=lambda i: vals[i])
     bottom_i = min(range(len(vals)), key=lambda i: vals[i])
@@ -153,7 +207,17 @@ def _risk_stats(row: dict, mode: str) -> dict:
 
     return {
         "period": "6M daily closes",
-        "risk_free_rate": 0,
+        "risk_free_rate": round(rf, 3),
+        "risk_free_label": ctx.get("risk_free_label"),
+        "risk_free_symbol": ctx.get("risk_free_symbol"),
+        "risk_free_source": ctx.get("risk_free_source"),
+        "hurdle_rate": round(_num(ctx.get("hurdle_rate")) or rf, 3),
+        "hurdle_label": ctx.get("hurdle_label"),
+        "hurdle_source": ctx.get("hurdle_source"),
+        "annual_return_pct": annual_return,
+        "annual_excess_return_pct": annual_excess,
+        "annual_volatility_pct": annual_vol,
+        "downside_volatility_pct": downside_vol,
         "sharpe": sharpe,
         "sortino": sortino,
         "peak_price": round(vals[peak_i], 4),
@@ -165,6 +229,7 @@ def _risk_stats(row: dict, mode: str) -> dict:
         "max_drawdown_peak_ts": pairs[dd_peak_i][0],
         "max_drawdown_trough_price": round(vals[dd_trough_i], 4),
         "max_drawdown_trough_ts": pairs[dd_trough_i][0],
+        "risk_adjusted_signal": _risk_signal(sharpe, sortino, round(max_dd, 2)),
     }
 
 
@@ -223,9 +288,10 @@ def _fetch_equity(sym: str) -> dict:
     }
 
 
-def _score_equity(row: dict, metrics: dict) -> dict:
+def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = dict(metrics)
-    metrics["_risk_stats"] = _risk_stats(row, "equity")
+    metrics["_risk_context"] = risk_context or {}
+    metrics["_risk_stats"] = _risk_stats(row, "equity", risk_context)
     one_month = _spark_return(row.get("spark"), 22)
     six_month = _spark_return(row.get("spark"))
     vol = _spark_volatility(row.get("spark"))
@@ -265,9 +331,10 @@ def _score_equity(row: dict, metrics: dict) -> dict:
     return _pack_score("equity", axes, metrics, one_month, six_month, vol)
 
 
-def _score_crypto(row: dict, metrics: dict) -> dict:
+def _score_crypto(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = dict(metrics)
-    metrics["_risk_stats"] = _risk_stats(row, "crypto")
+    metrics["_risk_context"] = risk_context or {}
+    metrics["_risk_stats"] = _risk_stats(row, "crypto", risk_context)
     one_month = _spark_return(row.get("spark"), 30)
     six_month = _spark_return(row.get("spark"))
     vol = _spark_volatility(row.get("spark"))
@@ -421,6 +488,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     one_month_period = "30D price return" if mode == "crypto" else "22 trading sessions"
     vol_period = "daily realized, 6M window" if mode == "crypto" else "daily realized, ~6M window"
     risk = metrics.get("_risk_stats") or {}
+    ctx = metrics.get("_risk_context") or {}
     metric_rows = [
         _metric("Current Price", _fmt_metric_value(metrics.get("current_price"), "number"), "number", currency, "latest quote"),
         _metric("P/E", _fmt_metric_value(metrics.get("pe"), "ratio"), "ratio", period="TTM"),
@@ -445,8 +513,22 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("1M Return", one_month, "percent", period=one_month_period),
         _metric("6M Return", six_month, "percent", period="6M price return"),
         _metric("Volatility", vol, "percent", period=vol_period),
-        _metric("Sharpe Ratio", _fmt_metric_value(risk.get("sharpe"), "ratio"), "ratio", period="annualized, 0% RF, 6M daily"),
-        _metric("Sortino Ratio", _fmt_metric_value(risk.get("sortino"), "ratio"), "ratio", period="annualized downside, 0% RF, 6M daily"),
+        _metric("Risk-Free Rate", _fmt_metric_value(risk.get("risk_free_rate"), "percent"), "percent",
+                period=f"annual benchmark: {risk.get('risk_free_label') or ctx.get('risk_free_label') or 'risk-free'}"),
+        _metric("Hurdle Rate", _fmt_metric_value(risk.get("hurdle_rate"), "percent"), "percent",
+                period=f"valuation anchor: {risk.get('hurdle_label') or ctx.get('hurdle_label') or 'risk-free'}"),
+        _metric("Annualized Return", _fmt_metric_value(risk.get("annual_return_pct"), "percent"), "percent",
+                period="geometric, 6M daily window"),
+        _metric("Excess Return", _fmt_metric_value(risk.get("annual_excess_return_pct"), "percent"), "percent",
+                period=f"annualized minus {risk.get('risk_free_label') or 'risk-free'}"),
+        _metric("Annual Volatility", _fmt_metric_value(risk.get("annual_volatility_pct"), "percent"), "percent",
+                period="annualized from 6M daily returns"),
+        _metric("Downside Volatility", _fmt_metric_value(risk.get("downside_volatility_pct"), "percent"), "percent",
+                period="annualized downside vs risk-free"),
+        _metric("Sharpe Ratio", _fmt_metric_value(risk.get("sharpe"), "ratio"), "ratio",
+                period=f"annualized vs {risk.get('risk_free_label') or 'risk-free'}, 6M daily"),
+        _metric("Sortino Ratio", _fmt_metric_value(risk.get("sortino"), "ratio"), "ratio",
+                period=f"downside vs {risk.get('risk_free_label') or 'risk-free'}, 6M daily"),
         _metric("Max Drawdown", _fmt_metric_value(risk.get("max_drawdown_pct"), "percent"), "percent", period="peak-to-trough, 6M"),
     ]
     return {
@@ -459,6 +541,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "metrics": [m for m in metric_rows if m["value"] is not None],
         "valuation": _valuation(metrics) if mode == "equity" else None,
         "risk_stats": risk or None,
+        "risk_context": ctx or None,
         "currency": currency,
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
         "as_of": metrics.get("as_of") or _now_iso(),
@@ -500,8 +583,56 @@ def _previous_metrics(previous_by_symbol: dict, row: dict, ttl_hours: int) -> di
     return None
 
 
+def risk_benchmarks_from_telemetry(telemetry: list | None) -> dict:
+    by_sym = {r.get("symbol"): r for r in telemetry or []}
+
+    def bench(sym: str, label: str) -> dict:
+        r = by_sym.get(sym) or {}
+        return {
+            "rate": _num(r.get("value")),
+            "label": r.get("label") or label,
+            "symbol": sym,
+            "source": r.get("source_name") or ("Yahoo Finance" if sym.startswith("^") else None),
+        }
+
+    bi = bench("BI_RATE", "BI Rate")
+    id10 = bench("ID10Y", "Indonesia 10Y SBN")
+    irx = bench("^IRX", "US 3M T-Bill")
+    tnx = bench("^TNX", "US 10Y Yield")
+    return {
+        "ID": {
+            "risk_free_rate": bi["rate"] if bi["rate"] is not None else id10["rate"],
+            "risk_free_label": bi["label"] if bi["rate"] is not None else id10["label"],
+            "risk_free_symbol": bi["symbol"] if bi["rate"] is not None else id10["symbol"],
+            "risk_free_source": bi["source"] if bi["rate"] is not None else id10["source"],
+            "hurdle_rate": id10["rate"] if id10["rate"] is not None else bi["rate"],
+            "hurdle_label": id10["label"] if id10["rate"] is not None else bi["label"],
+            "hurdle_source": id10["source"] if id10["rate"] is not None else bi["source"],
+        },
+        "US": {
+            "risk_free_rate": irx["rate"] if irx["rate"] is not None else tnx["rate"],
+            "risk_free_label": irx["label"] if irx["rate"] is not None else tnx["label"],
+            "risk_free_symbol": irx["symbol"] if irx["rate"] is not None else tnx["symbol"],
+            "risk_free_source": irx["source"] if irx["rate"] is not None else tnx["source"],
+            "hurdle_rate": tnx["rate"] if tnx["rate"] is not None else irx["rate"],
+            "hurdle_label": tnx["label"] if tnx["rate"] is not None else irx["label"],
+            "hurdle_source": tnx["source"] if tnx["rate"] is not None else irx["source"],
+        },
+        "CR": {
+            "risk_free_rate": irx["rate"] if irx["rate"] is not None else tnx["rate"],
+            "risk_free_label": irx["label"] if irx["rate"] is not None else tnx["label"],
+            "risk_free_symbol": irx["symbol"] if irx["rate"] is not None else tnx["symbol"],
+            "risk_free_source": irx["source"] if irx["rate"] is not None else tnx["source"],
+            "hurdle_rate": irx["rate"] if irx["rate"] is not None else tnx["rate"],
+            "hurdle_label": irx["label"] if irx["rate"] is not None else tnx["label"],
+            "hurdle_source": irx["source"] if irx["rate"] is not None else tnx["source"],
+        },
+    }
+
+
 def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
-           refresh_hours: int = 24, workers: int = 6) -> None:
+           refresh_hours: int = 24, workers: int = 6,
+           risk_benchmarks: dict | None = None) -> None:
     previous_by_symbol = previous_by_symbol or {}
     to_fetch, metric_cache = [], {}
     for row in rows:
@@ -534,10 +665,12 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
 
     for row in rows:
         metrics = metric_cache.get(row.get("source_symbol")) or {}
+        mode = "crypto" if row.get("country") == "CR" else "equity"
+        risk_context = _risk_context(row, mode, risk_benchmarks)
         if row.get("country") == "CR":
-            row["fundamental_score"] = _score_crypto(row, metrics)
+            row["fundamental_score"] = _score_crypto(row, metrics, risk_context)
         else:
-            row["fundamental_score"] = _score_equity(row, metrics) if metrics else _pack_score(
+            row["fundamental_score"] = _score_equity(row, metrics, risk_context) if metrics else _pack_score(
                 "equity", [
                     {"key": "value", "label": "Value", "score": None},
                     {"key": "quality", "label": "Quality", "score": None},
@@ -549,6 +682,7 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
                     ])},
                     {"key": "risk", "label": "Risk", "score": _score_low(_spark_volatility(row.get("spark")), 1.2, 5.0)},
                 ], {"source": "Price history only", "as_of": _now_iso(),
-                    "_risk_stats": _risk_stats(row, "equity")},
+                    "_risk_context": risk_context,
+                    "_risk_stats": _risk_stats(row, "equity", risk_context)},
                 _spark_return(row.get("spark"), 22), _spark_return(row.get("spark")),
                 _spark_volatility(row.get("spark")))
