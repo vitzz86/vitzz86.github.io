@@ -480,6 +480,29 @@ footer .g{color:var(--green);}
 .vexp .vsum{font-size:11px;line-height:1.6;color:#c7c7cf;margin-top:8px;}
 .vexp .vopen{font-family:var(--mono);font-size:9px;color:var(--cyan);margin-top:7px;display:inline-block;}
 
+/* predictions pane */
+.predbox{border:1px solid rgba(52,211,192,.28);background:rgba(20,184,166,.07);border-radius:9px;padding:11px;margin-bottom:10px;}
+.predbox .ptop{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--cyan);margin-bottom:7px;}
+.predline{font-size:10.8px;line-height:1.55;color:#cfd0d8;margin:5px 0;}
+.predline b{color:var(--ink);}
+.prednote{font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:7px;}
+.pred{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:10px 11px;margin-bottom:9px;}
+.pred:hover{border-color:#3a3a46;background:#121218;}
+.predhead{display:flex;gap:10px;align-items:flex-start;}
+.predprob{flex:0 0 54px;font-size:22px;font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums;line-height:1;}
+.predprob span{display:block;font-family:var(--mono);font-size:7.5px;color:var(--ink3);letter-spacing:.08em;margin-top:3px;}
+.predmain{flex:1;min-width:0;}
+.predq{font-size:12px;font-weight:650;line-height:1.35;color:var(--ink);}
+.predwhy{font-size:10.3px;line-height:1.55;color:var(--ink2);margin-top:6px;}
+.predout{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.predpill{font-family:var(--mono);font-size:8px;color:var(--cyan);background:rgba(52,211,192,.08);border:1px solid rgba(52,211,192,.25);border-radius:999px;padding:3px 6px;}
+.pcat{font-family:var(--mono);font-size:7.5px;letter-spacing:.05em;border-radius:3px;padding:2px 5px;color:var(--amber);background:rgba(245,158,11,.13);}
+.pcat.crypto{color:#f7931a;background:rgba(247,147,26,.14);}
+.pcat.fed_rates,.pcat.macro{color:var(--blue);background:rgba(59,130,246,.13);}
+.pcat.commodities{color:var(--green);background:rgba(34,197,94,.12);}
+.pcat.geopolitics{color:var(--red);background:rgba(239,68,68,.12);}
+.pcat.tech_ai{color:var(--purple);background:rgba(167,139,250,.14);}
+
 /* sticky mini media bar */
 body{padding-bottom:40px;}
 .mediabar{position:fixed;left:0;right:0;bottom:0;z-index:90;background:#0c0c0f;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--ink2);}
@@ -604,6 +627,7 @@ body{padding-bottom:40px;}
       <span class="hubtab on" data-p="brief">Daily Brief</span>
       <span class="hubtab" data-p="news">News</span>
       <span class="hubtab" data-p="videos">Videos</span>
+      <span class="hubtab" data-p="predictions">Predictions</span>
     </div>
     <div class="datefilter" id="dateFilter">
       <span class="dchip" data-d="today">Today</span>
@@ -626,6 +650,13 @@ body{padding-bottom:40px;}
       <input id="vsearch" placeholder="search videos…" autocomplete="off">
       <div class="wtabs" id="vidTabs"></div>
       <div id="vidList"></div>
+    </div>
+    <!-- PREDICTIONS -->
+    <div class="hubpane" id="panePredictions">
+      <div id="predImp"></div>
+      <input id="psearch" placeholder="search prediction markets…" autocomplete="off">
+      <div class="wtabs" id="predTabs"></div>
+      <div id="predList"></div>
     </div>
   </div>
 </div>
@@ -1132,13 +1163,14 @@ function expandIdx(i){
   $('idxExp').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-/* ---- intelligence hub: Daily Brief · News · Videos ---- */
+/* ---- intelligence hub: Daily Brief · News · Videos · Predictions ---- */
 let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
-let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null;
+let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',predCat='ALL',predQ='',WIRE=[],VIDEOS=[],PREDICTIONS=[],BRIEF=null,PRED=null;
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
 const VCATLABEL={ALL:'All',market_id:'🇮🇩 Market ID',market_us:'🇺🇸 Market US',crypto:'₿ Crypto'};
+const PCATLABEL={ALL:'All',fed_rates:'Fed & Rates',macro:'Macro',commodities:'Commodities',geopolitics:'Geopolitics',crypto:'Crypto',tech_ai:'Tech & AI',policy:'Policy'};
 const RANGE={today:86400,'3d':3*86400,'1w':7*86400};
 function inRange(ts){if(!ts)return true;return (Date.now()/1000-ts)<=RANGE[dateRange];}
 function normTitle(s){return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
@@ -1249,6 +1281,16 @@ function digestHTML(kind){
   const us=d.us?`<div class="di"><b>US / Global</b> ${esc(d.us.replace(/^(US\/global|US|Global):\s*/i,''))}</div>`:'';
   return `<div class="digestbox"><div class="dh">${label}</div>${id}${us}</div>`;
 }
+function pMoney(v){v=Number(v||0);if(v>=1e6)return '$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return '$'+Math.round(v/1e3)+'K';return '$'+Math.round(v);}
+function pDate(iso){if(!iso)return '';const d=new Date(iso);if(isNaN(d))return '';return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function predBriefHTML(){
+  const p=PRED||{},items=PREDICTIONS||[];
+  if(!items.length)return '';
+  const id=(p.indonesia_implication||'').replace(/^Indonesia:\s*/i,'');
+  const us=(p.global_implication||'').replace(/^(US\s*\/\s*Global|US|Global):\s*/i,'');
+  const bullets=(p.what_it_indicates||[]).slice(0,3).map(x=>`<div class="di">• ${esc(x)}</div>`).join('');
+  return `<div class="bsec"><div class="bh">◈ PREDICTION SENTIMENT</div><div class="predbox"><div class="ptop">POLYMARKET · SENTIMENT INDICATOR</div>${id?`<div class="predline"><b>Indonesia</b> ${esc(id)}</div>`:''}${us?`<div class="predline"><b>US / Global</b> ${esc(us)}</div>`:''}${bullets}<div class="prednote">${esc(p.note||'Prediction markets are sentiment indicators, not facts or investment advice.')}</div></div></div>`;
+}
 function setActive(sel,el){[...document.querySelectorAll(sel+' .wtab')].forEach(x=>x.classList.toggle('on',x===el));}
 function reltime(ts){if(!ts)return '';const m=Math.round(Date.now()/1000-ts);
   if(m<3600)return Math.max(1,Math.round(m/60))+'m';
@@ -1336,11 +1378,16 @@ function syncHubUI(){
   $('paneBrief').classList.toggle('on',hubPane==='brief');
   $('paneNews').classList.toggle('on',hubPane==='news');
   $('paneVideos').classList.toggle('on',hubPane==='videos');
+  $('panePredictions').classList.toggle('on',hubPane==='predictions');
   [...document.querySelectorAll('#dateFilter .dchip')].forEach(x=>x.classList.toggle('on',x.dataset.d===dateRange));
-  $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
+  $('dateFilter').style.display=(hubPane==='brief'||hubPane==='predictions')?'none':'flex';
+  if(hubPane==='predictions')drawPredictions();
+  else if(hubPane==='videos')drawVideos();
+  else if(hubPane==='news')drawWire();
+  else $('wireCount').textContent='LIVE';
 }
 function buildHub(d){
-  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;
+  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;PRED=d.prediction_sentiment||{};PREDICTIONS=PRED.items||[];
   BRIEF_VIDEOS=((BRIEF||{}).must_watch||[]).map(m=>m.video||m||{}).filter(goodVideo);
   rebuildPrioritySets();
   if(!hubInit){
@@ -1352,10 +1399,10 @@ function buildHub(d){
       dateRange=c.dataset.d;syncHubUI();drawWire();drawVideos();saveState();
     });
   }
-  syncHubUI();      // reflect the active/restored pane + date filter in the UI
-  buildBrief();buildWire();
+  buildBrief();buildWire();buildPredictions();
   // don't tear down a video the user is watching during the 30-min auto-refresh
   if(!$('vidList').querySelector('.vid.open iframe'))buildVideos();
+  syncHubUI();      // reflect the active/restored pane + date filter in the UI
 }
 
 function buildBrief(){
@@ -1375,6 +1422,7 @@ function buildBrief(){
     `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+
     `<div class="bsec"><div class="bh">MARKET SENTIMENT SCORE</div><div class="sentbox"><div class="sentscore"><div class="sn" style="color:${col(s.score||50)}">${s.score!=null?s.score:'—'}</div><div class="sd">/ 100</div></div><div class="sentbars"><div class="sentlabel" style="color:${col(s.score||50)}">${esc((s.label||'').toUpperCase())}</div>${bar('Indonesia',s.indonesia||0)}${bar('US Markets',s.us||0)}${bar('Global',s.global||0)}${bar('Crypto',s.crypto||0)}</div></div></div>`+
     (b.synthesis?`<div class="bsec"><div class="bh">DAILY SYNTHESIS</div><div class="synth">${esc(b.synthesis)}</div></div>`:'')+
+    predBriefHTML()+
     (watch?`<div class="bsec"><div class="bh">▶ MUST-WATCH TODAY</div>${watch}</div>`:'')+
     (read?`<div class="bsec"><div class="bh">⊳ MUST-READ TODAY</div>${read}</div>`:'')+
     (themes?`<div class="bsec"><div class="bh">◆ KEY THEMES TODAY</div>${themes}</div>`:'');
@@ -1414,11 +1462,33 @@ function buildVideos(){
 function drawVideos(){
   const items=prioritySort('video',VIDEOS.filter(v=>goodVideo(v)&&(vidCat==='ALL'||v.category===vidCat)&&inRange(v.ts)
     &&(!vidQ||v.title.toLowerCase().includes(vidQ)||(v.channel||'').toLowerCase().includes(vidQ)||(v.summary||'').toLowerCase().includes(vidQ))));
+  if(hubPane==='videos')$('wireCount').textContent=items.length+' videos';
   $('vidList').innerHTML=items.map(v=>`<div class="vid" data-id="${esc(v.video_id)}"><div class="vidtop"><img class="vthumb" loading="lazy" src="${encodeURI(v.thumb||'')}" alt=""><div class="vmeta"><div class="vt">${esc(v.title)}</div><div class="vc chiprow">${isMustWatch(v)?'<span class="meta-chip priority">MUST WATCH</span>':''}<span class="vcat ${v.category}">${VCATLABEL[v.category]||v.category}</span><span class="meta-chip source">${esc(v.channel)}</span><span class="meta-chip date">${fdate(v.published)}</span>${v.duration_s?`<span class="meta-chip">${esc(durLabel(v.duration_s))}</span>`:''}</div></div></div><div class="vexp">${v.summary?`<div class="vsum">${esc(v.summary)}</div>`:''}<a class="vopen" href="${encodeURI(v.url)}" target="_blank" rel="noopener">▶ Watch on YouTube ↗</a></div></div>`).join('')
     ||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No videos in this window.</div>';
   [...document.querySelectorAll('#vidList .vid')].forEach(el=>{
     el.querySelector('.vidtop').onclick=()=>{el.classList.toggle('open');playMedia('news',el.dataset.id);};
   });
+}
+function buildPredictions(){
+  const cats=['ALL',...Array.from(new Set((PREDICTIONS||[]).map(x=>x.category).filter(Boolean)))];
+  if(!cats.includes(predCat))predCat='ALL';
+  $('predTabs').innerHTML=cats.map(c=>`<span class="wtab ${c===predCat?'on':''}" data-c="${c}">${PCATLABEL[c]||c}</span>`).join('');
+  [...document.querySelectorAll('#predTabs .wtab')].forEach(t=>t.onclick=()=>{predCat=t.dataset.c;setActive('#predTabs',t);drawPredictions();});
+  const sb=$('psearch');sb.oninput=()=>{predQ=sb.value.toLowerCase().trim();drawPredictions();};
+  drawPredictions();
+}
+function drawPredictions(){
+  const p=PRED||{},items=(PREDICTIONS||[]).filter(x=>(predCat==='ALL'||x.category===predCat)
+    &&(!predQ||[x.question,x.event_title,x.category_label,x.outcome].join(' ').toLowerCase().includes(predQ)));
+  if(hubPane==='predictions')$('wireCount').textContent=items.length+' predictions';
+  const id=(p.indonesia_implication||'').replace(/^Indonesia:\s*/i,'');
+  const us=(p.global_implication||'').replace(/^(US\s*\/\s*Global|US|Global):\s*/i,'');
+  const bullets=(p.what_it_indicates||[]).slice(0,3).map(x=>`<div class="predline">• ${esc(x)}</div>`).join('');
+  $('predImp').innerHTML=`<div class="predbox"><div class="ptop">PREDICTION SENTIMENT · POLYMARKET</div>${id?`<div class="predline"><b>Indonesia</b> ${esc(id)}</div>`:''}${us?`<div class="predline"><b>US / Global</b> ${esc(us)}</div>`:''}${bullets}<div class="prednote">${esc(p.note||'Prediction markets are sentiment indicators, not facts or investment advice.')}</div></div>`;
+  $('predList').innerHTML=items.map(x=>{
+    const outcomes=(x.outcomes||[]).map((o,i)=>`<span class="predpill">${esc(o)} ${Number((x.prices||[])[i]||0).toFixed(1)}%</span>`).join('');
+    return `<div class="pred"><div class="predhead"><div class="predprob">${Number(x.probability||0).toFixed(0)}%<span>${esc(x.outcome||'top')}</span></div><div class="predmain"><div class="chiprow"><span class="pcat ${x.category||''}">${esc(PCATLABEL[x.category]||x.category_label||'Prediction')}</span><span class="meta-chip source">POLYMARKET</span>${x.volume_24h?`<span class="meta-chip date">24h ${pMoney(x.volume_24h)}</span>`:''}${x.liquidity?`<span class="meta-chip date">liq ${pMoney(x.liquidity)}</span>`:''}${x.end_date?`<span class="meta-chip date">ends ${esc(pDate(x.end_date))}</span>`:''}</div><div class="predq">${esc(x.question||'')}</div><div class="predwhy">${esc(x.why||'')}</div><div class="predout">${outcomes}</div><a class="vopen" href="${encodeURI(x.url||'https://polymarket.com')}" target="_blank" rel="noopener">Open market ↗</a></div></div></div>`;
+  }).join('')||'<div style="color:var(--ink3);font-size:11px;padding:10px 0;">No market-relevant prediction signals passed the filter this run.</div>';
 }
 
 /* ---- footer media player: ONE YouTube player, News / Podcast queues ---- */
@@ -1510,7 +1580,7 @@ function gatherState(){
   return {mood:moodPick,spPos:spState.pos,spPaused:spState.paused,
     ytSource,vid:cur,vidTime:vt,vidPaused:ytPaused,speed:ytSpeed,
     panel:$('mbPanel').classList.contains('open'),
-    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo};
+    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo,predCat};
 }
 function saveState(){try{localStorage.setItem(PKEY,JSON.stringify(gatherState()));}catch(_){}}
 function saveStateSoon(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveState,1200);}
@@ -2070,6 +2140,7 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.vidCat)vidCat=SS.vidCat;
   if(SS.wireFilter)wireFilter=SS.wireFilter;
   if(SS.wireGeo)wireGeo=SS.wireGeo;
+  if(SS.predCat)predCat=SS.predCat;
   _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=false;
 })();
 

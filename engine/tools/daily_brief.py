@@ -516,13 +516,29 @@ def _regional_digest(items: list, title_key: str, geo_key: str, telemetry: list 
     return {"indonesia": one("indonesia"), "us": one("us")}
 
 
+def _prediction_digest(prediction: dict | None) -> dict:
+    prediction = prediction if isinstance(prediction, dict) else {}
+    items = prediction.get("items") if isinstance(prediction.get("items"), list) else []
+    return {
+        "indonesia": str(prediction.get("indonesia_implication") or
+                         "Indonesia: no high-confidence prediction-market signal passed the filter this run."),
+        "us": str(prediction.get("global_implication") or
+                  "US / Global: no high-confidence prediction-market signal passed the filter this run."),
+        "what_it_indicates": [str(x) for x in (prediction.get("what_it_indicates") or [])[:4]],
+        "item_count": len(items),
+        "updated_at": str(prediction.get("updated_at") or ""),
+        "source": str(prediction.get("source") or "Polymarket public market data"),
+    }
+
+
 def compile_brief(telemetry, sectors, news, videos, arbiter,
-                  summarize=None, previous=None) -> dict:
+                  summarize=None, previous=None, prediction=None) -> dict:
     wk = _window_key()
     if (previous and previous.get("generated_for") == wk and previous.get("must_read")
             and previous.get("news_digest") and previous.get("video_digest")
             and not _brief_has_noisy_reasons(previous)):
         print(f"[daily_brief] window {wk} unchanged — reusing cached brief")
+        previous["prediction_sentiment"] = _prediction_digest(prediction)
         return _finalize_cards(previous)
 
     brief = None
@@ -629,6 +645,7 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
         "indonesia": ((brief.get("video_digest") or {}).get("indonesia") or vd_fallback["indonesia"]),
         "us": ((brief.get("video_digest") or {}).get("us") or vd_fallback["us"]),
     }
+    brief["prediction_sentiment"] = _prediction_digest(prediction)
     brief = _finalize_cards(brief)
 
     brief["generated_for"] = wk

@@ -645,6 +645,27 @@ VIDEO_FETCH_PER_RUN = 12
 # console.cloud.google.com → enable "YouTube Data API v3" → add as repo secret.
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 
+# ---------------------------------------------------------------- prediction sentiment
+# Polymarket public market data is keyless. We use it as a sentiment layer only:
+# no wallet, no orders, no trading actions. Keep the query list small so the
+# 30-minute cron stays fast and reliable.
+POLYMARKET_GAMMA_API = "https://gamma-api.polymarket.com"
+POLYMARKET_EVENT_LIMIT = 80
+POLYMARKET_SEARCH_LIMIT = 12
+POLYMARKET_ITEM_LIMIT = 24
+POLYMARKET_MIN_VOLUME = 1000
+POLYMARKET_MIN_LIQUIDITY = 500
+POLYMARKET_QUERIES = [
+    "Federal Reserve interest rates inflation",
+    "recession GDP unemployment treasury yields",
+    "oil gold crude OPEC Hormuz",
+    "China Taiwan tariffs trade war",
+    "Iran Israel geopolitics",
+    "Bitcoin Ethereum crypto stablecoin ETF",
+    "AI Nvidia semiconductor data center",
+    "Bank of Japan BOJ yen rates",
+]
+
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
 DAILY_BRIEF_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]   # every 3h WIB — tracks both ID & US sessions
 

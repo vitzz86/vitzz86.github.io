@@ -24,7 +24,7 @@ from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (daily_brief, enterprise_osint, env_context,  # noqa: E402
                    macro_alerts, market_telemetry, news_router, podcasts,
-                   sectors, spotify, trending, videos)
+                   polymarket, sectors, spotify, trending, videos)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -228,6 +228,7 @@ REQUIRED_SHAPE = {
     "sector_news": dict,
     "ticker_news": dict,
     "videos": list,
+    "prediction_sentiment": dict,
     "daily_brief": dict,
     "intelligence_health": dict,
     "note_of_the_day": str,
@@ -270,6 +271,8 @@ def _validate_intelligence(payload: dict) -> None:
                 f"videos[{i}].video_id missing")
         _expect(item.get("category") in VIDEO_CATEGORIES,
                 f"videos[{i}].category invalid: {item.get('category')}")
+    pred = payload.get("prediction_sentiment") or {}
+    _expect(isinstance(pred.get("items"), list), "prediction_sentiment.items missing")
     health = payload["intelligence_health"]
     _expect(isinstance(health.get("news"), dict), "intelligence_health.news missing")
     _expect(isinstance(health.get("videos"), dict), "intelligence_health.videos missing")
@@ -328,9 +331,10 @@ def compile_payload(state: dict) -> dict:
     _deepseek_sector_intel(sec, has_llm, previous_sectors)   # DeepSeek ai + structural themes
     news = news_router.enrich(state.get("headlines", {}), sec, state["telemetry"])
     vids = videos.collect(previous=previous_videos)
+    pred = polymarket.collect()
     brief = daily_brief.compile_brief(
         state["telemetry"], sec, news["wire"], vids, c["arbiter_brief"],
-        summarize=summarize, previous=previous_brief)
+        summarize=summarize, previous=previous_brief, prediction=pred)
     ma = macro_alerts.compile_macro_alerts(
         state["telemetry"], sec, news["wire"], vids,
         state.get("signals", ""), summarize=summarize)
@@ -358,9 +362,11 @@ def compile_payload(state: dict) -> dict:
         "sector_news": news["sector_news"],
         "ticker_news": news["ticker_news"],
         "videos": vids,
+        "prediction_sentiment": pred,
         "intelligence_health": {
             "news": news.get("audit", {}),
             "videos": videos.audit(vids),
+            "predictions": pred.get("health", {}),
             "daily_brief": brief.get("quality_audit", {}),
         },
         "daily_brief": brief,
