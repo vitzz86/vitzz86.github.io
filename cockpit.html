@@ -1591,7 +1591,7 @@ function radarSvg(sc,big=false){
     labels+`</svg>`;
 }
 function scorePanel(c){
-  const sc=invScore(c),metrics=(sc.metrics||[]).slice(0,9),n=sc.score;
+  const sc=invScore(c),metrics=displayScoreMetrics(sc,c).slice(0,9),n=sc.score;
   const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
   return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
@@ -1602,8 +1602,19 @@ function scoreSummary(c){
     `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${metrics.length} indicators</div></div>`+
     `<button class="scorebtn" id="scoreDetailBtn" type="button">Open score detail</button></div>`;
 }
-function scoreMetricHTML(sc,limit=null){
-  const metrics=(sc.metrics||[]);const list=limit?metrics.slice(0,limit):metrics;
+function displayScoreMetrics(sc,c=null){
+  const metrics=sc.metrics||[];
+  if(!staleCurrencyMismatch(c,sc))return metrics;
+  const sensitive=new Set(['P/E','Fwd P/E','EV/EBITDA','P/B','Book Value','EPS','Gross Profit','Total Cash','Free Cash Flow','FCF Yield']);
+  return metrics.map(m=>{
+    if(sensitive.has(m.label))return null;
+    if(m.label==='Current Price')return {...m,value:qValue(c),currency:'IDR',period:'latest quote · currency corrected'};
+    if(m.label==='Market Cap')return {...m,currency:'IDR',period:'latest quote · currency corrected'};
+    return m;
+  }).filter(Boolean);
+}
+function scoreMetricHTML(sc,limit=null,c=null){
+  const metrics=displayScoreMetrics(sc,c);const list=limit?metrics.slice(0,limit):metrics;
   return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
 }
 function scoreMetric(sc,label){
@@ -1738,6 +1749,9 @@ function lensDetail(c,type){
   if(sc.mode==='crypto'){
     return `<div class="lenscopy"><p>Crypto uses a different scoring stack: size, liquidity, momentum, trend, and volatility. Traditional P/E, ROE, P/B, and FCF valuation rules are not applied because CoinGecko does not provide operating fundamentals.</p></div>`;
   }
+  if(staleCurrencyMismatch(c,sc)){
+    return `<div class="lenscopy"><p>This cached IDX score mixed IDR quote prices with USD financial fields. Investor-style ratio checks are temporarily hidden until the next bake rebuilds this ticker with schema v6 currency normalization.</p></div>`;
+  }
   if(type==='buffett')return `<div class="lenscopy"><p><b>Buffett/Munger-style check</b>: heuristic screen for profitable, conservatively financed businesses at a sane price. These are dashboard thresholds inspired by value-investing practice, not official Buffett formulas.</p><ul>`+
     ruleLine(sc,'P/E',pe,'low',15,25,'lower multiple improves the Value axis')+
     ruleLine(sc,'P/B',pb,'low',1.5,3,'asset value is cheaper when this is low, unless ROE is exceptional')+
@@ -1765,7 +1779,7 @@ function openScoreModal(c,s){
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
-    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
+    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div class="metricsgrid">${scoreMetricHTML(sc,null,c)}</div></div>`+
     `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, risk ratios, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});
