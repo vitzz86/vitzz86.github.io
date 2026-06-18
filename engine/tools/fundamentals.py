@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 7
+SCORE_SCHEMA_VERSION = 8
 
 
 def _now_iso() -> str:
@@ -469,6 +469,8 @@ def _fair_pe_model(metrics: dict) -> dict:
     """Dynamic fair P/E based on real provider metrics and risk context."""
     current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
     forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
+    sector_pe = _sanitize_ratio(metrics.get("_sector_peer_pe"), 150.0)
+    sector_scope = metrics.get("_sector_peer_pe_scope") or "sector peer median"
     roe = _num(metrics.get("roe_pct"))
     debt = _num(metrics.get("debt_to_equity"))
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
@@ -478,20 +480,43 @@ def _fair_pe_model(metrics: dict) -> dict:
     max_dd = _num(risk.get("max_drawdown_pct"))
     hurdle = _valuation_hurdle(metrics)
 
-    # Higher rate environments deserve lower fair multiples. This becomes the
-    # neutral starting point before quality, growth, and risk adjustments.
-    base = _clamp(100 / ((hurdle or 5.0) + 2.0), 8.0, 18.0)
+    hurdle_base = _clamp(100 / ((hurdle or 5.0) + 2.0), 8.0, 18.0)
+    if sector_pe is not None:
+        base = _clamp(sector_pe, 6.0, 35.0)
+        base_label = "Base Sector P/E"
+        base_note = sector_scope
+    else:
+        base = hurdle_base
+        base_label = "Base Hurdle P/E"
+        base_note = f"hurdle {hurdle:.2f}%" if hurdle is not None else "fallback rate anchor"
     adjustments: list[float] = []
     drivers: list[str] = []
+    scorecard: list[dict] = [{
+        "label": base_label,
+        "metric": base_note,
+        "value": round(base, 2),
+        "adjustment": None,
+    }]
+
+    def add_adjustment(label: str, metric: str, adj: float, note: str) -> None:
+        adjustments.append(adj)
+        scorecard.append({
+            "label": label,
+            "metric": metric,
+            "adjustment": round(adj, 2),
+            "note": note,
+        })
 
     if roe is not None:
         adj = _clamp((roe - 12) / 15 * 4, -3.0, 5.0)
-        adjustments.append(adj)
+        add_adjustment("Quality Adjustment", f"ROE {roe:.1f}%", adj,
+                       "higher ROE earns a premium; weak ROE cuts the multiple")
         drivers.append(f"ROE {roe:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
 
     if growth is not None:
         adj = _clamp((growth - 5) / 20 * 5, -3.0, 6.0)
-        adjustments.append(adj)
+        add_adjustment("Growth Adjustment", f"revenue/EPS growth {growth:.1f}%", adj,
+                       "growth above 5% expands the fair multiple")
         drivers.append(f"growth {growth:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
 
     if fcf_yield is not None:
@@ -505,7 +530,8 @@ def _fair_pe_model(metrics: dict) -> dict:
             adj = -1.0
         else:
             adj = 0.0
-        adjustments.append(adj)
+        add_adjustment("Cash-Flow Adjustment", f"FCF yield {fcf_yield:.1f}%", adj,
+                       "strong FCF yield supports a higher fair P/E")
         drivers.append(f"FCF yield {fcf_yield:.1f}% {'supports' if adj >= 0 else 'pressures'} fair P/E")
 
     if debt is not None:
@@ -515,7 +541,8 @@ def _fair_pe_model(metrics: dict) -> dict:
             adj = 0.0
         else:
             adj = -_clamp((debt - 100) / 150 * 4, 0.5, 5.0)
-        adjustments.append(adj)
+        add_adjustment("Balance-Sheet Adjustment", f"Debt/Equity {debt:.1f}%", adj,
+                       "lower leverage improves valuation durability")
         drivers.append(f"Debt/Equity {debt:.1f}% {'supports' if adj >= 0 else 'cuts'} the multiple")
 
     if beta is not None:
@@ -525,7 +552,8 @@ def _fair_pe_model(metrics: dict) -> dict:
             adj = 0.0
         else:
             adj = -_clamp((beta - 1.2) / 0.8 * 3, 0.5, 3.5)
-        adjustments.append(adj)
+        add_adjustment("Market-Risk Adjustment", f"Beta {beta:.2f}x", adj,
+                       "higher beta reduces the risk-adjusted fair multiple")
         drivers.append(f"beta {beta:.2f}x {'supports' if adj >= 0 else 'cuts'} risk-adjusted fair P/E")
 
     if max_dd is not None:
@@ -536,18 +564,23 @@ def _fair_pe_model(metrics: dict) -> dict:
             adj = 0.0
         else:
             adj = -_clamp((dd - 35) / 25 * 3, 0.5, 4.0)
-        adjustments.append(adj)
+        add_adjustment("Drawdown Adjustment", f"6M max drawdown {dd:.1f}%", adj,
+                       "large peak-to-trough loss lowers the fair multiple")
         drivers.append(f"6M drawdown {dd:.1f}% {'supports' if adj >= 0 else 'cuts'} the risk multiple")
 
     if forward_pe is not None and current_pe is not None:
         if forward_pe < current_pe * 0.85 and (growth or 0) > 0:
-            adjustments.append(1.0)
+            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", 1.0,
+                           "forward earnings imply multiple compression")
             drivers.append(f"forward P/E {forward_pe:.1f}x is below current {current_pe:.1f}x")
         elif forward_pe > current_pe * 1.15:
-            adjustments.append(-1.0)
+            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", -1.0,
+                           "forward earnings imply multiple expansion risk")
             drivers.append(f"forward P/E {forward_pe:.1f}x is above current {current_pe:.1f}x")
 
-    fair_pe = base + sum(adjustments)
+    pre_cap_fair_pe = base + sum(adjustments)
+    fair_pe = pre_cap_fair_pe
+    cap_note = None
     if current_pe is not None:
         if (growth or 0) >= 20 and (roe or 0) >= 12:
             premium_cap = 1.55
@@ -558,17 +591,39 @@ def _fair_pe_model(metrics: dict) -> dict:
         upper = min(40.0, current_pe * premium_cap)
         lower = max(5.0, current_pe * 0.55)
         fair_pe = _clamp(fair_pe, lower, max(lower, upper))
+        if round(fair_pe, 2) != round(pre_cap_fair_pe, 2):
+            cap_note = f"bounded to {lower:.1f}x-{upper:.1f}x from current P/E {current_pe:.1f}x"
     else:
         fair_pe = _clamp(fair_pe, 5.0, 35.0)
+        if round(fair_pe, 2) != round(pre_cap_fair_pe, 2):
+            cap_note = "bounded to 5.0x-35.0x because current P/E is unavailable"
+
+    if cap_note:
+        scorecard.append({
+            "label": "Current-Multiple Guardrail",
+            "metric": cap_note,
+            "adjustment": round(fair_pe - pre_cap_fair_pe, 2),
+            "note": "prevents the model from drifting too far from traded valuation",
+        })
+    scorecard.append({
+        "label": "Final Fair P/E",
+        "metric": "base + adjustments",
+        "value": round(fair_pe, 2),
+        "adjustment": None,
+    })
 
     pe_gap = round((fair_pe / current_pe - 1) * 100, 2) if current_pe else None
     return {
         "fair_pe": round(fair_pe, 2),
         "current_pe": round(current_pe, 2) if current_pe is not None else None,
         "forward_pe": round(forward_pe, 2) if forward_pe is not None else None,
+        "base_pe": round(base, 2),
+        "base_pe_source": base_note,
+        "pre_guardrail_fair_pe": round(pre_cap_fair_pe, 2),
         "pe_gap_pct": pe_gap,
         "hurdle_rate": round(hurdle, 2) if hurdle is not None else None,
         "drivers": drivers[:6],
+        "scorecard": scorecard,
     }
 
 
@@ -709,13 +764,17 @@ def _valuation(metrics: dict) -> dict | None:
         "valuation_model": "dynamic_fair_pe",
         "current_pe": pe_model.get("current_pe"),
         "forward_pe": pe_model.get("forward_pe"),
+        "base_pe": pe_model.get("base_pe"),
+        "base_pe_source": pe_model.get("base_pe_source"),
         "fair_pe": pe_model.get("fair_pe"),
+        "pre_guardrail_fair_pe": pe_model.get("pre_guardrail_fair_pe"),
         "pe_gap_pct": pe_model.get("pe_gap_pct"),
         "fair_pb": base_pb,
         "required_fcf_yield_pct": base_fcf_req,
         "hurdle_rate": pe_model.get("hurdle_rate"),
         "primary_method": "Current P/E vs dynamic fair P/E, cross-checked by P/B and FCF yield",
         "fair_pe_drivers": pe_model.get("drivers") or [],
+        "fair_pe_scorecard": pe_model.get("scorecard") or [],
         "components": base_components,
         "sensitivity": sensitivity,
         "note": "Model estimate from Yahoo Finance metrics. Fair P/E is dynamic and adjusted by growth, ROE, cash flow, leverage, beta, drawdown, and local hurdle rate; not a broker target price or investment advice.",
@@ -920,10 +979,40 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
         except Exception as e:  # noqa: BLE001
             print(f"[fundamentals] equity fetch failed: {e}")
 
+    normalized_cache = {}
+    sector_pes, country_pes = [], {}
     for row in rows:
-        metrics = metric_cache.get(row.get("source_symbol")) or {}
+        if row.get("country") == "CR":
+            continue
+        sym = row.get("source_symbol")
+        metrics = metric_cache.get(sym) or {}
+        if not metrics:
+            continue
+        risk_context = _risk_context(row, "equity", risk_benchmarks)
+        normalized = _normalize_currencies(row, metrics, risk_context)
+        normalized_cache[sym] = normalized
+        pe = _sanitize_ratio(normalized.get("forward_pe") or normalized.get("pe"), 150.0)
+        if pe is not None:
+            sector_pes.append(pe)
+            country_pes.setdefault(row.get("country") or "", []).append(pe)
+
+    sector_peer_pe = _median(sector_pes) if len(sector_pes) >= 3 else None
+    country_peer_pe = {k: _median(v) for k, v in country_pes.items() if len(v) >= 3}
+
+    for row in rows:
         mode = "crypto" if row.get("country") == "CR" else "equity"
         risk_context = _risk_context(row, mode, risk_benchmarks)
+        metrics = normalized_cache.get(row.get("source_symbol")) or metric_cache.get(row.get("source_symbol")) or {}
+        if mode == "equity" and metrics:
+            metrics = dict(metrics)
+            country = row.get("country") or ""
+            peer = country_peer_pe.get(country) or sector_peer_pe
+            if peer is not None:
+                metrics["_sector_peer_pe"] = peer
+                metrics["_sector_peer_pe_scope"] = (
+                    f"{country} sector peer median" if country_peer_pe.get(country) is not None
+                    else "mixed-market sector peer median"
+                )
         if row.get("country") == "CR":
             row["fundamental_score"] = _score_crypto(row, metrics, risk_context)
         else:
