@@ -13,6 +13,9 @@ import math
 import statistics
 
 
+SCORE_SCHEMA_VERSION = 2
+
+
 def _now_iso() -> str:
     return dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -94,8 +97,11 @@ def _spark_volatility(spark: list):
     return round(statistics.pstdev(rets), 2)
 
 
-def _metric(label: str, value, fmt: str = "number") -> dict:
-    return {"label": label, "value": value, "fmt": fmt}
+def _metric(label: str, value, fmt: str = "number", currency: str | None = None) -> dict:
+    out = {"label": label, "value": value, "fmt": fmt}
+    if currency:
+        out["currency"] = currency
+    return out
 
 
 def _fmt_metric_value(v, fmt: str):
@@ -117,16 +123,25 @@ def _fetch_equity(sym: str) -> dict:
     market_cap = _num(info.get("marketCap"))
     fcf = _num(info.get("freeCashflow"))
     fcf_yield = round(fcf / market_cap * 100, 2) if fcf and market_cap else None
+    current_price = _num(info.get("currentPrice")) or _num(info.get("regularMarketPrice"))
     return {
+        "currency": info.get("financialCurrency") or info.get("currency"),
+        "current_price": current_price,
         "pe": _num(info.get("trailingPE")),
         "forward_pe": _num(info.get("forwardPE")),
         "ev_ebitda": _num(info.get("enterpriseToEbitda")),
         "pb": _num(info.get("priceToBook")),
+        "beta": _num(info.get("beta")),
+        "eps": _num(info.get("trailingEps")),
+        "book_value": _num(info.get("bookValue")),
         "roe_pct": _pct(info.get("returnOnEquity")),
         "debt_to_equity": _num(info.get("debtToEquity")),
         "revenue_growth_pct": _pct(info.get("revenueGrowth")),
         "eps_growth_pct": _pct(info.get("earningsGrowth")),
         "dividend_yield_pct": _pct(info.get("dividendYield")),
+        "gross_profit": _num(info.get("grossProfits")),
+        "total_cash": _num(info.get("totalCash")),
+        "free_cash_flow": fcf,
         "fcf_yield_pct": fcf_yield,
         "market_cap": market_cap,
         "source": "Yahoo Finance",
@@ -196,6 +211,122 @@ def _score_crypto(row: dict, metrics: dict) -> dict:
     return _pack_score("crypto", axes, metrics, one_month, six_month, vol)
 
 
+def _median(vals: list[float]) -> float | None:
+    vals = sorted(v for v in vals if v and v > 0)
+    if not vals:
+        return None
+    mid = len(vals) // 2
+    return vals[mid] if len(vals) % 2 else (vals[mid - 1] + vals[mid]) / 2
+
+
+def _valuation_components(metrics: dict, eps_multiple: float, pb_multiple: float,
+                          required_fcf_yield: float) -> list[dict]:
+    current = _num(metrics.get("current_price"))
+    candidates = []
+    eps = _num(metrics.get("eps"))
+    if eps and eps > 0:
+        candidates.append({
+            "method": f"EPS × {eps_multiple:g} P/E",
+            "price": eps * eps_multiple,
+            "input": f"EPS {round(eps, 2)}",
+        })
+
+    book = _num(metrics.get("book_value"))
+    roe = _num(metrics.get("roe_pct"))
+    if book and book > 0:
+        candidates.append({
+            "method": f"Book value × {pb_multiple:g} P/B",
+            "price": book * pb_multiple,
+            "input": f"Book value {round(book, 2)}, ROE {round(roe, 2) if roe is not None else 'n/a'}%",
+        })
+
+    fcf_yield = _num(metrics.get("fcf_yield_pct"))
+    if current and current > 0 and fcf_yield and fcf_yield > 0 and required_fcf_yield > 0:
+        candidates.append({
+            "method": f"Current price × FCF yield / {required_fcf_yield:g}%",
+            "price": current * (fcf_yield / required_fcf_yield),
+            "input": f"FCF yield {round(fcf_yield, 2)}%",
+        })
+    return candidates
+
+
+def _valuation(metrics: dict) -> dict | None:
+    """Multiple-based fair-value estimate from provider fields.
+
+    This is intentionally conservative and transparent: it uses only inputs Yahoo
+    already supplied, then reports the method and components so the UI can avoid
+    treating it as a broker target price.
+    """
+    current = _num(metrics.get("current_price"))
+    if not current or current <= 0:
+        return None
+
+    roe = _num(metrics.get("roe_pct"))
+    base_pb = 2.5 if roe and roe >= 20 else 1.8 if roe and roe >= 12 else 1.2
+    scenarios = [
+        ("Bear", 12, max(0.8, base_pb - 0.5), 10),
+        ("Base", 15, base_pb, 8),
+        ("Bull", 20, base_pb + 0.7, 6),
+    ]
+    sensitivity = []
+    base_components = []
+    for name, pe_mult, pb_mult, fcf_req in scenarios:
+        components = _valuation_components(metrics, pe_mult, pb_mult, fcf_req)
+        target = _median([c["price"] for c in components])
+        if target:
+            sensitivity.append({
+                "case": name,
+                "target": round(target, 2),
+                "upside_pct": round((target / current - 1) * 100, 2),
+                "assumptions": f"P/E {pe_mult:g}x, P/B {pb_mult:g}x, required FCF yield {fcf_req:g}%",
+                "components": components,
+            })
+        if name == "Base":
+            base_components = components
+
+    fair = next((s["target"] for s in sensitivity if s["case"] == "Base"), None)
+    if not fair:
+        return None
+
+    upside = (fair / current - 1) * 100
+    range_low = min(s["target"] for s in sensitivity)
+    range_high = max(s["target"] for s in sensitivity)
+    buy_below = fair * 0.85
+    accumulate_below = fair * 0.95
+    trim_above = fair * 1.15
+    if upside >= 20:
+        status = "Undervalued"
+    elif upside <= -20:
+        status = "Overvalued"
+    else:
+        status = "Fair value range"
+    if current <= buy_below:
+        signal = "Buy zone"
+    elif current <= accumulate_below:
+        signal = "Accumulate zone"
+    elif current <= trim_above:
+        signal = "Wait / fair zone"
+    else:
+        signal = "Expensive / trim zone"
+    return {
+        "status": status,
+        "fair_value": round(fair, 2),
+        "target_price": round(fair, 2),
+        "range_low": round(range_low, 2),
+        "range_high": round(range_high, 2),
+        "buy_below": round(buy_below, 2),
+        "accumulate_below": round(accumulate_below, 2),
+        "trim_above": round(trim_above, 2),
+        "signal": signal,
+        "upside_pct": round(upside, 2),
+        "current_price": round(current, 2),
+        "currency": metrics.get("currency"),
+        "components": base_components,
+        "sensitivity": sensitivity,
+        "note": "Model estimate from Yahoo Finance metrics; not a broker target price or investment advice.",
+    }
+
+
 def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month, vol) -> dict:
     valid = [a["score"] for a in axes if a.get("score") is not None]
     overall = round(sum(valid) / len(valid)) if valid else None
@@ -209,18 +340,27 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         label = "Neutral"
     else:
         label = "Weak"
+    currency = metrics.get("currency") or ("USD" if mode == "crypto" else None)
     metric_rows = [
+        _metric("Current Price", _fmt_metric_value(metrics.get("current_price"), "number"), "number", currency),
         _metric("P/E", _fmt_metric_value(metrics.get("pe"), "ratio"), "ratio"),
         _metric("Fwd P/E", _fmt_metric_value(metrics.get("forward_pe"), "ratio"), "ratio"),
+        _metric("EV/EBITDA", _fmt_metric_value(metrics.get("ev_ebitda"), "ratio"), "ratio"),
         _metric("P/B", _fmt_metric_value(metrics.get("pb"), "ratio"), "ratio"),
+        _metric("Book Value", _fmt_metric_value(metrics.get("book_value"), "number"), "number", currency),
+        _metric("Beta", _fmt_metric_value(metrics.get("beta"), "ratio"), "ratio"),
+        _metric("EPS", _fmt_metric_value(metrics.get("eps"), "number"), "number", currency),
         _metric("ROE", _fmt_metric_value(metrics.get("roe_pct"), "percent"), "percent"),
         _metric("Debt/Equity", _fmt_metric_value(metrics.get("debt_to_equity"), "ratio"), "ratio"),
         _metric("Revenue Growth", _fmt_metric_value(metrics.get("revenue_growth_pct"), "percent"), "percent"),
         _metric("EPS Growth", _fmt_metric_value(metrics.get("eps_growth_pct"), "percent"), "percent"),
         _metric("Dividend Yield", _fmt_metric_value(metrics.get("dividend_yield_pct"), "percent"), "percent"),
+        _metric("Gross Profit", _fmt_metric_value(metrics.get("gross_profit"), "money"), "money", currency),
+        _metric("Total Cash", _fmt_metric_value(metrics.get("total_cash"), "money"), "money", currency),
+        _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency),
         _metric("FCF Yield", _fmt_metric_value(metrics.get("fcf_yield_pct"), "percent"), "percent"),
-        _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money"),
-        _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money"),
+        _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money", currency),
+        _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency),
         _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent"),
         _metric("1M Return", one_month, "percent"),
         _metric("6M Return", six_month, "percent"),
@@ -228,11 +368,14 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     ]
     return {
         "mode": mode,
+        "schema_version": SCORE_SCHEMA_VERSION,
         "score": overall,
         "label": label,
         "coverage": round(len(valid) / len(axes), 2),
         "axes": axes,
         "metrics": [m for m in metric_rows if m["value"] is not None],
+        "valuation": _valuation(metrics) if mode == "equity" else None,
+        "currency": currency,
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
         "as_of": metrics.get("as_of") or _now_iso(),
     }
@@ -241,6 +384,8 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
 def _previous_metrics(previous_by_symbol: dict, row: dict, ttl_hours: int) -> dict | None:
     prev = previous_by_symbol.get(row.get("source_symbol")) or previous_by_symbol.get(row.get("ticker"))
     fs = (prev or {}).get("fundamental_score") or {}
+    if fs.get("schema_version") != SCORE_SCHEMA_VERSION:
+        return None
     as_of = _parse_iso(fs.get("as_of"))
     if not as_of:
         return None
@@ -252,15 +397,19 @@ def _previous_metrics(previous_by_symbol: dict, row: dict, ttl_hours: int) -> di
         label = m.get("label")
         value = m.get("value")
         key = {
-            "P/E": "pe", "Fwd P/E": "forward_pe", "P/B": "pb", "ROE": "roe_pct",
+            "Current Price": "current_price",
+            "P/E": "pe", "Fwd P/E": "forward_pe", "EV/EBITDA": "ev_ebitda",
+            "P/B": "pb", "Book Value": "book_value", "Beta": "beta", "EPS": "eps", "ROE": "roe_pct",
             "Debt/Equity": "debt_to_equity", "Revenue Growth": "revenue_growth_pct",
             "EPS Growth": "eps_growth_pct", "Dividend Yield": "dividend_yield_pct",
-            "FCF Yield": "fcf_yield_pct", "Market Cap": "market_cap",
+            "Gross Profit": "gross_profit", "Total Cash": "total_cash",
+            "Free Cash Flow": "free_cash_flow", "FCF Yield": "fcf_yield_pct", "Market Cap": "market_cap",
             "24h Volume": "volume_24h", "Liquidity": "liquidity_pct",
         }.get(label)
         if key:
             metrics[key] = value
     if metrics:
+        metrics["currency"] = fs.get("currency")
         metrics["source"] = fs.get("source")
         metrics["as_of"] = fs.get("as_of")
         return metrics

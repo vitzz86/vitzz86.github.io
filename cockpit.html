@@ -283,19 +283,40 @@ footer .g{color:var(--green);}
 @media(max-width:720px){.scorebox{grid-template-columns:1fr}.metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .scoremodal{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.74);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:5vh 16px;}
 .scoremodal.open{display:flex;}
-.scoremodalbox{width:min(760px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 32px 90px rgba(0,0,0,.66);padding:18px;position:relative;}
+.scoremodalbox{width:min(1120px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 32px 90px rgba(0,0,0,.66);padding:18px;position:relative;}
 .scoremodalhead{display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px;}
 .scoremodalhead .name{font-size:20px;font-weight:700;}
 .scoremodalhead .meta{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:4px;}
-.scoremodalgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start;}
+.scoremodalgrid{display:grid;grid-template-columns:minmax(440px,1.1fr) minmax(320px,.9fr);gap:16px;align-items:start;}
 .scoremodal .metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
-.radar.big svg{width:100%;min-height:330px;}
+.radar.big svg{width:100%;min-height:390px;overflow:visible;}
+.valuationbox{margin-bottom:12px;border:1px solid rgba(45,212,191,.22);border-radius:9px;background:rgba(45,212,191,.045);padding:11px;}
+.valuationbox .vh{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--cyan);margin-bottom:7px;}
+.valuationbox .vp{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.valuationbox .price{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--ink);}
+.valuationbox .status{font-family:var(--mono);font-size:10px;color:var(--amber);}
+.valuationbox .vn{font-family:var(--mono);font-size:8.5px;color:var(--ink3);line-height:1.55;margin-top:6px;}
+.valuerange{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px;}
+.valuerange .vr{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px;}
+.valuerange .k{font-family:var(--mono);font-size:7.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;}
+.valuerange .v{font-family:var(--mono);font-size:11px;color:var(--ink);margin-top:4px;}
+.sensgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px;}
+.sens{border:1px solid var(--line2);border-radius:7px;background:#0b0b0e;padding:8px;}
+.sens .case{font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:.08em;}
+.sens .target{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:5px;}
+.sens .ass{font-family:var(--mono);font-size:7.5px;color:var(--ink3);line-height:1.45;margin-top:5px;}
 .lensbox{margin-top:14px;border-left:2px solid var(--amber);background:rgba(245,158,11,.05);border-radius:0 8px 8px 0;padding:11px;}
 .lensbox .h{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--amber);margin-bottom:7px;}
 .lensbox ul{list-style:none;margin:0;padding:0;}
 .lensbox li{font-size:11px;line-height:1.55;color:#d0d0d8;margin:0 0 7px;padding-left:13px;position:relative;}
 .lensbox li:before{content:"▸";position:absolute;left:0;color:var(--amber);}
-@media(max-width:720px){.scoremodalgrid{grid-template-columns:1fr}.scoresummary{align-items:flex-start;flex-wrap:wrap}.scorebtn{margin-left:0;width:100%;}}
+.lenscopy{font-size:11px;line-height:1.6;color:#d0d0d8;}
+.lenscopy b{color:var(--ink);font-weight:700;}
+.lenscopy .pass{color:var(--green);font-family:var(--mono);}
+.lenscopy .fail{color:var(--red);font-family:var(--mono);}
+.lenscopy .watch{color:var(--amber);font-family:var(--mono);}
+@media(max-width:900px){.scoremodalgrid{grid-template-columns:1fr}.radar.big svg{min-height:340px;}.valuerange,.sensgrid{grid-template-columns:1fr;}}
+@media(max-width:720px){.scoresummary{align-items:flex-start;flex-wrap:wrap}.scorebtn{margin-left:0;width:100%;}}
 .tkhd .tkpx{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
 .tkhd .exch{font-family:var(--mono);font-size:8px;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;}
 
@@ -1426,25 +1447,34 @@ function scorePill(c){
 function fmtMetric(m){
   const v=m&&m.value,fmt=m&&m.fmt;
   if(v==null)return '—';
+  const cur=m&&m.currency?String(m.currency).toUpperCase():'';
+  const prefix=cur?cur+' ':'$';
   if(fmt==='percent')return `${Number(v).toFixed(2)}%`;
   if(fmt==='money'){
     const n=Number(v);if(!isFinite(n))return esc(String(v));
-    if(Math.abs(n)>=1e12)return '$'+(n/1e12).toFixed(2)+'T';
-    if(Math.abs(n)>=1e9)return '$'+(n/1e9).toFixed(2)+'B';
-    if(Math.abs(n)>=1e6)return '$'+(n/1e6).toFixed(1)+'M';
-    return '$'+Math.round(n).toLocaleString();
+    if(Math.abs(n)>=1e12)return prefix+(n/1e12).toFixed(2)+'T';
+    if(Math.abs(n)>=1e9)return prefix+(n/1e9).toFixed(2)+'B';
+    if(Math.abs(n)>=1e6)return prefix+(n/1e6).toFixed(1)+'M';
+    return prefix+Math.round(n).toLocaleString();
   }
+  if(fmt==='number'&&cur&&/price|eps|book/i.test(String(m.label||'')))return cur+' '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
   return Number(v).toFixed(fmt==='ratio'?2:2);
 }
 function radarSvg(sc,big=false){
   const axes=(sc.axes&&sc.axes.length?sc.axes:[]).slice(0,6);
   if(!axes.length)return '<div style="height:190px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Score unavailable</div>';
-  const w=big?360:220,h=big?330:200,cx=w/2,cy=big?158:98,r=big?104:62,levels=[.25,.5,.75,1],fs=big?11:8;
+  const w=big?560:220,h=big?390:200,cx=w/2,cy=big?190:98,r=big?118:62,levels=[.25,.5,.75,1],fs=big?12:8;
   const pts=(scale=1)=>axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*scale,cy+Math.sin(ang)*r*scale];});
   const poly=arr=>arr.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
   const vals=axes.map((a,i)=>{const v=a.score==null?0:Number(a.score)/100;const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*v,cy+Math.sin(ang)*r*v];});
-  const labels=axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length,lr=r+(big?48:28),x=cx+Math.cos(ang)*lr,y=cy+Math.sin(ang)*lr;
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${x<cx-8?'end':x>cx+8?'start':'middle'}" fill="${a.score==null?'#52525b':'#a1a1aa'}" font-size="${fs}" font-family="ui-monospace,monospace">${esc(a.label)} ${a.score==null?'n/a':Math.round(a.score)}</text>`;}).join('');
+  const labels=axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length,lr=r+(big?70:28);let x=cx+Math.cos(ang)*lr,y=cy+Math.sin(ang)*lr,anchor=x<cx-8?'end':x>cx+8?'start':'middle';
+    if(big){
+      if(x<cx-35){x=18;anchor='start';}
+      else if(x>cx+35){x=w-18;anchor='end';}
+      else{x=cx;anchor='middle';}
+      y=Math.max(24,Math.min(h-24,y));
+    }
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" fill="${a.score==null?'#52525b':'#a1a1aa'}" font-size="${fs}" font-family="ui-monospace,monospace">${esc(a.label)} ${a.score==null?'n/a':Math.round(a.score)}</text>`;}).join('');
   return `<svg viewBox="0 0 ${w} ${h}" aria-label="Investment score spider chart">`+
     levels.map(l=>`<polygon points="${poly(pts(l))}" fill="none" stroke="#27272f" stroke-width="1"/>`).join('')+
     pts(1).map(p=>`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#202028" stroke-width="1"/>`).join('')+
@@ -1468,27 +1498,82 @@ function scoreMetricHTML(sc,limit=null){
   const metrics=(sc.metrics||[]);const list=limit?metrics.slice(0,limit):metrics;
   return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
 }
+function scoreMetric(sc,label){
+  return (sc.metrics||[]).find(m=>String(m.label||'').toLowerCase()===String(label).toLowerCase())||null;
+}
+function metricValue(sc,label){
+  const m=scoreMetric(sc,label);return m&&m.value!=null?Number(m.value):null;
+}
+function metricDisplay(sc,label){
+  const m=scoreMetric(sc,label);return m?fmtMetric(m):'n/a';
+}
 function axisVal(sc,key){const a=(sc.axes||[]).find(x=>x.key===key||String(x.label||'').toLowerCase()===key);return a&&a.score!=null?Number(a.score):null;}
-function investorLens(c){
+function verdict(v,dir,good,watch){
+  if(v==null||!isFinite(v))return ['watch','not available'];
+  if(dir==='high')return v>=good?['pass','passes']:v>=watch?['watch','borderline']:['fail','misses'];
+  return v<=good?['pass','passes']:v<=watch?['watch','borderline']:['fail','misses'];
+}
+function ruleLine(sc,label,actual,dir,good,watch,why){
+  const [cls,txt]=verdict(actual,dir,good,watch);
+  const op=dir==='high'?'>=':'<=';
+  return `<li><b>${esc(label)}</b>: actual ${esc(metricDisplay(sc,label))}; style threshold ${op} ${esc(String(good))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+}
+function valuationPrice(n,currency){
+  if(n==null||!isFinite(Number(n)))return 'n/a';
+  return `${currency?String(currency).toUpperCase()+' ':''}${Number(n).toLocaleString('en-US',{maximumFractionDigits:2})}`;
+}
+function valuationBox(sc){
+  const v=sc.valuation;
+  if(!v)return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Unavailable this cycle because Yahoo did not provide enough current price, EPS, book value, or free-cash-flow inputs. No estimate is filled in.</div></div>`;
+  const col=v.upside_pct>=20?'var(--green)':v.upside_pct<=-20?'var(--red)':'var(--amber)';
+  const comps=(v.components||[]).slice(0,3).map(c=>`${c.method} (${c.input})`).join(' · ');
+  const cur=v.currency||sc.currency;
+  const sensitivity=(v.sensitivity||[]).map(s=>`<div class="sens"><div class="case">${esc(s.case)}</div><div class="target">${esc(valuationPrice(s.target,cur))}</div><div class="status" style="color:${COLP(s.upside_pct||0)}">${sign(s.upside_pct||0)}</div><div class="ass">${esc(s.assumptions||'')}</div></div>`).join('');
+  return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE · MODEL FROM PROVIDER INPUTS</div>`+
+    `<div class="vp"><span class="price">${esc(valuationPrice(v.target_price||v.fair_value,cur))}</span><span class="status" style="color:${col}">${esc(v.signal||v.status||'Range')} · ${sign(v.upside_pct||0)} vs current</span></div>`+
+    `<div class="valuerange"><div class="vr"><div class="k">Current</div><div class="v">${esc(valuationPrice(v.current_price,cur))}</div></div><div class="vr"><div class="k">Buy Below</div><div class="v">${esc(valuationPrice(v.buy_below,cur))}</div></div><div class="vr"><div class="k">Fair Range</div><div class="v">${esc(valuationPrice(v.range_low,cur))} - ${esc(valuationPrice(v.range_high,cur))}</div></div><div class="vr"><div class="k">Accumulate Below</div><div class="v">${esc(valuationPrice(v.accumulate_below,cur))}</div></div><div class="vr"><div class="k">Trim Above</div><div class="v">${esc(valuationPrice(v.trim_above,cur))}</div></div><div class="vr"><div class="k">Status</div><div class="v">${esc(v.status||'n/a')}</div></div></div>`+
+    `${sensitivity?`<div class="sensgrid">${sensitivity}</div>`:''}`+
+    `<div class="vn">Base methods: ${esc(comps||'n/a')}. ${esc(v.note||'')}</div></div>`;
+}
+function lensDetail(c,type){
   const sc=invScore(c);
-  if(Array.isArray(sc.investor_lens)&&sc.investor_lens.length)return sc.investor_lens.slice(0,5);
   const value=axisVal(sc,'value'),quality=axisVal(sc,'quality'),growth=axisVal(sc,'growth'),momentum=axisVal(sc,'momentum'),risk=axisVal(sc,'risk');
-  const safe=v=>v==null?'not enough data':Math.round(v)+'/100';
-  const lines=[];
-  lines.push(`Buffett/Munger lens: quality is ${safe(quality)} and value is ${safe(value)}, so the first check is whether durable returns justify the valuation instead of chasing price action.`);
-  lines.push(`Ackman lens: growth is ${safe(growth)} and risk is ${safe(risk)}, favoring names where the business can compound without heavy balance-sheet or volatility drag.`);
-  lines.push(`Dalio lens: momentum is ${safe(momentum)} while risk is ${safe(risk)}, useful for judging whether the asset is riding a supportive cycle or needs smaller position sizing.`);
-  if((sc.metrics||[]).length)lines.push(`Model discipline: only real provider metrics are shown; missing P/E, ROE, debt, growth, liquidity, or return fields are left blank and reduce coverage.`);
-  return lines;
+  const pe=metricValue(sc,'P/E'),pb=metricValue(sc,'P/B'),roe=metricValue(sc,'ROE'),debt=metricValue(sc,'Debt/Equity'),fcf=metricValue(sc,'FCF Yield');
+  const rev=metricValue(sc,'Revenue Growth'),beta=metricValue(sc,'Beta'),vol=metricValue(sc,'Volatility'),six=metricValue(sc,'6M Return');
+  if(sc.mode==='crypto'){
+    return `<div class="lenscopy"><p>Crypto uses a different scoring stack: size, liquidity, momentum, trend, and volatility. Traditional P/E, ROE, P/B, and FCF valuation rules are not applied because CoinGecko does not provide operating fundamentals.</p></div>`;
+  }
+  if(type==='buffett')return `<div class="lenscopy"><p><b>Buffett/Munger-style check</b>: prefer understandable, profitable, conservatively financed businesses bought at a sane price. This is a rules-of-thumb lens, not an official formula.</p><ul>`+
+    ruleLine(sc,'P/E',pe,'low',15,25,'lower multiple improves the Value axis')+
+    ruleLine(sc,'P/B',pb,'low',1.5,3,'asset value is cheaper when this is low, unless ROE is exceptional')+
+    ruleLine(sc,'ROE',roe,'high',15,8,'durable quality usually needs strong returns on equity')+
+    ruleLine(sc,'Debt/Equity',debt,'low',80,150,'lower leverage improves downside resilience')+
+    ruleLine(sc,'FCF Yield',fcf,'high',5,2,'cash generation supports intrinsic-value discipline')+
+    `</ul><p>Conclusion: Value ${Math.round(value||0)}/100 and Quality ${Math.round(quality||0)}/100 explain the current score contribution.</p></div>`;
+  if(type==='ackman')return `<div class="lenscopy"><p><b>Ackman-style check</b>: prefer high-quality compounders with cash generation, pricing power, and a balance sheet that does not break the thesis.</p><ul>`+
+    ruleLine(sc,'ROE',roe,'high',15,8,'quality compounders should earn above-average returns')+
+    ruleLine(sc,'Revenue Growth',rev,'high',5,0,'positive growth supports compounding')+
+    ruleLine(sc,'FCF Yield',fcf,'high',4,1,'cash flow gives room for reinvestment or shareholder returns')+
+    ruleLine(sc,'Debt/Equity',debt,'low',120,200,'excess leverage weakens thesis durability')+
+    ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta reduces market-sensitivity drag')+
+    `</ul><p>Conclusion: Growth ${Math.round(growth||0)}/100 and Risk ${Math.round(risk||0)}/100 show whether this is a clean compounder or a watchlist name.</p></div>`;
+  if(type==='dalio')return `<div class="lenscopy"><p><b>Dalio-style risk check</b>: look at the asset as part of a portfolio and macro regime, not just as a standalone story.</p><ul>`+
+    ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta helps portfolio balance')+
+    ruleLine(sc,'Volatility',vol,'low',1.2,3.0,'lower realized volatility improves the Risk axis')+
+    ruleLine(sc,'6M Return',six,'high',0,-20,'positive trend reduces the need to fight the cycle')+
+    ruleLine(sc,'Debt/Equity',debt,'low',120,200,'leverage can amplify macro shocks')+
+    `</ul><p>Conclusion: Momentum ${Math.round(momentum||0)}/100 and Risk ${Math.round(risk||0)}/100 determine whether sizing should be aggressive or defensive.</p></div>`;
+  return `<div class="lenscopy">${valuationBox(sc)}<p>Target price is the base-case model target. Buy-below, accumulate, and trim levels are margin-of-safety bands around that target. Sensitivity shows how the target changes under bear/base/bull assumptions.</p></div>`;
 }
 function openScoreModal(c,s){
   const sc=invScore(c),n=sc.score;
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
-    `<div class="scoremodalgrid"><div class="radar big">${radarSvg(sc,true)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
-    `<div class="lensbox"><div class="h">INVESTOR LENS · SCORE MODEL</div><ul>${investorLens(c).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`+
-    `<div class="scorefoot" style="margin-top:12px;">Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
+    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${valuationBox(sc)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
+    `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span><span class="wtab" data-lens="valuation">Valuation</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
+    `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
+  [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});
   $('scoreModal').classList.add('open');
 }
 function renderConsts(s){
