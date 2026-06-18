@@ -70,6 +70,22 @@ def node_quant(state: dict) -> dict:
             "anomaly_desc": tel["anomaly_desc"]}
 
 
+def _tel_value(r: dict) -> str:
+    val = float(r.get("value") or 0.0)
+    return f"{val:,.3f}%" if r.get("value_unit") == "percent" else f"{val:,.2f}"
+
+
+def _tel_move(r: dict) -> str:
+    mv = float(r.get("delta_pct") or 0.0)
+    if r.get("delta_unit") == "bp":
+        return f"{mv:+.1f} bp"
+    return f"{mv:+.2f}%"
+
+
+def _tel_line(r: dict) -> str:
+    return f"{r['label']}: {_tel_value(r)} ({_tel_move(r)})"
+
+
 def node_hunter(state: dict) -> dict:
     headlines = enterprise_osint.scan_feeds()
     if state["anomaly"]:
@@ -87,8 +103,7 @@ def node_hunter(state: dict) -> dict:
 
 
 def node_arbiter(state: dict) -> dict:
-    tel_str = "\n".join(f"{r['label']}: {r['value']} ({r['delta_pct']:+.2f}%)"
-                        for r in state["telemetry"])
+    tel_str = "\n".join(_tel_line(r) for r in state["telemetry"])
     brief = call_deepseek(
         pt.ARBITER_PERSONA,
         pt.ARBITER_TASK.format(telemetry=tel_str or "unavailable",
@@ -98,8 +113,7 @@ def node_arbiter(state: dict) -> dict:
 
 
 def node_chief(state: dict) -> dict:
-    tel_str = "\n".join(f"{r['label']}: {r['value']} ({r['delta_pct']:+.2f}%)"
-                        for r in state["telemetry"])
+    tel_str = "\n".join(_tel_line(r) for r in state["telemetry"])
     raw = call_deepseek(
         pt.CHIEF_PERSONA,
         pt.CHIEF_TASK.replace("{telemetry}", tel_str or "unavailable")

@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 3
+SCORE_SCHEMA_VERSION = 4
 
 
 def _now_iso() -> str:
@@ -97,6 +97,77 @@ def _spark_volatility(spark: list):
     return round(statistics.pstdev(rets), 2)
 
 
+def _spark_pairs(row: dict) -> list[tuple[int | None, float]]:
+    vals = [_num(x) for x in (row.get("spark") or [])]
+    vals = [x for x in vals if x is not None]
+    ts = row.get("spark_ts") or []
+    if ts and len(ts) >= len(vals):
+        ts = ts[-len(vals):]
+    else:
+        ts = [None] * len(vals)
+    return [(ts[i], vals[i]) for i in range(len(vals))]
+
+
+def _daily_returns(vals: list[float]) -> list[float]:
+    out = []
+    for a, b in zip(vals, vals[1:]):
+        if a:
+            out.append((b / a - 1))
+    return out
+
+
+def _risk_stats(row: dict, mode: str) -> dict:
+    pairs = _spark_pairs(row)
+    vals = [p[1] for p in pairs]
+    if len(vals) < 12:
+        return {}
+
+    rets = _daily_returns(vals)
+    periods = 365 if mode == "crypto" else 252
+    sharpe = sortino = None
+    if len(rets) >= 10:
+        mean = statistics.fmean(rets)
+        stdev = statistics.pstdev(rets)
+        if stdev:
+            sharpe = round((mean / stdev) * math.sqrt(periods), 2)
+        downside = [r for r in rets if r < 0]
+        if len(downside) >= 2:
+            down_dev = statistics.pstdev(downside)
+            if down_dev:
+                sortino = round((mean / down_dev) * math.sqrt(periods), 2)
+
+    peak_i = max(range(len(vals)), key=lambda i: vals[i])
+    bottom_i = min(range(len(vals)), key=lambda i: vals[i])
+    running_peak_i, max_dd = 0, 0.0
+    dd_peak_i = dd_trough_i = 0
+    for i, price in enumerate(vals):
+        if price > vals[running_peak_i]:
+            running_peak_i = i
+        peak = vals[running_peak_i]
+        if peak:
+            dd = (price / peak - 1) * 100
+            if dd < max_dd:
+                max_dd = dd
+                dd_peak_i = running_peak_i
+                dd_trough_i = i
+
+    return {
+        "period": "6M daily closes",
+        "risk_free_rate": 0,
+        "sharpe": sharpe,
+        "sortino": sortino,
+        "peak_price": round(vals[peak_i], 4),
+        "peak_ts": pairs[peak_i][0],
+        "bottom_price": round(vals[bottom_i], 4),
+        "bottom_ts": pairs[bottom_i][0],
+        "max_drawdown_pct": round(max_dd, 2),
+        "max_drawdown_peak_price": round(vals[dd_peak_i], 4),
+        "max_drawdown_peak_ts": pairs[dd_peak_i][0],
+        "max_drawdown_trough_price": round(vals[dd_trough_i], 4),
+        "max_drawdown_trough_ts": pairs[dd_trough_i][0],
+    }
+
+
 def _metric(label: str, value, fmt: str = "number", currency: str | None = None,
             period: str | None = None) -> dict:
     out = {"label": label, "value": value, "fmt": fmt}
@@ -153,6 +224,8 @@ def _fetch_equity(sym: str) -> dict:
 
 
 def _score_equity(row: dict, metrics: dict) -> dict:
+    metrics = dict(metrics)
+    metrics["_risk_stats"] = _risk_stats(row, "equity")
     one_month = _spark_return(row.get("spark"), 22)
     six_month = _spark_return(row.get("spark"))
     vol = _spark_volatility(row.get("spark"))
@@ -193,6 +266,8 @@ def _score_equity(row: dict, metrics: dict) -> dict:
 
 
 def _score_crypto(row: dict, metrics: dict) -> dict:
+    metrics = dict(metrics)
+    metrics["_risk_stats"] = _risk_stats(row, "crypto")
     one_month = _spark_return(row.get("spark"), 30)
     six_month = _spark_return(row.get("spark"))
     vol = _spark_volatility(row.get("spark"))
@@ -209,7 +284,6 @@ def _score_crypto(row: dict, metrics: dict) -> dict:
         {"key": "trend", "label": "Trend", "score": _score_high(six_month, -40, 80)},
         {"key": "risk", "label": "Risk", "score": _score_low(vol, 2.5, 9.0)},
     ]
-    metrics = dict(metrics)
     metrics["liquidity_pct"] = round(liquidity, 2) if liquidity is not None else None
     return _pack_score("crypto", axes, metrics, one_month, six_month, vol)
 
@@ -346,6 +420,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     currency = metrics.get("currency") or ("USD" if mode == "crypto" else None)
     one_month_period = "30D price return" if mode == "crypto" else "22 trading sessions"
     vol_period = "daily realized, 6M window" if mode == "crypto" else "daily realized, ~6M window"
+    risk = metrics.get("_risk_stats") or {}
     metric_rows = [
         _metric("Current Price", _fmt_metric_value(metrics.get("current_price"), "number"), "number", currency, "latest quote"),
         _metric("P/E", _fmt_metric_value(metrics.get("pe"), "ratio"), "ratio", period="TTM"),
@@ -370,6 +445,9 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("1M Return", one_month, "percent", period=one_month_period),
         _metric("6M Return", six_month, "percent", period="6M price return"),
         _metric("Volatility", vol, "percent", period=vol_period),
+        _metric("Sharpe Ratio", _fmt_metric_value(risk.get("sharpe"), "ratio"), "ratio", period="annualized, 0% RF, 6M daily"),
+        _metric("Sortino Ratio", _fmt_metric_value(risk.get("sortino"), "ratio"), "ratio", period="annualized downside, 0% RF, 6M daily"),
+        _metric("Max Drawdown", _fmt_metric_value(risk.get("max_drawdown_pct"), "percent"), "percent", period="peak-to-trough, 6M"),
     ]
     return {
         "mode": mode,
@@ -380,6 +458,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "axes": axes,
         "metrics": [m for m in metric_rows if m["value"] is not None],
         "valuation": _valuation(metrics) if mode == "equity" else None,
+        "risk_stats": risk or None,
         "currency": currency,
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
         "as_of": metrics.get("as_of") or _now_iso(),
@@ -469,6 +548,7 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
                         _score_high(_spark_return(row.get("spark")), -20, 35),
                     ])},
                     {"key": "risk", "label": "Risk", "score": _score_low(_spark_volatility(row.get("spark")), 1.2, 5.0)},
-                ], {"source": "Price history only", "as_of": _now_iso()},
+                ], {"source": "Price history only", "as_of": _now_iso(),
+                    "_risk_stats": _risk_stats(row, "equity")},
                 _spark_return(row.get("spark"), 22), _spark_return(row.get("spark")),
                 _spark_volatility(row.get("spark")))

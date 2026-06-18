@@ -104,11 +104,19 @@ def _fallback(telemetry, sectors, tel_by_sym, news=None) -> dict:
         r = tel_by_sym.get(sym)
         return [{"name": r["label"], "url": r["url"]}] if r else []
 
+    def tv(r):
+        val = float(r.get("value") or 0.0)
+        return f"{val:,.3f}%" if r.get("value_unit") == "percent" else f"{val:,.2f}"
+
+    def tm(r):
+        mv = float(r.get("delta_pct") or 0.0)
+        return f"{mv:+.1f} bp" if r.get("delta_unit") == "bp" else f"{mv:+.2f}%"
+
     ma = []
     for sym in ("^JKSE", "^GSPC", "^IXIC", "USDIDR=X", "GC=F", "BZ=F", "BTC-USD"):
         r = tel_by_sym.get(sym)
         if r:
-            ma.append({"point": f"{r['label']} at {r['value']:,.2f}, {r['delta_pct']:+.2f}% on the session.",
+            ma.append({"point": f"{r['label']} at {tv(r)}, {tm(r)} on the session.",
                        "sources": ref(sym)})
         if len(ma) >= 4:
             break
@@ -135,14 +143,22 @@ def compile_macro_alerts(telemetry, sectors, news, videos, signals="", summarize
     tel_by_sym = {r["symbol"]: r for r in telemetry}
     cons_by_tk = {c["ticker"]: c for s in sectors for c in s.get("constituents", [])}
 
+    def tv(r):
+        val = float(r.get("value") or 0.0)
+        return f"{val:,.3f}%" if r.get("value_unit") == "percent" else f"{val:,.2f}"
+
+    def tm(r):
+        mv = float(r.get("delta_pct") or 0.0)
+        return f"{mv:+.1f} bp" if r.get("delta_unit") == "bp" else f"{mv:+.2f}%"
+
     result = None
     if summarize:
-        tstr = "\n".join(f"{r['symbol']} = {r['label']}: {r['value']} ({r['delta_pct']:+.2f}%)"
+        tstr = "\n".join(f"{r['symbol']} = {r['label']}: {tv(r)} ({tm(r)})"
                          for r in telemetry)
         secstr = "; ".join(f"{s['name']} {s['change']:+.2f}%" for s in sectors)
         nstr = "\n".join(f"{i}. {n.get('source','')}: {n['title']}" for i, n in enumerate(nlist)) or "none"
         vstr = "\n".join(f"{i}. {v.get('channel','')}: {v['title']}" for i, v in enumerate(vlist)) or "none"
-        user = (f"=== TELEMETRY (symbol = label: value (day%)) ===\n{tstr}\n\n"
+        user = (f"=== TELEMETRY (symbol = label: value (move; % for assets, bp for rates)) ===\n{tstr}\n\n"
                 f"=== SECTORS ===\n{secstr}\n\n"
                 f"=== NEWS (cite by index) ===\n{nstr}\n\n"
                 f"=== VIDEOS (cite by index) ===\n{vstr}\n\n"

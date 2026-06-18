@@ -37,6 +37,17 @@ def _closes(res: dict) -> list:
         return []
 
 
+def _series(res: dict) -> dict:
+    """Aligned close/timestamp arrays for daily risk stats."""
+    try:
+        ts = res.get("timestamp") or []
+        closes = res["indicators"]["quote"][0].get("close") or []
+        pairs = [(int(t), round(float(c), 4)) for t, c in zip(ts, closes) if c is not None]
+        return {"spark_ts": [p[0] for p in pairs], "spark": [p[1] for p in pairs]}
+    except Exception:  # noqa: BLE001
+        return {"spark_ts": [], "spark": []}
+
+
 def _one(sym: str) -> dict | None:
     # range=1d&interval=30m → the OFFICIAL prior close (chartPreviousClose, the exact
     # anchor Yahoo/Bloomberg use for "today's %"), the live session bounds (open/closed),
@@ -61,7 +72,9 @@ def _one(sym: str) -> dict | None:
     # range=6mo&interval=1d → daily series for the 1W/1M/3M/6M sparkline + window returns
     six = _chart(sym, "6mo", "1d")
     if six:
-        out["spark"] = _closes(six)[-130:]
+        ser = _series(six)
+        out["spark"] = ser["spark"][-130:]
+        out["spark_ts"] = ser["spark_ts"][-130:]
         try:
             vols = [v for v in (six["indicators"]["quote"][0].get("volume") or []) if v is not None]
             out["volume"] = float(vols[-1]) if vols else 0.0

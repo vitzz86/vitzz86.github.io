@@ -387,11 +387,31 @@ def _fmt_pct(n) -> str:
         return ""
 
 
+def _fmt_telemetry_value(row: dict | None) -> str:
+    if not row:
+        return ""
+    try:
+        v = float(row.get("value") or 0.0)
+        return f"{v:,.3f}%" if row.get("value_unit") == "percent" else f"{v:,.2f}"
+    except Exception:  # noqa: BLE001
+        return ""
+
+
+def _fmt_telemetry_move(row: dict | None) -> str:
+    if not row:
+        return ""
+    try:
+        v = float(row.get("delta_pct") or 0.0)
+        return f"{v:+.1f} bp" if row.get("delta_unit") == "bp" else f"{v:+.2f}%"
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def _indicator(label: str, row: dict | None, note: str = "") -> str:
     if not row:
         return ""
-    pct = _fmt_pct(row.get("delta_pct"))
-    return f"{label} {pct}{note}" if pct else ""
+    mv = _fmt_telemetry_move(row)
+    return f"{label} {mv}{note}" if mv else ""
 
 
 def _tone(score: float) -> str:
@@ -516,7 +536,7 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
                          for i, v in enumerate(vlist)) or "none"
         nstr = "\n".join(f"{i}. [{n.get('category','')}/{n.get('geo','')}] {n.get('source','')}: {n['title']} — {snippet(n)}"
                          for i, n in enumerate(nlist)) or "none"
-        tstr = "\n".join(f"{r['label']}: {r['value']} ({r['delta_pct']:+.2f}%)" for r in telemetry)
+        tstr = "\n".join(f"{r['label']}: {_fmt_telemetry_value(r)} ({_fmt_telemetry_move(r)})" for r in telemetry)
         secstr = "; ".join(f"{s['name']} {s['change']:+.2f}%" for s in sectors)
         raw = summarize(
             "You are the chief intelligence officer for an Indonesia-focused investor. "
@@ -538,13 +558,13 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
             "The news_digest and video_digest must summarize the full listed set by region: "
             "Indonesia in one complete sentence and US/global in one complete sentence each. "
             "Each sentence must start with a tone label (bullish, bearish, or mixed), include 2-4 key indicators "
-            "from telemetry with up/down percentages when relevant, then name 3-5 recurring topics or concrete events "
+            "from telemetry with up/down percentages for assets and basis-point moves for rates when relevant, then name 3-5 recurring topics or concrete events "
             "that appear across multiple items, using title plus summary/description, not title alone. Include specific "
             "catalysts and numbers when present, for example BOJ rate-hike coverage around 1%, Rupiah near 17,780, "
             "Fed hold, Hormuz reopening, oil moves, or S&P/Nasdaq moves. Do not list headlines. "
             "Do not use semicolon-separated headline strings. "
             "Describe the common topics and market implications in plain language. "
-            "Indices are given as % day moves. Plain text inside JSON values, no markdown.",
+            "Indices are given as % day moves; policy/yield instruments are given as levels and bp moves. Plain text inside JSON values, no markdown.",
             f"=== TELEMETRY ===\n{tstr}\n\n=== SECTORS ===\n{secstr}\n\n"
             f"=== VIDEOS (pick must_watch by index) ===\n{vstr}\n\n"
             f"=== NEWS (pick must_read by index) ===\n{nstr}")

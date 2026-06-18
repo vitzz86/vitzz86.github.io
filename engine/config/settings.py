@@ -10,8 +10,8 @@ WIB_UTC_OFFSET = 7  # Asia/Jakarta
 
 # ---------------------------------------------------------------- telemetry
 # (yahoo symbol, display label, asset class)
-# PRD B3 monitored-asset registry (14 indices & instruments for the marquee +
-# telemetry cards). yfinance symbol doubles as the Yahoo Finance source link.
+# PRD B3 monitored-asset registry (indices, assets, rates for marquee telemetry
+# cards). yfinance symbol doubles as the Yahoo Finance source link.
 TICKERS = [
     ("^JKSE",    "JCI / IHSG",          "index"),
     ("^IXIC",    "Nasdaq",              "index"),
@@ -26,10 +26,18 @@ TICKERS = [
     ("INCO.JK",  "Nickel proxy (INCO)", "commodity"),
     ("USDIDR=X", "USD/IDR",             "fx"),
     ("DX-Y.NYB", "US Dollar Index",     "fx"),
+    ("^IRX",     "US 3M T-Bill",        "rates"),
     ("^TNX",     "US 10Y Yield",        "rates"),
     ("^VIX",     "CBOE VIX",            "rates"),
 ]
 YF_QUOTE = "https://finance.yahoo.com/quote/"
+
+# Non-Yahoo macro-rate benchmarks. These are fetched by tools.macro_rates and
+# added to the same telemetry rail with source labels preserved.
+MACRO_RATE_BENCHMARKS = [
+    ("BI_RATE", "BI Rate", "policy"),
+    ("ID10Y", "Indonesia 10Y SBN", "rates"),
+]
 
 # A JCI or Nasdaq move beyond this absolute % triggers the Market Anomaly Event.
 ANOMALY_THRESHOLD_PCT = 1.2

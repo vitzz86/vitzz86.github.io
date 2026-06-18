@@ -41,6 +41,7 @@ def _batch_prices(symbols: list) -> dict:
         out[sym] = {"delta_pct": r["delta_pct"], "value": round(r["value"], 2),
                     "turnover": round(r["value"] * r.get("volume", 0.0), 0),
                     "spark": r["spark"], "open": r["open"],
+                    "spark_ts": r.get("spark_ts", []),
                     "intraday": r.get("intraday", []),
                     "mkt_start": r.get("mkt_start"), "mkt_end": r.get("mkt_end")}
     return out
@@ -73,7 +74,9 @@ def collect(previous_sectors: list | None = None) -> list:
                 if not p.get("intraday"):
                     p["intraday"] = crypto_quotes.chart(sym, 1)
                 if not p.get("spark"):
-                    p["spark"] = crypto_quotes.chart(sym, 180, "daily")[-130:]
+                    ser = crypto_quotes.chart_series(sym, 180, "daily")
+                    p["spark"] = ser["spark"][-130:]
+                    p["spark_ts"] = ser["spark_ts"][-130:]
         except Exception as e:  # noqa: BLE001
             print(f"[sectors] CoinGecko crypto overlay failed: {e}")
 
@@ -92,6 +95,7 @@ def collect(previous_sectors: list | None = None) -> list:
                 "country": country, "mktcap": mktcap, "tier": tier,
                 "source_symbol": ysym,
                 "delta_pct": delta, "spark": spark,
+                "spark_ts": (p or {}).get("spark_ts", []),
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
                 "market_cap_value": (p or {}).get("market_cap_value"),

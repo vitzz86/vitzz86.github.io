@@ -306,6 +306,19 @@ footer .g{color:var(--green);}
 .sens .case{font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:.08em;}
 .sens .target{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:5px;}
 .sens .ass{font-family:var(--mono);font-size:7.5px;color:var(--ink3);line-height:1.45;margin-top:5px;}
+.pricebox{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;background:#0b0b0e;padding:11px;}
+.pricebox .ph{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--cyan);margin-bottom:9px;}
+.pricebar{position:relative;height:38px;margin:8px 2px 12px;}
+.pricebar .line{position:absolute;left:0;right:0;top:18px;height:4px;border-radius:99px;background:linear-gradient(90deg,rgba(239,68,68,.45),rgba(245,158,11,.5),rgba(45,212,191,.55));}
+.pmark{position:absolute;top:5px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pmark i{width:9px;height:9px;border-radius:50%;border:1px solid #000;background:var(--ink);}
+.pmark.current i{background:var(--amber);}.pmark.target i{background:var(--cyan);}.pmark.peak i{background:var(--green);}.pmark.bottom i{background:var(--red);}
+.pmark span{font-family:var(--mono);font-size:7.5px;color:var(--ink2);white-space:nowrap;}
+.pricegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
+.pricegrid .pg{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px;}
+.pricegrid .k{font-family:var(--mono);font-size:7px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;}
+.pricegrid .v{font-family:var(--mono);font-size:10.5px;color:var(--ink);margin-top:4px;}
+.pricegrid .d{font-family:var(--mono);font-size:7.5px;color:var(--ink3);margin-top:3px;}
 .lensbox{margin-top:14px;border-left:2px solid var(--amber);background:rgba(245,158,11,.05);border-radius:0 8px 8px 0;padding:11px;}
 .lensbox .h{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--amber);margin-bottom:7px;}
 .lensbox ul{list-style:none;margin:0;padding:0;}
@@ -316,7 +329,7 @@ footer .g{color:var(--green);}
 .lenscopy .pass{color:var(--green);font-family:var(--mono);}
 .lenscopy .fail{color:var(--red);font-family:var(--mono);}
 .lenscopy .watch{color:var(--amber);font-family:var(--mono);}
-@media(max-width:900px){.scoremodalgrid{grid-template-columns:1fr}.radar.big svg{min-height:340px;}.valuerange,.sensgrid{grid-template-columns:1fr;}}
+@media(max-width:900px){.scoremodalgrid{grid-template-columns:1fr}.radar.big svg{min-height:340px;}.valuerange,.sensgrid,.pricegrid{grid-template-columns:1fr 1fr;}}
 @media(max-width:720px){.scoresummary{align-items:flex-start;flex-wrap:wrap}.scorebtn{margin-left:0;width:100%;}}
 .tkhd .tkpx{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
 .tkhd .exch{font-family:var(--mono);font-size:8px;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;}
@@ -670,9 +683,33 @@ function updateDataAge(){
   const base=DATA&&DATA.timestamp?'compiled '+ago(DATA.timestamp):'compiled --';
   $('stamp').textContent=base+` · ${payloadSource}`+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
 }
-const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES'};
+const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES',policy:'POLICY'};
 const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
 const COLP=n=>n>=0?'var(--green)':'var(--red)';
+function teleValue(r,v){
+  const val=v==null?r.value:v;
+  if(r&&r.value_unit==='percent')return `${fmt(val)}%`;
+  return fmt(val);
+}
+function teleMove(r,v){
+  const n=Number(v==null?(r&&r.delta_pct):v)||0;
+  if(r&&r.delta_unit==='bp')return `${n>=0?'+':''}${n.toFixed(1)} bp`;
+  if(r&&r.delta_unit==='note')return r.delta_label||'computed';
+  return sign(n);
+}
+function teleColor(r,v){
+  const n=Number(v==null?(r&&r.delta_pct):v)||0;
+  if(r&&r.delta_unit==='bp')return n>0?'var(--amber)':n<0?'var(--cyan)':'var(--ink3)';
+  if(r&&r.delta_unit==='note')return 'var(--ink3)';
+  return COLP(n);
+}
+function teleSparkColor(r,v){
+  const n=Number(v==null?(r&&r.delta_pct):v)||0;
+  if(r&&r.delta_unit==='bp')return n>0?'#f59e0b':n<0?'#2dd4bf':'#8b8b96';
+  if(r&&r.delta_unit==='note')return '#8b8b96';
+  return n>=0?'#22c55e':'#ef4444';
+}
+function teleSourceName(r){return r&&r.source_name?r.source_name:(r&&r.kind==='crypto'?'CoinGecko':'Yahoo Finance');}
 const SECTOR_ICON={
   technology:'🖥️',financials:'🏦',energy:'⛏️',renewables:'☀️',consumer:'🛒',
   infrastructure:'🏗️',healthcare:'💊',logistics:'🚢',entertainment:'🎬',
@@ -750,7 +787,7 @@ function render(d){
       eb.slice(0,3).map((t,i)=>`<div class="alert ${i%2?'blue':'amber'}"><span>${i%2?'△':'⚠'}</span><span>${esc(t)}</span><span class="tm">${ago(d.timestamp)}</span></div>`).join('');
 
   /* marquee */
-  const mk=(d.telemetry||[]).map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${fmt(r.value)}</b> <span style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</span></span>`).join('');
+  const mk=(d.telemetry||[]).map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${teleValue(r)}</b> <span style="color:${teleColor(r)}">${teleMove(r)}</span></span>`).join('');
   $('marq').innerHTML=mk+mk;
 
   /* market open/closed pill — driven by JCI (the Indonesia-focused primary index) */
@@ -762,12 +799,12 @@ function render(d){
 
   /* index cards — green dot = trading now, grey dot = market closed */
   $('idxScroll').innerHTML=(d.telemetry||[]).map((r,i)=>{
-    const up=r.delta_pct>=0,op=mktOpen(r);
+    const up=Number(r.delta_pct)>=0,op=mktOpen(r),col=teleSparkColor(r),arrow=(r.delta_unit==='note'?'•':(up?'↗':'↘'));
     const dot=`<span class="mdot ${op?'live':'shut'}" title="${op?'Market open':'Market closed'}">●</span>`;
-    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${dot}${up?'↗':'↘'}</span></div>`+
-      `<div class="sym">${esc(r.label)}</div><div class="px">${fmt(r.value)}</div>`+
-      `<div class="ch" style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</div>`+
-      `<div class="sl">${spark(r.spark,150,30,up?'#22c55e':'#ef4444')}</div></div>`;
+    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${dot}${arrow}</span></div>`+
+      `<div class="sym">${esc(r.label)}</div><div class="px">${teleValue(r)}</div>`+
+      `<div class="ch" style="color:${teleColor(r)}">${teleMove(r)}</div>`+
+      `<div class="sl">${spark(r.spark,150,30,col)}</div></div>`;
   }).join('');
   [...document.querySelectorAll('.idxcard')].forEach(c=>c.onclick=()=>expandIdx(+c.dataset.i));
 
@@ -984,7 +1021,9 @@ function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
 function tfData(o,tf){
   if(tf==='24h')return {view:(o.intraday||[]),pct:o.delta_pct};
   const view=tfView(o.spark,tf);
-  const pct=(view.length>1&&view[0])?(view[view.length-1]-view[0])/view[0]*100:o.delta_pct;
+  const pct=(view.length>1&&view[0])
+    ?(o.delta_unit==='bp'?(view[view.length-1]-view[0])*100:(view[view.length-1]-view[0])/view[0]*100)
+    :o.delta_pct;
   return {view,pct};
 }
 function expandIdx(i){
@@ -992,21 +1031,22 @@ function expandIdx(i){
   const td=tfData(r,idxTF);let view=td.view;const tfPct=td.pct;
   if(!view.length)view=tfView(r.spark,'1W');           // graceful fallback if no intraday
   const hi=Math.max(...view),lo=Math.min(...view);
-  const col=tfPct>=0?'#22c55e':'#ef4444';
-  const stateTxt=mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
-                           :'<span style="color:var(--ink3)">● CLOSED</span>';
+  const col=teleSparkColor(r,tfPct);
+  const stateTxt=r.kind==='policy'?'<span style="color:var(--cyan)">● OFFICIAL</span>'
+                           :(mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
+                           :'<span style="color:var(--ink3)">● CLOSED</span>');
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
-    `<div class="px">${fmt(r.value)}</div><div class="ch mono" style="color:${col}">${sign(tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
+    `<div class="px">${teleValue(r)}</div><div class="ch mono" style="color:${teleColor(r,tfPct)}">${teleMove(r,tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
     `<div style="display:flex;align-items:center;gap:6px;"><div class="tabset">${Object.keys(TF).map(t=>`<span class="tab ${t===idxTF?'on':''}" data-tf="${t}">${t}</span>`).join('')}</div><button class="xclose" id="idxClose">✕</button></div></div>`+
     `<div class="smchart" style="margin-top:13px;">${spark(view,720,150,col)}</div>`+
-    `<div class="statrow"><div class="c"><div class="k">OPEN (${idxTF})</div><div class="v">${fmt(view[0]||r.value)}</div></div>`+
-    `<div class="c"><div class="k">HIGH</div><div class="v">${fmt(hi)}</div></div>`+
-    `<div class="c"><div class="k">LOW</div><div class="v">${fmt(lo)}</div></div>`+
-    `<div class="c"><div class="k">LAST</div><div class="v">${fmt(r.value)}</div></div>`+
-    `<div class="c"><div class="k">RANGE</div><div class="v">${fmt(lo)} – ${fmt(hi)}</div></div></div>`+
-    `<div class="lbl" style="margin-top:9px;">Last px ${fmt(r.value)} · today <span style="color:${COLP(r.delta_pct)}">${sign(r.delta_pct)}</span> · ${stateTxt} · as of ${wibStamp(DATA.timestamp)}</div>`+
-    `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on ${r.kind==='crypto'?'CoinGecko':'Yahoo Finance'} ↗</a>`;
+    `<div class="statrow"><div class="c"><div class="k">START (${idxTF})</div><div class="v">${teleValue(r,view[0]||r.value)}</div></div>`+
+    `<div class="c"><div class="k">HIGH</div><div class="v">${teleValue(r,hi)}</div></div>`+
+    `<div class="c"><div class="k">LOW</div><div class="v">${teleValue(r,lo)}</div></div>`+
+    `<div class="c"><div class="k">LAST</div><div class="v">${teleValue(r,r.value)}</div></div>`+
+    `<div class="c"><div class="k">RANGE</div><div class="v">${teleValue(r,lo)} – ${teleValue(r,hi)}</div></div></div>`+
+    `<div class="lbl" style="margin-top:9px;">Last ${teleValue(r)} · latest move <span style="color:${teleColor(r)}">${teleMove(r)}</span> · ${stateTxt} · as of ${esc(r.asof||wibStamp(DATA.timestamp))}</div>`+
+    `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on ${esc(teleSourceName(r))} ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
   $('idxExp').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1478,6 +1518,9 @@ function metricPeriod(m){
   if(label.includes('growth'))return 'YoY quarterly';
   if(label.includes('dividend yield'))return 'forward annual';
   if(label.includes('fcf yield'))return 'TTM FCF / market cap';
+  if(label.includes('sharpe'))return 'annualized, 0% RF, 6M daily';
+  if(label.includes('sortino'))return 'annualized downside, 0% RF, 6M daily';
+  if(label.includes('max drawdown'))return 'peak-to-trough, 6M';
   if(label.includes('liquidity'))return '24H volume / market cap';
   if(label.includes('24h volume'))return '24H';
   if(label==='roe')return 'TTM';
@@ -1560,6 +1603,57 @@ function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
   return `${currency?String(currency).toUpperCase()+' ':''}${Number(n).toLocaleString('en-US',{maximumFractionDigits:2})}`;
 }
+function tsDay(ts,estimated=false){
+  if(!ts)return estimated?'estimated':'n/a';
+  const d=new Date(Number(ts)*1000);
+  if(isNaN(d))return estimated?'estimated':'n/a';
+  return d.toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric'})+(estimated?' est.':'');
+}
+function fallbackRisk(c){
+  const vals=(c.spark||[]).map(Number).filter(Number.isFinite);
+  if(vals.length<2)return null;
+  let ts=(c.spark_ts||[]).slice(-vals.length),estimated=false;
+  if(ts.length<vals.length){
+    estimated=true;
+    const end=DATA&&DATA.timestamp?new Date(DATA.timestamp).getTime()/1000:Date.now()/1000;
+    ts=vals.map((_,i)=>Math.round(end-(vals.length-1-i)*86400));
+  }
+  let peakI=0,bottomI=0,runPeakI=0,dd=0,ddPeakI=0,ddTroughI=0;
+  vals.forEach((v,i)=>{
+    if(v>vals[peakI])peakI=i;if(v<vals[bottomI])bottomI=i;
+    if(v>vals[runPeakI])runPeakI=i;
+    const curDd=vals[runPeakI]?(v/vals[runPeakI]-1)*100:0;
+    if(curDd<dd){dd=curDd;ddPeakI=runPeakI;ddTroughI=i;}
+  });
+  return {peak_price:vals[peakI],peak_ts:ts[peakI],bottom_price:vals[bottomI],bottom_ts:ts[bottomI],
+    max_drawdown_pct:dd,max_drawdown_peak_price:vals[ddPeakI],max_drawdown_peak_ts:ts[ddPeakI],
+    max_drawdown_trough_price:vals[ddTroughI],max_drawdown_trough_ts:ts[ddTroughI],estimated_dates:estimated};
+}
+function priceRangeBox(c){
+  const sc=invScore(c),v=sc.valuation||{},risk=sc.risk_stats||fallbackRisk(c);
+  if(!risk)return '';
+  const cur=v.currency||sc.currency;
+  const current=(v.current_price!=null?v.current_price:qValue(c));
+  const target=v.target_price||v.fair_value;
+  const points=[
+    ['bottom',risk.bottom_price],
+    ['current',current],
+    ['target',target],
+    ['peak',risk.peak_price],
+  ].filter(x=>x[1]!=null&&isFinite(Number(x[1])));
+  if(points.length<2)return '';
+  const nums=points.map(x=>Number(x[1])),lo=Math.min(...nums),hi=Math.max(...nums),span=(hi-lo)||1;
+  const pos=n=>Math.max(0,Math.min(100,(Number(n)-lo)/span*100));
+  const mark=(cls,label,n)=>n==null?'':`<div class="pmark ${cls}" style="left:${pos(n).toFixed(1)}%"><i></i><span>${esc(label)}</span></div>`;
+  const est=!!risk.estimated_dates;
+  return `<div class="pricebox"><div class="ph">PRICE RANGE · 6M RISK MAP</div><div class="pricebar"><div class="line"></div>`+
+    mark('bottom','Bottom',risk.bottom_price)+mark('current','Current',current)+mark('target','Target',target)+mark('peak','Peak',risk.peak_price)+`</div>`+
+    `<div class="pricegrid"><div class="pg"><div class="k">Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
+    `<div class="pg"><div class="k">Current</div><div class="v">${esc(valuationPrice(current,cur))}</div><div class="d">latest quote</div></div>`+
+    `<div class="pg"><div class="k">Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${target?'base valuation':'n/a'}</div></div>`+
+    `<div class="pg"><div class="k">Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
+    `<div class="pg"><div class="k">Max Drawdown</div><div class="v">${sign(risk.max_drawdown_pct||0)}</div><div class="d">${esc(tsDay(risk.max_drawdown_peak_ts,est))} → ${esc(tsDay(risk.max_drawdown_trough_ts,est))}</div></div></div></div>`;
+}
 function valuationBox(sc){
   const v=sc.valuation;
   if(!v)return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Unavailable this cycle because Yahoo did not provide enough current price, EPS, book value, or free-cash-flow inputs. No estimate is filled in.</div></div>`;
@@ -1608,7 +1702,7 @@ function openScoreModal(c,s){
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
-    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${valuationBox(sc)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
+    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${valuationBox(sc)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
     `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});

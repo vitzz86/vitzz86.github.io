@@ -69,3 +69,15 @@ def chart(sym: str, days: int, interval: str = "") -> list:
         if prices:
             return prices
     return []
+
+
+def chart_series(sym: str, days: int, interval: str = "") -> dict:
+    """CoinGecko price series with second timestamps for risk stats."""
+    suffix = f"&interval={interval}" if interval else ""
+    for cid in _ids_for(sym):
+        data = _get(f"{API}/coins/{cid}/market_chart?vs_currency=usd&days={days}{suffix}")
+        pairs = [(int(p[0] / 1000), round(float(p[1]), 4))
+                 for p in (data.get("prices") or []) if len(p) > 1]
+        if pairs:
+            return {"spark_ts": [p[0] for p in pairs], "spark": [p[1] for p in pairs]}
+    return {"spark_ts": [], "spark": []}
