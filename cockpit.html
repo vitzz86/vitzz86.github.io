@@ -279,6 +279,7 @@ footer .g{color:var(--green);}
 .metric{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px 8px;}
 .metric .mk{font-family:var(--mono);font-size:7.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;}
 .metric .mv{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.metric .mp{font-family:var(--mono);font-size:7.5px;color:var(--ink3);margin-top:5px;line-height:1.25;}
 .scorefoot{grid-column:1 / -1;font-family:var(--mono);font-size:8px;color:var(--ink3);border-top:1px solid var(--line2);padding-top:8px;}
 @media(max-width:720px){.scorebox{grid-template-columns:1fr}.metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .scoremodal{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.74);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:5vh 16px;}
@@ -1447,6 +1448,7 @@ function scorePill(c){
 function fmtMetric(m){
   const v=m&&m.value,fmt=m&&m.fmt;
   if(v==null)return '—';
+  const label=String(m&&m.label||'');
   const cur=m&&m.currency?String(m.currency).toUpperCase():'';
   const prefix=cur?cur+' ':'$';
   if(fmt==='percent')return `${Number(v).toFixed(2)}%`;
@@ -1457,8 +1459,43 @@ function fmtMetric(m){
     if(Math.abs(n)>=1e6)return prefix+(n/1e6).toFixed(1)+'M';
     return prefix+Math.round(n).toLocaleString();
   }
-  if(fmt==='number'&&cur&&/price|eps|book/i.test(String(m.label||'')))return cur+' '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
-  return Number(v).toFixed(fmt==='ratio'?2:2);
+  if(fmt==='number'&&cur&&/price|eps|book/i.test(label))return cur+' '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
+  if(fmt==='ratio'){
+    if(/p\/e|p\/b|ev\/ebitda|beta/i.test(label))return Number(v).toFixed(2)+'x';
+    if(/debt\/equity/i.test(label))return Number(v).toFixed(2)+'%';
+    return Number(v).toFixed(2);
+  }
+  return Number(v).toFixed(2);
+}
+function metricPeriod(m){
+  if(m&&m.period)return m.period;
+  const label=String(m&&m.label||'').toLowerCase();
+  if(label==='p/e'||label==='ev/ebitda'||label==='eps'||label==='roe'||label.includes('gross profit')||label.includes('free cash flow'))return 'TTM';
+  if(label.includes('fwd p/e'))return 'forward 12M estimate';
+  if(label==='p/b')return 'latest book value';
+  if(label.includes('book value'))return 'per share, latest quarter';
+  if(label.includes('debt/equity')||label.includes('total cash'))return 'latest quarter';
+  if(label.includes('growth'))return 'YoY quarterly';
+  if(label.includes('dividend yield'))return 'forward annual';
+  if(label.includes('fcf yield'))return 'TTM FCF / market cap';
+  if(label.includes('liquidity'))return '24H volume / market cap';
+  if(label.includes('24h volume'))return '24H';
+  if(label==='roe')return 'TTM';
+  if(label.includes('volatility'))return 'daily realized, ~6M window';
+  if(label.includes('return'))return label.includes('1m')?'22 sessions / 30D crypto':'6M price return';
+  if(label.includes('beta'))return '5Y monthly';
+  if(label.includes('price')||label.includes('market cap'))return 'latest quote';
+  return '';
+}
+function fmtThreshold(label,val,dir){
+  const l=String(label||'').toLowerCase();
+  if(val==null||!isFinite(Number(val)))return 'n/a';
+  const n=Number(val);
+  if(l.includes('yield')||l.includes('growth')||l==='roe'||l.includes('volatility')||l.includes('return'))return n.toFixed(n%1?2:0)+'%';
+  if(l.includes('beta'))return n.toFixed(2)+'x';
+  if(l.includes('debt/equity'))return n.toFixed(n%1?2:0)+'%';
+  if(l.includes('p/e')||l.includes('p/b')||l.includes('ev/ebitda'))return n.toFixed(n%1?2:0)+'x';
+  return String(val);
 }
 function radarSvg(sc,big=false){
   const axes=(sc.axes&&sc.axes.length?sc.axes:[]).slice(0,6);
@@ -1484,7 +1521,7 @@ function radarSvg(sc,big=false){
 }
 function scorePanel(c){
   const sc=invScore(c),metrics=(sc.metrics||[]).slice(0,9),n=sc.score;
-  const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
+  const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
   return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
 function scoreSummary(c){
@@ -1496,7 +1533,7 @@ function scoreSummary(c){
 }
 function scoreMetricHTML(sc,limit=null){
   const metrics=(sc.metrics||[]);const list=limit?metrics.slice(0,limit):metrics;
-  return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
+  return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
 }
 function scoreMetric(sc,label){
   return (sc.metrics||[]).find(m=>String(m.label||'').toLowerCase()===String(label).toLowerCase())||null;
@@ -1516,7 +1553,8 @@ function verdict(v,dir,good,watch){
 function ruleLine(sc,label,actual,dir,good,watch,why){
   const [cls,txt]=verdict(actual,dir,good,watch);
   const op=dir==='high'?'>=':'<=';
-  return `<li><b>${esc(label)}</b>: actual ${esc(metricDisplay(sc,label))}; style threshold ${op} ${esc(String(good))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+  const period=metricPeriod(scoreMetric(sc,label));
+  return `<li><b>${esc(label)}</b>: actual ${esc(metricDisplay(sc,label))}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold ${op} ${esc(fmtThreshold(label,good,dir))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
 }
 function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
@@ -1543,27 +1581,27 @@ function lensDetail(c,type){
   if(sc.mode==='crypto'){
     return `<div class="lenscopy"><p>Crypto uses a different scoring stack: size, liquidity, momentum, trend, and volatility. Traditional P/E, ROE, P/B, and FCF valuation rules are not applied because CoinGecko does not provide operating fundamentals.</p></div>`;
   }
-  if(type==='buffett')return `<div class="lenscopy"><p><b>Buffett/Munger-style check</b>: prefer understandable, profitable, conservatively financed businesses bought at a sane price. This is a rules-of-thumb lens, not an official formula.</p><ul>`+
+  if(type==='buffett')return `<div class="lenscopy"><p><b>Buffett/Munger-style check</b>: heuristic screen for profitable, conservatively financed businesses at a sane price. These are dashboard thresholds inspired by value-investing practice, not official Buffett formulas.</p><ul>`+
     ruleLine(sc,'P/E',pe,'low',15,25,'lower multiple improves the Value axis')+
     ruleLine(sc,'P/B',pb,'low',1.5,3,'asset value is cheaper when this is low, unless ROE is exceptional')+
     ruleLine(sc,'ROE',roe,'high',15,8,'durable quality usually needs strong returns on equity')+
     ruleLine(sc,'Debt/Equity',debt,'low',80,150,'lower leverage improves downside resilience')+
     ruleLine(sc,'FCF Yield',fcf,'high',5,2,'cash generation supports intrinsic-value discipline')+
     `</ul><p>Conclusion: Value ${Math.round(value||0)}/100 and Quality ${Math.round(quality||0)}/100 explain the current score contribution.</p></div>`;
-  if(type==='ackman')return `<div class="lenscopy"><p><b>Ackman-style check</b>: prefer high-quality compounders with cash generation, pricing power, and a balance sheet that does not break the thesis.</p><ul>`+
+  if(type==='ackman')return `<div class="lenscopy"><p><b>Ackman-style check</b>: heuristic screen for quality compounders with cash generation, growth, and a balance sheet that does not break the thesis.</p><ul>`+
     ruleLine(sc,'ROE',roe,'high',15,8,'quality compounders should earn above-average returns')+
     ruleLine(sc,'Revenue Growth',rev,'high',5,0,'positive growth supports compounding')+
     ruleLine(sc,'FCF Yield',fcf,'high',4,1,'cash flow gives room for reinvestment or shareholder returns')+
     ruleLine(sc,'Debt/Equity',debt,'low',120,200,'excess leverage weakens thesis durability')+
     ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta reduces market-sensitivity drag')+
     `</ul><p>Conclusion: Growth ${Math.round(growth||0)}/100 and Risk ${Math.round(risk||0)}/100 show whether this is a clean compounder or a watchlist name.</p></div>`;
-  if(type==='dalio')return `<div class="lenscopy"><p><b>Dalio-style risk check</b>: look at the asset as part of a portfolio and macro regime, not just as a standalone story.</p><ul>`+
+  if(type==='dalio')return `<div class="lenscopy"><p><b>Dalio-style risk check</b>: heuristic screen for portfolio fit, cyclicality, volatility, and balance-sheet sensitivity.</p><ul>`+
     ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta helps portfolio balance')+
     ruleLine(sc,'Volatility',vol,'low',1.2,3.0,'lower realized volatility improves the Risk axis')+
     ruleLine(sc,'6M Return',six,'high',0,-20,'positive trend reduces the need to fight the cycle')+
     ruleLine(sc,'Debt/Equity',debt,'low',120,200,'leverage can amplify macro shocks')+
     `</ul><p>Conclusion: Momentum ${Math.round(momentum||0)}/100 and Risk ${Math.round(risk||0)}/100 determine whether sizing should be aggressive or defensive.</p></div>`;
-  return `<div class="lenscopy">${valuationBox(sc)}<p>Target price is the base-case model target. Buy-below, accumulate, and trim levels are margin-of-safety bands around that target. Sensitivity shows how the target changes under bear/base/bull assumptions.</p></div>`;
+  return `<div class="lenscopy"><p>Pick an investor style tab above. Valuation target, buy-below, fair range, and sensitivity are shown separately below the spider chart.</p></div>`;
 }
 function openScoreModal(c,s){
   const sc=invScore(c),n=sc.score;
@@ -1571,7 +1609,7 @@ function openScoreModal(c,s){
     `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
     `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${valuationBox(sc)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
-    `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span><span class="wtab" data-lens="valuation">Valuation</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
+    `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});
   $('scoreModal').classList.add('open');

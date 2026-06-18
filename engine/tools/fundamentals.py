@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 2
+SCORE_SCHEMA_VERSION = 3
 
 
 def _now_iso() -> str:
@@ -97,10 +97,13 @@ def _spark_volatility(spark: list):
     return round(statistics.pstdev(rets), 2)
 
 
-def _metric(label: str, value, fmt: str = "number", currency: str | None = None) -> dict:
+def _metric(label: str, value, fmt: str = "number", currency: str | None = None,
+            period: str | None = None) -> dict:
     out = {"label": label, "value": value, "fmt": fmt}
     if currency:
         out["currency"] = currency
+    if period:
+        out["period"] = period
     return out
 
 
@@ -341,30 +344,32 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     else:
         label = "Weak"
     currency = metrics.get("currency") or ("USD" if mode == "crypto" else None)
+    one_month_period = "30D price return" if mode == "crypto" else "22 trading sessions"
+    vol_period = "daily realized, 6M window" if mode == "crypto" else "daily realized, ~6M window"
     metric_rows = [
-        _metric("Current Price", _fmt_metric_value(metrics.get("current_price"), "number"), "number", currency),
-        _metric("P/E", _fmt_metric_value(metrics.get("pe"), "ratio"), "ratio"),
-        _metric("Fwd P/E", _fmt_metric_value(metrics.get("forward_pe"), "ratio"), "ratio"),
-        _metric("EV/EBITDA", _fmt_metric_value(metrics.get("ev_ebitda"), "ratio"), "ratio"),
-        _metric("P/B", _fmt_metric_value(metrics.get("pb"), "ratio"), "ratio"),
-        _metric("Book Value", _fmt_metric_value(metrics.get("book_value"), "number"), "number", currency),
-        _metric("Beta", _fmt_metric_value(metrics.get("beta"), "ratio"), "ratio"),
-        _metric("EPS", _fmt_metric_value(metrics.get("eps"), "number"), "number", currency),
-        _metric("ROE", _fmt_metric_value(metrics.get("roe_pct"), "percent"), "percent"),
-        _metric("Debt/Equity", _fmt_metric_value(metrics.get("debt_to_equity"), "ratio"), "ratio"),
-        _metric("Revenue Growth", _fmt_metric_value(metrics.get("revenue_growth_pct"), "percent"), "percent"),
-        _metric("EPS Growth", _fmt_metric_value(metrics.get("eps_growth_pct"), "percent"), "percent"),
-        _metric("Dividend Yield", _fmt_metric_value(metrics.get("dividend_yield_pct"), "percent"), "percent"),
-        _metric("Gross Profit", _fmt_metric_value(metrics.get("gross_profit"), "money"), "money", currency),
-        _metric("Total Cash", _fmt_metric_value(metrics.get("total_cash"), "money"), "money", currency),
-        _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency),
-        _metric("FCF Yield", _fmt_metric_value(metrics.get("fcf_yield_pct"), "percent"), "percent"),
-        _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money", currency),
-        _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency),
-        _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent"),
-        _metric("1M Return", one_month, "percent"),
-        _metric("6M Return", six_month, "percent"),
-        _metric("Volatility", vol, "percent"),
+        _metric("Current Price", _fmt_metric_value(metrics.get("current_price"), "number"), "number", currency, "latest quote"),
+        _metric("P/E", _fmt_metric_value(metrics.get("pe"), "ratio"), "ratio", period="TTM"),
+        _metric("Fwd P/E", _fmt_metric_value(metrics.get("forward_pe"), "ratio"), "ratio", period="forward 12M estimate"),
+        _metric("EV/EBITDA", _fmt_metric_value(metrics.get("ev_ebitda"), "ratio"), "ratio", period="TTM"),
+        _metric("P/B", _fmt_metric_value(metrics.get("pb"), "ratio"), "ratio", period="latest book value"),
+        _metric("Book Value", _fmt_metric_value(metrics.get("book_value"), "number"), "number", currency, "per share, latest quarter"),
+        _metric("Beta", _fmt_metric_value(metrics.get("beta"), "ratio"), "ratio", period="5Y monthly"),
+        _metric("EPS", _fmt_metric_value(metrics.get("eps"), "number"), "number", currency, "TTM"),
+        _metric("ROE", _fmt_metric_value(metrics.get("roe_pct"), "percent"), "percent", period="TTM"),
+        _metric("Debt/Equity", _fmt_metric_value(metrics.get("debt_to_equity"), "percent"), "percent", period="latest quarter"),
+        _metric("Revenue Growth", _fmt_metric_value(metrics.get("revenue_growth_pct"), "percent"), "percent", period="YoY quarterly"),
+        _metric("EPS Growth", _fmt_metric_value(metrics.get("eps_growth_pct"), "percent"), "percent", period="YoY quarterly"),
+        _metric("Dividend Yield", _fmt_metric_value(metrics.get("dividend_yield_pct"), "percent"), "percent", period="forward annual"),
+        _metric("Gross Profit", _fmt_metric_value(metrics.get("gross_profit"), "money"), "money", currency, "TTM"),
+        _metric("Total Cash", _fmt_metric_value(metrics.get("total_cash"), "money"), "money", currency, "latest quarter"),
+        _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency, "TTM"),
+        _metric("FCF Yield", _fmt_metric_value(metrics.get("fcf_yield_pct"), "percent"), "percent", period="TTM FCF / market cap"),
+        _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money", currency, "latest quote"),
+        _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency, "24H"),
+        _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent", period="24H volume / market cap"),
+        _metric("1M Return", one_month, "percent", period=one_month_period),
+        _metric("6M Return", six_month, "percent", period="6M price return"),
+        _metric("Volatility", vol, "percent", period=vol_period),
     ]
     return {
         "mode": mode,
