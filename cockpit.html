@@ -1631,6 +1631,9 @@ function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
   return `${currency?String(currency).toUpperCase()+' ':''}${Number(n).toLocaleString('en-US',{maximumFractionDigits:2})}`;
 }
+function staleCurrencyMismatch(c,sc){
+  return !!(c&&c.country==='ID'&&sc&&String(sc.currency||'').toUpperCase()==='USD'&&Number(sc.schema_version||0)<6);
+}
 function tsDay(ts,estimated=false){
   if(!ts)return estimated?'estimated':'n/a';
   const d=new Date(Number(ts)*1000);
@@ -1660,9 +1663,10 @@ function fallbackRisk(c){
 function priceRangeBox(c){
   const sc=invScore(c),v=sc.valuation||{},risk=sc.risk_stats||fallbackRisk(c);
   if(!risk)return '';
-  const cur=v.currency||sc.currency;
+  const stale=staleCurrencyMismatch(c,sc);
+  const cur=stale?'IDR':(v.currency||sc.currency);
   const current=(v.current_price!=null?v.current_price:qValue(c));
-  const target=v.target_price||v.fair_value;
+  const target=stale?null:(v.target_price||v.fair_value);
   const points=[
     ['bottom',risk.bottom_price],
     ['current',current],
@@ -1685,7 +1689,7 @@ function priceRangeBox(c){
     `<div class="tcall current" style="--x:${safePos(current).toFixed(1)}%;--tx:${tx(current)};--pin:${pin(current)}"><b>${esc(valuationPrice(current,cur))}</b><span>Current</span></div></div>`+
     `<div class="pricegrid"><div class="pg"><div class="k">6M Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Current</div><div class="v">${esc(valuationPrice(current,cur))}</div><div class="d">latest quote</div></div>`+
-    `<div class="pg"><div class="k">Model Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${target?'base valuation':'n/a'}</div></div>`+
+    `<div class="pg"><div class="k">Model Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${stale?'refreshing currency-safe target':(target?'base valuation':'n/a')}</div></div>`+
     `<div class="pg"><div class="k">6M Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Max Drawdown</div><div class="v">${sign(risk.max_drawdown_pct||0)}</div><div class="d">${esc(tsDay(risk.max_drawdown_peak_ts,est))} → ${esc(tsDay(risk.max_drawdown_trough_ts,est))}</div></div></div></div>`;
 }
@@ -1712,7 +1716,8 @@ function riskBenchmarkBox(sc){
     `<div class="rg"><div class="k">Annual Vol</div><div class="v">${pct(r.annual_volatility_pct)}</div><div class="d">annualized realized volatility</div></div>`+
     `<div class="rg"><div class="k">Downside Vol</div><div class="v">${pct(r.downside_volatility_pct)}</div><div class="d">only negative excess days</div></div></div></div>`;
 }
-function valuationBox(sc){
+function valuationBox(sc,c=null){
+  if(staleCurrencyMismatch(c,sc))return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Temporarily hidden for this cached IDX payload because Yahoo mixed IDR quote prices with USD financial fields. The next bake recomputes this in IDR using USD/IDR conversion where needed.</div></div>`;
   const v=sc.valuation;
   if(!v)return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Unavailable this cycle because Yahoo did not provide enough current price, EPS, book value, or free-cash-flow inputs. No estimate is filled in.</div></div>`;
   const col=v.upside_pct>=20?'var(--green)':v.upside_pct<=-20?'var(--red)':'var(--amber)';
@@ -1760,7 +1765,7 @@ function openScoreModal(c,s){
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
-    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
+    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
     `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, risk ratios, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});

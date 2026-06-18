@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 5
+SCORE_SCHEMA_VERSION = 6
 
 
 def _now_iso() -> str:
@@ -139,6 +139,7 @@ def _risk_context(row: dict, mode: str, benchmarks: dict | None = None) -> dict:
         ctx.setdefault("risk_free_source", "fallback")
     ctx["risk_free_rate"] = rf
     ctx.setdefault("risk_free_label", "Risk-free rate")
+    ctx["fx_rates"] = dict(benchmarks.get("fx_rates") or {})
     hurdle = _num(ctx.get("hurdle_rate"))
     ctx["hurdle_rate"] = hurdle if hurdle is not None else rf
     ctx.setdefault("hurdle_label", ctx.get("risk_free_label", "Risk-free rate"))
@@ -255,16 +256,43 @@ def _fmt_metric_value(v, fmt: str):
     return round(float(v), 2)
 
 
+def _fx_factor(src: str | None, dst: str | None, fx_rates: dict | None) -> float | None:
+    src = (src or "").upper()
+    dst = (dst or "").upper()
+    fx_rates = fx_rates or {}
+    if not src or not dst or src == dst:
+        return 1.0
+    usdidr = _num(fx_rates.get("USDIDR"))
+    if not usdidr:
+        return None
+    if src == "USD" and dst == "IDR":
+        return usdidr
+    if src == "IDR" and dst == "USD":
+        return 1 / usdidr
+    return None
+
+
+def _sanitize_ratio(v, max_reasonable: float = 500.0):
+    x = _num(v)
+    if x is None or abs(x) > max_reasonable:
+        return None
+    return x
+
+
 def _fetch_equity(sym: str) -> dict:
     import yfinance as yf
 
     info = yf.Ticker(sym).get_info() or {}
+    quote_currency = info.get("currency") or ("IDR" if sym.endswith(".JK") else None)
+    financial_currency = info.get("financialCurrency") or quote_currency
     market_cap = _num(info.get("marketCap"))
     fcf = _num(info.get("freeCashflow"))
     fcf_yield = round(fcf / market_cap * 100, 2) if fcf and market_cap else None
     current_price = _num(info.get("currentPrice")) or _num(info.get("regularMarketPrice"))
     return {
-        "currency": info.get("financialCurrency") or info.get("currency"),
+        "currency": quote_currency or financial_currency,
+        "quote_currency": quote_currency or financial_currency,
+        "financial_currency": financial_currency or quote_currency,
         "current_price": current_price,
         "pe": _num(info.get("trailingPE")),
         "forward_pe": _num(info.get("forwardPE")),
@@ -288,8 +316,62 @@ def _fetch_equity(sym: str) -> dict:
     }
 
 
-def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
+def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = dict(metrics)
+    quote_currency = (metrics.get("quote_currency") or metrics.get("currency")
+                      or ("IDR" if row.get("country") == "ID" else None))
+    financial_currency = metrics.get("financial_currency") or quote_currency
+    if row.get("country") == "ID" and row.get("exchange") == "IDX":
+        quote_currency = "IDR"
+    metrics["currency"] = quote_currency
+    metrics["quote_currency"] = quote_currency
+    metrics["financial_currency"] = financial_currency
+
+    if _num(row.get("value")):
+        metrics["current_price"] = _num(row.get("value"))
+
+    factor = _fx_factor(financial_currency, quote_currency, (risk_context or {}).get("fx_rates"))
+    needs_conversion = (financial_currency and quote_currency
+                        and financial_currency != quote_currency and factor)
+    converted_fields = []
+    if needs_conversion:
+        current = _num(metrics.get("current_price"))
+        for key in ("gross_profit", "total_cash", "free_cash_flow"):
+            val = _num(metrics.get(key))
+            if val is not None:
+                metrics[key] = val * factor
+                converted_fields.append(key)
+        for key in ("book_value", "eps"):
+            val = _num(metrics.get(key))
+            # Some Yahoo non-US per-share fields are already quote-currency-like
+            # despite financialCurrency being different. Convert only tiny values
+            # that are clearly not on the same scale as the traded share price.
+            converted = val * factor if val is not None else None
+            scale = abs(converted / current) if converted is not None and current else None
+            if val is not None and scale is not None and 0.01 <= scale <= 100:
+                metrics[key] = converted
+                converted_fields.append(key)
+        metrics["_conversion_note"] = (
+            f" · converted from {financial_currency} to {quote_currency} "
+            f"using USD/IDR {factor:,.2f}" if financial_currency == "USD" and quote_currency == "IDR"
+            else f" · converted from {financial_currency} to {quote_currency}"
+        )
+        metrics["_converted_fields"] = converted_fields
+
+    current = _num(metrics.get("current_price"))
+    eps = _num(metrics.get("eps"))
+    book = _num(metrics.get("book_value"))
+    market_cap = _num(metrics.get("market_cap"))
+    fcf = _num(metrics.get("free_cash_flow"))
+    metrics["pe"] = round(current / eps, 2) if current and eps and eps > 0 else _sanitize_ratio(metrics.get("pe"))
+    metrics["pb"] = round(current / book, 2) if current and book and book > 0 else _sanitize_ratio(metrics.get("pb"))
+    metrics["ev_ebitda"] = _sanitize_ratio(metrics.get("ev_ebitda"), 300.0)
+    metrics["fcf_yield_pct"] = round(fcf / market_cap * 100, 2) if fcf and market_cap else metrics.get("fcf_yield_pct")
+    return metrics
+
+
+def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
+    metrics = _normalize_currencies(row, metrics, risk_context)
     metrics["_risk_context"] = risk_context or {}
     metrics["_risk_stats"] = _risk_stats(row, "equity", risk_context)
     one_month = _spark_return(row.get("spark"), 22)
@@ -485,6 +567,10 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     else:
         label = "Weak"
     currency = metrics.get("currency") or ("USD" if mode == "crypto" else None)
+    conv_note = metrics.get("_conversion_note") or ""
+    converted = set(metrics.get("_converted_fields") or [])
+    def note(field: str) -> str:
+        return conv_note if field in converted else ""
     one_month_period = "30D price return" if mode == "crypto" else "22 trading sessions"
     vol_period = "daily realized, 6M window" if mode == "crypto" else "daily realized, ~6M window"
     risk = metrics.get("_risk_stats") or {}
@@ -495,17 +581,17 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("Fwd P/E", _fmt_metric_value(metrics.get("forward_pe"), "ratio"), "ratio", period="forward 12M estimate"),
         _metric("EV/EBITDA", _fmt_metric_value(metrics.get("ev_ebitda"), "ratio"), "ratio", period="TTM"),
         _metric("P/B", _fmt_metric_value(metrics.get("pb"), "ratio"), "ratio", period="latest book value"),
-        _metric("Book Value", _fmt_metric_value(metrics.get("book_value"), "number"), "number", currency, "per share, latest quarter"),
+        _metric("Book Value", _fmt_metric_value(metrics.get("book_value"), "number"), "number", currency, "per share, latest quarter" + note("book_value")),
         _metric("Beta", _fmt_metric_value(metrics.get("beta"), "ratio"), "ratio", period="5Y monthly"),
-        _metric("EPS", _fmt_metric_value(metrics.get("eps"), "number"), "number", currency, "TTM"),
+        _metric("EPS", _fmt_metric_value(metrics.get("eps"), "number"), "number", currency, "TTM" + note("eps")),
         _metric("ROE", _fmt_metric_value(metrics.get("roe_pct"), "percent"), "percent", period="TTM"),
         _metric("Debt/Equity", _fmt_metric_value(metrics.get("debt_to_equity"), "percent"), "percent", period="latest quarter"),
         _metric("Revenue Growth", _fmt_metric_value(metrics.get("revenue_growth_pct"), "percent"), "percent", period="YoY quarterly"),
         _metric("EPS Growth", _fmt_metric_value(metrics.get("eps_growth_pct"), "percent"), "percent", period="YoY quarterly"),
         _metric("Dividend Yield", _fmt_metric_value(metrics.get("dividend_yield_pct"), "percent"), "percent", period="forward annual"),
-        _metric("Gross Profit", _fmt_metric_value(metrics.get("gross_profit"), "money"), "money", currency, "TTM"),
-        _metric("Total Cash", _fmt_metric_value(metrics.get("total_cash"), "money"), "money", currency, "latest quarter"),
-        _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency, "TTM"),
+        _metric("Gross Profit", _fmt_metric_value(metrics.get("gross_profit"), "money"), "money", currency, "TTM" + note("gross_profit")),
+        _metric("Total Cash", _fmt_metric_value(metrics.get("total_cash"), "money"), "money", currency, "latest quarter" + note("total_cash")),
+        _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency, "TTM" + note("free_cash_flow")),
         _metric("FCF Yield", _fmt_metric_value(metrics.get("fcf_yield_pct"), "percent"), "percent", period="TTM FCF / market cap"),
         _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money", currency, "latest quote"),
         _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency, "24H"),
@@ -585,6 +671,7 @@ def _previous_metrics(previous_by_symbol: dict, row: dict, ttl_hours: int) -> di
 
 def risk_benchmarks_from_telemetry(telemetry: list | None) -> dict:
     by_sym = {r.get("symbol"): r for r in telemetry or []}
+    usdidr = _num((by_sym.get("USDIDR=X") or {}).get("value"))
 
     def bench(sym: str, label: str) -> dict:
         r = by_sym.get(sym) or {}
@@ -627,6 +714,7 @@ def risk_benchmarks_from_telemetry(telemetry: list | None) -> dict:
             "hurdle_label": irx["label"] if irx["rate"] is not None else tnx["label"],
             "hurdle_source": irx["source"] if irx["rate"] is not None else tnx["source"],
         },
+        "fx_rates": {"USDIDR": usdidr},
     }
 
 
