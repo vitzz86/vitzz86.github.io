@@ -601,7 +601,7 @@ function checkedAgo(ms){if(!ms)return 'not checked yet';const m=Math.max(0,Math.
 function updateDataAge(){
   if(!$('stamp'))return;
   const base=DATA&&DATA.timestamp?'compiled '+ago(DATA.timestamp):'compiled --';
-  $('stamp').textContent=base+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
+  $('stamp').textContent=base+` · ${payloadSource}`+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
 }
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES'};
 const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
@@ -612,7 +612,7 @@ const SECTOR_ICON={
   property:'🏢',crypto:'₿'
 };
 let DATA=null;
-let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false;
+let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false,payloadSource='local';
 
 function tzLine(tz,label){
   const now=new Date();
@@ -1035,16 +1035,33 @@ function durLabel(sec){sec=Number(sec||0);if(!sec)return '';const h=Math.floor(s
   return h?`${h}h ${String(m).padStart(2,'0')}m`:`${m}m`;}
 function goodVideo(v){const t=(v&&v.title||'').trim().toLowerCase();return !!(v&&v.video_id&&t&&t!=='private video'&&t!=='deleted video'&&!t.includes('video unavailable'));}
 const WHY_TOPICS=[
-  ['rupiah, Bank Indonesia, or IHSG signals that can move Indonesian risk appetite',['rupiah','bank indonesia','bi ','suku bunga','ihsg','jci','saham']],
-  ['Fed, rates, or yield signals that can drive global liquidity and equity multiples',['fed','federal reserve','rates','yield','treasury','warsh']],
-  ['AI, semiconductor, or data-center developments shaping tech leadership and capex',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
-  ["commodity, energy, or shipping moves that matter for inflation and Indonesia's resource exposure",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
-  ['crypto market or regulatory shifts that can affect Bitcoin and digital-asset sentiment',['bitcoin','btc','ethereum','crypto','stablecoin','token','kalshi','strategy']],
-  ['BOJ, Japan, or Asia policy signals with potential regional spillover',['boj','bank of japan','japan','nikkei']],
-  ['earnings, stock movers, or corporate actions that can affect market breadth',['earnings','revenue','profit','stock movers','shares','deal','ipo']],
-  ['geopolitical or trade-risk headlines that can shift risk appetite quickly',['iran','tariff','trade war','geopolitical','war']]
+  ['Indonesia flow is sensitive to Rupiah, Bank Indonesia, and IHSG direction, so this helps frame local risk appetite.',['rupiah','bank indonesia','bi','ihsg','jci','saham']],
+  ['Rates remain the discount-rate anchor for equities, so this helps explain pressure on multiples, bonds, and the Rupiah.',['fed','federal reserve','rates','yield','treasury','warsh','suku bunga']],
+  ['AI and semiconductor capex are still leading the tech cycle, making this useful for tracking market leadership.',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
+  ["Energy and commodity moves feed inflation expectations and Indonesia's resource exposure, so this is worth watching.",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
+  ['Digital-asset sentiment can turn quickly around Bitcoin, stablecoins, and regulation, so this keeps crypto risk in view.',['bitcoin','btc','ethereum','crypto','stablecoin','token','kalshi','strategy']],
+  ['Japan and BOJ policy can spill into Asian yields and FX, making this relevant for regional positioning.',['boj','bank of japan','japan','nikkei']],
+  ['Earnings and corporate actions reveal whether the market move is broadening or staying concentrated in a few names.',['earnings','revenue','profit','stock movers','shares','ipo','m&a','merger','acquisition']],
+  ['Geopolitical and trade headlines can quickly reset risk appetite, oil expectations, and defensive positioning.',['iran','tariff','trade war','geopolitical','war']]
 ];
-const WHY_NOISE=['referral','sign-up','signup','promo code','sponsor','subscribe','discord','telegram','patreon','not financial advice','trade $','get $'];
+const WHY_NOISE=['referral','sign-up','signup','promo code','sponsor','subscribe','discord','telegram','patreon','not financial advice','trade $','get $','watch this because','read this because'];
+function termHit(text,term){
+  text=String(text||'').toLowerCase();
+  term=String(term||'').toLowerCase().trim();
+  if(!term)return false;
+  if(/^[a-z0-9]+$/.test(term))return new RegExp(`(^|[^a-z0-9])${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}($|[^a-z0-9])`).test(text);
+  return text.includes(term);
+}
+function topicScore(txt,label,terms,item){
+  let hits=terms.reduce((n,t)=>n+(termHit(txt,t)?1:0),0);
+  if(!hits)return 0;
+  let score=hits*10,cat=item.category,geo=item.geo;
+  if(cat==='crypto'||cat==='CRYPTO')score+=label.startsWith('Digital-asset')?30:0;
+  if(cat==='market_id'||geo==='ID')score+=label.startsWith('Indonesia flow')?20:0;
+  if(cat==='market_us'&&(/^(Rates|Earnings|Geopolitical|AI|Energy|Japan)/.test(label)))score+=6;
+  if(label.startsWith('Japan'))score+=25;
+  return score;
+}
 function cleanWhy(s){
   s=String(s||'').replace(/https?:\/\/\S+/gi,' ').replace(/<[^>]+>/g,' ');
   s=s.replace(/[╔╗╚╝═║╦╩╠╣]{3,}.*/g,' ').replace(/[\[\]{}<>|*_`~]+/g,' ');
@@ -1056,15 +1073,36 @@ function cleanWhy(s){
 }
 function fallbackWhy(item,kind){
   const txt=normTitle([item.title,item.summary,item.source,item.channel].join(' '));
-  const verb=kind==='video'?'Watch':'Read';
-  for(const [label,terms] of WHY_TOPICS)if(terms.some(t=>txt.includes(normTitle(t))))return `${verb} this because it highlights ${label}.`;
-  return `${verb} this because it is one of the freshest high-priority items in today's market intelligence flow.`;
+  const scored=WHY_TOPICS.map(([label,terms])=>[topicScore(txt,label,terms,item),label]).filter(x=>x[0]);
+  if(scored.length)return scored.reduce((best,x)=>x[0]>best[0]?x:best,scored[0])[1];
+  return "This is a fresh high-priority item in today's market intelligence flow, useful for catching changes before they spread.";
 }
 function cardWhy(m,item,kind){
   let why=cleanWhy(m.why||item.summary||'');
   const low=why.toLowerCase();
   if(why.length<35||WHY_NOISE.some(t=>low.includes(t))||/https?:\/\//i.test(why))why=fallbackWhy(item,kind);
   return cleanWhy(why);
+}
+function promoVideo(v){const txt=normTitle([v.title,v.summary,v.channel].join(' '));return WHY_NOISE.some(t=>termHit(txt,t))||/\b(beginners?|how to trade|referral|sign up|subscribe)\b/.test(txt);}
+function videoScore(v){const txt=normTitle([v.title,v.summary,v.channel].join(' '));let s={market_id:30,market_us:28,crypto:12}[v.category]||10;WHY_TOPICS.forEach(([label,terms])=>{if(topicScore(txt,label,terms,v))s+=14;});if(promoVideo(v))s-=50;return s+(v.ts||0)/1e10;}
+function balancedWatchCards(cards){
+  const byId=new Map((cards||[]).map(m=>[(m.video||{}).video_id,m]));
+  const ranked=(VIDEOS||[]).filter(v=>goodVideo(v)&&!promoVideo(v)).sort((a,b)=>videoScore(b)-videoScore(a));
+  const out=[],used=new Set();
+  const add=v=>{if(v&&!used.has(v.video_id)){used.add(v.video_id);out.push(byId.get(v.video_id)||{video:v,why:fallbackWhy(v,'video')});}};
+  ['market_id','market_us','crypto','market_us'].forEach(cat=>add(ranked.find(v=>v.category===cat&&!used.has(v.video_id))));
+  ranked.forEach(v=>{if(out.length<4)add(v);});
+  return out.slice(0,4);
+}
+function balancedReadCards(cards){
+  const byUrl=new Map((cards||[]).map(m=>[(m.news||{}).url,m]));
+  const ranked=(WIRE||[]).filter(goodNews).sort((a,b)=>(b.score||0)-(a.score||0)||(b.ts||0)-(a.ts||0));
+  const out=[],used=new Set(),sources=new Set();
+  const add=n=>{if(n&&!used.has(n.url)){used.add(n.url);sources.add(n.source);out.push(byUrl.get(n.url)||{news:n,why:fallbackWhy(n,'news')});}};
+  const pick=fn=>ranked.find(n=>!used.has(n.url)&&fn(n)&&(out.length<2||!sources.has(n.source)));
+  [n=>n.geo==='ID',n=>n.geo!=='ID',n=>['MARKETS_FINANCE','TECH'].includes(n.category),n=>n.category==='CRYPTO'].forEach(fn=>add(pick(fn)));
+  ranked.forEach(n=>{if(out.length<4)add(n);});
+  return out.slice(0,4);
 }
 
 let hubInit=false;
@@ -1102,9 +1140,9 @@ function buildBrief(){
   const col=v=>v>=60?'var(--green)':v<=40?'var(--red)':'var(--amber)';
   const bar=(k,v)=>`<div class="sbar"><span class="sk">${k}</span><span class="st"><i style="width:${v}%;background:${col(v)}"></i></span><span class="sv">${v}</span></div>`;
   const win=b.generated_for?b.generated_for.replace('T',' · ')+':00':'Today';
-  const watch=(b.must_watch||[]).map(m=>{const v=m.video||{},why=cardWhy(m,v,'video');
+  const watch=balancedWatchCards(b.must_watch||[]).map(m=>{const v=m.video||{},why=cardWhy(m,v,'video');
     return `<button class="bcard bwatch" data-id="${esc(v.video_id||'')}" type="button"><div class="bct">${esc(v.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST WATCH</span><span class="vcat ${v.category||''}">${VCATLABEL[v.category]||v.category||''}</span><span class="meta-chip source">${esc(v.channel||'')}</span><span class="meta-chip date">${fdate(v.published)}</span></div><div class="bcw">${esc(why)}</div></button>`;}).join('');
-  const read=(b.must_read||[]).map(m=>{const n=m.news||{},cat=newsCat(n);
+  const read=balancedReadCards(b.must_read||[]).map(m=>{const n=m.news||{},cat=newsCat(n);
     const why=cardWhy(m,n,'news');
     return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div><div class="bcw">${esc(why)}</div></a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
@@ -1472,8 +1510,21 @@ $('mbStop').onclick=()=>stopVideo();
 /* ---- boot + auto-refresh ----
    Cache-bust the URL so the GitHub Pages CDN can't serve a stale data.json, and
    poll every 5 min so a new payload (baked every 30 min) shows within ~5 min with
-   no manual reload. Soft re-render keeps players & restored state alive. */
-function fetchData(){return fetch('data.json?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json();});}
+   no manual reload. Local file:// opens prefer the live GitHub Pages payload, then
+   fall back to raw GitHub/local data so testing still works offline. */
+const LIVE_DATA_URL='https://vitzz86.github.io/data.json';
+const RAW_DATA_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/data.json';
+function fetchJsonSource(url,label){
+  const sep=url.includes('?')?'&':'?';
+  return fetch(url+sep+'t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(label+' '+r.status);return r.json();})
+    .then(d=>{payloadSource=label;return d;});
+}
+function fetchData(){
+  const sources=location.protocol==='file:'
+    ?[[LIVE_DATA_URL,'live'],[RAW_DATA_URL,'raw'],['data.json','local']]
+    :[['data.json','site'],[LIVE_DATA_URL,'live'],[RAW_DATA_URL,'raw']];
+  return sources.reduce((chain,[url,label])=>chain.catch(()=>fetchJsonSource(url,label)),Promise.reject());
+}
 function applyPayload(d,initial){
   const prev=DATA&&DATA.timestamp,next=d&&d.timestamp;
   render(d);

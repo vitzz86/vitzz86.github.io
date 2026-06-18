@@ -239,6 +239,8 @@ def _validate_brief(brief: dict) -> None:
         for region in ("indonesia", "us"):
             _expect(isinstance(digest.get(region), str) and digest.get(region).strip(),
                     f"daily_brief.{key}.{region} missing")
+    if "quality_audit" in brief:
+        _expect(isinstance(brief.get("quality_audit"), dict), "daily_brief.quality_audit invalid")
 
 
 def _validate_intelligence(payload: dict) -> None:
@@ -259,6 +261,10 @@ def _validate_intelligence(payload: dict) -> None:
     _expect(isinstance(health.get("videos"), dict), "intelligence_health.videos missing")
     _expect(isinstance(health["news"].get("wire_count"), int), "intelligence_health.news.wire_count missing")
     _expect(isinstance(health["videos"].get("source_total"), int), "intelligence_health.videos.source_total missing")
+    if "daily_brief" in health:
+        _expect(isinstance(health.get("daily_brief"), dict), "intelligence_health.daily_brief invalid")
+        _expect(isinstance(health["daily_brief"].get("noisy_reason_count"), int),
+                "intelligence_health.daily_brief.noisy_reason_count missing")
     _validate_brief(payload["daily_brief"])
 
 
@@ -341,6 +347,7 @@ def compile_payload(state: dict) -> dict:
         "intelligence_health": {
             "news": news.get("audit", {}),
             "videos": videos.audit(vids),
+            "daily_brief": brief.get("quality_audit", {}),
         },
         "daily_brief": brief,
         "macro_analysis": ma["macro_analysis"],

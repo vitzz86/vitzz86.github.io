@@ -10,6 +10,7 @@ call per regeneration; deterministic fallback keeps the panel populated with no 
 from __future__ import annotations
 
 import datetime as dt
+import collections
 import json
 import re
 import sys
@@ -77,8 +78,8 @@ def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
                       "us": us, "global": glob, "crypto": cr},
         "synthesis": arbiter or "Synthesis pending the next scheduled window.",
         "key_themes": themes,
-        "must_watch": [{"video": v, "why": _fallback_reason(v, "video")} for v in videos[:4]],
-        "must_read": [{"news": n, "why": _fallback_reason(n, "news")} for n in news[:4]],
+        "must_watch": _balanced_watch_cards([], videos),
+        "must_read": _balanced_read_cards([], news),
         "news_digest": _regional_digest(news, "title", "geo", telemetry),
         "video_digest": _regional_digest(videos, "title", "geo", telemetry),
     })
@@ -121,23 +122,24 @@ PROMO_REASON_PATTERNS = (
 PROMO_REASON_TERMS = (
     "trade $", "get $", "referral", "subscribe", "sign-up", "signup",
     "promo code", "discord", "telegram", "patreon", "officially live in the united states",
+    "watch this because", "read this because",
 )
 RATIONALE_TOPICS = (
-    ("rupiah, Bank Indonesia, or IHSG signals that can move Indonesian risk appetite",
-     ("rupiah", "bank indonesia", "bi ", "suku bunga", "ihsg", "jci", "saham")),
-    ("Fed, rates, or yield signals that can drive global liquidity and equity multiples",
-     ("fed", "federal reserve", "rates", "yield", "treasury", "warsh")),
-    ("AI, semiconductor, or data-center developments shaping tech leadership and capex",
+    ("Indonesia flow is sensitive to Rupiah, Bank Indonesia, and IHSG direction, so this helps frame local risk appetite.",
+     ("rupiah", "bank indonesia", "bi", "ihsg", "jci", "saham")),
+    ("Rates remain the discount-rate anchor for equities, so this helps explain pressure on multiples, bonds, and the Rupiah.",
+     ("fed", "federal reserve", "rates", "yield", "treasury", "warsh", "suku bunga")),
+    ("AI and semiconductor capex are still leading the tech cycle, making this useful for tracking market leadership.",
      ("ai", "artificial intelligence", "nvidia", "semiconductor", "chip", "data center")),
-    ("commodity, energy, or shipping moves that matter for inflation and Indonesia's resource exposure",
+    ("Energy and commodity moves feed inflation expectations and Indonesia's resource exposure, so this is worth watching.",
      ("oil", "brent", "gold", "nickel", "coal", "commodity", "hormuz", "shipping")),
-    ("crypto market or regulatory shifts that can affect Bitcoin and digital-asset sentiment",
+    ("Digital-asset sentiment can turn quickly around Bitcoin, stablecoins, and regulation, so this keeps crypto risk in view.",
      ("bitcoin", "btc", "ethereum", "crypto", "stablecoin", "token", "kalshi", "strategy")),
-    ("BOJ, Japan, or Asia policy signals with potential regional spillover",
+    ("Japan and BOJ policy can spill into Asian yields and FX, making this relevant for regional positioning.",
      ("boj", "bank of japan", "japan", "nikkei")),
-    ("earnings, stock movers, or corporate actions that can affect market breadth",
-     ("earnings", "revenue", "profit", "stock movers", "shares", "deal", "ipo", "m&a")),
-    ("geopolitical or trade-risk headlines that can shift risk appetite quickly",
+    ("Earnings and corporate actions reveal whether the market move is broadening or staying concentrated in a few names.",
+     ("earnings", "revenue", "profit", "stock movers", "shares", "ipo", "m&a", "merger", "acquisition")),
+    ("Geopolitical and trade headlines can quickly reset risk appetite, oil expectations, and defensive positioning.",
      ("iran", "tariff", "trade war", "geopolitical", "war")),
 )
 
@@ -172,13 +174,47 @@ def _is_noisy_reason(s: str) -> bool:
     return bool(re.search(r"https?://|[╔╗╚╝═║╦╩╠╣]{3,}", s))
 
 
+def _term_match(text: str, term: str) -> bool:
+    term = str(term or "").lower().strip()
+    if not term:
+        return False
+    text = str(text or "").lower()
+    if re.fullmatch(r"[a-z0-9]+", term):
+        return bool(re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", text))
+    return term in text
+
+
+def _topic_score(text: str, phrase: str, terms: tuple[str, ...], item: dict) -> int:
+    hits = sum(1 for term in terms if _term_match(text, term))
+    if not hits:
+        return 0
+    score = hits * 10
+    category = item.get("category")
+    geo = item.get("geo")
+    if category == "crypto" or category == "CRYPTO":
+        if phrase.startswith("Digital-asset"):
+            score += 30
+    if category == "market_id" or geo == "ID":
+        if phrase.startswith("Indonesia flow"):
+            score += 20
+    if category == "market_us" and (
+        phrase.startswith("Rates") or phrase.startswith("Earnings") or
+        phrase.startswith("Geopolitical") or phrase.startswith("AI") or
+        phrase.startswith("Energy") or phrase.startswith("Japan")
+    ):
+        score += 6
+    if phrase.startswith("Japan"):
+        score += 25
+    return score
+
+
 def _fallback_reason(item: dict, kind: str) -> str:
     txt = " ".join(str(item.get(k, "")) for k in ("title", "summary", "source", "channel")).lower()
-    label = "Watch" if kind == "video" else "Read"
-    for phrase, terms in RATIONALE_TOPICS:
-        if any(term in txt for term in terms):
-            return f"{label} this because it highlights {phrase}."
-    return f"{label} this because it is one of the freshest high-priority items in today's market intelligence flow."
+    scored = [(_topic_score(txt, phrase, terms, item), phrase) for phrase, terms in RATIONALE_TOPICS]
+    scored = [(score, phrase) for score, phrase in scored if score]
+    if scored:
+        return max(scored, key=lambda x: x[0])[1]
+    return "This is a fresh high-priority item in today's market intelligence flow, useful for catching changes before they spread."
 
 
 def _clean_why(raw: str, item: dict, kind: str) -> str:
@@ -192,14 +228,20 @@ def _video_score(v: dict) -> int:
     txt = " ".join(str(v.get(k, "")) for k in ("title", "summary", "channel")).lower()
     score = int(v.get("score") or 0)
     score += {"market_id": 30, "market_us": 28, "crypto": 12}.get(v.get("category"), 10)
-    for _phrase, terms in RATIONALE_TOPICS:
-        if any(term in txt for term in terms):
+    for phrase, terms in RATIONALE_TOPICS:
+        if _topic_score(txt, phrase, terms, v):
             score += 14
-    if any(term in txt for term in PROMO_REASON_TERMS):
+    if any(_term_match(txt, term) for term in PROMO_REASON_TERMS):
         score -= 35
     if re.search(r"\b(beginners?|how to trade|perps?|referral|sign[- ]?up)\b", txt):
         score -= 20
     return score
+
+
+def _promo_video(v: dict) -> bool:
+    txt = " ".join(str(v.get(k, "")) for k in ("title", "summary", "channel")).lower()
+    return any(_term_match(txt, term) for term in PROMO_REASON_TERMS) or bool(
+        re.search(r"\b(beginners?|how to trade|referral|sign[- ]?up|subscribe)\b", txt))
 
 
 def _rank_videos(videos: list) -> list:
@@ -210,6 +252,77 @@ def _rank_news(news: list) -> list:
     return sorted(news or [], key=lambda n: (int(n.get("score") or 0), int(n.get("ts") or 0)), reverse=True)
 
 
+def _dedupe_cards(cards: list, key_fn) -> list:
+    seen, out = set(), []
+    for card in cards:
+        key = key_fn(card)
+        if key and key not in seen:
+            seen.add(key)
+            out.append(card)
+    return out
+
+
+def _balanced_watch_cards(existing: list, videos: list, size: int = 4) -> list:
+    ranked = [v for v in _rank_videos(videos) if not _promo_video(v)]
+    card_by_id = {((m.get("video") or {}).get("video_id")): m for m in (existing or [])}
+    result = []
+    used_ids = set()
+
+    def pick(cat: str):
+        for v in ranked:
+            if v.get("category") == cat and v.get("video_id") not in used_ids:
+                return card_by_id.get(v.get("video_id")) or {"video": v, "why": _fallback_reason(v, "video")}
+        return None
+
+    for cat in ("market_id", "market_us", "crypto", "market_us"):
+        card = pick(cat)
+        if card:
+            used_ids.add((card.get("video") or {}).get("video_id"))
+            result.append(card)
+    for v in ranked:
+        if len(result) >= size:
+            break
+        vid = v.get("video_id")
+        if vid not in used_ids:
+            used_ids.add(vid)
+            result.append(card_by_id.get(vid) or {"video": v, "why": _fallback_reason(v, "video")})
+    return _dedupe_cards(result, lambda m: (m.get("video") or {}).get("video_id"))[:size]
+
+
+def _balanced_read_cards(existing: list, news: list, size: int = 4) -> list:
+    ranked = _rank_news(news)
+    card_by_url = {((m.get("news") or {}).get("url")): m for m in (existing or [])}
+    result = []
+
+    def used_urls():
+        return {((m.get("news") or {}).get("url")) for m in result}
+
+    def pick(fn):
+        sources = {((m.get("news") or {}).get("source")) for m in result}
+        for n in ranked:
+            if n.get("url") in used_urls():
+                continue
+            if fn(n) and (len(result) < 2 or n.get("source") not in sources):
+                return card_by_url.get(n.get("url")) or {"news": n, "why": _fallback_reason(n, "news")}
+        return None
+
+    for fn in (
+        lambda n: n.get("geo") == "ID",
+        lambda n: n.get("geo") != "ID",
+        lambda n: n.get("category") in {"MARKETS_FINANCE", "TECH"},
+        lambda n: n.get("category") == "CRYPTO",
+    ):
+        card = pick(fn)
+        if card:
+            result.append(card)
+    for n in ranked:
+        if len(result) >= size:
+            break
+        if n.get("url") not in used_urls():
+            result.append(card_by_url.get(n.get("url")) or {"news": n, "why": _fallback_reason(n, "news")})
+    return _dedupe_cards(result, lambda m: (m.get("news") or {}).get("url"))[:size]
+
+
 def _finalize_cards(brief: dict) -> dict:
     for m in brief.get("must_watch") or []:
         v = m.get("video") or {}
@@ -217,7 +330,23 @@ def _finalize_cards(brief: dict) -> dict:
     for m in brief.get("must_read") or []:
         n = m.get("news") or {}
         m["why"] = _clean_why(m.get("why") or n.get("summary") or "", n, "news")
+    brief["quality_audit"] = _brief_quality(brief)
     return brief
+
+
+def _brief_quality(brief: dict) -> dict:
+    watch = brief.get("must_watch") or []
+    read = brief.get("must_read") or []
+    noisy = sum(1 for m in watch + read if _is_noisy_reason(_one_sentence(m.get("why") or "")))
+    return {
+        "must_watch_count": len(watch),
+        "must_read_count": len(read),
+        "noisy_reason_count": noisy,
+        "watch_categories": dict(collections.Counter((m.get("video") or {}).get("category") or "UNKNOWN" for m in watch)),
+        "read_geo": dict(collections.Counter((m.get("news") or {}).get("geo") or "UNKNOWN" for m in read)),
+        "read_categories": dict(collections.Counter((m.get("news") or {}).get("category") or "UNKNOWN" for m in read)),
+        "duplicate_read_sources": max(0, len(read) - len({(m.get("news") or {}).get("source") for m in read})),
+    }
 
 
 def _brief_has_noisy_reasons(brief: dict) -> bool:
@@ -321,8 +450,8 @@ def _topic_label(label: str, rows: list, title_key: str) -> str:
 def _digest_topics(rows: list, title_key: str) -> list[str]:
     scored = []
     for label, terms in DIGEST_TOPICS:
-        row_hits = sum(1 for row in rows if any(term in _item_text(row, title_key) for term in terms))
-        term_hits = sum(_item_text(row, title_key).count(term) for row in rows for term in terms)
+        row_hits = sum(1 for row in rows if any(_term_match(_item_text(row, title_key), term) for term in terms))
+        term_hits = sum(1 for row in rows for term in terms if _term_match(_item_text(row, title_key), term))
         if row_hits:
             scored.append((row_hits, term_hits, _topic_label(label, rows, title_key)))
     scored.sort(reverse=True)
@@ -415,9 +544,11 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
                     if isinstance(i, int) and 0 <= i < len(nlist):
                         mr.append({"news": nlist[i], "why": _clean_why(it.get("why") or "", nlist[i], "news")})
                 if not mw:
-                    mw = [{"video": v, "why": _fallback_reason(v, "video")} for v in videos[:4]]
+                    mw = _balanced_watch_cards([], videos)
                 if not mr:
-                    mr = [{"news": n, "why": _fallback_reason(n, "news")} for n in news[:4]]
+                    mr = _balanced_read_cards([], news)
+                mw = _balanced_watch_cards(mw, videos)
+                mr = _balanced_read_cards(mr, news)
                 sent = obj.get("sentiment") or {}
                 brief = {
                     "sentiment": {
