@@ -694,7 +694,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
 
     def _trusted(job):
         q, geo, cat, group = job
-        max_sites = 7 if group == "ID" else 5
+        max_sites = 8 if group == "ID" else 5
         return _targeted_source_news(q, geo, cat, group, q.split(), cap=10, max_sites=max_sites)
 
     try:

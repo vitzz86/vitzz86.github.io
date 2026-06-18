@@ -486,8 +486,8 @@ NEWS_TRUSTED_SOURCES = {
         ("e27", "e27.co"), ("Momentum Works", "momentum.asia"),
     ],
     "indonesia": [
-        ("CNBC Indonesia", "cnbcindonesia.com"), ("Bloomberg Technoz", "bloombergtechnoz.com"),
-        ("Kontan", "kontan.co.id"), ("Bisnis Indonesia", "bisnis.com"),
+        ("CNBC Indonesia", "cnbcindonesia.com"), ("EmitenNews", "emitennews.com"),
+        ("Bloomberg Technoz", "bloombergtechnoz.com"), ("Kontan", "kontan.co.id"), ("Bisnis Indonesia", "bisnis.com"),
         ("Investor Daily", "investor.id"), ("Katadata", "katadata.co.id"),
         ("Antara News", "antaranews.com"), ("IDX Channel", "idxchannel.com"),
         ("Detik Finance", "finance.detik.com"), ("Kompas Money", "money.kompas.com"),
@@ -515,7 +515,7 @@ NEWS_TRUSTED_SOURCES = {
 # Targeted source passes are deliberately compact: trusted source discovery should
 # improve quality without turning the 30-min cron into a crawler.
 NEWS_SOURCE_TARGETS = {
-    "ID": ["cnbcindonesia.com", "bloombergtechnoz.com", "kontan.co.id", "bisnis.com",
+    "ID": ["cnbcindonesia.com", "emitennews.com", "bloombergtechnoz.com", "kontan.co.id", "bisnis.com",
            "katadata.co.id", "antaranews.com", "idxchannel.com"],
     "US": ["reuters.com", "bloomberg.com", "cnbc.com", "finance.yahoo.com",
            "marketwatch.com", "investing.com", "barrons.com"],
@@ -537,6 +537,7 @@ NEWS_SOURCE_TARGETS = {
 NEWS_SOURCE_QUERY_TOPICS = [
     ("Bank Indonesia rupiah suku bunga IHSG", "ID", "ECONOMY", "ID"),
     ("Indonesia stocks banking commodities rupiah", "ID", "MARKETS_FINANCE", "ID"),
+    ("emiten saham aksi korporasi dividen RUPST IHSG", "ID", "MARKETS_FINANCE", "ID"),
     ("Indonesia startup AI digital economy", "ID", "TECH", "ID"),
     ("Federal Reserve rates inflation jobs yields", "US", "ECONOMY", "US"),
     ("Nasdaq S&P 500 Nvidia earnings yields", "US", "MARKETS_FINANCE", "US"),
@@ -560,6 +561,7 @@ WIRE_TOPICS = {
         ("rupiah nilai tukar dollar", "ECONOMY"),
         ("IHSG saham bursa efek Indonesia", "MARKETS_FINANCE"),
         ("saham bank BBCA BBRI BMRI emiten", "MARKETS_FINANCE"),
+        ("berita emiten aksi korporasi dividen RUPST saham", "MARKETS_FINANCE"),
         ("obligasi surat utang negara investasi", "MARKETS_FINANCE"),
         ("harga komoditas nikel batu bara emas Indonesia", "MARKETS_FINANCE"),
         ("startup Indonesia pendanaan modal ventura", "TECH"),
