@@ -117,11 +117,13 @@ a{color:inherit;text-decoration:none;}
 .trendtabs{display:flex;gap:6px;margin-bottom:8px;}
 .ttab{font-family:var(--mono);font-size:9px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:4px 8px;cursor:pointer;}
 .ttab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
-.mv{width:100%;display:flex;align-items:center;gap:8px;padding:7px 0;border:0;border-bottom:1px solid var(--line2);font-family:var(--mono);background:transparent;color:inherit;text-align:left;cursor:pointer;}
+.mv{width:100%;display:flex;align-items:center;gap:7px;padding:7px 0;border:0;border-bottom:1px solid var(--line2);font-family:var(--mono);background:transparent;color:inherit;text-align:left;cursor:pointer;}
 .mv .mtk{font-size:11px;font-weight:600;width:46px;flex:0 0 auto;}
 .mv .mnm{font-size:9.5px;color:var(--ink3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.mv .mcd{font-size:11px;font-variant-numeric:tabular-nums;}
+.mv .mcd{font-size:11px;font-variant-numeric:tabular-nums;min-width:46px;text-align:right;}
 .mv .msc{font-size:9px;color:var(--cyan);border:1px solid rgba(45,212,191,.28);border-radius:5px;padding:2px 5px;}
+.mv .msc.valpos{color:var(--green);border-color:rgba(34,197,94,.32);}
+.mv .msc.valneg{color:var(--red);border-color:rgba(239,68,68,.32);}
 .mv:hover .mtk{color:var(--cyan);}
 
 /* index cards */
@@ -309,20 +311,20 @@ footer .g{color:var(--green);}
 .pricebox{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;background:#15191f;padding:14px 16px 12px;}
 .pricebox .ph{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px;letter-spacing:0;}
 .pricebox .psub{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;}
-.targetchart{position:relative;height:150px;margin:12px 0 6px;}
-.targetrail{position:absolute;left:10px;right:10px;top:78px;height:8px;border-radius:99px;background:#737c85;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+.targetchart{position:relative;height:198px;margin:14px 0 8px;}
+.targetrail{position:absolute;left:10px;right:10px;top:88px;height:8px;border-radius:99px;background:#737c85;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
 .targetrail:before,.targetrail:after{content:"";position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translateY(-50%);background:#d9dde2;border:2px solid #fff;}
 .targetrail:before{left:-2px}.targetrail:after{right:-2px;background:#8f98a3;border-color:#8f98a3;}
-.tmark{position:absolute;left:var(--x);top:78px;transform:translate(-50%,-50%);z-index:2;}
+.tmark{position:absolute;left:var(--x);top:88px;transform:translate(-50%,-50%);z-index:2;}
 .tmark i{display:block;width:14px;height:14px;border-radius:50%;background:#15191f;border:3px solid var(--cyan);box-shadow:0 0 0 2px rgba(21,25,31,.95);}
-.tcall{position:absolute;left:var(--x);min-width:112px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:#15191f;color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:0 12px 28px rgba(0,0,0,.28);z-index:3;}
-.tcall b{display:block;font-size:17px;line-height:1;font-weight:800;}
+.tcall{position:absolute;left:var(--x);min-width:108px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:#15191f;color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:0 12px 28px rgba(0,0,0,.28);z-index:3;}
+.tcall b{display:block;font-size:16px;line-height:1;font-weight:800;}
 .tcall span{display:block;font-size:13px;color:var(--ink2);line-height:1.15;margin-top:3px;}
 .tcall.avg{top:14px;border-color:#38bdf8;transform:translateX(var(--tx,-50%));}
-.tcall.avg:after{content:"";position:absolute;left:var(--pin,50%);bottom:-45px;width:1px;height:44px;background:#38bdf8;}
-.tcall.current{top:104px;border-color:#e5e7eb;transform:translateX(var(--tx,-8%));}
-.tcall.current:before{content:"";position:absolute;left:var(--pin,12px);top:-34px;width:1px;height:34px;background:#e5e7eb;}
-.axislabel{position:absolute;top:98px;font-variant-numeric:tabular-nums;}
+.tcall.avg:after{content:"";position:absolute;left:var(--pin,50%);bottom:-55px;width:1px;height:54px;background:#38bdf8;}
+.tcall.current{top:128px;border-color:#e5e7eb;transform:translateX(var(--tx,-8%));}
+.tcall.current:before{content:"";position:absolute;left:var(--pin,12px);top:-40px;width:1px;height:40px;background:#e5e7eb;}
+.axislabel{position:absolute;top:104px;font-variant-numeric:tabular-nums;}
 .axislabel b{display:block;font-size:15px;line-height:1.1;}
 .axislabel span{display:block;font-size:10px;color:var(--ink2);margin-top:2px;}
 .axislabel.low{left:0}.axislabel.high{right:0;text-align:right;}
@@ -567,7 +569,7 @@ body{padding-bottom:40px;}
     </div>
     <div class="sec">
       <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2></div>
-      <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span></div>
+      <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span><span class="ttab" data-t="best_value">◇ Best Risk/Price</span></div>
       <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
       <div id="moveList"></div>
       <div class="lbl" style="margin:12px 0 6px;">Social buzz · StockTwits</div>
@@ -962,27 +964,71 @@ function openMoverTicker(ticker,country){
   openSector(hit.i);
   openTicker(hit.s,hit.c.ticker);
 }
+function finiteNum(v){const n=Number(v);return Number.isFinite(n)?n:null;}
+function clampScore(n){return Math.max(0,Math.min(100,Number(n)||0));}
+function riskStat(sc,key,label){
+  const r=(sc&&sc.risk_stats)||{};
+  const direct=finiteNum(r[key]);
+  return direct!=null?direct:finiteNum(metricValue(sc,label));
+}
+function bestRiskPrice(c){
+  const sc=invScore(c),score=finiteNum(sc.score);
+  if(score==null||staleCurrencyMismatch(c,sc))return null;
+  const mode=String(sc.mode||'equity').toLowerCase();
+  const value=finiteNum(axisVal(sc,'value'))??score;
+  const quality=finiteNum(axisVal(sc,'quality'))??score;
+  const risk=finiteNum(axisVal(sc,'risk'))??score;
+  const momentum=finiteNum(axisVal(sc,'momentum'))??50;
+  const v=sc.valuation||{};
+  const upside=finiteNum(v.upside_pct);
+  const current=finiteNum(v.current_price)??finiteNum(qValue(c));
+  const buyBelow=finiteNum(v.buy_below);
+  const sharpe=riskStat(sc,'sharpe','Sharpe Ratio');
+  const sortino=riskStat(sc,'sortino','Sortino Ratio');
+  const maxDd=riskStat(sc,'max_drawdown_pct','Max Drawdown');
+  const sharpeScore=sharpe==null?risk:clampScore((sharpe+.25)/1.75*100);
+  const sortinoScore=sortino==null?sharpeScore:clampScore((sortino+.25)/2.25*100);
+  const riskAdj=(sharpeScore+sortinoScore)/2;
+  const drawdownScore=maxDd==null?risk:clampScore((45-Math.abs(maxDd))/45*100);
+  const entryBonus=buyBelow!=null&&current!=null&&current<=buyBelow?8:0;
+  const valuationScore=upside==null?value:clampScore((upside+20)/60*100+entryBonus);
+  const raw=mode==='crypto'
+    ?score*.35+risk*.20+riskAdj*.20+momentum*.15+drawdownScore*.10
+    :value*.25+quality*.25+valuationScore*.20+riskAdj*.15+drawdownScore*.10+momentum*.05;
+  const signal=upside==null?'risk-adjusted':upside>=20?'undervalued':(buyBelow!=null&&current!=null&&current<=buyBelow?'buy zone':upside<=-20?'expensive':'fair');
+  return {score:clampScore(raw),upside_pct:upside,signal};
+}
 function localMoverBucket(geo){
   const want=geo==='crypto'?'CR':geo.toUpperCase();
   const rows=[];
   (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(c.country===want)rows.push(c);}));
   const uniq=Array.from(rows.reduce((m,c)=>{const k=c.country+'|'+c.ticker,cur=m.get(k);if(!cur||(Number(invScore(c).score)||-1)>(Number(invScore(cur).score)||-1))m.set(k,c);return m;},new Map()).values());
-  const trim=arr=>arr.slice(0,8).map(c=>({ticker:c.ticker,name:c.name,country:c.country,delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,url:c.url}));
+  const trim=arr=>arr.slice(0,8).map(c=>{const rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
   const byMove=uniq.slice().sort((a,b)=>qDelta(b)-qDelta(a));
   const byScore=uniq.slice().filter(c=>invScore(c).score!=null).sort((a,b)=>Number(invScore(b).score)-Number(invScore(a).score));
-  return {gainers:trim(byMove),losers:trim(byMove.slice().reverse()),top_score:trim(byScore)};
+  const byRiskPrice=uniq.slice().filter(c=>bestRiskPrice(c)).sort((a,b)=>bestRiskPrice(b).score-bestRiskPrice(a).score);
+  return {gainers:trim(byMove),losers:trim(byMove.slice().reverse()),top_score:trim(byScore),best_value:trim(byRiskPrice)};
+}
+function moverScoreBadges(m){
+  if(moveType==='top_score')return `<span class="msc">SC ${m.score==null?'--':Math.round(m.score)}</span>`;
+  if(moveType==='best_value'){
+    const val=m.upside_pct==null?'':`<span class="msc ${m.upside_pct>=0?'valpos':'valneg'}">${sign(m.upside_pct)}</span>`;
+    return `<span class="msc">R/P ${m.best_score==null?'--':Math.round(m.best_score)}</span>${val}`;
+  }
+  return '';
 }
 function drawMovers(){
   const fallback=localMoverBucket(moveGeo);
   const baked=(TREND&&TREND[moveGeo])||{};
   const bucket={...fallback,...baked};
   if(!bucket.top_score||!bucket.top_score.length)bucket.top_score=fallback.top_score;
+  if(!bucket.best_value||!bucket.best_value.length)bucket.best_value=fallback.best_value;
   const list=(bucket[moveType]||[]);
   $('moveList').innerHTML=list.map(m=>`<button class="mv" data-tk="${esc(m.ticker)}" data-country="${esc(m.country||moveGeo)}" type="button">`+
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
-    `${moveType==='top_score'?`<span class="msc">SC ${m.score==null?'--':Math.round(m.score)}</span>`:''}`+
+    `${moverScoreBadges(m)}`+
     `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></button>`).join('')||
-    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveType==='top_score'?'Score data pending next scored payload.':'—'}</div>`;
+    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
   [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
 }
 
@@ -1562,6 +1608,8 @@ function fmtThreshold(label,val,dir){
   const l=String(label||'').toLowerCase();
   if(val==null||!isFinite(Number(val)))return 'n/a';
   const n=Number(val);
+  if(l.includes('sharpe')||l.includes('sortino'))return n.toFixed(2);
+  if(l.includes('drawdown'))return n.toFixed(n%1?2:0)+'%';
   if(l.includes('yield')||l.includes('growth')||l==='roe'||l.includes('volatility')||l.includes('return'))return n.toFixed(n%1?2:0)+'%';
   if(l.includes('beta'))return n.toFixed(2)+'x';
   if(l.includes('debt/equity'))return n.toFixed(n%1?2:0)+'%';
@@ -1635,8 +1683,18 @@ function verdict(v,dir,good,watch){
 function ruleLine(sc,label,actual,dir,good,watch,why){
   const [cls,txt]=verdict(actual,dir,good,watch);
   const op=dir==='high'?'>=':'<=';
-  const period=metricPeriod(scoreMetric(sc,label));
-  return `<li><b>${esc(label)}</b>: actual ${esc(metricDisplay(sc,label))}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold ${op} ${esc(fmtThreshold(label,good,dir))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+  const m=scoreMetric(sc,label);
+  const period=metricPeriod(m||{label});
+  const display=m?metricDisplay(sc,label):(actual==null?'n/a':fmtThreshold(label,actual,dir));
+  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold ${op} ${esc(fmtThreshold(label,good,dir))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+}
+function ruleLineAbs(sc,label,actual,good,watch,why){
+  const test=actual==null||!isFinite(Number(actual))?null:Math.abs(Number(actual));
+  const [cls,txt]=verdict(test,'low',good,watch);
+  const m=scoreMetric(sc,label);
+  const period=metricPeriod(m||{label});
+  const display=m?metricDisplay(sc,label):(actual==null?'n/a':fmtThreshold(label,actual,'low'));
+  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold <= ${esc(fmtThreshold(label,good,'low'))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
 }
 function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
@@ -1746,6 +1804,7 @@ function lensDetail(c,type){
   const value=axisVal(sc,'value'),quality=axisVal(sc,'quality'),growth=axisVal(sc,'growth'),momentum=axisVal(sc,'momentum'),risk=axisVal(sc,'risk');
   const pe=metricValue(sc,'P/E'),pb=metricValue(sc,'P/B'),roe=metricValue(sc,'ROE'),debt=metricValue(sc,'Debt/Equity'),fcf=metricValue(sc,'FCF Yield');
   const rev=metricValue(sc,'Revenue Growth'),beta=metricValue(sc,'Beta'),vol=metricValue(sc,'Volatility'),six=metricValue(sc,'6M Return');
+  const sharpe=riskStat(sc,'sharpe','Sharpe Ratio'),sortino=riskStat(sc,'sortino','Sortino Ratio'),annualVol=riskStat(sc,'annual_volatility_pct','Annual Volatility'),drawdown=riskStat(sc,'max_drawdown_pct','Max Drawdown');
   if(sc.mode==='crypto'){
     return `<div class="lenscopy"><p>Crypto uses a different scoring stack: size, liquidity, momentum, trend, and volatility. Traditional P/E, ROE, P/B, and FCF valuation rules are not applied because CoinGecko does not provide operating fundamentals.</p></div>`;
   }
@@ -1758,6 +1817,8 @@ function lensDetail(c,type){
     ruleLine(sc,'ROE',roe,'high',15,8,'durable quality usually needs strong returns on equity')+
     ruleLine(sc,'Debt/Equity',debt,'low',80,150,'lower leverage improves downside resilience')+
     ruleLine(sc,'FCF Yield',fcf,'high',5,2,'cash generation supports intrinsic-value discipline')+
+    ruleLine(sc,'Sharpe Ratio',sharpe,'high',.7,.2,'positive excess return confirms value is not only statistical cheapness')+
+    ruleLineAbs(sc,'Max Drawdown',drawdown,25,40,'smaller drawdowns protect long-term compounding')+
     `</ul><p>Conclusion: Value ${Math.round(value||0)}/100 and Quality ${Math.round(quality||0)}/100 explain the current score contribution.</p></div>`;
   if(type==='ackman')return `<div class="lenscopy"><p><b>Ackman-style check</b>: heuristic screen for quality compounders with cash generation, growth, and a balance sheet that does not break the thesis.</p><ul>`+
     ruleLine(sc,'ROE',roe,'high',15,8,'quality compounders should earn above-average returns')+
@@ -1765,12 +1826,17 @@ function lensDetail(c,type){
     ruleLine(sc,'FCF Yield',fcf,'high',4,1,'cash flow gives room for reinvestment or shareholder returns')+
     ruleLine(sc,'Debt/Equity',debt,'low',120,200,'excess leverage weakens thesis durability')+
     ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta reduces market-sensitivity drag')+
+    ruleLine(sc,'Sortino Ratio',sortino,'high',1,.3,'concentrated compounders should be judged on downside-adjusted return')+
+    ruleLine(sc,'Annual Volatility',annualVol,'low',35,50,'lower realized volatility reduces thesis path risk')+
     `</ul><p>Conclusion: Growth ${Math.round(growth||0)}/100 and Risk ${Math.round(risk||0)}/100 show whether this is a clean compounder or a watchlist name.</p></div>`;
   if(type==='dalio')return `<div class="lenscopy"><p><b>Dalio-style risk check</b>: heuristic screen for portfolio fit, cyclicality, volatility, and balance-sheet sensitivity.</p><ul>`+
     ruleLine(sc,'Beta',beta,'low',1.2,1.6,'lower beta helps portfolio balance')+
     ruleLine(sc,'Volatility',vol,'low',1.2,3.0,'lower realized volatility improves the Risk axis')+
     ruleLine(sc,'6M Return',six,'high',0,-20,'positive trend reduces the need to fight the cycle')+
     ruleLine(sc,'Debt/Equity',debt,'low',120,200,'leverage can amplify macro shocks')+
+    ruleLine(sc,'Sharpe Ratio',sharpe,'high',.5,0,'risk-adjusted return should clear the cash benchmark')+
+    ruleLine(sc,'Sortino Ratio',sortino,'high',.8,.2,'downside-adjusted return helps compare assets across cycles')+
+    ruleLineAbs(sc,'Max Drawdown',drawdown,25,40,'drawdown limits determine sizing more than headline return')+
     `</ul><p>Conclusion: Momentum ${Math.round(momentum||0)}/100 and Risk ${Math.round(risk||0)}/100 determine whether sizing should be aggressive or defensive.</p></div>`;
   return `<div class="lenscopy"><p>Pick an investor style tab above. Valuation target, buy-below, fair range, and sensitivity are shown separately below the spider chart.</p></div>`;
 }
