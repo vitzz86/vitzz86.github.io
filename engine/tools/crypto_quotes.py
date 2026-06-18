@@ -40,7 +40,8 @@ def simple(symbols: list[str]) -> dict:
     ids = ",".join(dict.fromkeys(ordered_ids))
     if not ids:
         return {}
-    data = _get(f"{API}/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true")
+    data = _get(f"{API}/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true"
+                "&include_market_cap=true&include_24hr_vol=true")
     out = {}
     for sym in symbols:
         for cid in _ids_for(sym):
@@ -52,7 +53,9 @@ def simple(symbols: list[str]) -> dict:
             out[sym] = {"value": round(float(price), 4),
                         "delta_pct": round(float(dp), 2),
                         "prev_close": round(float(prev), 4),
-                        "open": True, "mkt_start": None, "mkt_end": None}
+                        "open": True, "mkt_start": None, "mkt_end": None,
+                        "market_cap_value": row.get("usd_market_cap"),
+                        "volume_24h": row.get("usd_24h_vol")}
             break
     return out
 

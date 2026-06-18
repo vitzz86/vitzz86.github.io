@@ -46,7 +46,18 @@ def _batch_prices(symbols: list) -> dict:
     return out
 
 
-def collect() -> list:
+def _previous_rows(previous_sectors: list | None) -> dict:
+    rows = {}
+    for sec in previous_sectors or []:
+        for r in sec.get("constituents", []) or []:
+            if r.get("source_symbol"):
+                rows[r["source_symbol"]] = r
+            if r.get("ticker"):
+                rows[r["ticker"]] = r
+    return rows
+
+
+def collect(previous_sectors: list | None = None) -> list:
     symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]]
     prices = _batch_prices(symbols)
     crypto_symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]
@@ -79,9 +90,12 @@ def collect() -> list:
             rows.append({
                 "ticker": ticker, "name": name, "exchange": exch,
                 "country": country, "mktcap": mktcap, "tier": tier,
+                "source_symbol": ysym,
                 "delta_pct": delta, "spark": spark,
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
+                "market_cap_value": (p or {}).get("market_cap_value"),
+                "volume_24h": (p or {}).get("volume_24h"),
                 "state": "open" if (p or {}).get("open") else "closed",
                 "mkt_start": (p or {}).get("mkt_start"),
                 "mkt_end": (p or {}).get("mkt_end"),
@@ -92,6 +106,14 @@ def collect() -> list:
                 id_d.append(delta)
             elif country == "US":
                 us_d.append(delta)
+
+        try:
+            from tools import fundamentals
+            fundamentals.enrich(rows, _previous_rows(previous_sectors),
+                                refresh_hours=getattr(settings, "FUNDAMENTAL_REFRESH_HOURS", 24),
+                                workers=getattr(settings, "FUNDAMENTAL_WORKERS", 6))
+        except Exception as e:  # noqa: BLE001
+            print(f"[sectors] fundamental scoring failed: {e}")
 
         all_d = [r["delta_pct"] for r in rows]
         id_agg = round(sum(id_d) / len(id_d), 2) if id_d else None

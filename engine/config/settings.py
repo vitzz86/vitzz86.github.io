@@ -42,6 +42,8 @@ ANOMALY_WATCHLIST = ("^JKSE", "^IXIC")
 # constituent: (ticker, company, yfinance_symbol, exchange, country, mktcap,
 # tier, *flags). tier ∈ mega|large|mid|small. flags: "spec" = speculative.
 SECTOR_SIGNAL_PCT = {"alert": 1.5, "watch": 0.8}  # |aggregate %| thresholds
+FUNDAMENTAL_REFRESH_HOURS = 24       # reuse real Yahoo metrics between daily refreshes
+FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-summary calls
 SECTORS = [
     {"key": "technology", "name": "Technology", "icon": "▚",
      "theme": "AI infra · Digital banking", "constituents": [

@@ -249,6 +249,12 @@ footer .g{color:var(--green);}
 .crow .cap{font-family:var(--mono);font-size:9px;color:var(--ink3);}
 .crow .cd{font-family:var(--mono);font-size:11px;width:54px;text-align:right;}
 .crow:hover{background:rgba(255,255,255,.02);}
+.scorepill{font-family:var(--mono);font-size:8px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--panel2);color:var(--ink2);min-width:43px;text-align:center;}
+.scorepill.strong{border-color:rgba(34,197,94,.45);color:var(--green);background:rgba(34,197,94,.08);}
+.scorepill.watchlist{border-color:rgba(59,130,246,.45);color:var(--blue);background:rgba(59,130,246,.08);}
+.scorepill.neutral{border-color:rgba(245,158,11,.42);color:var(--amber);background:rgba(245,158,11,.08);}
+.scorepill.weak{border-color:rgba(239,68,68,.45);color:var(--red);background:rgba(239,68,68,.08);}
+.scorepill.insufficient{border-color:var(--line);color:var(--ink3);}
 .showall{font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;margin-top:9px;display:inline-block;}
 .tierleg{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;color:var(--ink3);margin-bottom:8px;}
 .tierleg span{display:inline-flex;align-items:center;}
@@ -258,6 +264,18 @@ footer .g{color:var(--green);}
 .smnews a.ttl{font-size:12px;color:var(--ink);}.smnews a.ttl:hover{color:var(--amber);}
 .tkback{font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;display:inline-block;margin-bottom:9px;}
 .tkhd{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+.scorebox{margin-top:12px;border:1px solid var(--line);border-radius:8px;background:#0b0b0e;padding:12px;display:grid;grid-template-columns:230px 1fr;gap:14px;align-items:center;}
+.scorehead{display:flex;align-items:baseline;gap:9px;margin-bottom:8px;}
+.scorebig{font-family:var(--mono);font-size:28px;font-weight:800;line-height:1;}
+.scorelabel{font-family:var(--mono);font-size:9px;letter-spacing:.08em;}
+.scoremeta{font-family:var(--mono);font-size:8px;color:var(--ink3);line-height:1.5;margin-top:5px;}
+.radar svg{width:100%;height:auto;display:block;}
+.metricsgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+.metric{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px 8px;}
+.metric .mk{font-family:var(--mono);font-size:7.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;}
+.metric .mv{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.scorefoot{grid-column:1 / -1;font-family:var(--mono);font-size:8px;color:var(--ink3);border-top:1px solid var(--line2);padding-top:8px;}
+@media(max-width:720px){.scorebox{grid-template-columns:1fr}.metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .tkhd .tkpx{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
 .tkhd .exch{font-family:var(--mono);font-size:8px;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;}
 
@@ -1331,6 +1349,47 @@ function openSector(i){
 }
 function newsRow(n){const cat=newsCat(n);return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${cat}">${CATLABEL[cat]||(cat||'').replace(/_/g,' ')}</span><span class="meta-chip source">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
   `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
+function invScore(c){return c.fundamental_score||{};}
+function scoreClass(sc){const label=String((sc&&sc.label)||'insufficient').toLowerCase();return label.replace(/\s+/g,'')||'insufficient';}
+function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var(--ink3)';return n>=75?'var(--green)':n>=60?'var(--blue)':n>=45?'var(--amber)':'var(--red)';}
+function scorePill(c){
+  const sc=invScore(c),n=sc.score;
+  return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} investment score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
+}
+function fmtMetric(m){
+  const v=m&&m.value,fmt=m&&m.fmt;
+  if(v==null)return '—';
+  if(fmt==='percent')return `${Number(v).toFixed(2)}%`;
+  if(fmt==='money'){
+    const n=Number(v);if(!isFinite(n))return esc(String(v));
+    if(Math.abs(n)>=1e12)return '$'+(n/1e12).toFixed(2)+'T';
+    if(Math.abs(n)>=1e9)return '$'+(n/1e9).toFixed(2)+'B';
+    if(Math.abs(n)>=1e6)return '$'+(n/1e6).toFixed(1)+'M';
+    return '$'+Math.round(n).toLocaleString();
+  }
+  return Number(v).toFixed(fmt==='ratio'?2:2);
+}
+function radarSvg(sc){
+  const axes=(sc.axes&&sc.axes.length?sc.axes:[]).slice(0,6);
+  if(!axes.length)return '<div style="height:190px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Score unavailable</div>';
+  const w=220,h=200,cx=110,cy=98,r=62,levels=[.25,.5,.75,1];
+  const pts=(scale=1)=>axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*scale,cy+Math.sin(ang)*r*scale];});
+  const poly=arr=>arr.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
+  const vals=axes.map((a,i)=>{const v=a.score==null?0:Number(a.score)/100;const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*v,cy+Math.sin(ang)*r*v];});
+  const labels=axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length,lr=r+28,x=cx+Math.cos(ang)*lr,y=cy+Math.sin(ang)*lr;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${x<cx-8?'end':x>cx+8?'start':'middle'}" fill="${a.score==null?'#52525b':'#a1a1aa'}" font-size="8" font-family="ui-monospace,monospace">${esc(a.label)} ${a.score==null?'n/a':Math.round(a.score)}</text>`;}).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" aria-label="Investment score spider chart">`+
+    levels.map(l=>`<polygon points="${poly(pts(l))}" fill="none" stroke="#27272f" stroke-width="1"/>`).join('')+
+    pts(1).map(p=>`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#202028" stroke-width="1"/>`).join('')+
+    `<polygon points="${poly(vals)}" fill="rgba(45,212,191,.20)" stroke="#2dd4bf" stroke-width="2"/>`+
+    vals.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${axes[i].score==null?2:3}" fill="${axes[i].score==null?'#52525b':'#2dd4bf'}"/>`).join('')+
+    labels+`</svg>`;
+}
+function scorePanel(c){
+  const sc=invScore(c),metrics=(sc.metrics||[]).slice(0,9),n=sc.score;
+  const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
+  return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
+}
 function renderConsts(s){
   let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice().sort((a,b)=>qDelta(b)-qDelta(a));
   const full=list;
@@ -1340,7 +1399,7 @@ function renderConsts(s){
     return `<div class="crow" data-tk="${esc(c.ticker)}" style="cursor:pointer">`+
       `<span class="fl">${FLAG[c.country]||''}</span><span class="tk"><i class="tdot ${c.tier}"></i>${esc(c.ticker)}</span>`+
       `<span class="cn">${esc(c.name)}</span><span class="cap">${esc(c.mktcap)}</span>`+
-      `<span class="cd" style="color:${COLP(dp)}">${sign(dp)}</span></div>`;
+      `${scorePill(c)}<span class="cd" style="color:${COLP(dp)}">${sign(dp)}</span></div>`;
   }).join('')||'<div style="color:var(--ink3);font-size:11px;padding:6px 0;">No tickers for this filter.</div>';
   [...document.querySelectorAll('#smConsts .crow')].forEach(r=>r.onclick=()=>openTicker(s,r.dataset.tk));
   $('smShowAll').textContent=full.length<=6?'':(smShowAll?'▲ Show top 6':`▼ Show all ${full.length}`);
@@ -1362,6 +1421,7 @@ function openTicker(s,tk){
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
+    scorePanel(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
