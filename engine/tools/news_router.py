@@ -75,17 +75,16 @@ def _has_crypto(text: str, source: str = "") -> bool:
     src = _norm(source or "")
     if any(h in src for h in CRYPTO_SOURCE_HINTS):
         return True
-    return any((re.search(rf"\b{re.escape(t)}\b", hay) if len(t) <= 5 else t in hay)
-               for t in CRYPTO_STRONG_TERMS)
+    return any(_term_hit(hay, t) for t in CRYPTO_STRONG_TERMS)
 
 
 def _category(text: str, source: str = "") -> str:
     if _has_crypto(text, source):
         return "CRYPTO"
-    t = text.lower()
+    t = _norm(text)
     best, score = DEFAULT_CATEGORY, 0
     for cat, kws in CATEGORY_KEYWORDS.items():
-        s = sum(1 for k in kws if k in t)
+        s = sum(1 for k in kws if _term_hit(t, k))
         if s > score:
             best, score = cat, s
     return best
@@ -202,6 +201,26 @@ def _norm(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (s or "").lower()).strip()
 
 
+def _term_hit(text: str, term: str) -> bool:
+    """Match a normalized term without accidental substring hits like ai/said."""
+    txt = _norm(text)
+    needle = _norm(term)
+    if not txt or not needle:
+        return False
+    if " " in needle:
+        return needle in txt
+    return bool(re.search(rf"\b{re.escape(needle)}\b", txt))
+
+
+def _ticker_hit(raw_text: str, ticker: str) -> bool:
+    ticker = str(ticker or "").strip()
+    if not ticker:
+        return False
+    if len(ticker) <= 2:
+        return bool(re.search(rf"(\${re.escape(ticker)}\b|\({re.escape(ticker)}\))", raw_text, re.I))
+    return bool(re.search(rf"\b{re.escape(ticker)}\b", raw_text, re.I))
+
+
 NOISE_TITLE_PATTERNS = (
     "top pro news",
     "bloomberg businessweek",
@@ -305,7 +324,8 @@ MARKET_ANCHOR_TERMS = (
 SECTOR_ANCHOR_TERMS = {
     "technology": ("capex", "chips", "compute", "server", "model", "platform"),
     "financials": ("loan", "loans", "deposit", "deposits", "credit", "nim"),
-    "energy": ("supply", "demand", "production", "export", "inventory", "smelter"),
+    "energy": ("supply", "demand", "production", "export", "inventory", "smelter",
+               "rule", "rules", "policy", "investor", "investors", "investment"),
     "renewables": ("capacity", "project", "projects", "power", "electricity", "tariff", "policy"),
     "consumer": ("sales", "demand", "pricing", "brand", "store", "stores"),
     "infrastructure": ("project", "projects", "contract", "contracts", "construction", "capex"),
@@ -349,8 +369,7 @@ def _normalize_item(it: dict) -> dict:
 
 
 def _has_anchor(txt: str, terms: tuple | list) -> bool:
-    return any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
-               for t in terms)
+    return any(_term_hit(txt, t) for t in terms)
 
 
 def _quality_gate(it: dict) -> bool:
@@ -405,10 +424,8 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
     for t in terms:
         if not t:
             continue
-        if len(t) <= 5:
-            relevance += 18 if re.search(rf"\b{re.escape(t)}\b", txt) else 0
-        elif t in txt:
-            relevance += 12
+        if _term_hit(txt, t):
+            relevance += 18 if len(t) <= 5 else 12
     age = max(0, _now() - int(it.get("ts") or 0))
     fresh = 25 if age <= 86400 else 15 if age <= 3 * 86400 else 5
     query_bonus = {"trusted": 20, "official": 18, "gap": 10, "ticker": 8,
@@ -423,7 +440,7 @@ def _score_item(it: dict, terms: list[str] = None, trusted_bias: int = 0) -> dic
     if it.get("geo") == "ID" and it.get("category") != "CRYPTO":
         id_terms = ("indonesia", "rupiah", "ihsg", "idx", "bei", "saham", "emiten",
                     "bank indonesia", "ojk", "apbn", "jakarta", "bursa")
-        if not any(t in txt for t in id_terms):
+        if not any(_term_hit(txt, t) for t in id_terms):
             score -= 18
     if not relevance and not it.get("source_score") and it.get("query_type") in {"ticker", "gap"}:
         score -= 18
@@ -464,7 +481,7 @@ def _sector_relevant(it: dict, sector: dict) -> bool:
         name = _norm(c.get("name", "").split(" (")[0])
         first = name.split()[0] if name else ""
         ticker = str(c.get("ticker", "")).strip()
-        if (ticker and re.search(rf"\b{re.escape(ticker)}\b", raw_txt)) or \
+        if (ticker and _ticker_hit(raw_txt, ticker)) or \
            (name and name in txt) or (first and len(first) > 3 and re.search(rf"\b{re.escape(first)}\b", txt)):
             constituent_hit = True
             break
@@ -474,19 +491,27 @@ def _sector_relevant(it: dict, sector: dict) -> bool:
         return constituent_hit
     if title.startswith("why your summer tomatoes cost"):
         return constituent_hit
-    sector_hit = any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
-                     for t in terms)
+    sector_hit = any(_term_hit(txt, t) for t in terms)
     if not sector_hit:
         return False
     anchor_terms = MARKET_ANCHOR_TERMS + tuple(SECTOR_ANCHOR_TERMS.get(sector.get("key", ""), ()))
-    anchor_hit = any((re.search(rf"\b{re.escape(t)}\b", txt) if len(t) <= 5 else t in txt)
-                     for t in anchor_terms)
+    anchor_hit = any(_term_hit(txt, t) for t in anchor_terms)
     return anchor_hit or constituent_hit
 
 
 def _sector_rank(items: list, sector: dict, cap: int) -> list:
-    ranked = _rank(items, cap * 3, _sector_terms(sector))
-    return [it for it in ranked if _sector_relevant(it, sector)][:cap]
+    terms = _sector_terms(sector)
+    ranked = []
+    for it in [_normalize_item(x) for x in items if x.get("url")]:
+        if _is_noise_item(it):
+            continue
+        scored = _score_item(it, terms)
+        if not _sector_relevant(scored, sector):
+            continue
+        if scored.get("score", 0) >= 12 or scored.get("source_score", 0) >= 30:
+            ranked.append(scored)
+    ranked.sort(key=lambda x: (x.get("score", 0), x.get("ts", 0)), reverse=True)
+    return _dedupe(ranked, cap)
 
 
 def _targeted_source_news(query: str, geo: str, category: str, target_group: str,
@@ -536,8 +561,48 @@ def _count(items: list, key: str, cap: int = None) -> dict:
     return dict(rows)
 
 
+def _display_gate_failures(items: list, cap: int = 8) -> list:
+    failures = []
+    for it in items or []:
+        norm = _normalize_item(it)
+        reasons = []
+        if _is_noise_item(norm):
+            reasons.append("noise_title")
+        if not _quality_gate(norm):
+            reasons.append("quality_gate")
+        if reasons:
+            failures.append({
+                "title": norm.get("title", "")[:140],
+                "source": norm.get("source", ""),
+                "category": norm.get("category", ""),
+                "reasons": reasons,
+            })
+        if len(failures) >= cap:
+            break
+    return failures
+
+
+def _sector_gate_failures(sector_news: dict, sectors: list, cap: int = 8) -> list:
+    by_key = {s.get("key"): s for s in sectors or []}
+    failures = []
+    for key, items in (sector_news or {}).items():
+        sector = by_key.get(key, {})
+        for it in items or []:
+            norm = _normalize_item(it)
+            if _is_noise_item(norm) or not _sector_relevant(norm, sector):
+                failures.append({
+                    "sector": key,
+                    "title": norm.get("title", "")[:140],
+                    "source": norm.get("source", ""),
+                    "category": norm.get("category", ""),
+                })
+            if len(failures) >= cap:
+                return failures
+    return failures
+
+
 def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
-                    constituents: list, selected: list) -> dict:
+                    constituents: list, selected: list, sectors: list = None) -> dict:
     now = _now()
     fresh_tickers = {
         tk for tk, items in ticker_news.items()
@@ -551,6 +616,8 @@ def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
             stale.append(c["ticker"])
     sector_counts = {k: len(v or []) for k, v in sector_news.items()}
     by_source = _count(wire, "source", 12)
+    wire_failures = _display_gate_failures(wire)
+    sector_failures = _sector_gate_failures(sector_news, sectors or [])
     audit = {
         "wire_count": len(wire),
         "geo": _count(wire, "geo"),
@@ -558,8 +625,12 @@ def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
         "query_type": _count(wire, "query_type"),
         "top_sources": by_source,
         "trusted_items": sum(1 for x in wire if x.get("source_tier")),
+        "wire_quality_failure_count": len(_display_gate_failures(wire, cap=999)),
+        "wire_quality_failure_samples": wire_failures,
         "sector_counts": sector_counts,
         "sectors_below_3": [k for k, v in sector_counts.items() if v < 3],
+        "sector_quality_failure_count": len(_sector_gate_failures(sector_news, sectors or [], cap=999)),
+        "sector_quality_failure_samples": sector_failures,
         "ticker_total": len(constituents),
         "tickers_with_news": len(fresh_tickers),
         "missing_tickers": missing[:60],
@@ -573,6 +644,7 @@ def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
     print("[news:audit] "
           f"wire={audit['wire_count']} · geo={audit['geo']} · category={audit['category']} · "
           f"sectors_below_3={audit['sectors_below_3']} · "
+          f"quality_failures={audit['wire_quality_failure_count']}/{audit['sector_quality_failure_count']} · "
           f"missing_tickers={audit['missing_ticker_count']}/{audit['ticker_total']}")
     return audit
 
@@ -737,6 +809,6 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     print(f"[news] wire={len(wire)} (≤7d · {len(id_w)} ID / {len(us_w)} US) · "
           f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)} · "
           f"ticker_queries={len(selected)}/{len(cons)}")
-    audit = _coverage_audit(wire, sector_news, ticker_news, cons, selected)
+    audit = _coverage_audit(wire, sector_news, ticker_news, cons, selected, sectors)
     return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news,
             "audit": audit}
