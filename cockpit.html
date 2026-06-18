@@ -306,14 +306,26 @@ footer .g{color:var(--green);}
 .sens .case{font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:.08em;}
 .sens .target{font-family:var(--mono);font-size:13px;color:var(--ink);margin-top:5px;}
 .sens .ass{font-family:var(--mono);font-size:7.5px;color:var(--ink3);line-height:1.45;margin-top:5px;}
-.pricebox{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;background:#0b0b0e;padding:11px;}
-.pricebox .ph{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--cyan);margin-bottom:9px;}
-.pricebar{position:relative;height:38px;margin:8px 2px 12px;}
-.pricebar .line{position:absolute;left:0;right:0;top:18px;height:4px;border-radius:99px;background:linear-gradient(90deg,rgba(239,68,68,.45),rgba(245,158,11,.5),rgba(45,212,191,.55));}
-.pmark{position:absolute;top:5px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;}
-.pmark i{width:9px;height:9px;border-radius:50%;border:1px solid #000;background:var(--ink);}
-.pmark.current i{background:var(--amber);}.pmark.target i{background:var(--cyan);}.pmark.peak i{background:var(--green);}.pmark.bottom i{background:var(--red);}
-.pmark span{font-family:var(--mono);font-size:7.5px;color:var(--ink2);white-space:nowrap;}
+.pricebox{margin:0 0 12px;border:1px solid var(--line);border-radius:9px;background:#15191f;padding:14px 16px 12px;}
+.pricebox .ph{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:2px;letter-spacing:0;}
+.pricebox .psub{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;}
+.targetchart{position:relative;height:150px;margin:12px 0 6px;}
+.targetrail{position:absolute;left:10px;right:10px;top:78px;height:8px;border-radius:99px;background:#737c85;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+.targetrail:before,.targetrail:after{content:"";position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translateY(-50%);background:#d9dde2;border:2px solid #fff;}
+.targetrail:before{left:-2px}.targetrail:after{right:-2px;background:#8f98a3;border-color:#8f98a3;}
+.tmark{position:absolute;left:var(--x);top:78px;transform:translate(-50%,-50%);z-index:2;}
+.tmark i{display:block;width:14px;height:14px;border-radius:50%;background:#15191f;border:3px solid var(--cyan);box-shadow:0 0 0 2px rgba(21,25,31,.95);}
+.tcall{position:absolute;left:var(--x);min-width:112px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:#15191f;color:var(--ink);font-variant-numeric:tabular-nums;box-shadow:0 12px 28px rgba(0,0,0,.28);z-index:3;}
+.tcall b{display:block;font-size:17px;line-height:1;font-weight:800;}
+.tcall span{display:block;font-size:13px;color:var(--ink2);line-height:1.15;margin-top:3px;}
+.tcall.avg{top:14px;border-color:#38bdf8;transform:translateX(var(--tx,-50%));}
+.tcall.avg:after{content:"";position:absolute;left:var(--pin,50%);bottom:-45px;width:1px;height:44px;background:#38bdf8;}
+.tcall.current{top:104px;border-color:#e5e7eb;transform:translateX(var(--tx,-8%));}
+.tcall.current:before{content:"";position:absolute;left:var(--pin,12px);top:-34px;width:1px;height:34px;background:#e5e7eb;}
+.axislabel{position:absolute;top:98px;font-variant-numeric:tabular-nums;}
+.axislabel b{display:block;font-size:15px;line-height:1.1;}
+.axislabel span{display:block;font-size:10px;color:var(--ink2);margin-top:2px;}
+.axislabel.low{left:0}.axislabel.high{right:0;text-align:right;}
 .pricegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;}
 .pricegrid .pg{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px;}
 .pricegrid .k{font-family:var(--mono);font-size:7px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;}
@@ -1660,14 +1672,21 @@ function priceRangeBox(c){
   if(points.length<2)return '';
   const nums=points.map(x=>Number(x[1])),lo=Math.min(...nums),hi=Math.max(...nums),span=(hi-lo)||1;
   const pos=n=>Math.max(0,Math.min(100,(Number(n)-lo)/span*100));
-  const mark=(cls,label,n)=>n==null?'':`<div class="pmark ${cls}" style="left:${pos(n).toFixed(1)}%"><i></i><span>${esc(label)}</span></div>`;
+  const safePos=n=>Math.max(3,Math.min(97,pos(n)));
+  const tx=n=>{const p=safePos(n);return p<16?'0%':p>84?'-100%':'-50%';};
+  const pin=n=>{const p=safePos(n);return p<16?'12px':p>84?'calc(100% - 12px)':'50%';};
   const est=!!risk.estimated_dates;
-  return `<div class="pricebox"><div class="ph">PRICE RANGE · 6M RISK MAP</div><div class="pricebar"><div class="line"></div>`+
-    mark('bottom','Bottom',risk.bottom_price)+mark('current','Current',current)+mark('target','Target',target)+mark('peak','Peak',risk.peak_price)+`</div>`+
-    `<div class="pricegrid"><div class="pg"><div class="k">Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
+  const targetLabel=target?'Model target':'Target pending';
+  return `<div class="pricebox"><div class="ph">Price Targets</div><div class="psub">6M range · current vs model target</div>`+
+    `<div class="targetchart"><div class="targetrail"></div>`+
+    `<div class="axislabel low"><b>${esc(valuationPrice(lo,cur))}</b><span>Low</span></div>`+
+    `<div class="axislabel high"><b>${esc(valuationPrice(hi,cur))}</b><span>High</span></div>`+
+    `${target?`<div class="tmark" style="--x:${safePos(target).toFixed(1)}%"><i></i></div><div class="tcall avg" style="--x:${safePos(target).toFixed(1)}%;--tx:${tx(target)};--pin:${pin(target)}"><b>${esc(valuationPrice(target,cur))}</b><span>${esc(targetLabel)}</span></div>`:''}`+
+    `<div class="tcall current" style="--x:${safePos(current).toFixed(1)}%;--tx:${tx(current)};--pin:${pin(current)}"><b>${esc(valuationPrice(current,cur))}</b><span>Current</span></div></div>`+
+    `<div class="pricegrid"><div class="pg"><div class="k">6M Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Current</div><div class="v">${esc(valuationPrice(current,cur))}</div><div class="d">latest quote</div></div>`+
-    `<div class="pg"><div class="k">Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${target?'base valuation':'n/a'}</div></div>`+
-    `<div class="pg"><div class="k">Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
+    `<div class="pg"><div class="k">Model Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${target?'base valuation':'n/a'}</div></div>`+
+    `<div class="pg"><div class="k">6M Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Max Drawdown</div><div class="v">${sign(risk.max_drawdown_pct||0)}</div><div class="d">${esc(tsDay(risk.max_drawdown_peak_ts,est))} → ${esc(tsDay(risk.max_drawdown_trough_ts,est))}</div></div></div></div>`;
 }
 function riskBenchmarkBox(sc){
