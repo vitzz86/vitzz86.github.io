@@ -299,6 +299,9 @@ footer .g{color:var(--green);}
 .valuationbox .price{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--ink);}
 .valuationbox .status{font-family:var(--mono);font-size:10px;color:var(--amber);}
 .valuationbox .vn{font-family:var(--mono);font-size:8.5px;color:var(--ink3);line-height:1.55;margin-top:6px;}
+.valuationbox .vn b{color:var(--ink2);font-weight:600;}
+.valuationbox .drivers{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;}
+.valuationbox .drivers span{font-family:var(--mono);font-size:7.5px;color:var(--cyan);border:1px solid rgba(45,212,191,.25);border-radius:999px;padding:3px 6px;background:rgba(45,212,191,.05);}
 .valuerange{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px;}
 .valuerange .vr{border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.025);padding:7px;}
 .valuerange .k{font-family:var(--mono);font-size:7.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;}
@@ -1700,6 +1703,7 @@ function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
   return `${currency?String(currency).toUpperCase()+' ':''}${Number(n).toLocaleString('en-US',{maximumFractionDigits:2})}`;
 }
+function valuationRatio(n){return n==null||!isFinite(Number(n))?'n/a':Number(n).toFixed(2)+'x';}
 function staleCurrencyMismatch(c,sc){
   return !!(c&&c.country==='ID'&&sc&&String(sc.currency||'').toUpperCase()==='USD'&&Number(sc.schema_version||0)<6);
 }
@@ -1792,12 +1796,18 @@ function valuationBox(sc,c=null){
   const col=v.upside_pct>=20?'var(--green)':v.upside_pct<=-20?'var(--red)':'var(--amber)';
   const comps=(v.components||[]).slice(0,3).map(c=>`${c.method} (${c.input})`).join(' · ');
   const cur=v.currency||sc.currency;
+  const peLine=(v.current_pe!=null||v.fair_pe!=null)
+    ?`<div class="valuerange"><div class="vr"><div class="k">Current P/E</div><div class="v">${esc(valuationRatio(v.current_pe))}</div></div><div class="vr"><div class="k">Dynamic Fair P/E</div><div class="v">${esc(valuationRatio(v.fair_pe))}</div></div><div class="vr"><div class="k">P/E Gap</div><div class="v" style="color:${COLP(v.pe_gap_pct||0)}">${v.pe_gap_pct==null?'n/a':sign(v.pe_gap_pct)}</div></div></div>`
+    :'';
+  const drivers=(v.fair_pe_drivers||[]).slice(0,5).map(d=>`<span>${esc(d)}</span>`).join('');
   const sensitivity=(v.sensitivity||[]).map(s=>`<div class="sens"><div class="case">${esc(s.case)}</div><div class="target">${esc(valuationPrice(s.target,cur))}</div><div class="status" style="color:${COLP(s.upside_pct||0)}">${sign(s.upside_pct||0)}</div><div class="ass">${esc(s.assumptions||'')}</div></div>`).join('');
   return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE · MODEL FROM PROVIDER INPUTS</div>`+
     `<div class="vp"><span class="price">${esc(valuationPrice(v.target_price||v.fair_value,cur))}</span><span class="status" style="color:${col}">${esc(v.signal||v.status||'Range')} · ${sign(v.upside_pct||0)} vs current</span></div>`+
+    `${peLine}`+
     `<div class="valuerange"><div class="vr"><div class="k">Current</div><div class="v">${esc(valuationPrice(v.current_price,cur))}</div></div><div class="vr"><div class="k">Buy Below</div><div class="v">${esc(valuationPrice(v.buy_below,cur))}</div></div><div class="vr"><div class="k">Fair Range</div><div class="v">${esc(valuationPrice(v.range_low,cur))} - ${esc(valuationPrice(v.range_high,cur))}</div></div><div class="vr"><div class="k">Accumulate Below</div><div class="v">${esc(valuationPrice(v.accumulate_below,cur))}</div></div><div class="vr"><div class="k">Trim Above</div><div class="v">${esc(valuationPrice(v.trim_above,cur))}</div></div><div class="vr"><div class="k">Status</div><div class="v">${esc(v.status||'n/a')}</div></div></div>`+
     `${sensitivity?`<div class="sensgrid">${sensitivity}</div>`:''}`+
-    `<div class="vn">Base methods: ${esc(comps||'n/a')}. ${esc(v.note||'')}</div></div>`;
+    `<div class="vn"><b>P/E anchor:</b> ${esc(v.primary_method||'EPS and multiple-based valuation')}. Base methods: ${esc(comps||'n/a')}. ${esc(v.note||'')}</div>`+
+    `${drivers?`<div class="drivers">${drivers}</div>`:''}</div>`;
 }
 function lensDetail(c,type){
   const sc=invScore(c);

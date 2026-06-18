@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 6
+SCORE_SCHEMA_VERSION = 7
 
 
 def _now_iso() -> str:
@@ -445,26 +445,183 @@ def _median(vals: list[float]) -> float | None:
     return vals[mid] if len(vals) % 2 else (vals[mid - 1] + vals[mid]) / 2
 
 
+def _clamp(v: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, v))
+
+
+def _valuation_hurdle(metrics: dict) -> float | None:
+    risk = metrics.get("_risk_stats") or {}
+    ctx = metrics.get("_risk_context") or {}
+    return (_num(risk.get("hurdle_rate")) or _num(ctx.get("hurdle_rate"))
+            or _num(risk.get("risk_free_rate")) or _num(ctx.get("risk_free_rate")))
+
+
+def _growth_anchor(metrics: dict) -> float | None:
+    vals = []
+    for key in ("revenue_growth_pct", "eps_growth_pct"):
+        v = _num(metrics.get(key))
+        if v is not None and -80 <= v <= 150:
+            vals.append(v)
+    return round(statistics.fmean(vals), 2) if vals else None
+
+
+def _fair_pe_model(metrics: dict) -> dict:
+    """Dynamic fair P/E based on real provider metrics and risk context."""
+    current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
+    roe = _num(metrics.get("roe_pct"))
+    debt = _num(metrics.get("debt_to_equity"))
+    fcf_yield = _num(metrics.get("fcf_yield_pct"))
+    beta = _num(metrics.get("beta"))
+    growth = _growth_anchor(metrics)
+    risk = metrics.get("_risk_stats") or {}
+    max_dd = _num(risk.get("max_drawdown_pct"))
+    hurdle = _valuation_hurdle(metrics)
+
+    # Higher rate environments deserve lower fair multiples. This becomes the
+    # neutral starting point before quality, growth, and risk adjustments.
+    base = _clamp(100 / ((hurdle or 5.0) + 2.0), 8.0, 18.0)
+    adjustments: list[float] = []
+    drivers: list[str] = []
+
+    if roe is not None:
+        adj = _clamp((roe - 12) / 15 * 4, -3.0, 5.0)
+        adjustments.append(adj)
+        drivers.append(f"ROE {roe:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
+
+    if growth is not None:
+        adj = _clamp((growth - 5) / 20 * 5, -3.0, 6.0)
+        adjustments.append(adj)
+        drivers.append(f"growth {growth:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
+
+    if fcf_yield is not None:
+        if fcf_yield >= 8:
+            adj = 2.0
+        elif fcf_yield >= 4:
+            adj = 1.0
+        elif fcf_yield <= 0:
+            adj = -3.0
+        elif fcf_yield < 2:
+            adj = -1.0
+        else:
+            adj = 0.0
+        adjustments.append(adj)
+        drivers.append(f"FCF yield {fcf_yield:.1f}% {'supports' if adj >= 0 else 'pressures'} fair P/E")
+
+    if debt is not None:
+        if debt <= 40:
+            adj = 1.0
+        elif debt <= 100:
+            adj = 0.0
+        else:
+            adj = -_clamp((debt - 100) / 150 * 4, 0.5, 5.0)
+        adjustments.append(adj)
+        drivers.append(f"Debt/Equity {debt:.1f}% {'supports' if adj >= 0 else 'cuts'} the multiple")
+
+    if beta is not None:
+        if beta <= 0.8:
+            adj = 1.0
+        elif beta <= 1.2:
+            adj = 0.0
+        else:
+            adj = -_clamp((beta - 1.2) / 0.8 * 3, 0.5, 3.5)
+        adjustments.append(adj)
+        drivers.append(f"beta {beta:.2f}x {'supports' if adj >= 0 else 'cuts'} risk-adjusted fair P/E")
+
+    if max_dd is not None:
+        dd = abs(max_dd)
+        if dd <= 20:
+            adj = 1.0
+        elif dd <= 35:
+            adj = 0.0
+        else:
+            adj = -_clamp((dd - 35) / 25 * 3, 0.5, 4.0)
+        adjustments.append(adj)
+        drivers.append(f"6M drawdown {dd:.1f}% {'supports' if adj >= 0 else 'cuts'} the risk multiple")
+
+    if forward_pe is not None and current_pe is not None:
+        if forward_pe < current_pe * 0.85 and (growth or 0) > 0:
+            adjustments.append(1.0)
+            drivers.append(f"forward P/E {forward_pe:.1f}x is below current {current_pe:.1f}x")
+        elif forward_pe > current_pe * 1.15:
+            adjustments.append(-1.0)
+            drivers.append(f"forward P/E {forward_pe:.1f}x is above current {current_pe:.1f}x")
+
+    fair_pe = base + sum(adjustments)
+    if current_pe is not None:
+        if (growth or 0) >= 20 and (roe or 0) >= 12:
+            premium_cap = 1.55
+        elif (growth or 0) >= 8 or (roe or 0) >= 18:
+            premium_cap = 1.40
+        else:
+            premium_cap = 1.25
+        upper = min(40.0, current_pe * premium_cap)
+        lower = max(5.0, current_pe * 0.55)
+        fair_pe = _clamp(fair_pe, lower, max(lower, upper))
+    else:
+        fair_pe = _clamp(fair_pe, 5.0, 35.0)
+
+    pe_gap = round((fair_pe / current_pe - 1) * 100, 2) if current_pe else None
+    return {
+        "fair_pe": round(fair_pe, 2),
+        "current_pe": round(current_pe, 2) if current_pe is not None else None,
+        "forward_pe": round(forward_pe, 2) if forward_pe is not None else None,
+        "pe_gap_pct": pe_gap,
+        "hurdle_rate": round(hurdle, 2) if hurdle is not None else None,
+        "drivers": drivers[:6],
+    }
+
+
+def _fair_pb(metrics: dict) -> float:
+    roe = _num(metrics.get("roe_pct"))
+    if roe is None:
+        return 1.5
+    return round(_clamp(1.0 + max(0.0, roe - 8) / 12, 0.8, 3.5), 2)
+
+
+def _required_fcf_yield(metrics: dict) -> float:
+    hurdle = _valuation_hurdle(metrics)
+    return round(_clamp((hurdle or 5.0) + 2.0, 6.0, 12.0), 2)
+
+
 def _valuation_components(metrics: dict, eps_multiple: float, pb_multiple: float,
                           required_fcf_yield: float) -> list[dict]:
     current = _num(metrics.get("current_price"))
     candidates = []
     eps = _num(metrics.get("eps"))
+    current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
     if eps and eps > 0:
         candidates.append({
-            "method": f"EPS × {eps_multiple:g} P/E",
+            "method": f"EPS × {eps_multiple:g} fair P/E",
             "price": eps * eps_multiple,
-            "input": f"EPS {round(eps, 2)}",
+            "input": (
+                f"EPS {round(eps, 2)}, current P/E "
+                f"{round(current_pe, 2) if current_pe is not None else 'n/a'}x"
+            ),
+        })
+
+    if current and current > 0 and forward_pe and forward_pe > 0:
+        forward_eps = current / forward_pe
+        candidates.append({
+            "method": f"Forward EPS × {eps_multiple:g} fair P/E",
+            "price": forward_eps * eps_multiple,
+            "input": f"implied forward EPS {round(forward_eps, 2)}, forward P/E {round(forward_pe, 2)}x",
         })
 
     book = _num(metrics.get("book_value"))
-    roe = _num(metrics.get("roe_pct"))
     if book and book > 0:
-        candidates.append({
-            "method": f"Book value × {pb_multiple:g} P/B",
-            "price": book * pb_multiple,
-            "input": f"Book value {round(book, 2)}, ROE {round(roe, 2) if roe is not None else 'n/a'}%",
-        })
+        roe = _num(metrics.get("roe_pct"))
+        current_pb = _sanitize_ratio(metrics.get("pb"), 80.0)
+        # P/B is useful for banks, asset-heavy firms, and ordinary balance
+        # sheets, but it badly understates asset-light compounders.
+        use_pb = current_pb is None or current_pb <= 8 or (roe is not None and roe <= 20)
+        if use_pb:
+            candidates.append({
+                "method": f"Book value × {pb_multiple:g} P/B",
+                "price": book * pb_multiple,
+                "input": f"Book value {round(book, 2)}, ROE {round(roe, 2) if roe is not None else 'n/a'}%",
+            })
 
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
     if current and current > 0 and fcf_yield and fcf_yield > 0 and required_fcf_yield > 0:
@@ -487,12 +644,14 @@ def _valuation(metrics: dict) -> dict | None:
     if not current or current <= 0:
         return None
 
-    roe = _num(metrics.get("roe_pct"))
-    base_pb = 2.5 if roe and roe >= 20 else 1.8 if roe and roe >= 12 else 1.2
+    pe_model = _fair_pe_model(metrics)
+    base_pe = pe_model["fair_pe"]
+    base_pb = _fair_pb(metrics)
+    base_fcf_req = _required_fcf_yield(metrics)
     scenarios = [
-        ("Bear", 12, max(0.8, base_pb - 0.5), 10),
-        ("Base", 15, base_pb, 8),
-        ("Bull", 20, base_pb + 0.7, 6),
+        ("Bear", round(max(5.0, base_pe * 0.8), 2), round(max(0.7, base_pb * 0.75), 2), round(min(15.0, base_fcf_req * 1.25), 2)),
+        ("Base", base_pe, base_pb, base_fcf_req),
+        ("Bull", round(min(45.0, base_pe * 1.25), 2), round(min(5.0, base_pb * 1.25), 2), round(max(4.0, base_fcf_req * 0.8), 2)),
     ]
     sensitivity = []
     base_components = []
@@ -504,7 +663,7 @@ def _valuation(metrics: dict) -> dict | None:
                 "case": name,
                 "target": round(target, 2),
                 "upside_pct": round((target / current - 1) * 100, 2),
-                "assumptions": f"P/E {pe_mult:g}x, P/B {pb_mult:g}x, required FCF yield {fcf_req:g}%",
+                "assumptions": f"fair P/E {pe_mult:g}x, P/B {pb_mult:g}x, required FCF yield {fcf_req:g}%",
                 "components": components,
             })
         if name == "Base":
@@ -547,9 +706,19 @@ def _valuation(metrics: dict) -> dict | None:
         "upside_pct": round(upside, 2),
         "current_price": round(current, 2),
         "currency": metrics.get("currency"),
+        "valuation_model": "dynamic_fair_pe",
+        "current_pe": pe_model.get("current_pe"),
+        "forward_pe": pe_model.get("forward_pe"),
+        "fair_pe": pe_model.get("fair_pe"),
+        "pe_gap_pct": pe_model.get("pe_gap_pct"),
+        "fair_pb": base_pb,
+        "required_fcf_yield_pct": base_fcf_req,
+        "hurdle_rate": pe_model.get("hurdle_rate"),
+        "primary_method": "Current P/E vs dynamic fair P/E, cross-checked by P/B and FCF yield",
+        "fair_pe_drivers": pe_model.get("drivers") or [],
         "components": base_components,
         "sensitivity": sensitivity,
-        "note": "Model estimate from Yahoo Finance metrics; not a broker target price or investment advice.",
+        "note": "Model estimate from Yahoo Finance metrics. Fair P/E is dynamic and adjusted by growth, ROE, cash flow, leverage, beta, drawdown, and local hurdle rate; not a broker target price or investment advice.",
     }
 
 
