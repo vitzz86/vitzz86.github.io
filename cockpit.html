@@ -117,10 +117,11 @@ a{color:inherit;text-decoration:none;}
 .trendtabs{display:flex;gap:6px;margin-bottom:8px;}
 .ttab{font-family:var(--mono);font-size:9px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:4px 8px;cursor:pointer;}
 .ttab.on{background:var(--ink);color:#000;border-color:var(--ink);font-weight:600;}
-.mv{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line2);font-family:var(--mono);}
+.mv{width:100%;display:flex;align-items:center;gap:8px;padding:7px 0;border:0;border-bottom:1px solid var(--line2);font-family:var(--mono);background:transparent;color:inherit;text-align:left;cursor:pointer;}
 .mv .mtk{font-size:11px;font-weight:600;width:46px;flex:0 0 auto;}
 .mv .mnm{font-size:9.5px;color:var(--ink3);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .mv .mcd{font-size:11px;font-variant-numeric:tabular-nums;}
+.mv .msc{font-size:9px;color:var(--cyan);border:1px solid rgba(45,212,191,.28);border-radius:5px;padding:2px 5px;}
 .mv:hover .mtk{color:var(--cyan);}
 
 /* index cards */
@@ -255,6 +256,10 @@ footer .g{color:var(--green);}
 .scorepill.neutral{border-color:rgba(245,158,11,.42);color:var(--amber);background:rgba(245,158,11,.08);}
 .scorepill.weak{border-color:rgba(239,68,68,.45);color:var(--red);background:rgba(239,68,68,.08);}
 .scorepill.insufficient{border-color:var(--line);color:var(--ink3);}
+.scoresummary{margin-top:12px;border:1px solid var(--line);border-radius:8px;background:#0b0b0e;padding:12px;display:flex;align-items:center;gap:13px;}
+.scoresummary .scorebig{font-size:32px;min-width:48px;}
+.scorebtn{margin-left:auto;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.35);border-radius:7px;color:var(--cyan);font-family:var(--mono);font-size:9px;padding:8px 10px;cursor:pointer;white-space:nowrap;}
+.scorebtn:hover{background:rgba(45,212,191,.14);border-color:var(--cyan);}
 .showall{font-family:var(--mono);font-size:9px;color:var(--cyan);cursor:pointer;margin-top:9px;display:inline-block;}
 .tierleg{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:8.5px;color:var(--ink3);margin-bottom:8px;}
 .tierleg span{display:inline-flex;align-items:center;}
@@ -276,6 +281,21 @@ footer .g{color:var(--green);}
 .metric .mv{font-family:var(--mono);font-size:12px;color:var(--ink);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .scorefoot{grid-column:1 / -1;font-family:var(--mono);font-size:8px;color:var(--ink3);border-top:1px solid var(--line2);padding-top:8px;}
 @media(max-width:720px){.scorebox{grid-template-columns:1fr}.metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.scoremodal{position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.74);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:5vh 16px;}
+.scoremodal.open{display:flex;}
+.scoremodalbox{width:min(760px,100%);background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 32px 90px rgba(0,0,0,.66);padding:18px;position:relative;}
+.scoremodalhead{display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:14px;}
+.scoremodalhead .name{font-size:20px;font-weight:700;}
+.scoremodalhead .meta{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:4px;}
+.scoremodalgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start;}
+.scoremodal .metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.radar.big svg{width:100%;min-height:330px;}
+.lensbox{margin-top:14px;border-left:2px solid var(--amber);background:rgba(245,158,11,.05);border-radius:0 8px 8px 0;padding:11px;}
+.lensbox .h{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--amber);margin-bottom:7px;}
+.lensbox ul{list-style:none;margin:0;padding:0;}
+.lensbox li{font-size:11px;line-height:1.55;color:#d0d0d8;margin:0 0 7px;padding-left:13px;position:relative;}
+.lensbox li:before{content:"▸";position:absolute;left:0;color:var(--amber);}
+@media(max-width:720px){.scoremodalgrid{grid-template-columns:1fr}.scoresummary{align-items:flex-start;flex-wrap:wrap}.scorebtn{margin-left:0;width:100%;}}
 .tkhd .tkpx{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;}
 .tkhd .exch{font-family:var(--mono);font-size:8px;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;}
 
@@ -490,8 +510,8 @@ body{padding-bottom:40px;}
     </div>
     <div class="sec">
       <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2></div>
-      <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="active">⇅ Active</span></div>
-      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span></div>
+      <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span></div>
+      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
       <div id="moveList"></div>
       <div class="lbl" style="margin:12px 0 6px;">Social buzz · StockTwits</div>
       <div class="trendtk" id="socialTk"></div>
@@ -588,6 +608,7 @@ body{padding-bottom:40px;}
       <div id="smConstPanel">
         <div class="cttl">Constituents · click a ticker for its chart &amp; news</div>
         <div class="wtabs" id="smFilter"></div>
+        <div class="wtabs" id="smSort"></div>
         <div id="smConsts"></div>
         <span class="showall" id="smShowAll"></span>
       </div>
@@ -595,6 +616,12 @@ body{padding-bottom:40px;}
     </div>
   </div>
   <div class="smnews"><div class="cttl">⊳ Sector news · every item links to source ↗</div><div id="smSecNews"></div></div>
+</div></div>
+
+<!-- score detail modal -->
+<div class="scoremodal" id="scoreModal"><div class="scoremodalbox">
+  <button class="smclose" id="scoreClose">&times;</button>
+  <div id="scoreDetail"></div>
 </div></div>
 
 <script>
@@ -833,11 +860,49 @@ function renderTrending(t){
   [...document.querySelectorAll('#moveType .ttab')].forEach(b=>b.onclick=()=>{moveType=b.dataset.t;[...document.querySelectorAll('#moveType .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
   [...document.querySelectorAll('#moveGeo .ttab')].forEach(b=>b.onclick=()=>{moveGeo=b.dataset.g;[...document.querySelectorAll('#moveGeo .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
 }
+function findTickerHit(ticker,country){
+  const tk=String(ticker||'').toUpperCase();
+  const want=country==='crypto'?'CR':String(country||'').toUpperCase();
+  for(let i=0;i<(DATA.sectors||[]).length;i++){
+    const s=DATA.sectors[i];
+    const c=(s.constituents||[]).find(x=>String(x.ticker||'').toUpperCase()===tk&&(!want||x.country===want));
+    if(c)return {i,s,c};
+  }
+  for(let i=0;i<(DATA.sectors||[]).length;i++){
+    const s=DATA.sectors[i];
+    const c=(s.constituents||[]).find(x=>String(x.ticker||'').toUpperCase()===tk);
+    if(c)return {i,s,c};
+  }
+  return null;
+}
+function openMoverTicker(ticker,country){
+  const hit=findTickerHit(ticker,country);
+  if(!hit)return;
+  openSector(hit.i);
+  openTicker(hit.s,hit.c.ticker);
+}
+function localMoverBucket(geo){
+  const want=geo==='crypto'?'CR':geo.toUpperCase();
+  const rows=[];
+  (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(c.country===want)rows.push(c);}));
+  const uniq=Array.from(rows.reduce((m,c)=>{const k=c.country+'|'+c.ticker,cur=m.get(k);if(!cur||(Number(invScore(c).score)||-1)>(Number(invScore(cur).score)||-1))m.set(k,c);return m;},new Map()).values());
+  const trim=arr=>arr.slice(0,8).map(c=>({ticker:c.ticker,name:c.name,country:c.country,delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,url:c.url}));
+  const byMove=uniq.slice().sort((a,b)=>qDelta(b)-qDelta(a));
+  const byScore=uniq.slice().filter(c=>invScore(c).score!=null).sort((a,b)=>Number(invScore(b).score)-Number(invScore(a).score));
+  return {gainers:trim(byMove),losers:trim(byMove.slice().reverse()),top_score:trim(byScore)};
+}
 function drawMovers(){
-  const list=((TREND[moveGeo]||{})[moveType])||[];
-  $('moveList').innerHTML=list.map(m=>`<a class="mv" href="${encodeURI(m.url||'#')}" target="_blank" rel="noopener">`+
+  const fallback=localMoverBucket(moveGeo);
+  const baked=(TREND&&TREND[moveGeo])||{};
+  const bucket={...fallback,...baked};
+  if(!bucket.top_score||!bucket.top_score.length)bucket.top_score=fallback.top_score;
+  const list=(bucket[moveType]||[]);
+  $('moveList').innerHTML=list.map(m=>`<button class="mv" data-tk="${esc(m.ticker)}" data-country="${esc(m.country||moveGeo)}" type="button">`+
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
-    `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></a>`).join('')||'<div style="color:var(--ink3);font-size:10px;padding:6px 0;">—</div>';
+    `${moveType==='top_score'?`<span class="msc">SC ${m.score==null?'--':Math.round(m.score)}</span>`:''}`+
+    `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></button>`).join('')||
+    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveType==='top_score'?'Score data pending next scored payload.':'—'}</div>`;
+  [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
 }
 
 /* ---- market open/closed (live, from baked session bounds; falls back to state) ---- */
@@ -1322,9 +1387,9 @@ function restoreVideo(){
 }
 
 /* ---- sector modal ---- */
-let smShowAll=false,smIdx=0,smGeo='ALL';
+let smShowAll=false,smIdx=0,smGeo='ALL',smSort='return';
 function openSector(i){
-  smIdx=i;smShowAll=false;smGeo='ALL';const s=DATA.sectors[i];if(!s)return;
+  smIdx=i;smShowAll=false;smGeo='ALL';smSort='return';const s=DATA.sectors[i];if(!s)return;
   $('smConstPanel').style.display='';$('smTicker').style.display='none';
   $('smIco').textContent=SECTOR_ICON[s.key]||s.icon;$('smName').textContent=s.name;
   const m=sectorMetrics(s);
@@ -1342,6 +1407,8 @@ function openSector(i){
   const geos=hasSplit?[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']]:[['ALL','All assets']];
   $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
   [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;setActive('#smFilter',t);renderConsts(s);});
+  $('smSort').innerHTML=[['return','Sort: Return %'],['score','Sort: Score']].map(([k,l])=>`<span class="wtab ${k===smSort?'on':''}" data-sort="${k}">${l}</span>`).join('');
+  [...document.querySelectorAll('#smSort .wtab')].forEach(t=>t.onclick=()=>{smSort=t.dataset.sort;smShowAll=false;setActive('#smSort',t);renderConsts(s);});
   renderConsts(s);
   const sn=prioritySort('news',((DATA.sector_news||{})[s.key]||[]).filter(goodNews));
   $('smSecNews').innerHTML=sn.length?sn.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No sector news this cycle.</div>';
@@ -1369,15 +1436,15 @@ function fmtMetric(m){
   }
   return Number(v).toFixed(fmt==='ratio'?2:2);
 }
-function radarSvg(sc){
+function radarSvg(sc,big=false){
   const axes=(sc.axes&&sc.axes.length?sc.axes:[]).slice(0,6);
   if(!axes.length)return '<div style="height:190px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Score unavailable</div>';
-  const w=220,h=200,cx=110,cy=98,r=62,levels=[.25,.5,.75,1];
+  const w=big?360:220,h=big?330:200,cx=w/2,cy=big?158:98,r=big?104:62,levels=[.25,.5,.75,1],fs=big?11:8;
   const pts=(scale=1)=>axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*scale,cy+Math.sin(ang)*r*scale];});
   const poly=arr=>arr.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
   const vals=axes.map((a,i)=>{const v=a.score==null?0:Number(a.score)/100;const ang=-Math.PI/2+i*2*Math.PI/axes.length;return [cx+Math.cos(ang)*r*v,cy+Math.sin(ang)*r*v];});
-  const labels=axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length,lr=r+28,x=cx+Math.cos(ang)*lr,y=cy+Math.sin(ang)*lr;
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${x<cx-8?'end':x>cx+8?'start':'middle'}" fill="${a.score==null?'#52525b':'#a1a1aa'}" font-size="8" font-family="ui-monospace,monospace">${esc(a.label)} ${a.score==null?'n/a':Math.round(a.score)}</text>`;}).join('');
+  const labels=axes.map((a,i)=>{const ang=-Math.PI/2+i*2*Math.PI/axes.length,lr=r+(big?48:28),x=cx+Math.cos(ang)*lr,y=cy+Math.sin(ang)*lr;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${x<cx-8?'end':x>cx+8?'start':'middle'}" fill="${a.score==null?'#52525b':'#a1a1aa'}" font-size="${fs}" font-family="ui-monospace,monospace">${esc(a.label)} ${a.score==null?'n/a':Math.round(a.score)}</text>`;}).join('');
   return `<svg viewBox="0 0 ${w} ${h}" aria-label="Investment score spider chart">`+
     levels.map(l=>`<polygon points="${poly(pts(l))}" fill="none" stroke="#27272f" stroke-width="1"/>`).join('')+
     pts(1).map(p=>`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="#202028" stroke-width="1"/>`).join('')+
@@ -1390,8 +1457,45 @@ function scorePanel(c){
   const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
   return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
+function scoreSummary(c){
+  const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
+  return `<div class="scoresummary"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
+    `<div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div>`+
+    `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${metrics.length} indicators</div></div>`+
+    `<button class="scorebtn" id="scoreDetailBtn" type="button">Open score detail</button></div>`;
+}
+function scoreMetricHTML(sc,limit=null){
+  const metrics=(sc.metrics||[]);const list=limit?metrics.slice(0,limit):metrics;
+  return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div></div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
+}
+function axisVal(sc,key){const a=(sc.axes||[]).find(x=>x.key===key||String(x.label||'').toLowerCase()===key);return a&&a.score!=null?Number(a.score):null;}
+function investorLens(c){
+  const sc=invScore(c);
+  if(Array.isArray(sc.investor_lens)&&sc.investor_lens.length)return sc.investor_lens.slice(0,5);
+  const value=axisVal(sc,'value'),quality=axisVal(sc,'quality'),growth=axisVal(sc,'growth'),momentum=axisVal(sc,'momentum'),risk=axisVal(sc,'risk');
+  const safe=v=>v==null?'not enough data':Math.round(v)+'/100';
+  const lines=[];
+  lines.push(`Buffett/Munger lens: quality is ${safe(quality)} and value is ${safe(value)}, so the first check is whether durable returns justify the valuation instead of chasing price action.`);
+  lines.push(`Ackman lens: growth is ${safe(growth)} and risk is ${safe(risk)}, favoring names where the business can compound without heavy balance-sheet or volatility drag.`);
+  lines.push(`Dalio lens: momentum is ${safe(momentum)} while risk is ${safe(risk)}, useful for judging whether the asset is riding a supportive cycle or needs smaller position sizing.`);
+  if((sc.metrics||[]).length)lines.push(`Model discipline: only real provider metrics are shown; missing P/E, ROE, debt, growth, liquidity, or return fields are left blank and reduce coverage.`);
+  return lines;
+}
+function openScoreModal(c,s){
+  const sc=invScore(c),n=sc.score;
+  $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
+    `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
+    `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
+    `<div class="scoremodalgrid"><div class="radar big">${radarSvg(sc,true)}</div><div class="metricsgrid">${scoreMetricHTML(sc)}</div></div>`+
+    `<div class="lensbox"><div class="h">INVESTOR LENS · SCORE MODEL</div><ul>${investorLens(c).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`+
+    `<div class="scorefoot" style="margin-top:12px;">Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
+  $('scoreModal').classList.add('open');
+}
 function renderConsts(s){
-  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice().sort((a,b)=>qDelta(b)-qDelta(a));
+  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice();
+  list.sort((a,b)=>smSort==='score'
+    ?((Number(invScore(b).score)||-1)-(Number(invScore(a).score)||-1)||qDelta(b)-qDelta(a))
+    :qDelta(b)-qDelta(a));
   const full=list;
   if(!smShowAll)list=list.slice(0,6);
   $('smConsts').innerHTML=list.map((c,i)=>{
@@ -1421,17 +1525,23 @@ function openTicker(s,tk){
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
-    scorePanel(c)+
+    scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
   [...document.querySelectorAll('#smTicker .tab')].forEach(tab=>tab.onclick=()=>{tkTF=tab.dataset.tf;openTicker(s,tk);});
+  const sb=$('scoreDetailBtn');if(sb)sb.onclick=()=>openScoreModal(c,s);
   $('tkBack').onclick=()=>{t.style.display='none';$('smConstPanel').style.display='';};
 }
 $('smShowAll').onclick=()=>{smShowAll=!smShowAll;renderConsts(DATA.sectors[smIdx]);};
 $('smClose').onclick=()=>$('smodal').classList.remove('open');
 $('smodal').addEventListener('click',e=>{if(e.target===$('smodal'))$('smodal').classList.remove('open');});
-addEventListener('keydown',e=>{if(e.key==='Escape')$('smodal').classList.remove('open');});
+$('scoreClose').onclick=()=>$('scoreModal').classList.remove('open');
+$('scoreModal').addEventListener('click',e=>{if(e.target===$('scoreModal'))$('scoreModal').classList.remove('open');});
+addEventListener('keydown',e=>{if(e.key==='Escape'){
+  if($('scoreModal').classList.contains('open'))$('scoreModal').classList.remove('open');
+  else $('smodal').classList.remove('open');
+}});
 
 /* ---- live price overlay: CoinGecko (crypto, real-time, keyless) + Finnhub (US) ---- */
 function updateIdxCard(symbol,price,dp){
