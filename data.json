@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-06-17T23:32:27Z",
+  "timestamp": "2026-06-18T00:02:34Z",
   "opening": {
     "greeting": "Good morning, Vito. Let's process the boards.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
     "weather": {
-      "bsd": "Clear sky, 25°C.",
+      "bsd": "Clear sky, 26°C.",
       "jakarta": "Clear sky, 26°C.",
       "insight": "Clear operating window. Good day to front-load external meetings and site movement."
     },
@@ -469,11 +469,10 @@
       "value": 69902.25,
       "delta_pct": 0.72,
       "prev_close": 69404.5,
-      "state": "closed",
+      "state": "open",
       "mkt_start": 1781740800,
       "mkt_end": 1781764200,
       "spark": [
-        49512.2812,
         49001.5,
         49507.2109,
         50402.3906,
@@ -593,21 +592,7 @@
         69317.5,
         69404.5
       ],
-      "intraday": [
-        69391.1875,
-        69591.0234,
-        69793.8203,
-        69860.5078,
-        69932.0391,
-        69926.0781,
-        70111.1797,
-        69901.6016,
-        69837.0,
-        69922.4219,
-        69942.5625,
-        70002.3516,
-        69902.25
-      ],
+      "intraday": [],
       "url": "https://finance.yahoo.com/quote/^N225"
     },
     {
@@ -768,9 +753,9 @@
       "symbol": "BTC-USD",
       "label": "Bitcoin / USD",
       "kind": "crypto",
-      "value": 64441.0,
-      "delta_pct": -1.86,
-      "prev_close": 65665.0,
+      "value": 64430.0,
+      "delta_pct": -1.79,
+      "prev_close": 65606.89,
       "state": "open",
       "mkt_start": null,
       "mkt_end": null,
@@ -904,57 +889,10 @@
         65710.3984,
         66289.5,
         65600.6406,
-        64451.4102
+        64461.0586
       ],
       "intraday": [
-        65664.2891,
-        65644.6719,
-        65527.9883,
-        65871.0234,
-        66034.5938,
-        65847.9922,
-        65723.5469,
-        65785.2266,
-        65834.0234,
-        65831.7266,
-        65792.7109,
-        65768.1016,
-        65593.6406,
-        65554.3828,
-        65488.2695,
-        65472.2812,
-        65257.6797,
-        64861.9688,
-        64985.0312,
-        64849.9219,
-        64879.8906,
-        64739.5117,
-        64640.4609,
-        64749.5195,
-        64634.6602,
-        64983.3789,
-        64851.8516,
-        65225.0,
-        65195.1094,
-        65040.8984,
-        65280.4688,
-        65696.9609,
-        66226.1328,
-        65802.5703,
-        65915.3984,
-        66030.0078,
-        65349.1211,
-        65457.9688,
-        64414.8906,
-        64256.8281,
-        64300.1797,
-        64370.6602,
-        64204.7305,
-        64196.9805,
-        64302.0117,
-        64234.0,
-        64437.6719,
-        64451.4102
+        64461.0586
       ],
       "url": "https://www.coingecko.com/en/coins/bitcoin"
     },
@@ -962,8 +900,8 @@
       "symbol": "GC=F",
       "label": "Gold Spot",
       "kind": "commodity",
-      "value": 4298.0,
-      "delta_pct": -1.9,
+      "value": 4292.0,
+      "delta_pct": -2.04,
       "prev_close": 4381.4,
       "state": "open",
       "mkt_start": 1781668800,
@@ -1093,7 +1031,7 @@
         4215.0,
         4328.0,
         4330.8999,
-        4298.0
+        4292.0
       ],
       "intraday": [
         4344.1001,
@@ -1133,7 +1071,8 @@
         4286.0,
         4285.7998,
         4299.0,
-        4298.0
+        4292.0,
+        4292.0
       ],
       "url": "https://finance.yahoo.com/quote/GC=F"
     },
@@ -1141,8 +1080,8 @@
       "symbol": "BZ=F",
       "label": "Brent Crude",
       "kind": "commodity",
-      "value": 78.85,
-      "delta_pct": -0.88,
+      "value": 78.94,
+      "delta_pct": -0.77,
       "prev_close": 79.55,
       "state": "open",
       "mkt_start": 1781668800,
@@ -1272,7 +1211,7 @@
         87.33,
         83.17,
         78.96,
-        78.85
+        78.94
       ],
       "intraday": [
         78.71,
@@ -1311,8 +1250,9 @@
         78.69,
         79.17,
         79.02,
-        78.9,
-        78.85
+        78.91,
+        78.94,
+        78.94
       ],
       "url": "https://finance.yahoo.com/quote/BZ=F"
     },
@@ -1320,8 +1260,8 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 75.2,
-      "delta_pct": -1.07,
+      "value": 75.34,
+      "delta_pct": -0.88,
       "prev_close": 76.01,
       "state": "open",
       "mkt_start": 1781668800,
@@ -1451,7 +1391,7 @@
         84.88,
         80.75,
         76.05,
-        75.2
+        75.34
       ],
       "intraday": [
         75.08,
@@ -1490,8 +1430,9 @@
         75.01,
         75.53,
         75.38,
-        75.23,
-        75.2
+        75.26,
+        75.33,
+        75.34
       ],
       "url": "https://finance.yahoo.com/quote/CL=F"
     },
@@ -1919,17 +1860,21 @@
         17921.0,
         17772.0,
         17716.0,
-        17730.0
+        17730.0,
+        17748.0
       ],
-      "intraday": [],
+      "intraday": [
+        17748.0,
+        17748.0
+      ],
       "url": "https://finance.yahoo.com/quote/USDIDR=X"
     },
     {
       "symbol": "DX-Y.NYB",
       "label": "US Dollar Index",
       "kind": "fx",
-      "value": 100.39,
-      "delta_pct": 0.3,
+      "value": 100.35,
+      "delta_pct": 0.26,
       "prev_close": 100.09,
       "state": "open",
       "mkt_start": 1781668800,
@@ -2059,7 +2004,7 @@
         99.75,
         99.63,
         99.54,
-        100.388
+        100.349
       ],
       "intraday": [
         99.519,
@@ -2099,7 +2044,8 @@
         100.362,
         100.373,
         100.388,
-        100.388
+        100.349,
+        100.349
       ],
       "url": "https://finance.yahoo.com/quote/DX-Y.NYB"
     },
@@ -2433,27 +2379,27 @@
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI fell 0.55% to 6220, underperforming Nikkei's 0.72% gain.",
-      "Nasdaq dropped 1.34% and S&P 500 fell 1.21%, pressuring EM risk."
+      "JCI fell 0.55% to 6220, pressured by US selloff.",
+      "Nasdaq dropped 1.34% as hawkish Fed pivot spooks risk appetite."
     ],
     "economic": [
-      "BI faces pressure as US 10Y yield spiked to 4.46% and VIX surged 12.4%.",
-      "Brent crude fell 0.88% and coal proxy dropped 3.53%, hurting commodity exporters."
+      "BI faces pressure as US 10Y yield rises to 4.46%.",
+      "USD/IDR steady at 17748; commodity proxies coal and nickel fall."
     ],
     "tech_ai": [
-      "AI-native cloud startup Railway raised $100M, boosting local data center plays.",
-      "Chi-Hua Chien warns real AI winners won't sell AI, shifting venture focus."
+      "AI-native cloud startup Railway raises $100M to challenge AWS.",
+      "Google redesigns search box for first time in 25 years, signaling AI shift."
     ],
     "political": [
-      "Government policy reassurance aims to stabilize market confidence amid global headwinds.",
-      "Japan's banks weighing arms financing signals regional geopolitical shift."
+      "Senate bill bars defense contractors from stock buybacks.",
+      "Indonesia strengthens market confidence with strategic economic policies."
     ]
   },
-  "arbiter_brief": "Overnight Wall Street sold off on hawkish Warsh-era Fed signals, spiking US yields and VIX, which directly pressures JCI via foreign outflow and fragile rupiah. Commodity proxies fell sharply, dragging energy and mining weights. While AI-native cloud funding supports local data centers, the broader Nasdaq rout caps risk appetite for digital listings. The government's reassurance statement may cushion, but macro tide is against JCI near-term.",
+  "arbiter_brief": "Overnight Wall Street weakness, driven by a hawkish Fed pivot under Warsh and a VIX spike to 18.44, pressures JCI further below 6,300. The US 10Y yield rising to 4.46% tightens global liquidity, strengthening the USD/IDR at 17,748 and raising the cost of capital for Indonesian infrastructure and tech projects. Foreign institutional flow will remain net sellers as risk-off dominates; the coal and nickel proxy declines confirm commodity-linked selling. The AI-driven selloff in US tech, with Snap and Apple facing margin pressure, will stall local tech venture sentiment—investors will demand higher risk premiums. However, Japan’s bank pivot toward defense financing and Indonesia’s policy reassurance offer selective resilience. Expect JCI to test 6,150 support, with foreign outflow accelerating unless the Rupiah stabilizes below 17,800.",
   "executive_brief": [
-    "Defensive positioning: reduce exposure to rate-sensitive banks and big caps.",
-    "Monitor foreign outflow today as US yields tighten EM liquidity.",
-    "Watch commodity proxy weakness; coal and nickel drag on energy and mining."
+    "Prepare for JCI testing 6150 support as foreign selling accelerates.",
+    "Monitor Rupiah stability below 17800 to stem capital outflow.",
+    "Demand higher risk premiums on local tech ventures amid US AI selloff."
   ],
   "sectors": [
     {
@@ -2582,12 +2528,12 @@
         85.86,
         84.42
       ],
-      "ai": "Indonesia tech underperforms US peers today but MCAS (+5.6%) and TLKM (+1%) signal selective local demand for digital infrastructure and telecom. The sector's -1.72% aggregate masks divergence: avoid US-exposed names (NVDA -1.3%, AAPL -1.1%) and overweight domestic plays like MTDL (+0.9%) and GOTO (flat) on structural e-commerce and data center growth.",
+      "ai": "Indonesia tech underperformed US peers, but MCAS (+5.58%) and TLKM (+1.02%) signal selective local demand. Focus on domestic digital infrastructure plays (MCAS, MTDL) as they benefit from rising data consumption and government push for connectivity, while global chip names (NVDA, AMD) face headwinds from US rate sensitivity.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's digital economy expansion, driven by rising internet penetration and government push for digitalization, creates durable demand for local tech infrastructure and e-commerce platforms.",
-        "Domestic telecom and data center operators benefit from regulatory protection and capex cycles, insulating them from global semiconductor volatility.",
-        "US-listed tech giants face headwinds from rate sensitivity and valuation compression, making Indonesian tech a relative safe haven for regional exposure."
+        "Indonesia's digital economy growth, driven by rising internet penetration and e-commerce adoption, creates durable demand for local tech infrastructure and service providers like MCAS and MTDL.",
+        "Government's regulatory push for local data sovereignty and 5G rollout supports telecom tower and data center operators (TLKM, DCII) as structural winners.",
+        "Global semiconductor cycle volatility, tied to US monetary policy and export controls, will continue to pressure ID-listed US tech proxies (NVDA, AAPL), favoring domestic-exposed names."
       ],
       "constituents": [
         {
@@ -8905,12 +8851,12 @@
         114.14,
         112.74
       ],
-      "ai": "Indonesia's mining & energy sector underperformed US peers, but select nickel/coal names (TINS, ANTM, ADRO) held firm. Watch for policy catalysts on downstream processing and coal DMO adjustments. Favor ANTM on nickel integration; avoid MDKA on gold cost pressures.",
+      "ai": "Indonesia's mining & energy sector shows mixed signals: domestic names like TINS and ANTM gain on nickel and tin demand optimism, while US-listed peers lag. Watch for policy catalysts from the new government's resource nationalism push and potential export bans on critical minerals. Focus on nickel and tin stocks for near-term upside, but hedge with coal exposure given global energy transition risks.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's downstream nickel processing mandate continues to drive structural demand for integrated miners like ANTM, insulating them from global price volatility.",
-        "Coal sector remains supported by domestic market obligations (DMO) and stable thermal coal demand from China and India, benefiting ADRO.",
-        "Rising operational costs and regulatory uncertainty in gold mining weigh on MDKA's margins, making it a relative underperformer in the sector."
+        "Indonesia's downstreaming policy for nickel and tin continues to drive value-add processing investments, creating durable demand for domestic miners like ANTM and TINS.",
+        "Global energy transition uncertainty keeps coal prices volatile, benefiting low-cost producers like ADRO but pressuring US shale names like COP and DVN.",
+        "Rising geopolitical tensions and supply chain diversification favor Indonesia's critical mineral exports, with MDKA and SMMT positioned for long-term growth in copper and gold."
       ],
       "constituents": [
         {
@@ -12072,12 +12018,12 @@
         102.65,
         101.17
       ],
-      "ai": "Indonesia's renewables sector shows a clear divergence: domestic names like ESSA and BATR rally on local policy catalysts, while US-listed peers slide on rate sensitivity. Watch for further rotation into domestic plays as Indonesia's energy transition accelerates with new regulatory support.",
+      "ai": "Indonesia's renewables sector shows a mixed signal with local resilience (ESSA +8.13%, BATR +6.98%) versus US weakness, suggesting a tactical watch. Focus on domestic catalysts: ESSA's surge likely reflects near-term policy optimism, while PGEO's steady gain underscores geothermal's structural demand. Avoid US-exposed names like BEP and NEE until global rate headwinds ease.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's new renewable energy law mandates higher local content requirements, driving demand for domestic EPC and equipment suppliers like ESSA and BATR.",
-        "Geothermal continues to be the most scalable baseload renewable in Indonesia, with PGEO's expansion plans benefiting from government fast-tracking of permits.",
-        "US rate sensitivity remains a headwind for global clean-tech names, but Indonesia's insulated capital markets offer a relative safe haven for climate-tech investors."
+        "Indonesia's renewable energy law revision is a durable driver, as it mandates higher domestic content for solar and wind projects, boosting local manufacturers like ESSA and BATR.",
+        "Geothermal's baseload reliability and government subsidies create a structural advantage for PGEO, insulated from intermittent solar/wind volatility in Southeast Asia.",
+        "US climate-tech names face persistent headwinds from elevated interest rates and policy uncertainty, making Indonesian renewables a relative safe haven for capital allocation."
       ],
       "constituents": [
         {
@@ -24701,12 +24647,12 @@
         98.96,
         96.14
       ],
-      "ai": "Sell-side pressure on Indonesian logistics is overdone; buy CMPP and BPTR on relative strength as domestic e-commerce and commodity export volumes structurally underpin demand, while US rate sensitivity creates a tactical entry.",
+      "ai": "Indonesia logistics down 2.25% aggregate, driven by US weakness (-4.05%) despite ID resilience (-0.45%). CMPP and BPTR bucked the trend, signaling selective demand for cold-chain and port operators. Avoid broad exposure; focus on niche players with domestic moats.",
       "volume": "20 tickers",
       "themes": [
-        "E-commerce fulfillment expansion in Java and Sumatra drives recurring demand for last-mile and cold-chain logistics, insulating domestic players from global trade headwinds.",
-        "Commodity export logistics (coal, palm oil, nickel) remain a durable volume driver for port and shipping operators despite global rate volatility.",
-        "Infrastructure bottlenecks in eastern Indonesia create pricing power for established logistics firms with multimodal networks, supporting margin resilience."
+        "Indonesia's logistics sector benefits from rising e-commerce penetration and last-mile delivery demand, insulating it from global trade volatility.",
+        "Government infrastructure spending on ports and toll roads creates structural tailwinds for domestic logistics firms like CMPP and BPTR.",
+        "US recession fears weigh on export-linked logistics, but Indonesia's domestic consumption-driven economy provides a buffer for local operators."
       ],
       "constituents": [
         {
@@ -27842,12 +27788,12 @@
         79.3,
         78.55
       ],
-      "ai": "Indonesia's entertainment and consumer services sector shows relative resilience versus US peers, with ACES, GMFI, and MAPI leading gains. Watch for sustained domestic consumption momentum and digital adoption tailwinds, but remain cautious on global rate sensitivity. Favor names with strong local brand equity and recurring revenue models.",
+      "ai": "Indonesia's entertainment and consumer services sector shows resilience with a slight local gain versus US weakness, led by ACES (+2.19%) and GMFI (+1.89%). Watch for sustained domestic demand as global headwinds fade; MAPI and JIHD's positive moves signal selective strength. Maintain watch for entry points on dips.",
       "volume": "20 tickers",
       "themes": [
-        "Rising middle-class disposable income in Indonesia continues to drive premiumization in retail and entertainment, benefiting operators like ACES and MAPI with higher-margin product mixes.",
-        "Digital platform expansion and e-commerce integration are creating durable competitive moats for companies like GMFI, as offline-to-online convergence deepens consumer stickiness.",
-        "Regulatory stability and infrastructure improvements in Java and Sumatra are enabling scalable growth for consumer services firms, reducing operational risk and supporting margin expansion."
+        "Rising middle-class disposable income in Indonesia continues to drive domestic consumption for entertainment and retail services, insulating the sector from global volatility.",
+        "Digitalization and e-commerce penetration growth are structurally boosting consumer services platforms, with companies like ACES and MAPI benefiting from omnichannel expansion.",
+        "Government infrastructure spending and tourism recovery in Indonesia are creating durable tailwinds for media and leisure companies, supporting long-term sector fundamentals."
       ],
       "constituents": [
         {
@@ -31009,12 +30955,12 @@
         95.25,
         93.05
       ],
-      "ai": "Sell property developers on weak demand and rising rates; pivot to data-center REITs like DMAS for structural growth from cloud and AI capex.",
+      "ai": "Indonesia property underperformed US peers today, but CTRA and SMRA bucked the trend, signaling selective resilience. Capitalize on CTRA's affordable-housing momentum and SMRA's mall-recovery play; avoid laggards like BSDE and APLN amid rate-hike headwinds.",
       "volume": "20 tickers",
       "themes": [
-        "Indonesia's property sector faces margin compression from elevated mortgage rates and softening middle-class purchasing power, favoring only niche industrial/logistics plays.",
-        "Data-center real estate is a durable growth driver, with DMAS leading on hyperscaler demand from Google and Alibaba, decoupled from residential cycles.",
-        "Foreign capital rotation out of US REITs (INVH -1.76%) creates relative value in Jakarta-listed developers, but only for short-term tactical trades, not core holdings."
+        "Affordable housing demand remains structurally supported by Indonesia's young demographics and government subsidy programs, insulating CTRA from macro shocks.",
+        "Mall operators like SMRA benefit from post-pandemic foot traffic recovery and limited new supply in tier-1 cities, driving rental reversion.",
+        "High interest rates and weak consumer sentiment continue to pressure highly leveraged developers (BSDE, APLN), delaying project launches and compressing margins."
       ],
       "constituents": [
         {
@@ -34053,7 +33999,7 @@
       "name": "Crypto & Digital Assets",
       "icon": "₿",
       "theme": "BTC dominance · L1 rotation",
-      "change": -1.79,
+      "change": -1.74,
       "idChange": null,
       "usChange": null,
       "signal": "ALERT",
@@ -34187,14 +34133,14 @@
         84.36,
         85.58,
         84.52,
-        83.16
+        83.19
       ],
-      "ai": "Sell into any bounce: broad altcoin weakness led by ETH and SOL signals risk-off rotation from crypto. MATIC's outlier gain is noise; front-run further downside by shorting BTC and ETH, as regulatory overhang and fading ETF momentum crush speculative demand.",
+      "ai": "Sell into any bounce: BTC and ETH are breaking down on volume, dragging the entire alt stack lower. Rotate to cash or short MATIC as its relative strength is a dead-cat bounce. The ALERT signal demands immediate risk reduction—do not add exposure until BTC reclaims its 50-day moving average.",
       "volume": "10 tickers",
       "themes": [
-        "Regulatory crackdowns globally are structurally compressing crypto valuations, with SEC enforcement actions and stablecoin legislation creating persistent overhang on altcoins and DeFi tokens.",
-        "Institutional adoption via Bitcoin ETFs has peaked as a marginal catalyst, with net outflows and declining trading volumes signaling fading demand from traditional finance.",
-        "Macro headwinds from higher-for-longer interest rates are draining liquidity from risk assets, making crypto's high-beta nature a structural drag versus equities and bonds."
+        "Regulatory overhang in the US and EU is structurally compressing crypto risk appetite, as enforcement actions and stablecoin rules force institutional capital to the sidelines.",
+        "The ETH/BTC ratio is in a persistent downtrend, signaling a durable rotation away from smart-contract platforms toward Bitcoin as the sole store-of-value narrative strengthens.",
+        "Liquidity fragmentation across L2s and chains is creating a structural headwind for altcoins, as capital efficiency declines and user attention scatters, suppressing sustainable price appreciation."
       ],
       "constituents": [
         {
@@ -34204,7 +34150,7 @@
           "country": "CR",
           "mktcap": "$5B",
           "tier": "small",
-          "delta_pct": 0.48,
+          "delta_pct": 0.72,
           "spark": [
             0.0957,
             0.0944,
@@ -34343,12 +34289,6 @@
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            0.0764,
-            0.0764,
-            0.0764,
-            0.0764,
-            0.0762,
-            0.0762,
             0.0763,
             0.0763,
             0.0764,
@@ -34630,6 +34570,13 @@
             0.0767,
             0.0767,
             0.0768,
+            0.0768,
+            0.0768,
+            0.0768,
+            0.0768,
+            0.0768,
+            0.0768,
+            0.0768,
             0.0768
           ],
           "url": "https://www.coingecko.com/en/coins/polygon"
@@ -34641,7 +34588,7 @@
           "country": "CR",
           "mktcap": "$95B",
           "tier": "large",
-          "delta_pct": -0.73,
+          "delta_pct": -0.56,
           "spark": [
             640.2537,
             635.9545,
@@ -34772,62 +34719,16 @@
             616.0859,
             617.4219,
             604.3461,
-            600.82
+            601.31
           ],
-          "value": 600.78,
-          "turnover": 772071349688.0,
+          "value": 601.07,
+          "turnover": 770295235309.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            605.11,
-            604.45,
-            603.23,
-            606.87,
-            607.5,
-            604.84,
-            603.83,
-            604.21,
-            606.07,
-            607.1,
-            607.13,
-            607.35,
-            605.42,
-            606.47,
-            605.66,
-            606.0,
-            602.31,
-            601.52,
-            601.81,
-            600.7,
-            602.19,
-            601.4,
-            603.11,
-            603.82,
-            605.33,
-            608.97,
-            609.07,
-            608.1,
-            603.23,
-            601.38,
-            602.89,
-            604.81,
-            608.28,
-            605.19,
-            606.6,
-            607.95,
-            604.2,
-            607.33,
-            600.72,
-            598.2,
-            597.96,
-            600.43,
-            600.56,
-            598.96,
-            599.61,
-            599.09,
-            601.03,
-            600.82
+            601.31,
+            601.31
           ],
           "url": "https://www.coingecko.com/en/coins/binancecoin"
         },
@@ -34838,7 +34739,7 @@
           "country": "CR",
           "mktcap": "$28B",
           "tier": "mid",
-          "delta_pct": -1.35,
+          "delta_pct": -1.49,
           "spark": [
             0.0967,
             0.096,
@@ -34969,63 +34870,16 @@
             0.0888,
             0.0881,
             0.0871,
-            0.086
+            0.0859
           ],
-          "value": 0.086,
-          "turnover": 50243446.0,
+          "value": 0.0858,
+          "turnover": 50088452.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            0.0871,
-            0.0873,
-            0.0871,
-            0.0877,
-            0.088,
-            0.0877,
-            0.0874,
-            0.0874,
-            0.0875,
-            0.0874,
-            0.0875,
-            0.0873,
-            0.0871,
-            0.0869,
-            0.0867,
-            0.0868,
-            0.0864,
             0.0859,
-            0.086,
-            0.086,
-            0.086,
-            0.0859,
-            0.0857,
-            0.0858,
-            0.0856,
-            0.0862,
-            0.086,
-            0.0862,
-            0.0863,
-            0.086,
-            0.0865,
-            0.0872,
-            0.0875,
-            0.087,
-            0.0872,
-            0.0874,
-            0.0866,
-            0.087,
-            0.0855,
-            0.0854,
-            0.0857,
-            0.0861,
-            0.0858,
-            0.0855,
-            0.0857,
-            0.0858,
-            0.086,
-            0.086,
-            0.086
+            0.0859
           ],
           "url": "https://www.coingecko.com/en/coins/dogecoin"
         },
@@ -35036,7 +34890,7 @@
           "country": "CR",
           "mktcap": "$15B",
           "tier": "mid",
-          "delta_pct": -1.75,
+          "delta_pct": -1.71,
           "spark": [
             9.0895,
             9.048,
@@ -35170,58 +35024,12 @@
             6.76
           ],
           "value": 6.76,
-          "turnover": 2215577562.0,
+          "turnover": 2221357848.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            6.9,
-            6.89,
-            6.88,
-            6.96,
-            7.01,
-            6.98,
-            6.94,
-            6.94,
-            6.95,
-            6.95,
-            6.93,
-            6.93,
-            6.92,
-            6.89,
-            6.9,
-            6.89,
-            6.86,
-            6.81,
-            6.83,
-            6.83,
-            6.83,
-            6.81,
-            6.8,
-            6.8,
-            6.78,
-            6.84,
-            6.82,
-            6.83,
-            6.85,
-            6.83,
-            6.88,
-            6.96,
-            7.0,
-            6.91,
-            6.92,
-            6.95,
-            6.84,
-            6.9,
             6.77,
-            6.73,
-            6.75,
-            6.78,
-            6.75,
-            6.73,
-            6.74,
-            6.74,
-            6.76,
             6.76
           ],
           "url": "https://www.coingecko.com/en/coins/avalanche-2"
@@ -35233,7 +35041,7 @@
           "country": "CR",
           "mktcap": "$1.3T",
           "tier": "mega",
-          "delta_pct": -1.86,
+          "delta_pct": -1.77,
           "spark": [
             70264.7266,
             70120.7812,
@@ -35364,63 +35172,16 @@
             65710.3984,
             66289.5,
             65600.6406,
-            64460.6602
+            64471.3516
           ],
-          "value": 64441.0,
-          "turnover": 2009683061884355.0,
+          "value": 64448.0,
+          "turnover": 2017236671933645.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            65664.2891,
-            65644.6719,
-            65527.9883,
-            65871.0234,
-            66034.5938,
-            65847.9922,
-            65723.5469,
-            65785.2266,
-            65834.0234,
-            65831.7266,
-            65792.7109,
-            65768.1016,
-            65593.6406,
-            65554.3828,
-            65488.2695,
-            65472.2812,
-            65257.6797,
-            64861.9688,
-            64985.0312,
-            64849.9219,
-            64879.8906,
-            64739.5117,
-            64640.4609,
-            64749.5195,
-            64634.6602,
-            64983.3789,
-            64851.8516,
-            65225.0,
-            65195.1094,
-            65040.8984,
-            65280.4688,
-            65696.9609,
-            66226.1328,
-            65802.5703,
-            65915.3984,
-            66030.0078,
-            65349.1211,
-            65457.9688,
-            64414.8906,
-            64256.8281,
-            64300.1797,
-            64370.6602,
-            64204.7305,
-            64196.9805,
-            64302.0117,
-            64234.0,
-            64437.6719,
-            64456.9805,
-            64460.6602
+            64464.9883,
+            64471.3516
           ],
           "url": "https://www.coingecko.com/en/coins/bitcoin"
         },
@@ -35431,7 +35192,7 @@
           "country": "CR",
           "mktcap": "$95B",
           "tier": "large",
-          "delta_pct": -2.22,
+          "delta_pct": -2.1,
           "spark": [
             87.0441,
             86.7018,
@@ -35562,263 +35323,18 @@
             71.1662,
             73.9793,
             73.4138,
-            71.99
+            72.06
           ],
-          "value": 72.0,
-          "turnover": 186119209431.0,
+          "value": 71.97,
+          "turnover": 186557801180.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            73.44,
-            73.3,
-            73.35,
-            73.86,
-            74.31,
-            73.98,
-            73.63,
-            73.63,
-            73.68,
-            73.73,
-            73.65,
-            73.57,
-            73.31,
-            73.35,
-            73.13,
-            73.19,
-            72.72,
-            72.28,
-            72.45,
-            72.47,
-            72.4,
-            72.08,
-            71.94,
-            71.97,
-            71.68,
-            72.28,
-            72.26,
-            72.36,
-            72.41,
-            72.32,
-            72.97,
-            73.75,
-            74.44,
-            73.69,
-            73.77,
-            74.11,
-            73.13,
-            73.46,
-            72.01,
-            71.6,
-            71.86,
-            72.14,
-            71.83,
-            71.56,
-            71.79,
-            71.65,
-            71.96,
-            71.99,
-            71.99
+            72.03,
+            72.06
           ],
           "url": "https://www.coingecko.com/en/coins/solana"
-        },
-        {
-          "ticker": "LINK",
-          "name": "Chainlink",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$11B",
-          "tier": "mid",
-          "delta_pct": -2.41,
-          "spark": [
-            8.8324,
-            8.8298,
-            8.5613,
-            8.3116,
-            8.4027,
-            8.7683,
-            9.0885,
-            8.7819,
-            8.9255,
-            8.8306,
-            8.5989,
-            8.5695,
-            8.9414,
-            8.876,
-            8.6727,
-            8.2652,
-            8.2031,
-            9.2563,
-            9.0985,
-            8.7088,
-            8.8437,
-            8.6723,
-            8.9485,
-            8.8124,
-            9.3485,
-            9.1969,
-            8.7937,
-            8.695,
-            8.5234,
-            8.86,
-            8.9831,
-            8.9955,
-            9.0585,
-            9.088,
-            9.1615,
-            9.4821,
-            9.9271,
-            9.7952,
-            9.2258,
-            9.0473,
-            9.1132,
-            8.8074,
-            8.6852,
-            9.1027,
-            9.2465,
-            9.3747,
-            8.9145,
-            8.5638,
-            8.4282,
-            8.4053,
-            8.6107,
-            8.7775,
-            8.9378,
-            8.6285,
-            8.6582,
-            8.6929,
-            8.8116,
-            8.8051,
-            9.2956,
-            8.8605,
-            8.9428,
-            9.0878,
-            9.0694,
-            8.7372,
-            9.3629,
-            9.0228,
-            9.2615,
-            9.5808,
-            9.6251,
-            9.2929,
-            9.0707,
-            9.2911,
-            9.3982,
-            9.2987,
-            9.3559,
-            9.3774,
-            9.3462,
-            9.4941,
-            9.321,
-            9.2396,
-            9.1182,
-            9.1044,
-            9.0927,
-            9.1744,
-            9.1315,
-            9.3532,
-            9.766,
-            9.9942,
-            9.8517,
-            10.3302,
-            10.3719,
-            10.7125,
-            10.5936,
-            10.2838,
-            10.2116,
-            10.4731,
-            10.0662,
-            9.7199,
-            9.5541,
-            9.5928,
-            9.4498,
-            9.6219,
-            9.7406,
-            9.4154,
-            9.5584,
-            9.429,
-            9.4978,
-            9.3748,
-            9.1281,
-            8.9884,
-            9.0152,
-            9.1652,
-            9.1267,
-            9.038,
-            8.3624,
-            8.335,
-            8.0008,
-            7.3507,
-            7.398,
-            7.8985,
-            7.9875,
-            7.837,
-            7.563,
-            7.8823,
-            7.8557,
-            7.9774,
-            8.1662,
-            8.2952,
-            8.2645,
-            8.082
-          ],
-          "value": 8.08,
-          "turnover": 2000918672.0,
-          "state": "open",
-          "mkt_start": null,
-          "mkt_end": null,
-          "intraday": [
-            8.27,
-            8.287,
-            8.271,
-            8.346,
-            8.398,
-            8.362,
-            8.32,
-            8.343,
-            8.347,
-            8.343,
-            8.329,
-            8.329,
-            8.324,
-            8.317,
-            8.302,
-            8.286,
-            8.229,
-            8.166,
-            8.198,
-            8.194,
-            8.183,
-            8.166,
-            8.142,
-            8.149,
-            8.102,
-            8.171,
-            8.149,
-            8.176,
-            8.178,
-            8.151,
-            8.211,
-            8.288,
-            8.349,
-            8.263,
-            8.265,
-            8.299,
-            8.188,
-            8.24,
-            8.07,
-            8.03,
-            8.052,
-            8.094,
-            8.07,
-            8.031,
-            8.042,
-            8.032,
-            8.079,
-            8.08,
-            8.082
-          ],
-          "url": "https://www.coingecko.com/en/coins/chainlink"
         },
         {
           "ticker": "ETH",
@@ -35827,7 +35343,7 @@
           "country": "CR",
           "mktcap": "$420B",
           "tier": "mega",
-          "delta_pct": -2.49,
+          "delta_pct": -2.32,
           "spark": [
             2088.7629,
             2103.5676,
@@ -35958,65 +35474,169 @@
             1724.6133,
             1794.9612,
             1790.3982,
-            1748.8101
+            1749.72
           ],
-          "value": 1748.74,
-          "turnover": 24642916534118.0,
+          "value": 1749.04,
+          "turnover": 24795118738145.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            1792.49,
-            1792.3,
-            1784.08,
-            1795.8101,
-            1803.84,
-            1793.83,
-            1789.26,
-            1791.92,
-            1792.95,
-            1792.48,
-            1791.97,
-            1792.34,
-            1787.45,
-            1788.61,
-            1783.6,
-            1783.46,
-            1774.75,
-            1763.55,
-            1773.1899,
-            1771.34,
-            1770.66,
-            1766.87,
-            1764.89,
-            1762.41,
-            1745.39,
-            1757.99,
-            1756.64,
-            1760.0,
-            1754.9399,
-            1753.67,
-            1761.78,
-            1771.95,
-            1783.9399,
-            1770.51,
-            1776.5699,
-            1787.5,
-            1765.38,
-            1769.26,
-            1739.53,
-            1733.9301,
-            1738.05,
-            1745.79,
-            1742.04,
-            1737.25,
-            1741.88,
-            1738.59,
-            1748.6,
-            1748.89,
-            1748.8101
+            1749.66,
+            1749.72
           ],
           "url": "https://www.coingecko.com/en/coins/ethereum"
+        },
+        {
+          "ticker": "LINK",
+          "name": "Chainlink",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$11B",
+          "tier": "mid",
+          "delta_pct": -2.35,
+          "spark": [
+            8.8324,
+            8.8298,
+            8.5613,
+            8.3116,
+            8.4027,
+            8.7683,
+            9.0885,
+            8.7819,
+            8.9255,
+            8.8306,
+            8.5989,
+            8.5695,
+            8.9414,
+            8.876,
+            8.6727,
+            8.2652,
+            8.2031,
+            9.2563,
+            9.0985,
+            8.7088,
+            8.8437,
+            8.6723,
+            8.9485,
+            8.8124,
+            9.3485,
+            9.1969,
+            8.7937,
+            8.695,
+            8.5234,
+            8.86,
+            8.9831,
+            8.9955,
+            9.0585,
+            9.088,
+            9.1615,
+            9.4821,
+            9.9271,
+            9.7952,
+            9.2258,
+            9.0473,
+            9.1132,
+            8.8074,
+            8.6852,
+            9.1027,
+            9.2465,
+            9.3747,
+            8.9145,
+            8.5638,
+            8.4282,
+            8.4053,
+            8.6107,
+            8.7775,
+            8.9378,
+            8.6285,
+            8.6582,
+            8.6929,
+            8.8116,
+            8.8051,
+            9.2956,
+            8.8605,
+            8.9428,
+            9.0878,
+            9.0694,
+            8.7372,
+            9.3629,
+            9.0228,
+            9.2615,
+            9.5808,
+            9.6251,
+            9.2929,
+            9.0707,
+            9.2911,
+            9.3982,
+            9.2987,
+            9.3559,
+            9.3774,
+            9.3462,
+            9.4941,
+            9.321,
+            9.2396,
+            9.1182,
+            9.1044,
+            9.0927,
+            9.1744,
+            9.1315,
+            9.3532,
+            9.766,
+            9.9942,
+            9.8517,
+            10.3302,
+            10.3719,
+            10.7125,
+            10.5936,
+            10.2838,
+            10.2116,
+            10.4731,
+            10.0662,
+            9.7199,
+            9.5541,
+            9.5928,
+            9.4498,
+            9.6219,
+            9.7406,
+            9.4154,
+            9.5584,
+            9.429,
+            9.4978,
+            9.3748,
+            9.1281,
+            8.9884,
+            9.0152,
+            9.1652,
+            9.1267,
+            9.038,
+            8.3624,
+            8.335,
+            8.0008,
+            7.3507,
+            7.398,
+            7.8985,
+            7.9875,
+            7.837,
+            7.563,
+            7.8823,
+            7.8557,
+            7.9774,
+            8.1662,
+            8.2952,
+            8.2645,
+            8.09
+          ],
+          "value": 8.08,
+          "turnover": 2006573185.0,
+          "state": "open",
+          "mkt_start": null,
+          "mkt_end": null,
+          "intraday": [
+            8.088,
+            8.09
+          ],
+          "url": "https://www.coingecko.com/en/coins/chainlink"
         },
         {
           "ticker": "XRP",
@@ -36025,7 +35645,7 @@
           "country": "CR",
           "mktcap": "$130B",
           "tier": "large",
-          "delta_pct": -2.55,
+          "delta_pct": -2.57,
           "spark": [
             1.4322,
             1.4361,
@@ -36156,63 +35776,16 @@
             1.1858,
             1.2382,
             1.216,
-            1.1864
+            1.1867
           ],
           "value": 1.19,
-          "turnover": 2279316539.0,
+          "turnover": 2285788198.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            1.2142,
-            1.214,
-            1.2101,
-            1.2205,
-            1.2249,
-            1.2181,
-            1.2139,
-            1.2151,
-            1.2164,
-            1.216,
-            1.2175,
-            1.2169,
-            1.2128,
-            1.2106,
-            1.2089,
-            1.2084,
-            1.2015,
-            1.195,
-            1.1955,
-            1.1968,
-            1.1959,
-            1.1953,
-            1.1905,
-            1.1919,
-            1.1904,
-            1.1968,
-            1.199,
-            1.2003,
-            1.1999,
-            1.1943,
-            1.2021,
-            1.2127,
-            1.222,
-            1.2118,
-            1.2129,
-            1.2168,
-            1.2004,
-            1.2081,
             1.1859,
-            1.1798,
-            1.1837,
-            1.1893,
-            1.1852,
-            1.1812,
-            1.1867,
-            1.183,
-            1.1862,
-            1.1863,
-            1.1864
+            1.1867
           ],
           "url": "https://www.coingecko.com/en/coins/ripple"
         },
@@ -36223,7 +35796,7 @@
           "country": "CR",
           "mktcap": "$22B",
           "tier": "mid",
-          "delta_pct": -3.07,
+          "delta_pct": -3.25,
           "spark": [
             0.2703,
             0.2697,
@@ -36354,63 +35927,16 @@
             0.1828,
             0.1786,
             0.1721,
-            0.1668
+            0.167
           ],
-          "value": 0.1669,
-          "turnover": 86875840.0,
+          "value": 0.1667,
+          "turnover": 86769593.0,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            0.1723,
-            0.1719,
-            0.1716,
-            0.1734,
-            0.1747,
-            0.1743,
-            0.1732,
-            0.1729,
-            0.173,
-            0.1728,
-            0.1727,
-            0.1724,
-            0.1717,
-            0.1713,
-            0.1708,
-            0.1711,
-            0.1699,
-            0.1689,
-            0.1688,
-            0.169,
-            0.1692,
-            0.1689,
-            0.1688,
-            0.1687,
-            0.1677,
-            0.1693,
-            0.1686,
-            0.1682,
-            0.1688,
-            0.168,
-            0.169,
-            0.1713,
-            0.1726,
-            0.1709,
-            0.1717,
-            0.172,
-            0.1685,
-            0.1697,
-            0.1663,
-            0.1655,
-            0.1668,
-            0.1672,
-            0.1667,
-            0.166,
-            0.1667,
-            0.1665,
-            0.1668,
-            0.1668,
-            0.1668
+            0.1669,
+            0.167
           ],
           "url": "https://www.coingecko.com/en/coins/cardano"
         }
@@ -36526,6 +36052,21 @@
       "query": "Bank Indonesia rupiah suku bunga IHSG",
       "target_site": "bisnis.com",
       "score": 121
+    },
+    {
+      "title": "Stocks drop, bond yields rise; Fed keeps rates steady but projects hike for later this year - Reuters",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQOU5DMTRIOHpLY0VUdlJ6RW1fcEhveWNmVmZaNFo0YkdfNmN0a0VZN1JHMDcxVFdlMl81aVpWQV8td2hxb1dZcldhVE5USmVqeEhDNDA4Yk5RSDBpWnBuN3FTblFLMUxEa3poLTZsR3pfMmNfUENaOVZDRjVFNGl5V0l6MA?oc=5",
+      "source": "Reuters",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781661000,
+      "source_tier": "tier1_global",
+      "source_score": 45,
+      "query_type": "trusted",
+      "query": "Federal Reserve rates inflation jobs yields",
+      "target_site": "reuters.com",
+      "score": 120
     },
     {
       "title": "Bank Sentral Jepang Naikkan Suku Bunga Acuan, Tertinggi Dalam 31 Tahun - CNBC Indonesia",
@@ -36820,21 +36361,6 @@
       "sectors": [
         "healthcare"
       ]
-    },
-    {
-      "title": "S&P 500 falls, yields rise following Fed announcement - Reuters",
-      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQOU5DMTRIOHpLY0VUdlJ6RW1fcEhveWNmVmZaNFo0YkdfNmN0a0VZN1JHMDcxVFdlMl81aVpWQV8td2hxb1dZcldhVE5USmVqeEhDNDA4Yk5RSDBpWnBuN3FTblFLMUxEa3poLTZsR3pfMmNfUENaOVZDRjVFNGl5V0l6MA?oc=5",
-      "source": "Reuters",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781661000,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "trusted",
-      "query": "Federal Reserve rates inflation jobs yields",
-      "target_site": "reuters.com",
-      "score": 102
     },
     {
       "title": "Video: Racikan Investasi MI Saat Suku Bunga Naik & Risiko Pasar Tinggi - CNBC Indonesia",
@@ -37587,6 +37113,21 @@
       "query_type": "trusted",
       "query": "Federal Reserve rates inflation jobs yields",
       "target_site": "marketwatch.com",
+      "score": 90
+    },
+    {
+      "title": "Instant View: Fed holds steady in Warsh's debut, but hawkish shift fuels bond-market rout - Reuters",
+      "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPaXdKWGRzWFlvOXVCQWxpMnZtNk1PcVBFU3BGbFZNaS1keXY1NGRGY2Y4blE4RGMzUXJTd0hSbS1kNllkWjBwLWNjenQ0VWhYVVcyTy04SjhkZ2lWbkstX1JOQ1F3UV8wMVQtMENxU01TbEdmQXBJanl3Q2ZZYjBCeVZ0ZnJIdTJJQkkyamJaWVI5c19VTTJIaUExeWsxb3dHUnl4M0h2YWg3Zw?oc=5",
+      "source": "Reuters",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781730413,
+      "source_tier": "tier1_global",
+      "source_score": 45,
+      "query_type": "trusted",
+      "query": "Federal Reserve rates inflation jobs yields",
+      "target_site": "reuters.com",
       "score": 90
     },
     {
@@ -39081,21 +38622,6 @@
       "score": 80
     },
     {
-      "title": "Wall Street rallies, Dow ends with record on US-Iran deal, oil price slide - Reuters",
-      "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNajR4UzdaSXRuUjREVE5uZDBySzllNTdibzhobEdmbXJaMDNBX2ZmTFBnUUxzRy04WkZ3RUZCSEJkSURNcE5vUERPbGlBdVNwNDEzU3FwUWZmTnhreGRVeU9EeEpCTVZQT05fNk5scUZ5Z2RGY09idlFCRTY1T3NkQ2wySllpNXlSZmg4MUI3MUNIbGgzalRFUlNZV08tTktl?oc=5",
-      "source": "Reuters",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781566713,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "trusted",
-      "query": "Nasdaq S&P 500 Nvidia earnings yields",
-      "target_site": "reuters.com",
-      "score": 80
-    },
-    {
       "title": "Panja DPR dan Pemerintah Sepakati Kerangka Ekonomi Makro PPKF APBN 2027 - kontan.co.id",
       "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOVzE1RXN2S0tPRjQzbEZRcUF1RnFRcWZwb1FDS3VGNUw4VWY1aFo4NEtmWWZRUl9zQ2J5LVNZdzd6dW9EMjZYcFlDNzhTaXpUbHBkb2FxV0hsLWtPeGRLaWJ3eVlHVWdzdi1pNzY4ZXo3Mm81dnhjMHd1OWd4elMtYVd1TU0yaVZPcXJhTDdvZkYzWkhHTDNuT3NOTDdROGMxaV9id3hGM3BpUdIBowFBVV95cUxQckJhWG94LUZWSzhDRC1LWDBOQWRhMzlWVllGSjdNTGJ6LUIyOVpLVXd3V3B2Q295Zi0ybVlZN0xjaEdFSlZrdGZ3d01TOEdVR0JWN1A3Q05sYjFLM1luTFdDanpEYnpzNkxiQ090b2ZxYUJiT1ZlT0RwclZxaFJaOVo2TVRLaDRJeGl2TnlWTHRKSTVCTGhpTVZscXFMQktDcE5J?oc=5",
       "source": "kontan.co.id",
@@ -39519,21 +39045,6 @@
       "score": 73
     },
     {
-      "title": "IHSG Menuju 6.000? Simak Proyeksi dan Rekomendasi Saham dari BRI Danareksa - TradingView",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE8xSU10b1h2X0VDQVEtemNLV2FGT2FJTVktbHpzS3VlbW1IYmMzQlY5VV9hNUZCdWNNUGU3dEQ1X1ZPUWduRkkwSnJaaGxPUXJqNlU0VDVjQ2NvRjVmbzBya0FnYmZNdw?oc=5",
-      "source": "TradingView",
-      "geo": "ID",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781134646,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "index",
-      "query": "Jakarta Composite IHSG",
-      "target_site": "",
-      "score": 73
-    },
-    {
       "title": "Rupiah menguat jadi Rp17.778 per dolar AS pada Senin pagi - ANTARA News",
       "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNU09uYWt5c3BTUUFOcThGc1h0YjRTZ2dNUFhmWXd1eERIQ3FCTVN0anQxbU55YzI4eC1EMTJlMTRYaS1JOVdibnBuS2FrYmFNdHF3VGM0dm9DRFFKRlNvV2dCYWViaE1wSGtFY0JmdTl4WFNRa1Ntei1TRUt4SXdVVDRPb2hwX0dTTUZDdFZnbmZfQWJXekxHRTVNMA?oc=5",
       "source": "ANTARA News",
@@ -39882,6 +39393,24 @@
       "score": 65,
       "sectors": [
         "logistics"
+      ]
+    },
+    {
+      "title": "Indeks Kepercayaan Konsumen Turun, Saham Emiten Consumer Staples Direkomendasikan - kontan.co.id",
+      "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPcU1sdXlmTjJFVnNWc1ZxOWtna0lMRm03dDRjUklPYVFsdTBWVnN0RkJ3NXcwWDlIMjUzRjlDTWpiU3JmaFhic3FDcFlLMk1SRkJuM0t5d0NYRl9WcTlGZldnYnZJX1JsV1VuNmtiNVJGQ2NBazQ0SnpLYVVjbW11YmxnTlA0MnhZT3pfV0dnZXlDRWx2THdYQTRmb1BpWEdCampoaTdvekt2bDhnMlpqSkwzWkZ2RlHSAa8BQVVfeXFMTVVuWkl4a0l4bXk0Y2hzTUZIVW1sM2hmT0NXZTE2bHJOdW8yaDlHdi1tRXlLeXF2LVIwUEhueGFRVmFhN1BjMmlqd3lCSTNPZk9HU0NDMS1OTGtXZmkteW9XWTJkVC00U21oeDdvVTVEU3NFZ3dqT05OWWdFMjJLOGJ4NmNLM1pRc201b19qY2pUZmVuWmhvMlNSamF2SUN2SjcyOUtRZksxNUVlcTJaZw?oc=5",
+      "source": "kontan.co.id",
+      "geo": "ID",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781166884,
+      "source_tier": "indonesia",
+      "source_score": 40,
+      "query_type": "trusted",
+      "query": "saham konsumer ritel Indonesia",
+      "target_site": "kontan.co.id",
+      "score": 65,
+      "sectors": [
+        "consumer"
       ]
     }
   ],
@@ -41166,24 +40695,6 @@
         ]
       },
       {
-        "title": "5 Best Housing Stocks for 2026 and How to Invest - The Motley Fool",
-        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPNWNEVElITXRULTNvdzNHTUdZUllFR3lqN0tqRnZFT1ZCZEpKX2RpNzFQM2Z4RHo1d256YWJGZVAtbk9LT3JIT2Q5ZEpyQnNNVnhGd21ReXkxLWVXVDZ4SzFpOUdveElqYk1TNG1hTFZEX0VVNUpJNC1WSjI3MXB1MWVJWUpPOXBFVnJJM0RHM0NMVXRaejVuT0RkR3Z5UVNsZE5oUWJPb2lIdw?oc=5",
-        "source": "The Motley Fool",
-        "geo": "US",
-        "category": "MARKETS_FINANCE",
-        "summary": "",
-        "ts": 1781652900,
-        "source_tier": "us_equity",
-        "source_score": 20,
-        "query_type": "sector",
-        "query": "real estate property REIT stocks mortgage",
-        "target_site": "",
-        "score": 64,
-        "sectors": [
-          "property"
-        ]
-      },
-      {
         "title": "Thinking Of Buying Property? Consider This Tax-Efficient Real Estate Alternative First - NDTV Profit",
         "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxOMXQzNGtwTjVkUHhvNUF6UUVnUWFNM2JBb2Z3MEpwQktiQmctU2prLTlFSnhQV3YwQkRrR21FTkJudnA3cEpFZ3B4dXdqVE9NTW5hbERDejgtT2toSXlWbEQwY3lwRlFEbW5xd2l4T2xzN2N4cnE2TWJrT2UwRjVVcW94ZERZazJPaVBScUo5RmFWVy1BMTVESjRZeXhPU2pqZ2Y0U1Y0cERYTTgyWm1hblo2Um9SUUFENHl4b0dvWnFJWVByUlRFX0tRczh0TFVadnlWWXhDckVIQVRr0gHkAUFVX3lxTE1wWFJGLUJjT1JNX0pVR0VvcXZSelVBVW1mbnc2V3c3NDRJMDNXSkRmY3l2bkNDSmQxc0V0NzRXMXc0WFgzeTFTRGZSSzdpdmVjUi1XdldWb1RMZVFUd3QwN1NXSXdBYV90UVNfTWhtZ1FvbUljZXRaNDk4ZWxwdVU3ZWVPWlU0b1ItVExleERQQ0Q1bXV2aC1xaUdBUHVVc1VyekZBWEJkbDB0bW5oMWJmYWh6dzJsMEFqcUdqbHpqbS1sXzRkX2gycGhIYS1XOG5ZaXEyaWljN2xNWkMyM3JSVjg4eA?oc=5",
         "source": "NDTV Profit",
@@ -41197,6 +40708,24 @@
         "query": "real estate property REIT stocks",
         "target_site": "",
         "score": 58,
+        "sectors": [
+          "property"
+        ]
+      },
+      {
+        "title": "5 Best Housing Stocks for 2026 and How to Invest - The Motley Fool",
+        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPNWNEVElITXRULTNvdzNHTUdZUllFR3lqN0tqRnZFT1ZCZEpKX2RpNzFQM2Z4RHo1d256YWJGZVAtbk9LT3JIT2Q5ZEpyQnNNVnhGd21ReXkxLWVXVDZ4SzFpOUdveElqYk1TNG1hTFZEX0VVNUpJNC1WSjI3MXB1MWVJWUpPOXBFVnJJM0RHM0NMVXRaejVuT0RkR3Z5UVNsZE5oUWJPb2lIdw?oc=5",
+        "source": "The Motley Fool",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781652900,
+        "source_tier": "us_equity",
+        "source_score": 20,
+        "query_type": "sector",
+        "query": "real estate property REIT stocks mortgage",
+        "target_site": "",
+        "score": 54,
         "sectors": [
           "property"
         ]
@@ -43089,15 +42618,6 @@
         "category": "TECH",
         "summary": "",
         "ts": 1781320200
-      },
-      {
-        "title": "Is It Time To Reassess Array Technologies (ARRY) After The Recent Share Price Slide - simplywall.st",
-        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPNU4tZk1KdlNKaEdaNXFGYjJFd2NvYXVwSDl0elFfMzRVUjY1a2Q5MW1nVEF5X3I4bU15LXZsS3JQWjMyMEdtbHpQUThUTGZ4WTB6dVhUd3cyc1duWTBCUnpOdHludXJ3alFsQ2hiSENvVUFRaFozVEdJSWhGOS00RFV1SmxBcjBfOHQtMXpXdTFqVldVMzBDeGMxUXRoY3QzM0dzLUVTcE9yTUc1N2lxVUVkSTF1bE9NX2Q5c1B6LVpnaEVCQkF2UlJ5Yjg0RWdQUW9SLUlqTVBRQdIB3wFBVV95cUxQbTZZNlZYQjFHX0I0WkZHRXBaVENQMnBGUDhHdEMtbVBtMlNsUXJpa2E1RkZ5aFRlNGtkdnlHYW5OaWVpTllaYThZYTFnTmF5ODNfWEN1RGJYN3cyaDVUc0lya3pmYXZWeUl3a19GUlR2a2xhTVVOMDgwRGFkN05SMHJjTWNDbmUtRFNGaFBhN1ZpVERSRU1pSEJZSm53cTl6bzd5ZlNCQWtHV2xKOHkyZlFqMmRXTzNCcDJZU040ZDZEeW9VbUdxazZ4RmxzYk1XR2QtRjNyc0VCRFlkejE0?oc=5",
-        "source": "simplywall.st",
-        "geo": "US",
-        "category": "TECH",
-        "summary": "",
-        "ts": 1781135287
       }
     ],
     "PLUG": [
@@ -44877,13 +44397,29 @@
     ],
     "CMCSA": [
       {
-        "title": "AT&amp;T, CMCSA, CMG Hit 52-Week Lows: What Dragged These Stocks Lower? - Stocktwits",
+        "title": "Is Comcast (CMCSA) One of the Top 10 Income Stocks with the Highest Upside Potential? - Yahoo Finance",
+        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOUTFGLWtvUE9QSjFuSFFHLU9EWVJFTlN2VFo0Q0Q1YzBQemVXN2l4YVNObnp6MGpaNnN4UHBJeXFwU3ZoYWh1ZHpTczlpcFVlTFcyUHRfQTVHTXpOelpHTVMzSzdycUtkS1hPeEUzTkZmSnk0Y2FXV3hoSWZ4Z05TYnJfN0YtY2ZUOHp2LXYxVkpOczg?oc=5",
+        "source": "Yahoo Finance",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781552641,
+        "source_tier": "tier1_global",
+        "source_score": 45,
+        "query_type": "ticker",
+        "query": "CMCSA Comcast stock earnings shares",
+        "target_site": "",
+        "score": 86
+      },
+      {
+        "title": "AT&T, CMCSA, CMG Hit 52-Week Lows: What Dragged These Stocks Lower? - Stocktwits",
         "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPN2ZRT2haanpVQ2FpTWtDWW1QRFFxT0tWaklCWFUyS1RteEZib0VLa3d3bmNZVW5UUmM4UUI2MlZVNkp6UE9WenZfczI3ZFVfMGVlNVQ1cVJvaFVvdHJPRFVUV3lQNTVfTHRyQW5OZThiZWR3MkJQcUdCZk50S2F2azNfQzJOTDN6X1dHeDI4R3dDc2RNd1plamd3?oc=5",
         "source": "Stocktwits",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "AT&T, CMCSA, CMG Hit 52-Week Lows: What Dragged These Stocks Lower? Stocktwits",
-        "ts": 1781646882
+        "ts": 1781646882,
+        "score": 33
       },
       {
         "title": "Rosenblatt Lowers PT on Comcast (CMCSA) Stock - Yahoo Finance",
@@ -44892,16 +44428,38 @@
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781637588
+        "ts": 1781637588,
+        "score": 33
+      },
+      {
+        "title": "Landscape Capital Management L.L.C. Acquires 93,762 Shares of Comcast Corporation $CMCSA - MarketBeat",
+        "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQODN0RXdURFFBVkFUYWtaVmswQldGR1pmLVJBcXd1WXNDakh5bm5jX1UyTWhBanVpdWRnTU9mSFo3OS1ERENLUmZmc0FiLXdHMURDWF9JNDlIMFFfcElGaE9EdVg0cHV4aFRYTGJjQldrRmwtS1ZjY3ZINmowZG1IS2ZzU3RvRlJ0bFR3SlA2MmxGYWJGVG5YbXJHWnFmYmhsWUUzSkE1bkRFLU9OMzlyT3VqdlRDNUk5a1lnY3F2U3c1VkpzSjlLLWg3SVJXWlljU3ZLNHM5a3Vqd2c2?oc=5",
+        "source": "MarketBeat",
+        "geo": "US",
+        "category": "MARKETS_FINANCE",
+        "summary": "",
+        "ts": 1781429232,
+        "source_tier": "",
+        "source_score": 0,
+        "query_type": "ticker",
+        "query": "CMCSA Comcast stock earnings shares",
+        "target_site": "",
+        "score": 31
       },
       {
         "title": "Comcast (CMCSA) Stock Attracts Attention As Cash Flows And Peacock Progress Support Undervalued Case - simplywall.st",
-        "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxPNTJCbUwxREdnb0VKU2RFNHZfNDY1c0Q1ZVctNFNucTRocERLamlLNGlwdzlWVEFvWk5fUG1zdXhZeDJrbjR0WndaZ3pvYWhzVmZDajE0Z1hvR3JyMTVYMkkzRkIyQ0ZjNGZHZHl2SGFGRlEtYWZXTEhvQlktS1ZaQjQxb0dOc1k2Y3pDbGFXVHQ2aVIzYW9vbXI2OTBvZS13UDFCcTRBcmh6OE9FcmtsS3ZKU242NC1YWnJONXMxYzdTcHU5WEJSdzNR0gHKAUFVX3lxTE81MkJtTDFER2dvRUpTZEU0dl80NjVzRDVlVy00U25xNGhwREtqaUs0aXB3OVZUQW9aTl9QbXN1eFl4MmtuNHRad1pnem9haHNWZkNqMTRnWG9HcnIxNVgySTNGQjJDRmM0ZkdkeXZIYUZGUS1hZldMSG9CWS1LVlpCNDFvR05zWTZjekNsYVdUdDZpUjNhb29tcjY5MG9lLXdQMUJxNEFyaHo4T0Vya2xLdkpTbjY0LVhack41czFjN1NwdTlYQlJ3M1E?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNR2RUbXNyR3EtVDc4MjFmRDQwc2tYLThMdllJN1VTRHY1ZzFSVy1ya1hqamV6ekh0M3hOQ2JjZnpiZk0tQ3l5b3JobGd1elF2RkI3cW9vdDNLQzRGLXk0Nno0SlpucGlZdHp0cnYyLTZIRHIwS2RLbF9SLVpBbEN5aGRnWDg2Xy1COHpvYWF4ajRVZFFESUtGbU8wamJJZm1CdkFyLVFjRDlxU1dxWUZSOWsxS1JEb1hXZUxYOWNpYW1BUTFL0gHKAUFVX3lxTE81MkJtTDFER2dvRUpTZEU0dl80NjVzRDVlVy00U25xNGhwREtqaUs0aXB3OVZUQW9aTl9QbXN1eFl4MmtuNHRad1pnem9haHNWZkNqMTRnWG9HcnIxNVgySTNGQjJDRmM0ZkdkeXZIYUZGUS1hZldMSG9CWS1LVlpCNDFvR05zWTZjekNsYVdUdDZpUjNhb29tcjY5MG9lLXdQMUJxNEFyaHo4T0Vya2xLdkpTbjY0LVhack41czFjN1NwdTlYQlJ3M1E?oc=5",
         "source": "simplywall.st",
         "geo": "US",
         "category": "MARKETS_FINANCE",
         "summary": "",
-        "ts": 1781522551
+        "ts": 1781522549,
+        "source_tier": "",
+        "source_score": 0,
+        "query_type": "ticker",
+        "query": "CMCSA Comcast stock earnings shares",
+        "target_site": "",
+        "score": 27
       }
     ],
     "SPOT": [
@@ -48092,6 +47650,76 @@
   },
   "videos": [
     {
+      "video_id": "O6dh8k71iMw",
+      "title": "Menguji Ketangguhan Sentimen #BUYINDONESIA Para Arah Pergerakan IHSG ke Depan | THE EDITORIAL",
+      "channel": "IDX Channel",
+      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
+      "category": "market_id",
+      "geo": "ID",
+      "url": "https://www.youtube.com/watch?v=O6dh8k71iMw",
+      "embed": "https://www.youtube.com/embed/O6dh8k71iMw",
+      "thumb": "https://i.ytimg.com/vi/O6dh8k71iMw/hqdefault.jpg",
+      "published": "2026-06-18T00:00:06Z",
+      "ts": 1781740806,
+      "summary": "Indeks Harga Saham Gabungan (IHSG) telah melambung tinggi sejak munculnya kampanye #BUYINDONESIA dan juga #SELLSINGAPORE sebagai respons pelaku pasar domestik atas tagar yang sempat viral sebelumnya, yaitu #SELLINDONESIA. namun, sejauh mana ketangguhan kampanye ini dapat menopang kinerja dan pergerakan indeks ke depan?#idxcupdate #idxc Berita selengkapnya klik di sini: https://www.idxchannel.com/ Follow US on Social Media Yuk Subscribe - https://www.youtube.com/@IDXChannel_ Wa Channel - https://"
+    },
+    {
+      "video_id": "VbSQmgeuhtE",
+      "title": "Prasetyo Hadi Dorong Deregulasi dan Hilirisasi Demi Jaga Kepercayaan Investor | MARKET HIGHLIGHTS",
+      "channel": "IDX Channel",
+      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
+      "category": "market_id",
+      "geo": "ID",
+      "url": "https://www.youtube.com/watch?v=VbSQmgeuhtE",
+      "embed": "https://www.youtube.com/embed/VbSQmgeuhtE",
+      "thumb": "https://i.ytimg.com/vi/VbSQmgeuhtE/hqdefault.jpg",
+      "published": "2026-06-18T00:00:06Z",
+      "ts": 1781740806,
+      "summary": "Menteri Sekretaris Negara Prasetyo Hadi menegaskan pentingnya deregulasi serta percepatan program hilirisasi dan industrialisasi guna menjaga kepercayaan investor dan memperkuat perekonomian nasional. Langkah tersebut dilakukan untuk meningkatkan nilai tambah sumber daya alam Indonesia dan mendorong pertumbuhan ekonomi yang berkelanjutan. #idxcupdate #idxc Berita selengkapnya klik di sini: https://www.idxchannel.com/ Follow US on Social Media Yuk Subscribe - https://www.youtube.com/@IDXChannel_ "
+    },
+    {
+      "video_id": "ZATKwOs-66k",
+      "title": "Strategi Menggapai Target Ekspor Manufaktur 30% | MARKET REVIEW",
+      "channel": "IDX Channel",
+      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
+      "category": "market_id",
+      "geo": "ID",
+      "url": "https://www.youtube.com/watch?v=ZATKwOs-66k",
+      "embed": "https://www.youtube.com/embed/ZATKwOs-66k",
+      "thumb": "https://i.ytimg.com/vi/ZATKwOs-66k/hqdefault.jpg",
+      "published": "2026-06-18T00:00:02Z",
+      "ts": 1781740802,
+      "summary": "Di tengah ketidakpastian ekonomi global, pemerintah terus mendorong penguatan industri manufaktur berorientasi ekspor sebagai motor pertumbuhan ekonomi nasional. Kementerian Perindustrian menargetkan peningkatan porsi penjualan produk manufaktur ke pasar luar negeri dari 20% menjadi 30%, seiring upaya menjaga daya saing dan kecukupan pasokan di dalam negeri. Dengan kontribusi industri pengolahan yang mencapai lebih dari 82% terhadap total ekspor nasional pada Januari–April 2026, mampukah Indones"
+    },
+    {
+      "video_id": "I5LhdJoU5LQ",
+      "title": "Morning Meeting 18 Juni 2026",
+      "channel": "Mirae Asset Sekuritas",
+      "channel_id": "UCbgUIA1udecuOCfDaOFkZ1w",
+      "category": "market_id",
+      "geo": "ID",
+      "url": "https://www.youtube.com/watch?v=I5LhdJoU5LQ",
+      "embed": "https://www.youtube.com/embed/I5LhdJoU5LQ",
+      "thumb": "https://i.ytimg.com/vi/I5LhdJoU5LQ/hqdefault_live.jpg",
+      "published": "2026-06-17T23:33:43Z",
+      "ts": 1781739223,
+      "summary": "#SmartInvesting starts with Real Insights Menjelang akhir pekan, arah market mulai semakin penting untuk dicermati, terutama dari sisi sentimen dan peluang teknikal. Simak update hari ini bersama Mirae Asset Sekuritas Indonesia. Morning Meeting akan membahas: • Market Highlight – ringkasan sentimen & pergerakan utama • Market Update – Martha Christina • Technical Analysis – Arif Setyawan - Senior Investment Specialist See full report #SmartInvesting dimulai dari tools yang tepat. Gunakan M-STOCK"
+    },
+    {
+      "video_id": "Rmb42AzvxSY",
+      "title": "Kekayaan Negara Menggunung, Total Aset RI Capai Rp14.600,98 Triliun di 2025 | MARKET HIGHLIGHTS",
+      "channel": "IDX Channel",
+      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
+      "category": "market_id",
+      "geo": "ID",
+      "url": "https://www.youtube.com/watch?v=Rmb42AzvxSY",
+      "embed": "https://www.youtube.com/embed/Rmb42AzvxSY",
+      "thumb": "https://i.ytimg.com/vi/Rmb42AzvxSY/hqdefault.jpg",
+      "published": "2026-06-17T23:30:38Z",
+      "ts": 1781739038,
+      "summary": "Direktorat Jenderal Kekayaan Negara Kementerian Keuangan mencatat total aset negara mencapai Rp14.600,98 triliun hingga tahun 2025. Nilai tersebut mencakup aset lancar, aset tetap, serta properti yang tercermin dalam komponen kewajiban dan ekuitas pemerintah. #idxcupdate #idxc Berita selengkapnya klik di sini: https://www.idxchannel.com/ Follow US on Social Media Yuk Subscribe - https://www.youtube.com/@IDXChannel_ Wa Channel - https://whatsapp.com/channel/0029Va5VFtkADTO8ErWrJF3M Instagram - ht"
+    },
+    {
       "video_id": "Kw7G8K9KAvo",
       "title": "Trump Criticizes Israel Over Lebanon at G7 Summit in France",
       "channel": "Bloomberg Television",
@@ -48118,6 +47746,20 @@
       "published": "2026-06-17T23:00:07Z",
       "ts": 1781737207,
       "summary": "The FOMC unanimously voted to hold its interest rate target unchanged, and Kevin Warsh said, \"the Fed will deliver price stability.\" Intel (INTC) announced trial runs of its most advanced chip node and Microsoft (MSFT) reportedly is in discussion with Oracle (ORCL). ======== Schwab Network ======== Empowering every investor and trader, every market day. Subscribe to the Market Minute newsletter - https://schwabnetwork.com/subscribe Download the iOS app - https://apps.apple.com/us/app/schwab-netw"
+    },
+    {
+      "video_id": "DhejctGJzBI",
+      "title": "Kevin Warsh Just Revealed The Fed's Impossible Position",
+      "channel": "Simply Bitcoin",
+      "channel_id": "UCB6Q0S1gUHXMe5-Jjx0_laQ",
+      "category": "crypto",
+      "geo": "CR",
+      "url": "https://www.youtube.com/watch?v=DhejctGJzBI",
+      "embed": "https://www.youtube.com/embed/DhejctGJzBI",
+      "thumb": "https://i.ytimg.com/vi/DhejctGJzBI/hqdefault.jpg",
+      "published": "2026-06-17T22:59:04Z",
+      "ts": 1781737144,
+      "summary": "A massive shift just happened, and almost nobody is talking about what it really means. Behind the headlines about peace is a deeper story involving oil, debt, inflation, and the future of the dollar. When Wall Street insiders openly admit inflation is the only way out of a $40 trillion debt hole, the implications for Bitcoin become impossible to ignore. SPONSORS: ✅ Ledn 👉 https://www.nmj1gs2i.com/8LJN3/9B9DM/?source_id=Youtube&sub1=Description 💡 Simply Bitcoin clients get 0.25% off their first "
     },
     {
       "video_id": "pSq9Wh6plaM",
@@ -48624,62 +48266,6 @@
       "summary": "Today's biggest winners and losers in the stock market. On this episode of Stock Movers: - SpaceX (SPCX) shares are climbing higher yet again. Shares are poised for a fourth straight day of gains, reinforcing the company’s place among the world’s largest after it surpassed Amazon.com by market value. - La-Z-Boy (LZB) shares are higher after the home furniture store’s reported adjusted earnings per share for the fourth quarter beat the average analyst estimate. - CarMax (KMX) shares are moving af"
     },
     {
-      "video_id": "O6dh8k71iMw",
-      "title": "Menguji Ketangguhan Sentimen #BUYINDONESIA Para Arah Pergerakan IHSG ke Depan | THE EDITORIAL",
-      "channel": "IDX Channel",
-      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
-      "category": "market_id",
-      "geo": "ID",
-      "url": "https://www.youtube.com/watch?v=O6dh8k71iMw",
-      "embed": "https://www.youtube.com/embed/O6dh8k71iMw",
-      "thumb": "https://i.ytimg.com/vi/O6dh8k71iMw/hqdefault.jpg",
-      "published": "2026-06-17T14:17:46Z",
-      "ts": 1781705866,
-      "summary": "Indeks Harga Saham Gabungan (IHSG) telah melambung tinggi sejak munculnya kampanye #BUYINDONESIA dan juga #SELLSINGAPORE sebagai respons pelaku pasar domestik atas tagar yang sempat viral sebelumnya, yaitu #SELLINDONESIA. namun, sejauh mana ketangguhan kampanye ini dapat menopang kinerja dan pergerakan indeks ke depan?#idxcupdate #idxc Berita selengkapnya klik di sini: https://www.idxchannel.com/ Follow US on Social Media Yuk Subscribe - https://www.youtube.com/@IDXChannel_ Wa Channel - https://"
-    },
-    {
-      "video_id": "gaP0L2Gk_fU",
-      "title": "AS Menekan Israel, Minta Hentikan Serangan Membabi Buta di Lebanon | IDXC UPDATE",
-      "channel": "IDX Channel",
-      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
-      "category": "market_id",
-      "geo": "ID",
-      "url": "https://www.youtube.com/watch?v=gaP0L2Gk_fU",
-      "embed": "https://www.youtube.com/embed/gaP0L2Gk_fU",
-      "thumb": "https://i.ytimg.com/vi/gaP0L2Gk_fU/hqdefault.jpg",
-      "published": "2026-06-17T14:10:02Z",
-      "ts": 1781705402,
-      "summary": "Desakan Amerika Serikat kepada Israel untuk menahan serangan militer di Lebanon menandai meningkatnya kekhawatiran internasional terhadap potensi meluasnya konflik di Timur Tengah. Washington menegaskan bahwa tidak semua sasaran di Lebanon terkait dengan Hizbullah dan meminta agar perlindungan terhadap warga sipil menjadi prioritas, di tengah ancaman eskalasi yang dapat memperburuk situasi keamanan dan kemanusiaan di kawasan tersebut. #idxcupdate #idxc Berita selengkapnya klik di sini: https://w"
-    },
-    {
-      "video_id": "ajdaYAKQPpg",
-      "title": "Harga Minyak Terus Turun, Kini Tinggalkan Level USD80 per Barel | 2ND SESSION CLOSING",
-      "channel": "IDX Channel",
-      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
-      "category": "market_id",
-      "geo": "ID",
-      "url": "https://www.youtube.com/watch?v=ajdaYAKQPpg",
-      "embed": "https://www.youtube.com/embed/ajdaYAKQPpg",
-      "thumb": "https://i.ytimg.com/vi/ajdaYAKQPpg/hqdefault.jpg",
-      "published": "2026-06-17T14:00:16Z",
-      "ts": 1781704816,
-      "summary": "Harga minyak dunia kembali mengalami tekanan dan turun tajam hingga meninggalkan level psikologis 80 dolar Amerika Serikat per barel. Pelemahan terjadi seiring meredanya kekhawatiran pasar terhadap gangguan pasokan energi global di tengah perkembangan terbaru konflik di Timur Tengah. Pelaku pasar juga mulai mengalihkan fokus pada prospek permintaan energi dan arah kebijakan ekonomi global dalam beberapa bulan ke depan. Di sisi lain, harga batu bara terkoreksi tajam hingga 8 persen mengikuti penu"
-    },
-    {
-      "video_id": "_CfhuAmKGKg",
-      "title": "BABAK BARU DI SELAT HORMUZ, Iran Terapkan Tarif untuk Kapal Pengangkut Minyak | IDXC UPDATE",
-      "channel": "IDX Channel",
-      "channel_id": "UCQA6NejSxQguRkD3L8eXHzA",
-      "category": "market_id",
-      "geo": "ID",
-      "url": "https://www.youtube.com/watch?v=_CfhuAmKGKg",
-      "embed": "https://www.youtube.com/embed/_CfhuAmKGKg",
-      "thumb": "https://i.ytimg.com/vi/_CfhuAmKGKg/hqdefault.jpg",
-      "published": "2026-06-17T13:46:52Z",
-      "ts": 1781704012,
-      "summary": "Perubahan kebijakan Iran terhadap Selat Hormuz kembali menarik perhatian dunia. Jalur strategis perdagangan minyak global yang sebelumnya sempat memicu kekhawatiran akibat ancaman blokade kini dilaporkan mulai dibuka kembali. Namun, Iran menerapkan aturan baru berupa biaya layanan bagi kapal tanker yang melintas, sebuah langkah yang berpotensi memengaruhi distribusi energi dunia serta memicu respons dari negara-negara yang bergantung pada jalur pelayaran vital tersebut. #idxcupdate #idxc Berita "
-    },
-    {
       "video_id": "gmYiuDKn9N0",
       "title": "Airlangga: Pemerintah beri stimulus ekonomi bantuan non-tunai",
       "channel": "Bloomberg Technoz",
@@ -49098,20 +48684,6 @@
       "published": "2026-06-15T21:17:12Z",
       "ts": 1781558232,
       "summary": "Bloomberg’s Ed Ludlow breaks down why Anthropic disabled access to its most advanced models for all foreign nationals after a request from the Trump administration. Plus, Nvidia is seeking to raise at least $20 billion from its first corporate bond sale since 2021. And, SpaceX shares throttle up on day 2 of trading, adding to a blockbuster public markets debut on Friday. See omnystudio.com/listener (https://omnystudio.com/listener) for privacy information. Bloomberg Technology is the only daily "
-    },
-    {
-      "video_id": "6PcsR1gah3E",
-      "title": "Did Elon Ring the Bell on the Top? The Great Capital Rotation is Coming!",
-      "channel": "Simply Bitcoin",
-      "channel_id": "UCB6Q0S1gUHXMe5-Jjx0_laQ",
-      "category": "crypto",
-      "geo": "CR",
-      "url": "https://www.youtube.com/watch?v=6PcsR1gah3E",
-      "embed": "https://www.youtube.com/embed/6PcsR1gah3E",
-      "thumb": "https://i.ytimg.com/vi/6PcsR1gah3E/hqdefault.jpg",
-      "published": "2026-06-15T21:06:31Z",
-      "ts": 1781557591,
-      "summary": "Bitcoin is rebounding, stocks are ripping, and Elon Musk’s SpaceX IPO may have just marked the peak of the AI bubble. As capital gets sucked into AI, mega-cap tech, and historic IPO valuations, Michael Saylor argues the next major rotation could send capital back into Bitcoin — but only after one more brutal shakeout. This episode breaks down the SpaceX IPO, AI overvaluation, the great capital rotation, the Bitcoin civil war between self-custody purists and treasury-company suits, and why the ne"
     },
     {
       "video_id": "xBcugR2fM84",
@@ -49534,20 +49106,6 @@
       "summary": "Our Global Head of Fixed Income Research Andrew Sheets explains our differentiated view of a potential benign outlook for inflation, despite the recent acceleration. Never miss a Morgan Stanley video. Subscribe to our YouTube channel now: https://mgstn.ly/4rf2Txj _________________________________________________________________________ Or you can subscribe to Thoughts on the Market directly on Apple or Spotify. Apple Podcasts: https://mgstn.ly/3Kpzs8r Spotify Podcasts: https://mgstn.ly/3KqqpE2"
     },
     {
-      "video_id": "Rr_RQlkRSI4",
-      "title": "BI RATE NAIK MENDADAK! + PERTAMAX IKUT NAIK!",
-      "channel": "Mirae Asset Sekuritas",
-      "channel_id": "UCbgUIA1udecuOCfDaOFkZ1w",
-      "category": "market_id",
-      "geo": "ID",
-      "url": "https://www.youtube.com/watch?v=Rr_RQlkRSI4",
-      "embed": "https://www.youtube.com/embed/Rr_RQlkRSI4",
-      "thumb": "https://i.ytimg.com/vi/Rr_RQlkRSI4/hqdefault.jpg",
-      "published": "2026-06-11T13:48:17Z",
-      "ts": 1781185697,
-      "summary": "Simak MASI-LIMA INFORMASI ekonomi dan bursa hari ini yang wajib kamu tahu: 1. BI RATE: Bank Indonesia naikkan BI Rate 25 bps ke 5,50% lewat rapat di luar jadwal resmi untuk stabilisasi Rupiah. 2. PERTAMAX: Harga Pertamax resmi naik jadi Rp16.250/liter dari sebelumnya Rp12.300/liter, berlaku mulai 10 Juni 2026. 3. PGAS: PGAS resmi operasikan proyek pipa transmisi Cirebon–Semarang tahap II untuk memperkuat distribusi gas bumi. 4. REKSA DANA: AUM RDPU naik 68,8% YoY ke Rp152,5 triliun, level tertin"
-    },
-    {
       "video_id": "llliImDWB2o",
       "title": "This Is “100%” a Margin Call, Says Bubba Horwitz  #kitconews #news #gold #margincall",
       "channel": "Kitco News",
@@ -49612,15 +49170,15 @@
         "US": 110
       },
       "category": {
-        "ECONOMY": 70,
-        "MARKETS_FINANCE": 78,
+        "ECONOMY": 71,
+        "MARKETS_FINANCE": 77,
         "TECH": 35,
         "CRYPTO": 37
       },
       "query_type": {
-        "trusted": 151,
+        "trusted": 152,
         "topic": 48,
-        "index": 10,
+        "index": 9,
         "sector": 11
       },
       "top_sources": {
@@ -49628,10 +49186,10 @@
         "CNBC Indonesia": 19,
         "Yahoo Finance": 17,
         "CNBC": 14,
-        "kontan.co.id": 12,
+        "kontan.co.id": 13,
         "Bloomberg Technoz": 11,
         "Bloomberg.com": 11,
-        "TradingView": 9,
+        "TradingView": 8,
         "Bisnis.com": 7,
         "Pluang": 7,
         "MarketWatch": 7,
@@ -49725,35 +49283,35 @@
       "sources_present": 21,
       "missing_sources": [],
       "category": {
+        "market_id": 26,
         "market_us": 67,
-        "crypto": 15,
-        "market_id": 26
+        "crypto": 15
       },
       "geo": {
+        "ID": 26,
         "US": 67,
-        "CR": 15,
-        "ID": 26
+        "CR": 15
       },
       "top_sources": {
+        "IDX Channel": 6,
+        "Mirae Asset Sekuritas": 6,
         "Bloomberg Television": 6,
         "Schwab Network": 6,
+        "Simply Bitcoin": 6,
         "Bloomberg Stock Movers": 6,
         "CNBC Television": 6,
         "Altcoin Daily": 6,
         "Kitco News": 6,
         "BBC News": 6,
         "Bloomberg Daybreak: US": 6,
-        "Morgan Stanley": 6,
-        "Simply Bitcoin": 6,
-        "IDX Channel": 6,
-        "Bloomberg Technoz": 6
+        "Morgan Stanley": 6
       },
       "fresh_by_source": {
         "Bloomberg Daybreak: Asia": 6,
         "Mirae Asset Sekuritas": 6,
         "Bloomberg Technoz": 6,
-        "CNBC Television": 6,
-        "Schwab Network": 6,
+        "IDX Channel": 6,
+        "Simply Bitcoin": 6,
         "Bloomberg Tech": 5,
         "Reuters Morning Bid": 5,
         "Mandiri Sekuritas": 4,
@@ -49955,8 +49513,16 @@
   },
   "macro_analysis": [
     {
-      "point": "The Fed's hawkish hold under Warsh, with more officials projecting hikes, has lifted US real yields and the dollar, pressuring EM currencies. This explains the Rupiah's stagnation near 17,748 and the JCI's 0.55% decline as foreign flows retreat from risk-sensitive Indonesian equities.",
+      "point": "The Fed's hawkish hold and projection of a rate hike later this year (news 7, 15) have pushed US 10-year yields up 0.79% and the dollar index up 0.26%, tightening global financial conditions. This strengthens the USD/IDR and pressures foreign flows out of Indonesian equities, as seen in the JCI's 0.55% decline and the broad sell-off in rate-sensitive sectors like Technology (-1.72%) and Property & Real Estate (-2.29%).",
       "sources": [
+        {
+          "name": "US 10Y Yield",
+          "url": "https://finance.yahoo.com/quote/^TNX"
+        },
+        {
+          "name": "US Dollar Index",
+          "url": "https://finance.yahoo.com/quote/DX-Y.NYB"
+        },
         {
           "name": "USD/IDR",
           "url": "https://finance.yahoo.com/quote/USDIDR=X"
@@ -49964,19 +49530,19 @@
         {
           "name": "JCI / IHSG",
           "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
+        {
+          "name": "Reuters",
+          "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQOU5DMTRIOHpLY0VUdlJ6RW1fcEhveWNmVmZaNFo0YkdfNmN0a0VZN1JHMDcxVFdlMl81aVpWQV8td2hxb1dZcldhVE5USmVqeEhDNDA4Yk5RSDBpWnBuN3FTblFLMUxEa3poLTZsR3pfMmNfUENaOVZDRjVFNGl5V0l6MA?oc=5"
         },
         {
           "name": "Yahoo Finance",
           "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPeUVkdmxNcUd4Vno0MjFkSUJEbW9tbjV1UnBfX1JaUlZkM1pldURYeFEzVlZObzNacGxzVlRVa01CRUotVkFmVGtIU2xwSWQwRjhfU3dGUldzeE5sQm1aQVNYOVIzU2hmLWdkQkl5aFEydHdlbnZvZHNvUUp0X2lQbklaY0stVWtLam9TNXRGdVVFajVxeGlNOEhLU2VFSEhSRDU5bnJ1cEIxWm8yeG1IOUlfZFNmb2VvZ2s5dlZnUkRfTHRMLXhydHg5ejgzTkFIbWd3NXp2OXpLUXZPUUdVUF9lT0hvNUhCb2NRZlVR?oc=5"
-        },
-        {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxNWTFkRmhHamg0VkY1ZGREVEJRUDNDSTZvRlVONVJ0TEw4SWVTUDk4cHVoOGZzR2x2cHRFLW9Kb2FnM2RhM1ZTYkFRSUh3UklCeF9nem5zSXVieFhDeWQ2bDVhNjcwVFRBa3JUbkhrS0ROeWRONHg2UGR2WTZzTUlsVVhSLVFWekZieWNQaGRGZkhDMWc4LVp0TDdEMXMzUjMtbnczRExDU21pcHBySDJLYnhUWHB6OHlIZUFCcTJzSlNwdFZZVzlyZ0t6UVB0SHhxTmJMRWRBRUFPRFVBOEVmcEVLU3BUMDUwTUVkRk9Ic09tWmFvOFdJeDlR?oc=5"
         }
       ]
     },
     {
-      "point": "Japan's rate hike to 1%, the highest since 1995, tightens global liquidity and strengthens the yen, reducing carry trade appetite for high-yield currencies like the Rupiah. This adds to IDR depreciation pressure and weighs on JCI via foreign outflows, particularly in rate-sensitive property and real estate sectors which fell 2.29%.",
+      "point": "Bank Indonesia is expected to hold its policy rate steady at the June RDG (news 2, 3), which, combined with the Fed's hawkish stance, keeps the rupiah under pressure and limits the JCI's upside. The anticipation of BI's decision has created a 'wait and see' environment (news 0), with foreign investor flows diverging across stocks like BUMI, BRMS, and BBCA (news 5), indicating selective positioning rather than broad-based buying.",
       "sources": [
         {
           "name": "USD/IDR",
@@ -49985,6 +49551,39 @@
         {
           "name": "JCI / IHSG",
           "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
+        {
+          "name": "Antara News jatim",
+          "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNU2JJMy1HY1M2VU9BSkFrbnlCd0c3RjNtTDM0Z3JsTElQeHNrRnZwN0szQVpULU44UjNySi05TXRWdzJBRXFzRWdlX25BNmc4Tnl4NnpmVk0wSDZXOFRpOERqcGtWeEpyUWJOc1doRERlRXZ2RF9zemZMZ3B5bThsZHBIYy14alBESG5SNklkNlJPSEItSW5IRkhhTV94N2FOMWp5ZE9yWljSAa4BQVVfeXFMT0czbTNhNG80RXp0cUtlbE9zYkYyc1hTTVJkSEFHTkE2Xy1hMXlBaWxrQXllMGlWT2wybHlxWmx0RDcyYnpJX1R0bFgxRl9nS1NpYkxPMU96Qk81encwZ1BrV2NmVDAyNURWNTJKR0pwR2I5bGZ3SjBMQmsyOE90TjFPbVpuX0Q2SVNkMExxTklpelR3U2hfZkwzdjdXdlFIY0ZUSHB0Tk1FbGtqR1lR?oc=5"
+        },
+        {
+          "name": "Bloomberg Technoz",
+          "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPRG84OGQ3VzNwUlBqanIxSFktVTZRbVoxT2RqTUR4WWdkRkI2YVVWaVc0Znd5a095SEo1cnJfaHNkSEVaYjB4Y01YVC1Pb2ZLNW1sOE9CdHV3TElobmN1OG1uRFVhcWVOcERZa18zREVHTmFuTWFPd3JsV1hsdnNvdllPTEc4NWh5UFpQbzNHdDJ6MEhNZy1nSEhJUGZtQ2pQX1lUWWxHVWxnVWZHdjhfVUp2MG1NZw?oc=5"
+        },
+        {
+          "name": "Bisnis Indonesia Premium",
+          "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOU2hoZ3Rpdm52RlZtVTBUOHJxcWdkTU5aSUM3M0JmenJ5VzdkejZJbU9HREw3R253LUk0SlNfNkZ2NGVQVW1ralVSRm1WelJ5aDlMeFBOaEdvaU5JQ0dnY0ptc2JvNUc1YmhleC1zdVF1ZVhGZF9CQm1Xcm14ZW45ZzA3dExqdnlzcEFheWRhbGpKbzdHUEQ5eWgzV3hXTWRxeElDeGVKTlhtZXlkaHBHU3VmLW53U3FsTWc?oc=5"
+        }
+      ]
+    },
+    {
+      "point": "The Bank of Japan's rate hike to 1%, the highest since 1995 (news 6, 8), has triggered a sharp yen carry trade unwind, contributing to the 12.37% spike in the VIX and a 1.34% drop in the Nasdaq. This risk-off sentiment cascades to Indonesia, hitting growth-sensitive sectors like Logistics (-2.25%) and Mining & Energy (-1.19%), with coal proxy ITMG falling 3.53% and nickel proxy INCO down 1.67%.",
+      "sources": [
+        {
+          "name": "CBOE VIX",
+          "url": "https://finance.yahoo.com/quote/^VIX"
+        },
+        {
+          "name": "Nasdaq",
+          "url": "https://finance.yahoo.com/quote/^IXIC"
+        },
+        {
+          "name": "Coal proxy (ITMG)",
+          "url": "https://finance.yahoo.com/quote/ITMG.JK"
+        },
+        {
+          "name": "Nickel proxy (INCO)",
+          "url": "https://finance.yahoo.com/quote/INCO.JK"
         },
         {
           "name": "Bisnis.com",
@@ -49997,50 +49596,8 @@
       ]
     },
     {
-      "point": "Commodity weakness, with Brent crude down 0.88% and coal proxy ITMG falling 3.53%, reflects global demand concerns and a stronger dollar. This directly drags on Indonesia's mining and energy sector, which declined 1.19%, and pressures the trade balance, adding to Rupiah vulnerability.",
+      "point": "The key risk to watch is whether BI's expected rate hold (news 2, 3) can stabilize the rupiah amid a hawkish Fed and BOJ tightening, or if further weakness triggers capital outflows that deepen the JCI's decline. The divergence in foreign flows (news 5) and the VIX surge (news 7) suggest that any hawkish surprise from BI or escalation in global risk aversion could accelerate selling in Indonesian equities, especially in property and tech sectors.",
       "sources": [
-        {
-          "name": "Brent Crude",
-          "url": "https://finance.yahoo.com/quote/BZ=F"
-        },
-        {
-          "name": "Coal proxy (ITMG)",
-          "url": "https://finance.yahoo.com/quote/ITMG.JK"
-        },
-        {
-          "name": "USD/IDR",
-          "url": "https://finance.yahoo.com/quote/USDIDR=X"
-        }
-      ]
-    },
-    {
-      "point": "US tech selloff, with Nasdaq down 1.34%, spills over to Indonesia's technology sector (-1.72%) and crypto-related names (-1.79%) as global risk appetite contracts. Higher US rates compress duration-sensitive valuations, making Indonesian tech and digital assets particularly vulnerable to foreign selling.",
-      "sources": [
-        {
-          "name": "Nasdaq",
-          "url": "https://finance.yahoo.com/quote/^IXIC"
-        },
-        {
-          "name": "Bitcoin / USD",
-          "url": "https://www.coingecko.com/en/coins/bitcoin"
-        },
-        {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPVXc5VWxXSTRVNWNESkN6eXRidktIdEpxNmZjaWVxdWlLeWd0dXNXSGo4b2xVeEdmU1NGTVpQdDVza29ld3lCbW9nNmJXR0p3MmtsOFUyZzM5VEVJSHp1VWhLanlZUEJyUVZLMFZrazR4YWRuanVhZGl3WGRWVllFaVpkTkpGc3dZSVl3UHBnTFBEM3lNRk9BbGNseXFGWFdYZTBNRFdlcVNWR2RUWHc?oc=5"
-        }
-      ]
-    },
-    {
-      "point": "The key risk is whether BI will hold rates steady in June, as widely expected, or be forced to hike to defend the Rupiah amid Fed hawkishness and yen strength. A BI hold could stabilize JCI short-term but risks further IDR weakness if US rates rise, while a hike would pressure domestic growth-sensitive sectors.",
-      "sources": [
-        {
-          "name": "Bloomberg Technoz",
-          "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPRG84OGQ3VzNwUlBqanIxSFktVTZRbVoxT2RqTUR4WWdkRkI2YVVWaVc0Znd5a095SEo1cnJfaHNkSEVaYjB4Y01YVC1Pb2ZLNW1sOE9CdHV3TElobmN1OG1uRFVhcWVOcERZa18zREVHTmFuTWFPd3JsV1hsdnNvdllPTEc4NWh5UFpQbzNHdDJ6MEhNZy1nSEhJUGZtQ2pQX1lUWWxHVWxnVWZHdjhfVUp2MG1NZw?oc=5"
-        },
-        {
-          "name": "CNBC Indonesia",
-          "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQbUJ1dGhYcHRMVTJ4dHA5YTZ1UFFadEtyYmpScEo4U1ppTS1oeTNtVVpqVGFYRE13aDNWUUt4cS04U1loMWh0RnhIenZUV3Zqd21HUFpNaHM0X3RqeEVqRXNGUWVGLTBBQ2tQMkh6aEN5MjZ6Y183dGN4Nmg2eUlybHJDZlAtb1hWT3IzR0VjenZ6WUtrcm5zNVRnYzg5VVFnQjB4ZElsQ3U2eEFTdVdIc1hCWUlGNE1MNHhuR3NZejV3N3VxejlocXdEc0RrY2_SAdQBQVVfeXFMTzEwM082YU1NWlFmeVl3cndsS2lQWGNEX2hoODlGVVFncmY3cUZpN2VkZG80WmxWY2dvUDRIaTBSX0hNQ19SMkhOMlIwc0hETV80UGhJWFZhRnZMQWNuX0UyYjJlZWtDd2VUUEpHUDlLMkxScm9RajhoTFlUNGxfNFl0UzFJZHVHb0NJWlctcDFGNFVQZlBULVJBVmVvYmxUU1c2YTg5Q2xZSkpaRlh1R1FnaVQ5T3FfdlpzLS0tbE9CYjUyUmZ1N1J6Sk4xNnNMUmlVQ0c?oc=5"
-        },
         {
           "name": "USD/IDR",
           "url": "https://finance.yahoo.com/quote/USDIDR=X"
@@ -50048,22 +49605,42 @@
         {
           "name": "JCI / IHSG",
           "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
+        {
+          "name": "CBOE VIX",
+          "url": "https://finance.yahoo.com/quote/^VIX"
+        },
+        {
+          "name": "Bloomberg Technoz",
+          "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPRG84OGQ3VzNwUlBqanIxSFktVTZRbVoxT2RqTUR4WWdkRkI2YVVWaVc0Znd5a095SEo1cnJfaHNkSEVaYjB4Y01YVC1Pb2ZLNW1sOE9CdHV3TElobmN1OG1uRFVhcWVOcERZa18zREVHTmFuTWFPd3JsV1hsdnNvdllPTEc4NWh5UFpQbzNHdDJ6MEhNZy1nSEhJUGZtQ2pQX1lUWWxHVWxnVWZHdjhfVUp2MG1NZw?oc=5"
+        },
+        {
+          "name": "Bisnis Indonesia Premium",
+          "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOU2hoZ3Rpdm52RlZtVTBUOHJxcWdkTU5aSUM3M0JmenJ5VzdkejZJbU9HREw3R253LUk0SlNfNkZ2NGVQVW1ralVSRm1WelJ5aDlMeFBOaEdvaU5JQ0dnY0ptc2JvNUc1YmhleC1zdVF1ZVhGZF9CQm1Xcm14ZW45ZzA3dExqdnlzcEFheWRhbGpKbzdHUEQ5eWgzV3hXTWRxeElDeGVKTlhtZXlkaHBHU3VmLW53U3FsTWc?oc=5"
+        },
+        {
+          "name": "Reuters",
+          "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQOU5DMTRIOHpLY0VUdlJ6RW1fcEhveWNmVmZaNFo0YkdfNmN0a0VZN1JHMDcxVFdlMl81aVpWQV8td2hxb1dZcldhVE5USmVqeEhDNDA4Yk5RSDBpWnBuN3FTblFLMUxEa3poLTZsR3pfMmNfUENaOVZDRjVFNGl5V0l6MA?oc=5"
         }
       ]
     }
   ],
   "alerts": [
     {
-      "title": "Fed hawkish hold signals potential hike by October",
-      "desc": "More Fed officials now project rate hikes later this year, with markets pricing a move by October. This strengthens the dollar and pressures EM currencies like the Rupiah.",
+      "title": "Fed Hawkish Hold Pressures JCI and Rupiah",
+      "desc": "The Fed's decision to keep rates steady but project a hike (news 7, 15) has lifted US yields and the dollar, weakening the rupiah and dragging the JCI down 0.55%.",
       "sources": [
+        {
+          "name": "Reuters",
+          "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQOU5DMTRIOHpLY0VUdlJ6RW1fcEhveWNmVmZaNFo0YkdfNmN0a0VZN1JHMDcxVFdlMl81aVpWQV8td2hxb1dZcldhVE5USmVqeEhDNDA4Yk5RSDBpWnBuN3FTblFLMUxEa3poLTZsR3pfMmNfUENaOVZDRjVFNGl5V0l6MA?oc=5"
+        },
         {
           "name": "Yahoo Finance",
           "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPeUVkdmxNcUd4Vno0MjFkSUJEbW9tbjV1UnBfX1JaUlZkM1pldURYeFEzVlZObzNacGxzVlRVa01CRUotVkFmVGtIU2xwSWQwRjhfU3dGUldzeE5sQm1aQVNYOVIzU2hmLWdkQkl5aFEydHdlbnZvZHNvUUp0X2lQbklaY0stVWtLam9TNXRGdVVFajVxeGlNOEhLU2VFSEhSRDU5bnJ1cEIxWm8yeG1IOUlfZFNmb2VvZ2s5dlZnUkRfTHRMLXhydHg5ejgzTkFIbWd3NXp2OXpLUXZPUUdVUF9lT0hvNUhCb2NRZlVR?oc=5"
         },
         {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMi-gFBVV95cUxNWTFkRmhHamg0VkY1ZGREVEJRUDNDSTZvRlVONVJ0TEw4SWVTUDk4cHVoOGZzR2x2cHRFLW9Kb2FnM2RhM1ZTYkFRSUh3UklCeF9nem5zSXVieFhDeWQ2bDVhNjcwVFRBa3JUbkhrS0ROeWRONHg2UGR2WTZzTUlsVVhSLVFWekZieWNQaGRGZkhDMWc4LVp0TDdEMXMzUjMtbnczRExDU21pcHBySDJLYnhUWHB6OHlIZUFCcTJzSlNwdFZZVzlyZ0t6UVB0SHhxTmJMRWRBRUFPRFVBOEVmcEVLU3BUMDUwTUVkRk9Ic09tWmFvOFdJeDlR?oc=5"
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
         },
         {
           "name": "USD/IDR",
@@ -50072,8 +49649,8 @@
       ]
     },
     {
-      "title": "Japan rate hike to 1% reduces carry trade appeal",
-      "desc": "BOJ's hike to highest since 1995 strengthens yen, reducing demand for high-yield EM currencies. Rupiah faces additional headwinds from yen-funded carry unwinding.",
+      "title": "BOJ Rate Hike Triggers Risk-Off, Hits Indonesian Commodities",
+      "desc": "Japan's rate hike to 1% (news 6, 8) has spiked the VIX 12.37%, driving a sell-off in Indonesian mining stocks with ITMG down 3.53% and INCO down 1.67%.",
       "sources": [
         {
           "name": "Bisnis.com",
@@ -50084,58 +49661,66 @@
           "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNdjZKOWlBaDJOV1BaRjNxbXRaSzJjb0s0a1ZHMHQxMjZ2ZjNsSHY3UzFlODNJRmJfbUF6Z0R1LVUtYUUzSjh1WWROOF9ISXJzbU5nNXpwbXBIR1NIbU9haXBhSEtJYXFvNDY2SEtfZUVfNlFKREx1eEFjczRXS0l6WDE2MkJFZGZmODBCTnFsSUxkb1hfOXhKU1c0UjctdGp1b0RodldURzVNcEZaSmN3ektvYWo0Wm5nYTFaZ0Q5OXJSQU1sYlVmV0R4b9IB0AFBVV95cUxNelhGQmFtMUtFLXM0aVFJOHRTdUZGYUdKdTJMU2RhRkJlY0hVUEppLXl0M0hlcnNRX2FjbEd0NklhZVpvQm1lR0tsTFhObjFFVXNBNFJDZ3hpWG1ERU43SE1odFpQTi1EZl96aDRPcllJZ1dEbUlCOU8xdUZGd21qc1BnTWM0X05fU2lNdE1qMFhOeHlKby0weHVXMklmei01V0pHUGNwN1Fyak5FUldiLVpOeXlWZE1SV29NVlAtaWJ5eFFSUDZqOTVIOUNDc2JX?oc=5"
         },
         {
-          "name": "USD/IDR",
-          "url": "https://finance.yahoo.com/quote/USDIDR=X"
-        }
-      ]
-    },
-    {
-      "title": "Coal proxy ITMG plunges 3.53% on commodity rout",
-      "desc": "Brent crude and coal prices fall amid global demand fears and stronger dollar. Indonesia's mining sector is under pressure, with ITMG leading losses.",
-      "sources": [
+          "name": "CBOE VIX",
+          "url": "https://finance.yahoo.com/quote/^VIX"
+        },
         {
           "name": "Coal proxy (ITMG)",
           "url": "https://finance.yahoo.com/quote/ITMG.JK"
         },
         {
-          "name": "Brent Crude",
-          "url": "https://finance.yahoo.com/quote/BZ=F"
-        },
-        {
-          "name": "Antara News jatim",
-          "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE0zNmdzR2x4T1hDSmVjUEVkZWFlb3Z3NUlSLUw4c0p0X1FabFM2aEczaEJoWHE4MEpEZzlnekpRZGp2TmluS085ZENJc3hhMDdNcU9sbFF3Z1hDTGp6MW5adnZDOXNxYkdiSTJZ?oc=5"
+          "name": "Nickel proxy (INCO)",
+          "url": "https://finance.yahoo.com/quote/INCO.JK"
         }
       ]
     },
     {
-      "title": "US tech selloff hits Indonesian tech and crypto",
-      "desc": "Nasdaq down 1.34% and Bitcoin down 1.86% as higher US rates compress duration-sensitive assets. Indonesian tech sector fell 1.72% and crypto names dropped 1.79%.",
-      "sources": [
-        {
-          "name": "Nasdaq",
-          "url": "https://finance.yahoo.com/quote/^IXIC"
-        },
-        {
-          "name": "Bitcoin / USD",
-          "url": "https://www.coingecko.com/en/coins/bitcoin"
-        },
-        {
-          "name": "Yahoo Finance",
-          "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPVXc5VWxXSTRVNWNESkN6eXRidktIdEpxNmZjaWVxdWlLeWd0dXNXSGo4b2xVeEdmU1NGTVpQdDVza29ld3lCbW9nNmJXR0p3MmtsOFUyZzM5VEVJSHp1VWhLanlZUEJyUVZLMFZrazR4YWRuanVhZGl3WGRWVllFaVpkTkpGc3dZSVl3UHBnTFBEM3lNRk9BbGNseXFGWFdYZTBNRFdlcVNWR2RUWHc?oc=5"
-        }
-      ]
-    },
-    {
-      "title": "BI expected to hold rates steady in June meeting",
-      "desc": "Market consensus points to BI maintaining its policy rate, but the Rupiah's weakness and Fed hawkishness raise the risk of a surprise hike. Watch for BI's decision this week.",
+      "title": "BI Rate Decision in Focus as Rupiah Weakens",
+      "desc": "With BI expected to hold rates (news 2, 3) and the rupiah flat at 17748, any hawkish surprise could further pressure the currency and JCI.",
       "sources": [
         {
           "name": "Bloomberg Technoz",
           "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPRG84OGQ3VzNwUlBqanIxSFktVTZRbVoxT2RqTUR4WWdkRkI2YVVWaVc0Znd5a095SEo1cnJfaHNkSEVaYjB4Y01YVC1Pb2ZLNW1sOE9CdHV3TElobmN1OG1uRFVhcWVOcERZa18zREVHTmFuTWFPd3JsV1hsdnNvdllPTEc4NWh5UFpQbzNHdDJ6MEhNZy1nSEhJUGZtQ2pQX1lUWWxHVWxnVWZHdjhfVUp2MG1NZw?oc=5"
         },
         {
-          "name": "CNBC Indonesia",
-          "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQbUJ1dGhYcHRMVTJ4dHA5YTZ1UFFadEtyYmpScEo4U1ppTS1oeTNtVVpqVGFYRE13aDNWUUt4cS04U1loMWh0RnhIenZUV3Zqd21HUFpNaHM0X3RqeEVqRXNGUWVGLTBBQ2tQMkh6aEN5MjZ6Y183dGN4Nmg2eUlybHJDZlAtb1hWT3IzR0VjenZ6WUtrcm5zNVRnYzg5VVFnQjB4ZElsQ3U2eEFTdVdIc1hCWUlGNE1MNHhuR3NZejV3N3VxejlocXdEc0RrY2_SAdQBQVVfeXFMTzEwM082YU1NWlFmeVl3cndsS2lQWGNEX2hoODlGVVFncmY3cUZpN2VkZG80WmxWY2dvUDRIaTBSX0hNQ19SMkhOMlIwc0hETV80UGhJWFZhRnZMQWNuX0UyYjJlZWtDd2VUUEpHUDlLMkxScm9RajhoTFlUNGxfNFl0UzFJZHVHb0NJWlctcDFGNFVQZlBULVJBVmVvYmxUU1c2YTg5Q2xZSkpaRlh1R1FnaVQ5T3FfdlpzLS0tbE9CYjUyUmZ1N1J6Sk4xNnNMUmlVQ0c?oc=5"
+          "name": "Bloomberg Technoz",
+          "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQeFVvdWQyLXFpVVlkWG5seUEwY2JIUlROSG9sMVhqSDkzODRyNjNDbGxhM1ZRamtCb2lORVZDNUlxcW1CdUo1OUxjWXg2a3pUWGp2MXJNcWY2MDlzVGxpVW9PT1RMRWVMY2FoUElPVmYwR29GTUg0WWpOYXVXTEVsQkUydjRwV3ZzejlUbFhZT1dhUFZHcHd5d2pkTThuekZQaWFVdDd3ckowS3lIZUlvSXlqV3FrR0pk?oc=5"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        }
+      ]
+    },
+    {
+      "title": "Foreign Flows Diverge Across Indonesian Blue Chips",
+      "desc": "Investor flows are split among stocks like BUMI, BRMS, TPIA, BBRI, and BBCA (news 5), signaling selective positioning amid global uncertainty.",
+      "sources": [
+        {
+          "name": "Bisnis Indonesia Premium",
+          "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOU2hoZ3Rpdm52RlZtVTBUOHJxcWdkTU5aSUM3M0JmenJ5VzdkejZJbU9HREw3R253LUk0SlNfNkZ2NGVQVW1ralVSRm1WelJ5aDlMeFBOaEdvaU5JQ0dnY0ptc2JvNUc1YmhleC1zdVF1ZVhGZF9CQm1Xcm14ZW45ZzA3dExqdnlzcEFheWRhbGpKbzdHUEQ5eWgzV3hXTWRxeElDeGVKTlhtZXlkaHBHU3VmLW53U3FsTWc?oc=5"
+        },
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        }
+      ]
+    },
+    {
+      "title": "Property and Tech Sectors Lead JCI Decline",
+      "desc": "Rate-sensitive Property & Real Estate (-2.29%) and Technology (-1.72%) sectors are underperforming as higher US yields and rupiah weakness weigh on valuations.",
+      "sources": [
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
+        {
+          "name": "US 10Y Yield",
+          "url": "https://finance.yahoo.com/quote/^TNX"
         },
         {
           "name": "USD/IDR",
