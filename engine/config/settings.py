@@ -640,6 +640,8 @@ NEWS_TRUSTED_SOURCES = {
     ],
     "indonesia": [
         ("CNBC Indonesia", "cnbcindonesia.com"), ("EmitenNews", "emitennews.com"),
+        ("Kabar Bursa", "kabarbursa.com"), ("Ajaib Berita", "ajaib.co.id"),
+        ("IDNFinancials", "idnfinancials.com"),
         ("Bloomberg Technoz", "bloombergtechnoz.com"), ("Kontan", "kontan.co.id"), ("Bisnis Indonesia", "bisnis.com"),
         ("Investor Daily", "investor.id"), ("Katadata", "katadata.co.id"),
         ("Antara News", "antaranews.com"), ("IDX Channel", "idxchannel.com"),
@@ -668,7 +670,8 @@ NEWS_TRUSTED_SOURCES = {
 # Targeted source passes are deliberately compact: trusted source discovery should
 # improve quality without turning the 30-min cron into a crawler.
 NEWS_SOURCE_TARGETS = {
-    "ID": ["cnbcindonesia.com", "emitennews.com", "bloombergtechnoz.com", "kontan.co.id", "bisnis.com",
+    "ID": ["cnbcindonesia.com", "emitennews.com", "kabarbursa.com", "idnfinancials.com",
+           "bloombergtechnoz.com", "kontan.co.id", "bisnis.com", "ajaib.co.id",
            "katadata.co.id", "antaranews.com", "idxchannel.com"],
     "US": ["reuters.com", "bloomberg.com", "cnbc.com", "finance.yahoo.com",
            "marketwatch.com", "investing.com", "barrons.com"],

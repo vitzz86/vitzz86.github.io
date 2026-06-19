@@ -694,7 +694,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
 
     def _trusted(job):
         q, geo, cat, group = job
-        max_sites = 8 if group == "ID" else 5
+        max_sites = 11 if group == "ID" else 5
         return _targeted_source_news(q, geo, cat, group, q.split(), cap=10, max_sites=max_sites)
 
     try:
@@ -745,7 +745,7 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         items += _targeted_source_news(usqs[0], "US", sec_cat, "CRYPTO_GLOBAL" if s["key"] == "crypto" else "US",
                                        terms, cap=6, max_sites=3 if s["key"] == "crypto" else 2)
         items += _targeted_source_news(idqs[0], "ID", sec_cat, "CRYPTO_ID" if s["key"] == "crypto" else "ID",
-                                       terms, cap=8, max_sites=4 if s["key"] == "crypto" else 5)
+                                       terms, cap=8, max_sites=4 if s["key"] == "crypto" else 8)
         items = _sector_rank(_recent(prev_sector.get(s["key"], []) + items), s, 14)   # ≤7d memory
         for it in items:
             it["sectors"] = [s["key"]]

@@ -13,7 +13,17 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 8
+SCORE_SCHEMA_VERSION = 9
+
+BANK_KEYWORDS = (
+    "bank", "bancorp", "chase", "wells fargo", "syariah", "btpn", "bpd",
+    "rakyat", "mandiri", "negara", "central asia", "jago", "mega",
+)
+BANK_TICKERS = {
+    "BBCA", "BBRI", "BMRI", "BBNI", "BRIS", "BTPS", "MEGA", "ARTO",
+    "BJTM", "JPM", "BAC", "WFC",
+}
+ASSET_LIGHT_FINANCIAL_TICKERS = {"V", "MA", "BLK", "SCHW", "GS", "MS", "AXP", "ADMF"}
 
 
 def _now_iso() -> str:
@@ -279,6 +289,133 @@ def _sanitize_ratio(v, max_reasonable: float = 500.0):
     return x
 
 
+def _valid_beta(v):
+    beta = _num(v)
+    if beta is None or beta < 0.15 or beta > 4.0:
+        return None
+    return beta
+
+
+def _sector_key(metrics: dict) -> str:
+    return str(metrics.get("_sector_key") or "").lower()
+
+
+def _country(metrics: dict) -> str:
+    return str(metrics.get("_country") or "").upper()
+
+
+def _ticker(metrics: dict) -> str:
+    return str(metrics.get("_ticker") or "").upper()
+
+
+def _is_bank_like(metrics: dict) -> bool:
+    ticker = _ticker(metrics)
+    if ticker in ASSET_LIGHT_FINANCIAL_TICKERS:
+        return False
+    if ticker in BANK_TICKERS:
+        return True
+    if _sector_key(metrics) != "financials":
+        return False
+    name = str(metrics.get("_company_name") or "").lower()
+    return any(term in name for term in BANK_KEYWORDS)
+
+
+def _sector_profile(metrics: dict) -> dict:
+    key = _sector_key(metrics)
+    if _is_bank_like(metrics):
+        return {
+            "family": "bank",
+            "method": "Bank justified P/B from ROE, sustainable growth, and cost of equity; P/E is a cross-check",
+            "scorecard_title": "BANK VALUATION SCORECARD",
+        }
+    if key in {"energy", "renewables"}:
+        return {
+            "family": "asset_heavy",
+            "method": "Current P/E anchored multiple, cross-checked by FCF yield, EV/EBITDA, and balance-sheet risk",
+            "scorecard_title": "SECTOR-ADAPTED P/E SCORECARD",
+        }
+    if key == "property":
+        return {
+            "family": "asset_heavy",
+            "method": "Current P/E anchored multiple, cross-checked by P/B and asset value",
+            "scorecard_title": "PROPERTY VALUATION SCORECARD",
+        }
+    if key in {"technology", "healthcare", "consumer", "entertainment"}:
+        return {
+            "family": "compounder",
+            "method": "Current P/E anchored multiple, adjusted for growth, quality, cash conversion, and risk",
+            "scorecard_title": "COMPOUNDER P/E SCORECARD",
+        }
+    return {
+        "family": "general",
+        "method": "Current P/E anchored multiple, adjusted for quality, growth, cash flow, leverage, and risk",
+        "scorecard_title": "SECTOR-ADAPTED P/E SCORECARD",
+    }
+
+
+def _country_equity_risk_premium(metrics: dict) -> float:
+    country = _country(metrics)
+    if country == "ID":
+        return 5.0
+    if country == "US":
+        return 4.0
+    return 4.5
+
+
+def _cost_of_equity(metrics: dict) -> float:
+    hurdle = _valuation_hurdle(metrics)
+    country = _country(metrics)
+    floor = 10.0 if country == "ID" else 7.5 if country == "US" else 8.5
+    coe = (hurdle or floor) + _country_equity_risk_premium(metrics)
+    return round(_clamp(coe, floor, 18.0), 2)
+
+
+def _sustainable_growth(metrics: dict, coe: float | None = None) -> tuple[float, str]:
+    roe = _num(metrics.get("roe_pct"))
+    pe = _sanitize_ratio(metrics.get("pe"), 150.0)
+    div_yield = _num(metrics.get("dividend_yield_pct"))
+    growth = _growth_anchor(metrics)
+    country = _country(metrics)
+    cap = 7.0 if country == "ID" else 5.0 if country == "US" else 6.0
+    source = "growth metrics"
+    if roe is not None and roe > 0 and pe and div_yield is not None and div_yield >= 0:
+        earnings_yield = 100 / pe if pe else None
+        payout = _clamp(div_yield / earnings_yield, 0.10, 0.85) if earnings_yield else 0.45
+        growth = roe * (1 - payout)
+        source = f"ROE × retention; payout implied by dividend yield and P/E"
+    elif growth is None and roe is not None:
+        growth = roe * 0.35
+        source = "ROE × assumed retention"
+    growth = _clamp(growth if growth is not None else 3.0, -3.0, cap)
+    if coe is not None:
+        growth = min(growth, max(-3.0, coe - 1.5))
+    return round(growth, 2), source
+
+
+def _valuation_value_score(valuation: dict | None) -> float | None:
+    if not valuation:
+        return None
+    upside = _num(valuation.get("upside_pct"))
+    if upside is None:
+        return None
+    # -30% or worse = very expensive, +30% or better = compelling value.
+    return round(_clamp((upside + 30) / 60 * 100, 0, 100))
+
+
+def _valuation_confidence(metrics: dict, components: list[dict], method: str) -> str:
+    required = ["current_price"]
+    if method == "bank":
+        required += ["book_value", "roe_pct"]
+    else:
+        required += ["eps", "pe"]
+    present = sum(1 for k in required if _num(metrics.get(k)) is not None)
+    if present == len(required) and len(components) >= 2:
+        return "High"
+    if present >= max(2, len(required) - 1) and components:
+        return "Medium"
+    return "Low"
+
+
 def _fetch_equity(sym: str) -> dict:
     import yfinance as yf
 
@@ -372,23 +509,59 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
 
 def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = _normalize_currencies(row, metrics, risk_context)
+    metrics["_ticker"] = row.get("ticker")
+    metrics["_company_name"] = row.get("name")
+    metrics["_sector_key"] = row.get("sector_key")
+    metrics["_sector_name"] = row.get("sector_name")
+    metrics["_country"] = row.get("country")
+    metrics["_exchange"] = row.get("exchange")
     metrics["_risk_context"] = risk_context or {}
     metrics["_risk_stats"] = _risk_stats(row, "equity", risk_context)
     one_month = _spark_return(row.get("spark"), 22)
     six_month = _spark_return(row.get("spark"))
     vol = _spark_volatility(row.get("spark"))
-    value = _avg([
-        _score_low(metrics.get("forward_pe") or metrics.get("pe"), 12, 45),
-        _score_low(metrics.get("pb"), 1.5, 8),
-        _score_low(metrics.get("ev_ebitda"), 8, 25),
-        _score_high(metrics.get("fcf_yield_pct"), 0, 8),
-        _score_high(metrics.get("dividend_yield_pct"), 0, 5),
-    ])
-    quality = _avg([
-        _score_high(metrics.get("roe_pct"), 0, 25),
-        _score_low(metrics.get("debt_to_equity"), 40, 250),
-        _score_high(metrics.get("fcf_yield_pct"), 0, 8),
-    ])
+    valuation = _valuation(metrics)
+    metrics["_valuation_cached"] = valuation
+    valuation_score = _valuation_value_score(valuation)
+    profile = _sector_profile(metrics)
+
+    if profile["family"] == "bank":
+        value = _avg([
+            valuation_score,
+            valuation_score,
+            _score_low(metrics.get("pb"), 1.2, 4.5),
+            _score_low(metrics.get("forward_pe") or metrics.get("pe"), 8, 24),
+            _score_high(metrics.get("dividend_yield_pct"), 0, 5),
+        ])
+        quality = _avg([
+            _score_high(metrics.get("roe_pct"), 8, 22),
+            _score_high(metrics.get("eps_growth_pct"), -8, 18),
+            _score_high(metrics.get("dividend_yield_pct"), 0, 5),
+        ])
+        risk = _avg([
+            _score_low(vol, 1.2, 5.0),
+            _score_high(six_month, -35, 15),
+        ])
+    else:
+        value = _avg([
+            valuation_score,
+            valuation_score,
+            _score_low(metrics.get("forward_pe") or metrics.get("pe"), 12, 45),
+            _score_low(metrics.get("pb"), 1.5, 8),
+            _score_low(metrics.get("ev_ebitda"), 8, 25),
+            _score_high(metrics.get("fcf_yield_pct"), 0, 8),
+            _score_high(metrics.get("dividend_yield_pct"), 0, 5),
+        ])
+        quality = _avg([
+            _score_high(metrics.get("roe_pct"), 0, 25),
+            _score_low(metrics.get("debt_to_equity"), 40, 250),
+            _score_high(metrics.get("fcf_yield_pct"), 0, 8),
+        ])
+        risk = _avg([
+            _score_low(vol, 1.2, 5.0),
+            _score_low(metrics.get("debt_to_equity"), 40, 250),
+            _score_high(six_month, -35, 15),
+        ])
     growth = _avg([
         _score_high(metrics.get("revenue_growth_pct"), -5, 25),
         _score_high(metrics.get("eps_growth_pct"), -10, 30),
@@ -397,11 +570,6 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
         _score_high(row.get("delta_pct"), -3, 3),
         _score_high(one_month, -8, 12),
         _score_high(six_month, -20, 35),
-    ])
-    risk = _avg([
-        _score_low(vol, 1.2, 5.0),
-        _score_low(metrics.get("debt_to_equity"), 40, 250),
-        _score_high(six_month, -35, 15),
     ])
     axes = [
         {"key": "value", "label": "Value", "score": value},
@@ -466,7 +634,12 @@ def _growth_anchor(metrics: dict) -> float | None:
 
 
 def _fair_pe_model(metrics: dict) -> dict:
-    """Dynamic fair P/E based on real provider metrics and risk context."""
+    """Fair P/E bridge anchored to the stock's own traded multiple.
+
+    Sector P/E is deliberately a sanity check, not the primary anchor. That
+    keeps high-quality compounders from being dragged to a weak peer median and
+    keeps optically cheap names from receiving a free rerating.
+    """
     current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
     forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
     sector_pe = _sanitize_ratio(metrics.get("_sector_peer_pe"), 150.0)
@@ -474,29 +647,49 @@ def _fair_pe_model(metrics: dict) -> dict:
     roe = _num(metrics.get("roe_pct"))
     debt = _num(metrics.get("debt_to_equity"))
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
-    beta = _num(metrics.get("beta"))
+    beta = _valid_beta(metrics.get("beta"))
     growth = _growth_anchor(metrics)
-    risk = metrics.get("_risk_stats") or {}
-    max_dd = _num(risk.get("max_drawdown_pct"))
     hurdle = _valuation_hurdle(metrics)
+    profile = _sector_profile(metrics)
 
     hurdle_base = _clamp(100 / ((hurdle or 5.0) + 2.0), 8.0, 18.0)
-    if sector_pe is not None:
+    if current_pe is not None:
+        base = current_pe
+        base_label = "Current P/E Anchor"
+        base_note = "actual traded trailing P/E"
+    elif forward_pe is not None:
+        base = forward_pe
+        base_label = "Forward P/E Anchor"
+        base_note = "actual traded forward P/E"
+    elif sector_pe is not None:
         base = _clamp(sector_pe, 6.0, 35.0)
-        base_label = "Base Sector P/E"
+        base_label = "Peer Fallback P/E"
         base_note = sector_scope
     else:
         base = hurdle_base
-        base_label = "Base Hurdle P/E"
+        base_label = "Hurdle Fallback P/E"
         base_note = f"hurdle {hurdle:.2f}%" if hurdle is not None else "fallback rate anchor"
+
     adjustments: list[float] = []
     drivers: list[str] = []
     scorecard: list[dict] = [{
         "label": base_label,
         "metric": base_note,
         "value": round(base, 2),
+        "fmt": "multiple",
         "adjustment": None,
     }]
+
+    if sector_pe is not None:
+        gap = round((current_pe / sector_pe - 1) * 100, 1) if current_pe and sector_pe else None
+        scorecard.append({
+            "label": "Sector P/E Sanity Check",
+            "metric": f"{sector_scope}{f'; current vs peer {gap:+.1f}%' if gap is not None else ''}",
+            "value": round(sector_pe, 2),
+            "fmt": "multiple",
+            "adjustment": None,
+            "note": "reference only; not the primary valuation anchor",
+        })
 
     def add_adjustment(label: str, metric: str, adj: float, note: str) -> None:
         adjustments.append(adj)
@@ -504,95 +697,105 @@ def _fair_pe_model(metrics: dict) -> dict:
             "label": label,
             "metric": metric,
             "adjustment": round(adj, 2),
+            "fmt": "multiple",
             "note": note,
         })
 
     if roe is not None:
-        adj = _clamp((roe - 12) / 15 * 4, -3.0, 5.0)
+        adj = _clamp(base * ((roe - 12) / 100), -base * 0.15, base * 0.25)
         add_adjustment("Quality Adjustment", f"ROE {roe:.1f}%", adj,
-                       "higher ROE earns a premium; weak ROE cuts the multiple")
-        drivers.append(f"ROE {roe:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
+                       "higher ROE deserves a premium to the stock's current multiple")
+        drivers.append(f"ROE {roe:.1f}% {'adds' if adj >= 0 else 'subtracts'} {abs(adj):.1f}x from fair P/E")
 
     if growth is not None:
-        adj = _clamp((growth - 5) / 20 * 5, -3.0, 6.0)
+        adj = _clamp(base * ((growth - 5) / 80), -base * 0.20, base * 0.30)
         add_adjustment("Growth Adjustment", f"revenue/EPS growth {growth:.1f}%", adj,
-                       "growth above 5% expands the fair multiple")
-        drivers.append(f"growth {growth:.1f}% {'raises' if adj >= 0 else 'cuts'} fair P/E by {abs(adj):.1f}x")
+                       "growth above 5% earns a premium; weak growth earns a discount")
+        drivers.append(f"growth {growth:.1f}% {'adds' if adj >= 0 else 'subtracts'} {abs(adj):.1f}x")
 
     if fcf_yield is not None:
-        if fcf_yield >= 8:
-            adj = 2.0
-        elif fcf_yield >= 4:
-            adj = 1.0
+        req = _required_fcf_yield(metrics)
+        if fcf_yield >= req:
+            adj = base * 0.10
+        elif fcf_yield >= req * 0.5:
+            adj = base * 0.03
         elif fcf_yield <= 0:
-            adj = -3.0
-        elif fcf_yield < 2:
-            adj = -1.0
+            adj = -base * 0.18
         else:
-            adj = 0.0
-        add_adjustment("Cash-Flow Adjustment", f"FCF yield {fcf_yield:.1f}%", adj,
-                       "strong FCF yield supports a higher fair P/E")
-        drivers.append(f"FCF yield {fcf_yield:.1f}% {'supports' if adj >= 0 else 'pressures'} fair P/E")
+            adj = -base * 0.08
+        add_adjustment("Cash-Flow Adjustment", f"FCF yield {fcf_yield:.1f}% vs required {req:.1f}%", adj,
+                       "cash yield checks whether earnings convert into owner cash")
+        drivers.append(f"FCF yield {fcf_yield:.1f}% {'supports' if adj >= 0 else 'pressures'} valuation")
 
-    if debt is not None:
+    if debt is not None and profile["family"] != "bank":
         if debt <= 40:
-            adj = 1.0
-        elif debt <= 100:
+            adj = base * 0.05
+        elif debt <= 120:
             adj = 0.0
         else:
-            adj = -_clamp((debt - 100) / 150 * 4, 0.5, 5.0)
+            adj = -_clamp(base * ((debt - 120) / 500), base * 0.05, base * 0.18)
         add_adjustment("Balance-Sheet Adjustment", f"Debt/Equity {debt:.1f}%", adj,
-                       "lower leverage improves valuation durability")
+                       "excess leverage limits rerating potential")
         drivers.append(f"Debt/Equity {debt:.1f}% {'supports' if adj >= 0 else 'cuts'} the multiple")
 
     if beta is not None:
         if beta <= 0.8:
-            adj = 1.0
+            adj = base * 0.05
         elif beta <= 1.2:
             adj = 0.0
         else:
-            adj = -_clamp((beta - 1.2) / 0.8 * 3, 0.5, 3.5)
+            adj = -_clamp(base * ((beta - 1.2) / 8), base * 0.03, base * 0.15)
         add_adjustment("Market-Risk Adjustment", f"Beta {beta:.2f}x", adj,
-                       "higher beta reduces the risk-adjusted fair multiple")
-        drivers.append(f"beta {beta:.2f}x {'supports' if adj >= 0 else 'cuts'} risk-adjusted fair P/E")
-
-    if max_dd is not None:
-        dd = abs(max_dd)
-        if dd <= 20:
-            adj = 1.0
-        elif dd <= 35:
-            adj = 0.0
-        else:
-            adj = -_clamp((dd - 35) / 25 * 3, 0.5, 4.0)
-        add_adjustment("Drawdown Adjustment", f"6M max drawdown {dd:.1f}%", adj,
-                       "large peak-to-trough loss lowers the fair multiple")
-        drivers.append(f"6M drawdown {dd:.1f}% {'supports' if adj >= 0 else 'cuts'} the risk multiple")
+                       "higher market beta deserves a modest discount")
+        drivers.append(f"beta {beta:.2f}x {'supports' if adj >= 0 else 'cuts'} fair P/E")
+    elif metrics.get("beta") is not None:
+        scorecard.append({
+            "label": "Market-Risk Adjustment",
+            "metric": f"Beta {metrics.get('beta')} ignored as unreliable",
+            "adjustment": 0,
+            "fmt": "multiple",
+            "note": "near-zero or extreme beta is not used for valuation",
+        })
 
     if forward_pe is not None and current_pe is not None:
-        if forward_pe < current_pe * 0.85 and (growth or 0) > 0:
-            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", 1.0,
-                           "forward earnings imply multiple compression")
+        if forward_pe < current_pe * 0.9 and (growth or 0) > 0:
+            adj = base * 0.05
+            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", adj,
+                           "forward earnings imply valuation support")
             drivers.append(f"forward P/E {forward_pe:.1f}x is below current {current_pe:.1f}x")
         elif forward_pe > current_pe * 1.15:
-            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", -1.0,
-                           "forward earnings imply multiple expansion risk")
+            adj = -base * 0.05
+            add_adjustment("Forward-Earnings Adjustment", f"Fwd P/E {forward_pe:.1f}x vs current {current_pe:.1f}x", adj,
+                           "forward earnings imply valuation risk")
             drivers.append(f"forward P/E {forward_pe:.1f}x is above current {current_pe:.1f}x")
+
+    if sector_pe is not None and current_pe is not None:
+        if current_pe > sector_pe * 1.75 and (growth or 0) < 8 and (roe or 0) < 18:
+            adj = -base * 0.08
+            add_adjustment("Peer Sanity Adjustment", f"current P/E {current_pe:.1f}x vs peer {sector_pe:.1f}x", adj,
+                           "small discount because premium is not backed by growth or ROE")
+            drivers.append("peer sanity check trims unsupported premium")
+        elif current_pe < sector_pe * 0.65 and ((growth or 0) >= 5 or (roe or 0) >= 15):
+            adj = base * 0.05
+            add_adjustment("Peer Sanity Adjustment", f"current P/E {current_pe:.1f}x vs peer {sector_pe:.1f}x", adj,
+                           "small premium because quality/growth is not reflected in current multiple")
+            drivers.append("peer sanity check supports a modest rerating")
 
     pre_cap_fair_pe = base + sum(adjustments)
     fair_pe = pre_cap_fair_pe
     cap_note = None
     if current_pe is not None:
         if (growth or 0) >= 20 and (roe or 0) >= 12:
-            premium_cap = 1.55
+            premium_cap = 1.65
         elif (growth or 0) >= 8 or (roe or 0) >= 18:
-            premium_cap = 1.40
+            premium_cap = 1.50
         else:
-            premium_cap = 1.25
-        upper = min(40.0, current_pe * premium_cap)
-        lower = max(5.0, current_pe * 0.55)
+            premium_cap = 1.35
+        lower = max(4.0, current_pe * 0.65)
+        upper = min(55.0, current_pe * premium_cap)
         fair_pe = _clamp(fair_pe, lower, max(lower, upper))
         if round(fair_pe, 2) != round(pre_cap_fair_pe, 2):
-            cap_note = f"bounded to {lower:.1f}x-{upper:.1f}x from current P/E {current_pe:.1f}x"
+            cap_note = f"bounded to {lower:.1f}x-{upper:.1f}x around current P/E {current_pe:.1f}x"
     else:
         fair_pe = _clamp(fair_pe, 5.0, 35.0)
         if round(fair_pe, 2) != round(pre_cap_fair_pe, 2):
@@ -603,12 +806,14 @@ def _fair_pe_model(metrics: dict) -> dict:
             "label": "Current-Multiple Guardrail",
             "metric": cap_note,
             "adjustment": round(fair_pe - pre_cap_fair_pe, 2),
-            "note": "prevents the model from drifting too far from traded valuation",
+            "fmt": "multiple",
+            "note": "prevents unsupported rerating or derating",
         })
     scorecard.append({
         "label": "Final Fair P/E",
-        "metric": "base + adjustments",
+        "metric": "current multiple + explicit premiums/discounts",
         "value": round(fair_pe, 2),
+        "fmt": "multiple",
         "adjustment": None,
     })
 
@@ -617,6 +822,7 @@ def _fair_pe_model(metrics: dict) -> dict:
         "fair_pe": round(fair_pe, 2),
         "current_pe": round(current_pe, 2) if current_pe is not None else None,
         "forward_pe": round(forward_pe, 2) if forward_pe is not None else None,
+        "sector_peer_pe": round(sector_pe, 2) if sector_pe is not None else None,
         "base_pe": round(base, 2),
         "base_pe_source": base_note,
         "pre_guardrail_fair_pe": round(pre_cap_fair_pe, 2),
@@ -688,6 +894,219 @@ def _valuation_components(metrics: dict, eps_multiple: float, pb_multiple: float
     return candidates
 
 
+def _bank_valuation_components(metrics: dict, fair_pb: float, fair_pe: float | None) -> list[dict]:
+    candidates = []
+    book = _num(metrics.get("book_value"))
+    current = _num(metrics.get("current_price"))
+    eps = _num(metrics.get("eps"))
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
+    if book and book > 0:
+        candidates.append({
+            "method": f"Book value × {fair_pb:g} justified P/B",
+            "price": book * fair_pb,
+            "input": f"Book value {round(book, 2)}, ROE {round(_num(metrics.get('roe_pct')) or 0, 2)}%",
+        })
+    if eps and eps > 0 and fair_pe:
+        candidates.append({
+            "method": f"EPS × {fair_pe:g} fair P/E cross-check",
+            "price": eps * fair_pe,
+            "input": f"EPS {round(eps, 2)}, current P/E {round(_sanitize_ratio(metrics.get('pe'), 150.0) or 0, 2)}x",
+        })
+    if current and current > 0 and forward_pe and fair_pe:
+        forward_eps = current / forward_pe
+        candidates.append({
+            "method": f"Forward EPS × {fair_pe:g} fair P/E cross-check",
+            "price": forward_eps * fair_pe,
+            "input": f"implied forward EPS {round(forward_eps, 2)}, forward P/E {round(forward_pe, 2)}x",
+        })
+    return candidates
+
+
+def _bank_valuation(metrics: dict) -> dict | None:
+    current = _num(metrics.get("current_price"))
+    book = _num(metrics.get("book_value"))
+    roe = _num(metrics.get("roe_pct"))
+    if not current or current <= 0 or not book or book <= 0 or roe is None:
+        return None
+
+    current_pb = _sanitize_ratio(metrics.get("pb"), 80.0)
+    current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
+    sector_pe = _sanitize_ratio(metrics.get("_sector_peer_pe"), 150.0)
+    sector_scope = metrics.get("_sector_peer_pe_scope") or "sector peer median"
+    coe = _cost_of_equity(metrics)
+    growth, growth_source = _sustainable_growth(metrics, coe)
+    roe_dec = roe / 100
+    coe_dec = coe / 100
+    growth_dec = growth / 100
+    denom = coe_dec - growth_dec
+    if denom <= 0.005 or roe_dec <= 0:
+        return None
+
+    justified_pb = _clamp((roe_dec - growth_dec) / denom, 0.4, 6.0)
+    fair_pb = justified_pb
+    guardrail_note = None
+    if current_pb:
+        lower = max(0.4, current_pb * 0.65)
+        upper = min(6.0, current_pb * 1.50)
+        fair_pb = _clamp(justified_pb, lower, max(lower, upper))
+        if round(fair_pb, 2) != round(justified_pb, 2):
+            guardrail_note = f"bounded to {lower:.2f}x-{upper:.2f}x around current P/B {current_pb:.2f}x"
+
+    fair_pe = fair_pb / roe_dec if roe_dec > 0 else None
+    if fair_pe and current_pe:
+        fair_pe = _clamp(fair_pe, max(4.0, current_pe * 0.65), min(45.0, current_pe * 1.55))
+    elif fair_pe:
+        fair_pe = _clamp(fair_pe, 4.0, 35.0)
+
+    scorecard = [
+        {"label": "Current P/B Anchor", "metric": "actual traded P/B", "value": round(current_pb, 2) if current_pb else None, "fmt": "multiple", "adjustment": None},
+        {"label": "Current P/E Cross-Check", "metric": "actual traded trailing P/E", "value": round(current_pe, 2) if current_pe else None, "fmt": "multiple", "adjustment": None},
+        {"label": "Cost of Equity", "metric": "local hurdle rate + country equity risk premium", "value": coe, "fmt": "percent", "adjustment": None},
+        {"label": "Sustainable Growth", "metric": growth_source, "value": growth, "fmt": "percent", "adjustment": None},
+        {"label": "Justified P/B", "metric": "(ROE - growth) / (cost of equity - growth)", "value": round(justified_pb, 2), "fmt": "multiple", "adjustment": None},
+    ]
+    if guardrail_note:
+        scorecard.append({
+            "label": "Current-Multiple Guardrail",
+            "metric": guardrail_note,
+            "value": round(fair_pb, 2),
+            "fmt": "multiple",
+            "adjustment": None,
+            "note": "keeps the screen from projecting an unsupported valuation cliff",
+        })
+    scorecard.extend([
+        {"label": "Final Fair P/B", "metric": "justified P/B with current-multiple guardrail", "value": round(fair_pb, 2), "fmt": "multiple", "adjustment": None},
+        {"label": "Fair P/E Cross-Check", "metric": "fair P/B divided by ROE", "value": round(fair_pe, 2) if fair_pe else None, "fmt": "multiple", "adjustment": None},
+    ])
+    if sector_pe is not None:
+        scorecard.append({
+            "label": "Sector P/E Sanity Check",
+            "metric": f"{sector_scope}; reference only",
+            "value": round(sector_pe, 2),
+            "fmt": "multiple",
+            "adjustment": None,
+        })
+
+    scenarios = [
+        ("Bear", round(max(0.4, fair_pb * 0.82), 2), round(fair_pe * 0.88, 2) if fair_pe else None),
+        ("Base", round(fair_pb, 2), round(fair_pe, 2) if fair_pe else None),
+        ("Bull", round(min(7.0, fair_pb * 1.18), 2), round(fair_pe * 1.12, 2) if fair_pe else None),
+    ]
+    sensitivity, base_components = [], []
+    for name, pb_mult, pe_mult in scenarios:
+        components = _bank_valuation_components(metrics, pb_mult, pe_mult)
+        target = _median([c["price"] for c in components])
+        if target:
+            sensitivity.append({
+                "case": name,
+                "target": round(target, 2),
+                "upside_pct": round((target / current - 1) * 100, 2),
+                "assumptions": f"justified P/B {pb_mult:g}x, fair P/E {pe_mult:g}x" if pe_mult else f"justified P/B {pb_mult:g}x",
+                "components": components,
+            })
+        if name == "Base":
+            base_components = components
+
+    fair = next((s["target"] for s in sensitivity if s["case"] == "Base"), None)
+    if not fair:
+        return None
+
+    return _valuation_payload(
+        metrics=metrics,
+        fair=fair,
+        current=current,
+        sensitivity=sensitivity,
+        base_components=base_components,
+        valuation_model="bank_justified_pb",
+        primary_method=_sector_profile(metrics)["method"],
+        scorecard=scorecard,
+        scorecard_title="BANK VALUATION SCORECARD",
+        current_pe=current_pe,
+        forward_pe=forward_pe,
+        fair_pe=fair_pe,
+        base_pe=current_pe,
+        base_pe_source="actual traded P/E; bank value anchored to justified P/B",
+        fair_pb=fair_pb,
+        required_fcf_yield_pct=None,
+        hurdle_rate=coe,
+        confidence=_valuation_confidence(metrics, base_components, "bank"),
+        drivers=[
+            f"ROE {roe:.1f}% and sustainable growth {growth:.1f}% imply justified P/B {justified_pb:.2f}x",
+            f"cost of equity {coe:.1f}% is the bank valuation hurdle",
+            f"current P/B {current_pb:.2f}x is used as a sanity guardrail" if current_pb else "current P/B unavailable; no traded multiple guardrail",
+        ],
+        note=(
+            "Bank method: fair value is driven by justified P/B from ROE, sustainable growth, and cost of equity. "
+            "P/E and sector P/E are shown as cross-checks only; this is a screening estimate, not a broker target or investment advice."
+        ),
+    )
+
+
+def _valuation_payload(metrics: dict, fair: float, current: float, sensitivity: list[dict],
+                       base_components: list[dict], valuation_model: str,
+                       primary_method: str, scorecard: list[dict],
+                       scorecard_title: str, current_pe=None, forward_pe=None,
+                       fair_pe=None, base_pe=None, base_pe_source=None,
+                       fair_pb=None, required_fcf_yield_pct=None, hurdle_rate=None,
+                       confidence: str = "Medium", drivers: list[str] | None = None,
+                       note: str = "") -> dict:
+    upside = (fair / current - 1) * 100
+    range_low = min(s["target"] for s in sensitivity)
+    range_high = max(s["target"] for s in sensitivity)
+    buy_below = fair * 0.85
+    accumulate_below = fair * 0.95
+    trim_above = fair * 1.15
+    if upside >= 20:
+        status = "Undervalued"
+    elif upside <= -20:
+        status = "Overvalued"
+    else:
+        status = "Fair value range"
+    if current <= buy_below:
+        signal = "Buy zone"
+    elif current <= accumulate_below:
+        signal = "Accumulate zone"
+    elif current <= trim_above:
+        signal = "Wait / fair zone"
+    else:
+        signal = "Expensive / trim zone"
+    pe_gap = round((fair_pe / current_pe - 1) * 100, 2) if fair_pe and current_pe else None
+    return {
+        "status": status,
+        "fair_value": round(fair, 2),
+        "target_price": round(fair, 2),
+        "range_low": round(range_low, 2),
+        "range_high": round(range_high, 2),
+        "buy_below": round(buy_below, 2),
+        "accumulate_below": round(accumulate_below, 2),
+        "trim_above": round(trim_above, 2),
+        "signal": signal,
+        "upside_pct": round(upside, 2),
+        "current_price": round(current, 2),
+        "currency": metrics.get("currency"),
+        "valuation_model": valuation_model,
+        "valuation_confidence": confidence,
+        "current_pe": round(current_pe, 2) if current_pe is not None else None,
+        "forward_pe": round(forward_pe, 2) if forward_pe is not None else None,
+        "base_pe": round(base_pe, 2) if base_pe is not None else None,
+        "base_pe_source": base_pe_source,
+        "fair_pe": round(fair_pe, 2) if fair_pe is not None else None,
+        "pre_guardrail_fair_pe": None,
+        "pe_gap_pct": pe_gap,
+        "fair_pb": round(fair_pb, 2) if fair_pb is not None else None,
+        "required_fcf_yield_pct": required_fcf_yield_pct,
+        "hurdle_rate": round(hurdle_rate, 2) if hurdle_rate is not None else None,
+        "primary_method": primary_method,
+        "scorecard_title": scorecard_title,
+        "fair_pe_drivers": (drivers or [])[:6],
+        "fair_pe_scorecard": [r for r in scorecard if r.get("value") is not None or r.get("adjustment") is not None],
+        "components": base_components,
+        "sensitivity": sensitivity,
+        "note": note,
+    }
+
+
 def _valuation(metrics: dict) -> dict | None:
     """Multiple-based fair-value estimate from provider fields.
 
@@ -699,10 +1118,16 @@ def _valuation(metrics: dict) -> dict | None:
     if not current or current <= 0:
         return None
 
+    if _is_bank_like(metrics):
+        bank = _bank_valuation(metrics)
+        if bank:
+            return bank
+
     pe_model = _fair_pe_model(metrics)
     base_pe = pe_model["fair_pe"]
     base_pb = _fair_pb(metrics)
     base_fcf_req = _required_fcf_yield(metrics)
+    profile = _sector_profile(metrics)
     scenarios = [
         ("Bear", round(max(5.0, base_pe * 0.8), 2), round(max(0.7, base_pb * 0.75), 2), round(min(15.0, base_fcf_req * 1.25), 2)),
         ("Base", base_pe, base_pb, base_fcf_req),
@@ -728,57 +1153,32 @@ def _valuation(metrics: dict) -> dict | None:
     if not fair:
         return None
 
-    upside = (fair / current - 1) * 100
-    range_low = min(s["target"] for s in sensitivity)
-    range_high = max(s["target"] for s in sensitivity)
-    buy_below = fair * 0.85
-    accumulate_below = fair * 0.95
-    trim_above = fair * 1.15
-    if upside >= 20:
-        status = "Undervalued"
-    elif upside <= -20:
-        status = "Overvalued"
-    else:
-        status = "Fair value range"
-    if current <= buy_below:
-        signal = "Buy zone"
-    elif current <= accumulate_below:
-        signal = "Accumulate zone"
-    elif current <= trim_above:
-        signal = "Wait / fair zone"
-    else:
-        signal = "Expensive / trim zone"
-    return {
-        "status": status,
-        "fair_value": round(fair, 2),
-        "target_price": round(fair, 2),
-        "range_low": round(range_low, 2),
-        "range_high": round(range_high, 2),
-        "buy_below": round(buy_below, 2),
-        "accumulate_below": round(accumulate_below, 2),
-        "trim_above": round(trim_above, 2),
-        "signal": signal,
-        "upside_pct": round(upside, 2),
-        "current_price": round(current, 2),
-        "currency": metrics.get("currency"),
-        "valuation_model": "dynamic_fair_pe",
-        "current_pe": pe_model.get("current_pe"),
-        "forward_pe": pe_model.get("forward_pe"),
-        "base_pe": pe_model.get("base_pe"),
-        "base_pe_source": pe_model.get("base_pe_source"),
-        "fair_pe": pe_model.get("fair_pe"),
-        "pre_guardrail_fair_pe": pe_model.get("pre_guardrail_fair_pe"),
-        "pe_gap_pct": pe_model.get("pe_gap_pct"),
-        "fair_pb": base_pb,
-        "required_fcf_yield_pct": base_fcf_req,
-        "hurdle_rate": pe_model.get("hurdle_rate"),
-        "primary_method": "Current P/E vs dynamic fair P/E, cross-checked by P/B and FCF yield",
-        "fair_pe_drivers": pe_model.get("drivers") or [],
-        "fair_pe_scorecard": pe_model.get("scorecard") or [],
-        "components": base_components,
-        "sensitivity": sensitivity,
-        "note": "Model estimate from Yahoo Finance metrics. Fair P/E is dynamic and adjusted by growth, ROE, cash flow, leverage, beta, drawdown, and local hurdle rate; not a broker target price or investment advice.",
-    }
+    return _valuation_payload(
+        metrics=metrics,
+        fair=fair,
+        current=current,
+        sensitivity=sensitivity,
+        base_components=base_components,
+        valuation_model=f"{profile['family']}_current_pe_anchor",
+        primary_method=profile["method"],
+        scorecard=pe_model.get("scorecard") or [],
+        scorecard_title=profile["scorecard_title"],
+        current_pe=pe_model.get("current_pe"),
+        forward_pe=pe_model.get("forward_pe"),
+        fair_pe=pe_model.get("fair_pe"),
+        base_pe=pe_model.get("base_pe"),
+        base_pe_source=pe_model.get("base_pe_source"),
+        fair_pb=base_pb,
+        required_fcf_yield_pct=base_fcf_req,
+        hurdle_rate=pe_model.get("hurdle_rate"),
+        confidence=_valuation_confidence(metrics, base_components, "generic"),
+        drivers=pe_model.get("drivers") or [],
+        note=(
+            "Screening estimate from Yahoo Finance metrics. Fair P/E starts from the stock's actual traded P/E, "
+            "then applies explicit premiums/discounts for quality, growth, cash conversion, leverage, beta, and peer sanity. "
+            "Sector P/E is a reference check only; not a broker target or investment advice."
+        ),
+    )
 
 
 def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month, vol) -> dict:
@@ -845,6 +1245,9 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
                 period=f"downside vs {risk.get('risk_free_label') or 'risk-free'}, 6M daily"),
         _metric("Max Drawdown", _fmt_metric_value(risk.get("max_drawdown_pct"), "percent"), "percent", period="peak-to-trough, 6M"),
     ]
+    valuation = metrics.get("_valuation_cached") if mode == "equity" else None
+    if mode == "equity" and "_valuation_cached" not in metrics:
+        valuation = _valuation(metrics)
     return {
         "mode": mode,
         "schema_version": SCORE_SCHEMA_VERSION,
@@ -853,7 +1256,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "coverage": round(len(valid) / len(axes), 2),
         "axes": axes,
         "metrics": [m for m in metric_rows if m["value"] is not None],
-        "valuation": _valuation(metrics) if mode == "equity" else None,
+        "valuation": valuation,
         "risk_stats": risk or None,
         "risk_context": ctx or None,
         "currency": currency,
@@ -980,7 +1383,7 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
             print(f"[fundamentals] equity fetch failed: {e}")
 
     normalized_cache = {}
-    sector_pes, country_pes = [], {}
+    sector_pes, country_pes, country_sector_pes = {}, {}, {}
     for row in rows:
         if row.get("country") == "CR":
             continue
@@ -993,11 +1396,15 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
         normalized_cache[sym] = normalized
         pe = _sanitize_ratio(normalized.get("forward_pe") or normalized.get("pe"), 150.0)
         if pe is not None:
-            sector_pes.append(pe)
-            country_pes.setdefault(row.get("country") or "", []).append(pe)
+            country = row.get("country") or ""
+            sector = row.get("sector_key") or ""
+            sector_pes.setdefault(sector, []).append(pe)
+            country_pes.setdefault(country, []).append(pe)
+            country_sector_pes.setdefault((country, sector), []).append(pe)
 
-    sector_peer_pe = _median(sector_pes) if len(sector_pes) >= 3 else None
+    sector_peer_pe = {k: _median(v) for k, v in sector_pes.items() if len(v) >= 3}
     country_peer_pe = {k: _median(v) for k, v in country_pes.items() if len(v) >= 3}
+    country_sector_peer_pe = {k: _median(v) for k, v in country_sector_pes.items() if len(v) >= 3}
 
     for row in rows:
         mode = "crypto" if row.get("country") == "CR" else "equity"
@@ -1006,12 +1413,16 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
         if mode == "equity" and metrics:
             metrics = dict(metrics)
             country = row.get("country") or ""
-            peer = country_peer_pe.get(country) or sector_peer_pe
+            sector = row.get("sector_key") or ""
+            peer = (country_sector_peer_pe.get((country, sector))
+                    or sector_peer_pe.get(sector)
+                    or country_peer_pe.get(country))
             if peer is not None:
                 metrics["_sector_peer_pe"] = peer
                 metrics["_sector_peer_pe_scope"] = (
-                    f"{country} sector peer median" if country_peer_pe.get(country) is not None
-                    else "mixed-market sector peer median"
+                    f"{country} {sector} peer median" if country_sector_peer_pe.get((country, sector)) is not None
+                    else f"mixed-market {sector} peer median" if sector_peer_pe.get(sector) is not None
+                    else f"{country} market peer median"
                 )
         if row.get("country") == "CR":
             row["fundamental_score"] = _score_crypto(row, metrics, risk_context)

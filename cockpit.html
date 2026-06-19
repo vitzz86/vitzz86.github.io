@@ -1966,13 +1966,22 @@ function valuationAdj(n){
   const v=Number(n);
   return `${v>=0?'+':''}${v.toFixed(2)}x`;
 }
+function scorecardValue(r){
+  const isAdj=r.adjustment!=null;
+  const n=isAdj?Number(r.adjustment):Number(r.value);
+  if(!isFinite(n))return 'n/a';
+  if(isAdj)return valuationAdj(n);
+  if(r.fmt==='percent')return `${n.toFixed(2)}%`;
+  if(r.fmt==='price')return n.toLocaleString('en-US',{maximumFractionDigits:2});
+  return `${n.toFixed(2)}x`;
+}
 function peScorecard(v){
   const rows=(v&&v.fair_pe_scorecard)||[];
   if(!rows.length)return '';
-  return `<div class="pecard"><div class="peh">FAIR P/E SCORECARD</div>`+
+  return `<div class="pecard"><div class="peh">${esc(v.scorecard_title||'VALUATION SCORECARD')}</div>`+
     rows.map(r=>{
       const final=/final/i.test(r.label||'');
-      const shown=r.adjustment==null?valuationRatio(r.value):valuationAdj(r.adjustment);
+      const shown=scorecardValue(r);
       const col=r.adjustment==null?'var(--ink)':COLP(r.adjustment);
       return `<div class="perow ${final?'final':''}"><div class="pl">${esc(r.label||'')}</div><div class="pm">${esc(r.metric||r.note||'')}</div><div class="pa" style="color:${final?'var(--cyan)':col}">${esc(shown)}</div></div>`;
     }).join('')+`</div>`;
@@ -2026,8 +2035,8 @@ function priceRangeBox(c){
   const tx=n=>{const p=safePos(n);return p<16?'0%':p>84?'-100%':'-50%';};
   const pin=n=>{const p=safePos(n);return p<16?'12px':p>84?'calc(100% - 12px)':'50%';};
   const est=!!risk.estimated_dates;
-  const targetLabel=target?'Model target':'Target pending';
-  return `<div class="pricebox"><div class="ph">Price Targets</div><div class="psub">6M range · current vs model target</div>`+
+  const targetLabel=target?'Screening fair value':'Target pending';
+  return `<div class="pricebox"><div class="ph">Price Targets</div><div class="psub">6M range · current vs screening fair value</div>`+
     `<div class="targetchart"><div class="targetrail"></div>`+
     `<div class="axislabel low"><b>${esc(valuationPrice(lo,cur))}</b><span>Low</span></div>`+
     `<div class="axislabel high"><b>${esc(valuationPrice(hi,cur))}</b><span>High</span></div>`+
@@ -2035,7 +2044,7 @@ function priceRangeBox(c){
     `<div class="tcall current" style="--x:${safePos(current).toFixed(1)}%;--tx:${tx(current)};--pin:${pin(current)}"><b>${esc(valuationPrice(current,cur))}</b><span>Current</span></div></div>`+
     `<div class="pricegrid"><div class="pg"><div class="k">6M Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Current</div><div class="v">${esc(valuationPrice(current,cur))}</div><div class="d">latest quote</div></div>`+
-    `<div class="pg"><div class="k">Model Target</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${stale?'refreshing currency-safe target':(target?'base valuation':'n/a')}</div></div>`+
+    `<div class="pg"><div class="k">Screening Fair Value</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${stale?'refreshing currency-safe target':(target?'base valuation':'n/a')}</div></div>`+
     `<div class="pg"><div class="k">6M Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Max Drawdown</div><div class="v">${sign(risk.max_drawdown_pct||0)}</div><div class="d">${esc(tsDay(risk.max_drawdown_peak_ts,est))} → ${esc(tsDay(risk.max_drawdown_trough_ts,est))}</div></div></div></div>`;
 }
@@ -2070,17 +2079,18 @@ function valuationBox(sc,c=null){
   const comps=(v.components||[]).slice(0,3).map(c=>`${c.method} (${c.input})`).join(' · ');
   const cur=v.currency||sc.currency;
   const peLine=(v.current_pe!=null||v.fair_pe!=null)
-    ?`<div class="valuerange"><div class="vr"><div class="k">Current P/E</div><div class="v">${esc(valuationRatio(v.current_pe))}</div></div><div class="vr"><div class="k">Dynamic Fair P/E</div><div class="v">${esc(valuationRatio(v.fair_pe))}</div></div><div class="vr"><div class="k">P/E Gap</div><div class="v" style="color:${COLP(v.pe_gap_pct||0)}">${v.pe_gap_pct==null?'n/a':sign(v.pe_gap_pct)}</div></div></div>`
+    ?`<div class="valuerange"><div class="vr"><div class="k">Current P/E</div><div class="v">${esc(valuationRatio(v.current_pe))}</div></div><div class="vr"><div class="k">Screening Fair P/E</div><div class="v">${esc(valuationRatio(v.fair_pe))}</div></div><div class="vr"><div class="k">P/E Gap</div><div class="v" style="color:${COLP(v.pe_gap_pct||0)}">${v.pe_gap_pct==null?'n/a':sign(v.pe_gap_pct)}</div></div></div>`
     :'';
   const drivers=(v.fair_pe_drivers||[]).slice(0,5).map(d=>`<span>${esc(d)}</span>`).join('');
   const sensitivity=(v.sensitivity||[]).map(s=>`<div class="sens"><div class="case">${esc(s.case)}</div><div class="target">${esc(valuationPrice(s.target,cur))}</div><div class="status" style="color:${COLP(s.upside_pct||0)}">${sign(s.upside_pct||0)}</div><div class="ass">${esc(s.assumptions||'')}</div></div>`).join('');
-  return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE · MODEL FROM PROVIDER INPUTS</div>`+
+  return `<div class="valuationbox"><div class="vh">SCREENING FAIR VALUE · MODEL FROM PROVIDER INPUTS</div>`+
     `<div class="vp"><span class="price">${esc(valuationPrice(v.target_price||v.fair_value,cur))}</span><span class="status" style="color:${col}">${esc(v.signal||v.status||'Range')} · ${sign(v.upside_pct||0)} vs current</span></div>`+
+    `<div class="vn"><b>Confidence:</b> ${esc(v.valuation_confidence||'Medium')} · <b>Method:</b> ${esc(v.primary_method||'EPS and multiple-based valuation')}</div>`+
     `${peLine}`+
     `${peScorecard(v)}`+
     `<div class="valuerange"><div class="vr"><div class="k">Current</div><div class="v">${esc(valuationPrice(v.current_price,cur))}</div></div><div class="vr"><div class="k">Buy Below</div><div class="v">${esc(valuationPrice(v.buy_below,cur))}</div></div><div class="vr"><div class="k">Fair Range</div><div class="v">${esc(valuationPrice(v.range_low,cur))} - ${esc(valuationPrice(v.range_high,cur))}</div></div><div class="vr"><div class="k">Accumulate Below</div><div class="v">${esc(valuationPrice(v.accumulate_below,cur))}</div></div><div class="vr"><div class="k">Trim Above</div><div class="v">${esc(valuationPrice(v.trim_above,cur))}</div></div><div class="vr"><div class="k">Status</div><div class="v">${esc(v.status||'n/a')}</div></div></div>`+
     `${sensitivity?`<div class="sensgrid">${sensitivity}</div>`:''}`+
-    `<div class="vn"><b>P/E anchor:</b> ${esc(v.primary_method||'EPS and multiple-based valuation')}. Base methods: ${esc(comps||'n/a')}. ${esc(v.note||'')}</div>`+
+    `<div class="vn"><b>Component methods:</b> ${esc(comps||'n/a')}. ${esc(v.note||'')}</div>`+
     `${drivers?`<div class="drivers">${drivers}</div>`:''}</div>`;
 }
 function lensDetail(c,type){
