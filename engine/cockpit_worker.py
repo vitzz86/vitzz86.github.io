@@ -86,6 +86,33 @@ def _tel_line(r: dict) -> str:
     return f"{r['label']}: {_tel_value(r)} ({_tel_move(r)})"
 
 
+def _coverage_universe_summary(sectors_list: list) -> dict:
+    active_rows = [c for s in sectors_list for c in s.get("constituents", [])]
+    leaders = getattr(settings, "GLOBAL_LEADERS_V1", [])
+
+    def counts(rows: list, key: str) -> dict:
+        out: dict[str, int] = {}
+        for row in rows:
+            val = row.get(key) or "UNKNOWN"
+            out[val] = out.get(val, 0) + 1
+        return dict(sorted(out.items()))
+
+    return {
+        "active_sector_flow": {
+            "count": len(active_rows),
+            "countries": counts(active_rows, "country"),
+            "regions": counts(active_rows, "region"),
+        },
+        "global_leaders_v1": {
+            "count": len(leaders),
+            "countries": counts(leaders, "country"),
+            "sectors": counts(leaders, "sector"),
+            "status": "mapped_not_active",
+        },
+        "next_targets": ["full_idx", "sp500", "nasdaq100", "crypto_top100"],
+    }
+
+
 def node_hunter(state: dict) -> dict:
     headlines = enterprise_osint.scan_feeds()
     if state["anomaly"]:
@@ -368,6 +395,7 @@ def compile_payload(state: dict) -> dict:
         "alerts": ma["alerts"],
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
+        "coverage_universe": _coverage_universe_summary(sec),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},
         "note_of_the_day": env_context.note_of_the_day(previous_note),
         "generated_by": ("LangGraph pipeline · DeepSeek · yfinance / Google News / "

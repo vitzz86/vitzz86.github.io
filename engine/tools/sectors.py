@@ -22,6 +22,15 @@ CG_IDS = {"BTC-USD": "bitcoin", "ETH-USD": "ethereum", "SOL-USD": "solana",
 CG_SLUGS = {"MATIC-USD": "polygon"}
 
 
+def _country_meta(country: str) -> dict:
+    meta = getattr(settings, "COUNTRY_META", {}).get(country, {})
+    return {
+        "country_name": meta.get("name", country),
+        "country_flag": meta.get("flag", ""),
+        "region": meta.get("region", country),
+    }
+
+
 def _signal(agg: float) -> str:
     a = abs(agg)
     if a >= settings.SECTOR_SIGNAL_PCT["alert"]:
@@ -90,9 +99,14 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
             spark = p["spark"] if p else []
             url = (COINGECKO + CG_SLUGS.get(ysym, CG_IDS[ysym])) if (country == "CR" and ysym in CG_IDS) \
                 else (YF_QUOTE + ysym)
+            meta = _country_meta(country)
             rows.append({
                 "ticker": ticker, "name": name, "exchange": exch,
                 "country": country, "mktcap": mktcap, "tier": tier,
+                "country_name": meta["country_name"],
+                "country_flag": meta["country_flag"],
+                "region": meta["region"],
+                "universe": ["SECTOR_FLOW"],
                 "source_symbol": ysym,
                 "delta_pct": delta, "spark": spark,
                 "spark_ts": (p or {}).get("spark_ts", []),

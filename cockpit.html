@@ -125,6 +125,9 @@ a{color:inherit;text-decoration:none;}
 .mv .msc.valpos{color:var(--green);border-color:rgba(34,197,94,.32);}
 .mv .msc.valneg{color:var(--red);border-color:rgba(239,68,68,.32);}
 .mv:hover .mtk{color:var(--cyan);}
+.mini{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink2);padding:4px 8px;cursor:pointer;text-transform:uppercase;}
+.mini:hover{border-color:var(--cyan);color:var(--cyan);}
+.mini.act{color:#050506;background:var(--amber);border-color:var(--amber);font-weight:700;}
 
 /* index cards */
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
@@ -177,6 +180,42 @@ a{color:inherit;text-decoration:none;}
 .splitbar{height:4px;background:#0b0b0e;border-radius:999px;overflow:hidden;}
 .splitbar i{display:block;height:100%;}
 .seccard .thm{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:8px;display:flex;justify-content:space-between;align-items:center;}
+
+/* market heatmap */
+.heatwrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;}
+.heattools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.heatnote{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;}
+.heatgrid{position:relative;height:clamp(430px,48vw,660px);min-height:360px;background:#09090b;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.heatsector{position:absolute;border:1px solid rgba(255,255,255,.22);background:#101016;overflow:hidden;}
+.heatsector-title{position:absolute;left:4px;top:2px;right:4px;height:16px;font-family:var(--mono);font-size:8px;font-weight:700;color:#e7e7ed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.75);z-index:2;}
+.heatcell{position:absolute;border:1px solid rgba(255,255,255,.18);overflow:hidden;cursor:pointer;color:#fff;padding:5px;background:#19191f;text-align:left;font-family:var(--mono);transition:filter .15s,border-color .15s;min-width:0;}
+.heatcell:hover{border-color:rgba(255,255,255,.65);filter:brightness(1.14);}
+.heatcell .htk{font-size:11px;font-weight:800;letter-spacing:.02em;line-height:1.05;text-shadow:0 1px 2px rgba(0,0,0,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.heatcell .hpct{font-size:10px;margin-top:2px;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.55);}
+.heatcell .hnm{position:absolute;left:5px;right:5px;bottom:4px;font-size:7px;color:rgba(255,255,255,.66);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.heatcell.big .htk{font-size:18px;letter-spacing:0;}
+.heatcell.big .hpct{font-size:14px;}
+.heatcell.mid .htk{font-size:13px;}
+.heatcell.tiny{padding:2px;text-align:center;}
+.heatcell.tiny .htk{font-size:7px;}
+.heatcell.tiny .hpct,.heatcell.tiny .hnm{display:none;}
+.heatempty{min-height:150px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;border:1px dashed var(--line);border-radius:8px;}
+@media(max-width:760px){.heatgrid{height:620px;}.heatsector-title{font-size:7px;}.heatcell .hnm{display:none;}}
+
+/* screener modal */
+.moverbox{width:min(980px,100%);}
+.screenerbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:12px 0;flex-wrap:wrap;}
+.screenerbar .title{font-size:20px;font-weight:700;}
+.screenerbar .sub{font-family:var(--mono);font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-top:3px;}
+.screener{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);}
+.srow{display:grid;grid-template-columns:86px minmax(170px,1fr) 130px 78px 70px 86px 96px;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line2);font-family:var(--mono);font-size:10px;cursor:pointer;}
+.srow.head{position:sticky;top:0;background:#14141a;color:var(--ink3);cursor:default;text-transform:uppercase;letter-spacing:.08em;font-size:8px;z-index:1;}
+.srow:not(.head):hover{background:rgba(255,255,255,.025);}
+.srow .stk{font-size:12px;font-weight:700;color:var(--ink);}
+.srow .snm{font-family:var(--sans);font-size:11px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.srow .metricval{font-size:11px;text-align:right;font-variant-numeric:tabular-nums;}
+.srow .muted{color:var(--ink3);}
+@media(max-width:760px){.srow{grid-template-columns:74px minmax(120px,1fr) 70px 58px;}.srow .hide-sm{display:none;}}
 
 /* arbiter + alerts */
 .arbiter{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;}
@@ -231,7 +270,7 @@ footer .g{color:var(--green);}
 .smclose:hover{color:var(--ink);border-color:#444;}
 .smgrid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;margin-top:15px;}
 @media(max-width:720px){.smgrid{grid-template-columns:1fr;}}
-.smstats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+.smstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;}
 .smstats .c{background:var(--panel2);padding:9px 11px;}
 .smstats .k{font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--ink3);}
 .smstats .v{font-family:var(--mono);font-size:14px;margin-top:3px;}
@@ -250,6 +289,8 @@ footer .g{color:var(--green);}
 .tdot.mega{background:var(--amber);}.tdot.large{background:var(--blue);}.tdot.mid{background:var(--green);}.tdot.small{background:var(--purple);}
 .crow .cn{color:var(--ink3);font-size:10px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .crow .cap{font-family:var(--mono);font-size:9px;color:var(--ink3);}
+.countrychip{font-family:var(--mono);font-size:8px;letter-spacing:.04em;color:var(--cyan);background:rgba(45,212,191,.06);border:1px solid rgba(45,212,191,.22);border-radius:5px;padding:2px 5px;white-space:nowrap;}
+.countrychip.region{color:var(--ink2);background:rgba(255,255,255,.035);border-color:var(--line);}
 .crow .cd{font-family:var(--mono);font-size:11px;width:54px;text-align:right;}
 .crow:hover{background:rgba(255,255,255,.02);}
 .scorepill{font-family:var(--mono);font-size:8px;border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:var(--panel2);color:var(--ink2);min-width:43px;text-align:center;}
@@ -580,9 +621,24 @@ body{padding-bottom:40px;}
       <div class="secgrid" id="secGrid"></div>
     </div>
     <div class="sec">
-      <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2></div>
+      <div class="sechd"><h2>Market Heatmap</h2><span class="tag" id="heatCount">ACTIVE UNIVERSE</span></div>
+      <div class="heatwrap">
+        <div class="heattools">
+          <div class="trendtabs" id="heatGeo">
+            <span class="ttab on" data-g="id">🇮🇩 Indonesia</span>
+            <span class="ttab" data-g="us">🇺🇸 US</span>
+            <span class="ttab" data-g="crypto">₿ Crypto</span>
+            <span class="ttab" data-g="others">🌐 Others</span>
+          </div>
+          <span class="heatnote">size = market cap · color = selected return</span>
+        </div>
+        <div class="heatgrid" id="heatGrid"></div>
+      </div>
+    </div>
+    <div class="sec">
+      <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2><button class="mini act" id="moverDetails" type="button">Details →</button></div>
       <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span><span class="ttab" data-t="best_value">◇ Best Risk/Price</span></div>
-      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
+      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="others">🌐 Others</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
       <div id="moveList"></div>
       <div class="lbl" style="margin:12px 0 6px;">Social buzz · StockTwits</div>
       <div class="trendtk" id="socialTk"></div>
@@ -689,6 +745,12 @@ body{padding-bottom:40px;}
   <div class="smnews"><div class="cttl">⊳ Sector news · every item links to source ↗</div><div id="smSecNews"></div></div>
 </div></div>
 
+<!-- market movers details -->
+<div class="smodal" id="moverModal"><div class="smbox moverbox">
+  <button class="smclose" id="moverClose">&times;</button>
+  <div id="moverDetail"></div>
+</div></div>
+
 <!-- score detail modal -->
 <div class="scoremodal" id="scoreModal"><div class="scoremodalbox">
   <button class="smclose" id="scoreClose">&times;</button>
@@ -720,7 +782,33 @@ function updateDataAge(){
   $('stamp').textContent=base+` · ${payloadSource}`+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
 }
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES',policy:'POLICY'};
-const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿'};
+const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
+const REGION_LABEL={ID:'Indonesia',US:'US',OTHERS:'Others',CRYPTO:'Crypto'};
+function flagOf(c){return (c&&(c.country_flag||FLAG[c.country]))||'';}
+function regionOf(c){
+  if(!c)return '';
+  if(c.region)return c.region;
+  if(c.country==='CR')return 'CRYPTO';
+  if(c.country==='ID'||c.country==='US')return c.country;
+  return 'OTHERS';
+}
+function regionLabel(c){return REGION_LABEL[regionOf(c)]||regionOf(c)||'';}
+function countryLabel(c){return c&&c.country_name?c.country_name:(c&&c.country)||'';}
+function geoMatches(c,geo){
+  const g=String(geo||'').toLowerCase();
+  if(g==='all')return true;
+  if(g==='crypto')return c.country==='CR'||regionOf(c)==='CRYPTO';
+  if(g==='others')return regionOf(c)==='OTHERS';
+  return c.country===g.toUpperCase()||regionOf(c)===g.toUpperCase();
+}
+function geoTabLabel(g){
+  if(g==='ALL')return 'All';
+  if(g==='ID')return '🇮🇩 Indonesia';
+  if(g==='US')return '🇺🇸 US';
+  if(g==='OTHERS')return '🌐 Others';
+  if(g==='CRYPTO'||g==='CR')return '₿ Crypto';
+  return g;
+}
 const COLP=n=>n>=0?'var(--green)':'var(--red)';
 function teleValue(r,v){
   const val=v==null?r.value:v;
@@ -753,6 +841,7 @@ const SECTOR_ICON={
 };
 let DATA=null;
 let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false,payloadSource='local';
+let heatGeo='id';
 
 function tzLine(tz,label){
   const now=new Date();
@@ -845,6 +934,7 @@ function render(d){
   [...document.querySelectorAll('.idxcard')].forEach(c=>c.onclick=()=>expandIdx(+c.dataset.i));
 
   drawSectors();
+  drawHeatmap();
 
   /* macro analysis (bullets + sources when baked; paragraph fallback) */
   const macro=Array.isArray(d.macro_analysis)?d.macro_analysis:null;
@@ -954,13 +1044,14 @@ function renderTrending(t){
   $('socialTk').innerHTML=(t.social||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">—</span>';
   [...document.querySelectorAll('#moveType .ttab')].forEach(b=>b.onclick=()=>{moveType=b.dataset.t;[...document.querySelectorAll('#moveType .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
   [...document.querySelectorAll('#moveGeo .ttab')].forEach(b=>b.onclick=()=>{moveGeo=b.dataset.g;[...document.querySelectorAll('#moveGeo .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
+  if($('moverDetails'))$('moverDetails').onclick=()=>openMoverDetails();
 }
 function findTickerHit(ticker,country){
   const tk=String(ticker||'').toUpperCase();
-  const want=country==='crypto'?'CR':String(country||'').toUpperCase();
+  const want=String(country||'').toLowerCase();
   for(let i=0;i<(DATA.sectors||[]).length;i++){
     const s=DATA.sectors[i];
-    const c=(s.constituents||[]).find(x=>String(x.ticker||'').toUpperCase()===tk&&(!want||x.country===want));
+    const c=(s.constituents||[]).find(x=>String(x.ticker||'').toUpperCase()===tk&&(!want||geoMatches(x,want)));
     if(c)return {i,s,c};
   }
   for(let i=0;i<(DATA.sectors||[]).length;i++){
@@ -1011,11 +1102,10 @@ function bestRiskPrice(c){
   return {score:clampScore(raw),upside_pct:upside,signal};
 }
 function localMoverBucket(geo){
-  const want=geo==='crypto'?'CR':geo.toUpperCase();
   const rows=[];
-  (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(c.country===want)rows.push(c);}));
+  (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(geoMatches(c,geo))rows.push(c);}));
   const uniq=Array.from(rows.reduce((m,c)=>{const k=c.country+'|'+c.ticker,cur=m.get(k);if(!cur||(Number(invScore(c).score)||-1)>(Number(invScore(cur).score)||-1))m.set(k,c);return m;},new Map()).values());
-  const trim=arr=>arr.slice(0,8).map(c=>{const rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
+  const trim=arr=>arr.slice(0,8).map(c=>{const rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,region:regionOf(c),delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
   const byMove=uniq.slice().sort((a,b)=>qDelta(b)-qDelta(a));
   const byScore=uniq.slice().filter(c=>invScore(c).score!=null).sort((a,b)=>Number(invScore(b).score)-Number(invScore(a).score));
   const byRiskPrice=uniq.slice().filter(c=>bestRiskPrice(c)).sort((a,b)=>bestRiskPrice(b).score-bestRiskPrice(a).score);
@@ -1040,8 +1130,40 @@ function drawMovers(){
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
     `${moverScoreBadges(m)}`+
     `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></button>`).join('')||
-    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
+    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveGeo==='others'?'Global leaders universe is mapped; activate it in the next scoring batch to populate this tab.':moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
   [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
+}
+function moverGeoLabel(){
+  return moveGeo==='id'?'Indonesia':moveGeo==='us'?'US':moveGeo==='crypto'?'Crypto':'Others';
+}
+function moverTypeLabel(){
+  return {gainers:'Top gainers',losers:'Top losers',top_score:'Top score',best_value:'Best risk/price'}[moveType]||moveType;
+}
+function moverDetailRows(){
+  const rows=activeRows(moveGeo);
+  const byScore=c=>Number(invScore(c).score);
+  const byBest=c=>(bestRiskPrice(c)||{}).score;
+  if(moveType==='losers')rows.sort((a,b)=>qDelta(a)-qDelta(b));
+  else if(moveType==='top_score')rows.sort((a,b)=>(Number.isFinite(byScore(b))?byScore(b):-1)-(Number.isFinite(byScore(a))?byScore(a):-1)||qDelta(b)-qDelta(a));
+  else if(moveType==='best_value')rows.sort((a,b)=>(Number.isFinite(byBest(b))?byBest(b):-1)-(Number.isFinite(byBest(a))?byBest(a):-1)||qDelta(b)-qDelta(a));
+  else rows.sort((a,b)=>qDelta(b)-qDelta(a));
+  return rows;
+}
+function openMoverDetails(){
+  const rows=moverDetailRows();
+  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart, score, and news</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
+  const body=rows.length?`<div class="screener"><div class="srow head"><div>Ticker</div><div>Name</div><div class="hide-sm">Sector</div><div>Return</div><div>Score</div><div class="hide-sm">Risk/Price</div><div class="hide-sm">Mkt cap</div></div>`+
+    rows.map(c=>{
+      const sc=invScore(c),rp=bestRiskPrice(c),dp=qDelta(c);
+      return `<div class="srow" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}">`+
+        `<div class="stk">${flagOf(c)} ${esc(c.ticker)}</div><div class="snm">${esc(c.name)}</div><div class="muted hide-sm">${esc(c.sector_name||'')}</div>`+
+        `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${sc.score==null?'--':Math.round(sc.score)}</div>`+
+        `<div class="metricval hide-sm">${rp&&rp.score!=null?Math.round(rp.score):'--'}</div><div class="metricval muted hide-sm">${esc(c.mktcap||'--')}</div></div>`;
+    }).join('')+`</div>`:`<div class="heatempty">Global leaders are mapped; activate the backend pricing pass to populate this table.</div>`;
+  $('moverDetail').innerHTML=header+body;
+  $('moverModal').classList.add('open');
+  const rb=$('moverRefreshSort');if(rb)rb.onclick=()=>openMoverDetails();
+  [...document.querySelectorAll('#moverDetail .srow:not(.head)')].forEach(r=>r.onclick=()=>{$('moverModal').classList.remove('open');openMoverTicker(r.dataset.tk,r.dataset.country);});
 }
 
 /* ---- market open/closed (live, from baked session bounds; falls back to state) ---- */
@@ -1069,9 +1191,10 @@ function sectorMetrics(s){
   const rows=s.constituents||[];
   const vals=rows.map(qDelta).filter(Number.isFinite);
   const avg=a=>a.length?round2(a.reduce((x,y)=>x+y,0)/a.length):0;
-  const id=rows.filter(r=>r.country==='ID').map(qDelta).filter(Number.isFinite);
-  const us=rows.filter(r=>r.country==='US').map(qDelta).filter(Number.isFinite);
-  return {change:avg(vals),idChange:id.length?avg(id):null,usChange:us.length?avg(us):null};
+  const id=rows.filter(r=>regionOf(r)==='ID').map(qDelta).filter(Number.isFinite);
+  const us=rows.filter(r=>regionOf(r)==='US').map(qDelta).filter(Number.isFinite);
+  const others=rows.filter(r=>regionOf(r)==='OTHERS').map(qDelta).filter(Number.isFinite);
+  return {change:avg(vals),idChange:id.length?avg(id):null,usChange:us.length?avg(us):null,othersChange:others.length?avg(others):null};
 }
 function round2(n){return Math.round((Number(n)||0)*100)/100;}
 function drawSectors(){
@@ -1079,11 +1202,11 @@ function drawSectors(){
   $('secCount').textContent=(DATA.sectors||[]).length+' sectors · click any card for deep dive';
   $('secGrid').innerHTML=(DATA.sectors||[]).map((s,i)=>{
     const m=sectorMetrics(s);
-    const split=(m.idChange!=null&&m.usChange!=null);
-    const tot=split?(Math.abs(m.idChange)+Math.abs(m.usChange)||1):1;
+    const parts=[['ID',m.idChange],['US',m.usChange],['Others',m.othersChange]].filter(x=>x[1]!=null);
+    const split=parts.length>1;
+    const tot=split?(parts.reduce((a,x)=>a+Math.abs(x[1]),0)||1):1;
     const body=split
-      ?`<div class="splitline"><div class="k"><span>ID</span><span style="color:${COLP(m.idChange)}">${sign(m.idChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.idChange)/tot*100}%;background:${COLP(m.idChange)}"></i></div></div>`+
-       `<div class="splitline"><div class="k"><span>US</span><span style="color:${COLP(m.usChange)}">${sign(m.usChange)}</span></div><div class="splitbar"><i style="width:${Math.abs(m.usChange)/tot*100}%;background:${COLP(m.usChange)}"></i></div></div>`
+      ?parts.map(([label,val])=>`<div class="splitline"><div class="k"><span>${esc(label)}</span><span style="color:${COLP(val)}">${sign(val)}</span></div><div class="splitbar"><i style="width:${Math.abs(val)/tot*100}%;background:${COLP(val)}"></i></div></div>`).join('')
       :`<div class="splitline"><div class="k"><span>GLOBAL · ${s.constituents.length} assets</span><span style="color:${COLP(m.change)}">${sign(m.change)}</span></div><div class="splitbar"><i style="width:100%;background:${COLP(m.change)}"></i></div></div>`;
     const sig=sectorSignal(m.change);
     return `<button class="seccard" data-i="${i}"><div class="top"><span class="ico">${SECTOR_ICON[s.key]||esc(s.icon)}</span><span class="nm">${esc(s.name)}</span><span class="sbadge ${sig}">${sig}</span></div>`+
@@ -1092,6 +1215,113 @@ function drawSectors(){
   }).join('');
   [...document.querySelectorAll('.seccard')].forEach(b=>b.onclick=()=>openSector(+b.dataset.i));
 }
+function capNumber(c){
+  const direct=finiteNum(c&&c.market_cap_value);
+  if(direct!=null&&direct>0)return direct;
+  const raw=String(c&&c.mktcap||'').replace(/,/g,'').toUpperCase();
+  const nums=[...raw.matchAll(/(\d+(?:\.\d+)?)/g)].map(m=>Number(m[1])).filter(Number.isFinite);
+  if(!nums.length)return ({mega:1e12,large:2e11,mid:4e10,small:5e9}[c&&c.tier]||1e9);
+  const base=nums.length>1?nums.reduce((a,b)=>a+b,0)/nums.length:nums[0];
+  const mult=raw.includes('T')?1e12:raw.includes('B')?1e9:raw.includes('M')?1e6:1;
+  return base*mult;
+}
+function activeRows(geo){
+  const rows=[];
+  (DATA.sectors||[]).forEach((s,i)=>(s.constituents||[]).forEach(c=>{if(geoMatches(c,geo))rows.push({...c,sector_idx:i,sector_name:s.name});}));
+  const uniq=new Map();
+  rows.forEach(c=>{
+    const k=(c.country||'')+'|'+(c.ticker||'');
+    const cur=uniq.get(k);
+    if(!cur||capNumber(c)>capNumber(cur))uniq.set(k,c);
+  });
+  return [...uniq.values()];
+}
+function heatRows(geo){
+  return activeRows(geo).sort((a,b)=>capNumber(b)-capNumber(a)).slice(0,120);
+}
+function heatColor(v){
+  const n=Math.max(-5,Math.min(5,Number(v)||0));
+  if(Math.abs(n)<.08)return 'linear-gradient(180deg,#3f3f46,#27272f)';
+  if(n>0){
+    const a=.35+Math.abs(n)/5*.55;
+    return `linear-gradient(180deg,rgba(16,185,129,${a}),rgba(4,120,87,${Math.max(.45,a-.12)}))`;
+  }
+  const a=.35+Math.abs(n)/5*.55;
+  return `linear-gradient(180deg,rgba(239,68,68,${a}),rgba(127,29,29,${Math.max(.45,a-.12)}))`;
+}
+function treemapSplit(items,rect){
+  const clean=items.filter(x=>Number(x.value)>0&&rect.w>0&&rect.h>0);
+  if(!clean.length)return [];
+  if(clean.length===1)return [{item:clean[0],...rect}];
+  const sorted=clean.slice().sort((a,b)=>b.value-a.value);
+  const total=sorted.reduce((a,x)=>a+x.value,0);
+  let acc=0,split=1,best=Infinity;
+  for(let i=1;i<sorted.length;i++){
+    acc+=sorted[i-1].value;
+    const diff=Math.abs(total/2-acc);
+    if(diff<best){best=diff;split=i;}
+  }
+  const left=sorted.slice(0,split),right=sorted.slice(split);
+  const leftSum=left.reduce((a,x)=>a+x.value,0),ratio=leftSum/total;
+  if(rect.w>=rect.h){
+    const w1=Math.max(1,rect.w*ratio);
+    return treemapSplit(left,{x:rect.x,y:rect.y,w:w1,h:rect.h})
+      .concat(treemapSplit(right,{x:rect.x+w1,y:rect.y,w:rect.w-w1,h:rect.h}));
+  }
+  const h1=Math.max(1,rect.h*ratio);
+  return treemapSplit(left,{x:rect.x,y:rect.y,w:rect.w,h:h1})
+    .concat(treemapSplit(right,{x:rect.x,y:rect.y+h1,w:rect.w,h:rect.h-h1}));
+}
+function heatClass(w,h){
+  const area=w*h;
+  if(area>42000&&w>130&&h>95)return 'big';
+  if(area>15000&&w>80&&h>60)return 'mid';
+  if(area<3600||w<48||h<34)return 'tiny';
+  return '';
+}
+function sectorGroups(rows){
+  const m=new Map();
+  rows.forEach(c=>{
+    const key=c.sector_name||'Other';
+    if(!m.has(key))m.set(key,{name:key,rows:[],value:0});
+    const g=m.get(key),v=Math.max(1,capNumber(c));
+    g.rows.push(c);g.value+=v;
+  });
+  return [...m.values()].sort((a,b)=>b.value-a.value);
+}
+function drawHeatmap(){
+  if(!$('heatGrid')||!DATA)return;
+  [...document.querySelectorAll('#heatGeo .ttab')].forEach(b=>{
+    b.classList.toggle('on',b.dataset.g===heatGeo);
+    b.onclick=()=>{heatGeo=b.dataset.g;drawHeatmap();};
+  });
+  const rows=heatRows(heatGeo);
+  $('heatCount').textContent=`${rows.length} active assets`;
+  if(!rows.length){
+    $('heatGrid').innerHTML=`<div class="heatempty">Global leaders are mapped; the next backend phase will activate prices and scores for this tab.</div>`;
+    return;
+  }
+  const el=$('heatGrid'),box=el.getBoundingClientRect();
+  const w=Math.max(320,Math.floor(box.width||900)),h=Math.max(320,Math.floor(box.height||520)),gap=3,labelH=18;
+  const sectors=sectorGroups(rows);
+  const sectorRects=treemapSplit(sectors.map(g=>({value:g.value,group:g})),{x:0,y:0,w,h});
+  $('heatGrid').innerHTML=sectorRects.map(sr=>{
+    const g=sr.item.group;
+    const x=Math.round(sr.x)+gap,y=Math.round(sr.y)+gap,sw=Math.max(1,Math.round(sr.w)-gap*2),sh=Math.max(1,Math.round(sr.h)-gap*2);
+    const inner={x:gap,y:labelH,w:Math.max(1,sw-gap*2),h:Math.max(1,sh-labelH-gap)};
+    const tileRects=treemapSplit(g.rows.map(c=>({value:Math.max(1,capNumber(c)),row:c})),inner);
+    const tiles=tileRects.map(tr=>{
+      const c=tr.item.row,dp=qDelta(c),tx=Math.round(tr.x),ty=Math.round(tr.y),tw=Math.max(1,Math.round(tr.w)-1),th=Math.max(1,Math.round(tr.h)-1);
+      const cls=heatClass(tw,th);
+      return `<button class="heatcell ${cls}" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}" type="button" style="left:${tx}px;top:${ty}px;width:${tw}px;height:${th}px;background:${heatColor(dp)}" title="${esc(c.name)} · ${esc(g.name)} · ${sign(dp)}">`+
+        `<div class="htk">${flagOf(c)} ${esc(c.ticker)}</div><div class="hpct">${sign(dp)}</div><div class="hnm">${esc(c.name)}</div></button>`;
+    }).join('');
+    return `<div class="heatsector" style="left:${x}px;top:${y}px;width:${sw}px;height:${sh}px"><div class="heatsector-title">${esc(g.name)}</div>${tiles}</div>`;
+  }).join('');
+  [...document.querySelectorAll('#heatGrid .heatcell')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
+}
+let heatResizeTimer=null;
+addEventListener('resize',()=>{clearTimeout(heatResizeTimer);heatResizeTimer=setTimeout(()=>drawHeatmap(),120);});
 
 /* ---- index expand ---- */
 const TF={'24h':0,'1W':5,'1M':22,'3M':65,'6M':130};   // 24h=intraday; rest slice the daily series
@@ -1136,7 +1366,7 @@ function expandIdx(i){
 let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
 let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null;
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
-const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿'};
+const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
 const VCATLABEL={ALL:'All',market_id:'🇮🇩 Market ID',market_us:'🇺🇸 Market US',crypto:'₿ Crypto'};
 const RANGE={today:86400,'3d':3*86400,'1w':7*86400};
@@ -1541,15 +1771,16 @@ function openSector(i){
   const agg=$('smAgg');agg.textContent=(m.change>=0?'↗ ':'↘ ')+sign(m.change);
   agg.style.color=COLP(m.change);agg.style.background=m.change>=0?'rgba(34,197,94,.12)':'rgba(239,68,68,.12)';
   const cell=(k,v)=>`<div class="c"><div class="k">${k}</div><div class="v"${typeof v==='number'?` style="color:${COLP(v)}"`:''}>${typeof v==='number'?sign(v):v}</div></div>`;
-  $('smStats').innerHTML=(m.idChange!=null
-    ?cell('ID PERFORMANCE',m.idChange)+cell('US PERFORMANCE',m.usChange)
+  const perfParts=[['ID PERFORMANCE',m.idChange],['US PERFORMANCE',m.usChange],['OTHERS PERFORMANCE',m.othersChange]].filter(x=>x[1]!=null);
+  $('smStats').innerHTML=(perfParts.length>1
+    ?perfParts.map(([k,v])=>cell(k,v)).join('')
     :cell('AGGREGATE',m.change)+cell('ASSETS',String(s.constituents.length)))
     +cell('CONSTITUENTS',String(s.constituents.length))+cell('SIGNAL',sectorSignal(m.change));
   $('smChart').innerHTML='<div class="lbl" style="margin-bottom:6px;">6-month sector performance</div>'+spark(s.spark,640,120,m.change>=0?'#22c55e':'#ef4444');
   $('smThemes').innerHTML=(s.themes||[]).map(t=>`<li>${esc(t)}</li>`).join('');
   $('smAi').textContent=s.ai||'';
-  const hasSplit=(s.idChange!=null);
-  const geos=hasSplit?[['ALL','All'],['ID','🇮🇩'],['US','🇺🇸']]:[['ALL','All assets']];
+  const regions=Array.from(new Set((s.constituents||[]).map(regionOf).filter(Boolean)));
+  const geos=regions.length>1?[['ALL','All'],...regions.map(g=>[g,geoTabLabel(g)])]:[['ALL','All assets']];
   $('smFilter').innerHTML=geos.map(([g,l])=>`<span class="wtab ${g===smGeo?'on':''}" data-g="${g}">${l}</span>`).join('');
   [...document.querySelectorAll('#smFilter .wtab')].forEach(t=>t.onclick=()=>{smGeo=t.dataset.g;smShowAll=false;setActive('#smFilter',t);renderConsts(s);});
   $('smSort').innerHTML=[['return','Sort: Return %'],['score','Sort: Score']].map(([k,l])=>`<span class="wtab ${k===smSort?'on':''}" data-sort="${k}">${l}</span>`).join('');
@@ -1882,8 +2113,8 @@ function lensDetail(c,type){
 function openScoreModal(c,s){
   const sc=invScore(c),n=sc.score;
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
-    `<div><div class="name">${FLAG[c.country]||''} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
-    `<div class="meta">${esc(s.name)} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
+    `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
+    `<div class="meta">${esc(s.name)} · ${esc(countryLabel(c))} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
     `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div class="metricsgrid">${scoreMetricHTML(sc,null,c)}</div></div>`+
     `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, risk ratios, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
@@ -1891,7 +2122,7 @@ function openScoreModal(c,s){
   $('scoreModal').classList.add('open');
 }
 function renderConsts(s){
-  let list=s.constituents.filter(c=>smGeo==='ALL'||c.country===smGeo).slice();
+  let list=s.constituents.filter(c=>smGeo==='ALL'||geoMatches(c,smGeo)).slice();
   list.sort((a,b)=>smSort==='score'
     ?((Number(invScore(b).score)||-1)-(Number(invScore(a).score)||-1)||qDelta(b)-qDelta(a))
     :qDelta(b)-qDelta(a));
@@ -1900,8 +2131,8 @@ function renderConsts(s){
   $('smConsts').innerHTML=list.map((c,i)=>{
     const dp=qDelta(c);
     return `<div class="crow" data-tk="${esc(c.ticker)}" style="cursor:pointer">`+
-      `<span class="fl">${FLAG[c.country]||''}</span><span class="tk"><i class="tdot ${c.tier}"></i>${esc(c.ticker)}</span>`+
-      `<span class="cn">${esc(c.name)}</span><span class="cap">${esc(c.mktcap)}</span>`+
+      `<span class="fl">${flagOf(c)}</span><span class="tk"><i class="tdot ${c.tier}"></i>${esc(c.ticker)}</span>`+
+      `<span class="cn">${esc(c.name)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="cap">${esc(c.mktcap)}</span>`+
       `${scorePill(c)}<span class="cd" style="color:${COLP(dp)}">${sign(dp)}</span></div>`;
   }).join('')||'<div style="color:var(--ink3);font-size:11px;padding:6px 0;">No tickers for this filter.</div>';
   [...document.querySelectorAll('#smConsts .crow')].forEach(r=>r.onclick=()=>openTicker(s,r.dataset.tk));
@@ -1920,7 +2151,7 @@ function openTicker(s,tk){
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${FLAG[c.country]||''} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
@@ -1935,10 +2166,13 @@ function openTicker(s,tk){
 $('smShowAll').onclick=()=>{smShowAll=!smShowAll;renderConsts(DATA.sectors[smIdx]);};
 $('smClose').onclick=()=>$('smodal').classList.remove('open');
 $('smodal').addEventListener('click',e=>{if(e.target===$('smodal'))$('smodal').classList.remove('open');});
+$('moverClose').onclick=()=>$('moverModal').classList.remove('open');
+$('moverModal').addEventListener('click',e=>{if(e.target===$('moverModal'))$('moverModal').classList.remove('open');});
 $('scoreClose').onclick=()=>$('scoreModal').classList.remove('open');
 $('scoreModal').addEventListener('click',e=>{if(e.target===$('scoreModal'))$('scoreModal').classList.remove('open');});
 addEventListener('keydown',e=>{if(e.key==='Escape'){
   if($('scoreModal').classList.contains('open'))$('scoreModal').classList.remove('open');
+  else if($('moverModal').classList.contains('open'))$('moverModal').classList.remove('open');
   else $('smodal').classList.remove('open');
 }});
 

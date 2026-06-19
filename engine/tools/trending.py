@@ -92,13 +92,16 @@ def collect(sectors_list: list) -> dict:
     id_rows = [r for r in rows if r["country"] == "ID"]
     us_rows = [r for r in rows if r["country"] == "US"]
     crypto_rows = [r for r in rows if r["country"] == "CR"]
+    other_rows = [r for r in rows if r.get("region") == "OTHERS"]
     out = {
         "id": _movers(id_rows),
         "us": _movers(us_rows),
+        "others": _movers(other_rows),
         "crypto": _movers(crypto_rows),
         "social": stocktwits(),
     }
     print(f"[trending] movers from {len(rows)} tickers "
-          f"({len(id_rows)} ID / {len(us_rows)} US / {len(crypto_rows)} crypto) "
+          f"({len(id_rows)} ID / {len(us_rows)} US / {len(other_rows)} others / "
+          f"{len(crypto_rows)} crypto) "
           f"+ {len(out['social'])} social")
     return out

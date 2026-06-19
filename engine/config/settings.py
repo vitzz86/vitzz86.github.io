@@ -52,6 +52,150 @@ ANOMALY_WATCHLIST = ("^JKSE", "^IXIC")
 SECTOR_SIGNAL_PCT = {"alert": 1.5, "watch": 0.8}  # |aggregate %| thresholds
 FUNDAMENTAL_REFRESH_HOURS = 24       # reuse real Yahoo metrics between daily refreshes
 FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-summary calls
+
+# Country / region metadata used by the dashboard and by the next universe
+# expansion. "OTHERS" is intentionally separate from US and Indonesia so sector
+# cards can eventually show ID / US / Others without double-counting.
+COUNTRY_META = {
+    "ID": {"name": "Indonesia", "flag": "🇮🇩", "region": "ID"},
+    "US": {"name": "United States", "flag": "🇺🇸", "region": "US"},
+    "CR": {"name": "Crypto", "flag": "₿", "region": "CRYPTO"},
+    "SG": {"name": "Singapore", "flag": "🇸🇬", "region": "OTHERS"},
+    "JP": {"name": "Japan", "flag": "🇯🇵", "region": "OTHERS"},
+    "KR": {"name": "South Korea", "flag": "🇰🇷", "region": "OTHERS"},
+    "TW": {"name": "Taiwan", "flag": "🇹🇼", "region": "OTHERS"},
+    "HK": {"name": "Hong Kong / China", "flag": "🇭🇰", "region": "OTHERS"},
+    "NL": {"name": "Netherlands", "flag": "🇳🇱", "region": "OTHERS"},
+    "DK": {"name": "Denmark", "flag": "🇩🇰", "region": "OTHERS"},
+    "DE": {"name": "Germany", "flag": "🇩🇪", "region": "OTHERS"},
+    "CH": {"name": "Switzerland", "flag": "🇨🇭", "region": "OTHERS"},
+    "FR": {"name": "France", "flag": "🇫🇷", "region": "OTHERS"},
+    "GB": {"name": "United Kingdom", "flag": "🇬🇧", "region": "OTHERS"},
+    "ES": {"name": "Spain", "flag": "🇪🇸", "region": "OTHERS"},
+    "AU": {"name": "Australia", "flag": "🇦🇺", "region": "OTHERS"},
+    "IN": {"name": "India", "flag": "🇮🇳", "region": "OTHERS"},
+}
+REGION_LABELS = {
+    "ID": "Indonesia",
+    "US": "US",
+    "CRYPTO": "Crypto",
+    "OTHERS": "Others",
+}
+
+# Global Leaders V1 is a research/watch universe, not yet a cron-active scoring
+# universe. It gives the UI and future screener/heatmap a clean source of truth
+# for non-ID / non-US leaders before we scale into full S&P 500, Nasdaq 100,
+# full IDX, and top-100 crypto coverage.
+GLOBAL_LEADERS_V1 = [
+    # Singapore
+    {"sector": "financials", "ticker": "D05", "name": "DBS Group", "source_symbol": "D05.SI", "exchange": "SGX", "country": "SG", "tier": "mega"},
+    {"sector": "financials", "ticker": "O39", "name": "OCBC Bank", "source_symbol": "O39.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "financials", "ticker": "U11", "name": "United Overseas Bank", "source_symbol": "U11.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "technology", "ticker": "Z74", "name": "Singtel", "source_symbol": "Z74.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "logistics", "ticker": "C6L", "name": "Singapore Airlines", "source_symbol": "C6L.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "logistics", "ticker": "BN4", "name": "Keppel", "source_symbol": "BN4.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "consumer", "ticker": "F34", "name": "Wilmar International", "source_symbol": "F34.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "financials", "ticker": "S68", "name": "Singapore Exchange", "source_symbol": "S68.SI", "exchange": "SGX", "country": "SG", "tier": "large"},
+    {"sector": "property", "ticker": "C38U", "name": "CapitaLand Integrated Commercial Trust", "source_symbol": "C38U.SI", "exchange": "SGX", "country": "SG", "tier": "mid"},
+    {"sector": "property", "ticker": "A17U", "name": "CapitaLand Ascendas REIT", "source_symbol": "A17U.SI", "exchange": "SGX", "country": "SG", "tier": "mid"},
+
+    # Japan
+    {"sector": "consumer", "ticker": "7203", "name": "Toyota Motor", "source_symbol": "7203.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "technology", "ticker": "6758", "name": "Sony Group", "source_symbol": "6758.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "technology", "ticker": "9984", "name": "SoftBank Group", "source_symbol": "9984.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "financials", "ticker": "8306", "name": "Mitsubishi UFJ Financial", "source_symbol": "8306.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "technology", "ticker": "6861", "name": "Keyence", "source_symbol": "6861.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "technology", "ticker": "8035", "name": "Tokyo Electron", "source_symbol": "8035.T", "exchange": "TSE", "country": "JP", "tier": "mega"},
+    {"sector": "consumer", "ticker": "6098", "name": "Recruit Holdings", "source_symbol": "6098.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+    {"sector": "technology", "ticker": "9432", "name": "Nippon Telegraph and Telephone", "source_symbol": "9432.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+    {"sector": "energy", "ticker": "8058", "name": "Mitsubishi Corporation", "source_symbol": "8058.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+    {"sector": "entertainment", "ticker": "7974", "name": "Nintendo", "source_symbol": "7974.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+    {"sector": "healthcare", "ticker": "4568", "name": "Daiichi Sankyo", "source_symbol": "4568.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "6501", "name": "Hitachi", "source_symbol": "6501.T", "exchange": "TSE", "country": "JP", "tier": "large"},
+
+    # South Korea
+    {"sector": "technology", "ticker": "005930", "name": "Samsung Electronics", "source_symbol": "005930.KS", "exchange": "KRX", "country": "KR", "tier": "mega"},
+    {"sector": "technology", "ticker": "000660", "name": "SK Hynix", "source_symbol": "000660.KS", "exchange": "KRX", "country": "KR", "tier": "mega"},
+    {"sector": "renewables", "ticker": "373220", "name": "LG Energy Solution", "source_symbol": "373220.KS", "exchange": "KRX", "country": "KR", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "207940", "name": "Samsung Biologics", "source_symbol": "207940.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "consumer", "ticker": "005380", "name": "Hyundai Motor", "source_symbol": "005380.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "consumer", "ticker": "000270", "name": "Kia", "source_symbol": "000270.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "healthcare", "ticker": "068270", "name": "Celltrion", "source_symbol": "068270.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "technology", "ticker": "035420", "name": "Naver", "source_symbol": "035420.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "technology", "ticker": "035720", "name": "Kakao", "source_symbol": "035720.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "renewables", "ticker": "051910", "name": "LG Chem", "source_symbol": "051910.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+    {"sector": "energy", "ticker": "005490", "name": "POSCO Holdings", "source_symbol": "005490.KS", "exchange": "KRX", "country": "KR", "tier": "large"},
+
+    # Taiwan
+    {"sector": "technology", "ticker": "2330", "name": "Taiwan Semiconductor Manufacturing", "source_symbol": "2330.TW", "exchange": "TWSE", "country": "TW", "tier": "mega"},
+    {"sector": "technology", "ticker": "2317", "name": "Hon Hai Precision", "source_symbol": "2317.TW", "exchange": "TWSE", "country": "TW", "tier": "mega"},
+    {"sector": "technology", "ticker": "2454", "name": "MediaTek", "source_symbol": "2454.TW", "exchange": "TWSE", "country": "TW", "tier": "mega"},
+    {"sector": "technology", "ticker": "2308", "name": "Delta Electronics", "source_symbol": "2308.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "technology", "ticker": "2382", "name": "Quanta Computer", "source_symbol": "2382.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "financials", "ticker": "2881", "name": "Fubon Financial", "source_symbol": "2881.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "financials", "ticker": "2891", "name": "CTBC Financial", "source_symbol": "2891.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "financials", "ticker": "2882", "name": "Cathay Financial", "source_symbol": "2882.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "technology", "ticker": "2412", "name": "Chunghwa Telecom", "source_symbol": "2412.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "technology", "ticker": "2303", "name": "United Microelectronics", "source_symbol": "2303.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+    {"sector": "technology", "ticker": "2357", "name": "ASUSTeK Computer", "source_symbol": "2357.TW", "exchange": "TWSE", "country": "TW", "tier": "large"},
+
+    # Hong Kong / China
+    {"sector": "technology", "ticker": "0700", "name": "Tencent Holdings", "source_symbol": "0700.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "technology", "ticker": "9988", "name": "Alibaba Group", "source_symbol": "9988.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "consumer", "ticker": "3690", "name": "Meituan", "source_symbol": "3690.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "consumer", "ticker": "9618", "name": "JD.com", "source_symbol": "9618.HK", "exchange": "HKEX", "country": "HK", "tier": "large"},
+    {"sector": "financials", "ticker": "1299", "name": "AIA Group", "source_symbol": "1299.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "financials", "ticker": "0388", "name": "Hong Kong Exchanges and Clearing", "source_symbol": "0388.HK", "exchange": "HKEX", "country": "HK", "tier": "large"},
+    {"sector": "financials", "ticker": "0005", "name": "HSBC Holdings", "source_symbol": "0005.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "financials", "ticker": "0939", "name": "China Construction Bank", "source_symbol": "0939.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "renewables", "ticker": "1211", "name": "BYD Company", "source_symbol": "1211.HK", "exchange": "HKEX", "country": "HK", "tier": "mega"},
+    {"sector": "technology", "ticker": "1810", "name": "Xiaomi", "source_symbol": "1810.HK", "exchange": "HKEX", "country": "HK", "tier": "large"},
+    {"sector": "energy", "ticker": "0883", "name": "CNOOC", "source_symbol": "0883.HK", "exchange": "HKEX", "country": "HK", "tier": "large"},
+
+    # Europe
+    {"sector": "technology", "ticker": "ASML", "name": "ASML Holding", "source_symbol": "ASML.AS", "exchange": "Euronext", "country": "NL", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "NOVO-B", "name": "Novo Nordisk", "source_symbol": "NOVO-B.CO", "exchange": "Nasdaq Copenhagen", "country": "DK", "tier": "mega"},
+    {"sector": "technology", "ticker": "SAP", "name": "SAP", "source_symbol": "SAP.DE", "exchange": "XETRA", "country": "DE", "tier": "mega"},
+    {"sector": "consumer", "ticker": "NESN", "name": "Nestle", "source_symbol": "NESN.SW", "exchange": "SIX", "country": "CH", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "ROG", "name": "Roche", "source_symbol": "ROG.SW", "exchange": "SIX", "country": "CH", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "NOVN", "name": "Novartis", "source_symbol": "NOVN.SW", "exchange": "SIX", "country": "CH", "tier": "mega"},
+    {"sector": "consumer", "ticker": "MC", "name": "LVMH", "source_symbol": "MC.PA", "exchange": "Euronext Paris", "country": "FR", "tier": "mega"},
+    {"sector": "consumer", "ticker": "RMS", "name": "Hermes International", "source_symbol": "RMS.PA", "exchange": "Euronext Paris", "country": "FR", "tier": "large"},
+    {"sector": "consumer", "ticker": "OR", "name": "L'Oreal", "source_symbol": "OR.PA", "exchange": "Euronext Paris", "country": "FR", "tier": "mega"},
+    {"sector": "energy", "ticker": "SHEL", "name": "Shell", "source_symbol": "SHEL.L", "exchange": "LSE", "country": "GB", "tier": "mega"},
+    {"sector": "financials", "ticker": "HSBA", "name": "HSBC Holdings", "source_symbol": "HSBA.L", "exchange": "LSE", "country": "GB", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "AZN", "name": "AstraZeneca", "source_symbol": "AZN.L", "exchange": "LSE", "country": "GB", "tier": "mega"},
+    {"sector": "consumer", "ticker": "ULVR", "name": "Unilever", "source_symbol": "ULVR.L", "exchange": "LSE", "country": "GB", "tier": "large"},
+    {"sector": "energy", "ticker": "TTE", "name": "TotalEnergies", "source_symbol": "TTE.PA", "exchange": "Euronext Paris", "country": "FR", "tier": "mega"},
+    {"sector": "infrastructure", "ticker": "AIR", "name": "Airbus", "source_symbol": "AIR.PA", "exchange": "Euronext Paris", "country": "FR", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "SIE", "name": "Siemens", "source_symbol": "SIE.DE", "exchange": "XETRA", "country": "DE", "tier": "mega"},
+    {"sector": "financials", "ticker": "ALV", "name": "Allianz", "source_symbol": "ALV.DE", "exchange": "XETRA", "country": "DE", "tier": "large"},
+    {"sector": "financials", "ticker": "SAN", "name": "Banco Santander", "source_symbol": "SAN.MC", "exchange": "BME", "country": "ES", "tier": "large"},
+
+    # Australia
+    {"sector": "energy", "ticker": "BHP", "name": "BHP Group", "source_symbol": "BHP.AX", "exchange": "ASX", "country": "AU", "tier": "mega"},
+    {"sector": "financials", "ticker": "CBA", "name": "Commonwealth Bank of Australia", "source_symbol": "CBA.AX", "exchange": "ASX", "country": "AU", "tier": "mega"},
+    {"sector": "healthcare", "ticker": "CSL", "name": "CSL", "source_symbol": "CSL.AX", "exchange": "ASX", "country": "AU", "tier": "mega"},
+    {"sector": "financials", "ticker": "NAB", "name": "National Australia Bank", "source_symbol": "NAB.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "financials", "ticker": "WBC", "name": "Westpac Banking", "source_symbol": "WBC.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "financials", "ticker": "ANZ", "name": "ANZ Group", "source_symbol": "ANZ.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "financials", "ticker": "MQG", "name": "Macquarie Group", "source_symbol": "MQG.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "consumer", "ticker": "WES", "name": "Wesfarmers", "source_symbol": "WES.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "energy", "ticker": "FMG", "name": "Fortescue", "source_symbol": "FMG.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+    {"sector": "consumer", "ticker": "WOW", "name": "Woolworths Group", "source_symbol": "WOW.AX", "exchange": "ASX", "country": "AU", "tier": "large"},
+
+    # India
+    {"sector": "energy", "ticker": "RELIANCE", "name": "Reliance Industries", "source_symbol": "RELIANCE.NS", "exchange": "NSE", "country": "IN", "tier": "mega"},
+    {"sector": "technology", "ticker": "TCS", "name": "Tata Consultancy Services", "source_symbol": "TCS.NS", "exchange": "NSE", "country": "IN", "tier": "mega"},
+    {"sector": "financials", "ticker": "HDFCBANK", "name": "HDFC Bank", "source_symbol": "HDFCBANK.NS", "exchange": "NSE", "country": "IN", "tier": "mega"},
+    {"sector": "financials", "ticker": "ICICIBANK", "name": "ICICI Bank", "source_symbol": "ICICIBANK.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "technology", "ticker": "INFY", "name": "Infosys", "source_symbol": "INFY.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "technology", "ticker": "BHARTIARTL", "name": "Bharti Airtel", "source_symbol": "BHARTIARTL.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "financials", "ticker": "SBIN", "name": "State Bank of India", "source_symbol": "SBIN.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "consumer", "ticker": "HINDUNILVR", "name": "Hindustan Unilever", "source_symbol": "HINDUNILVR.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "consumer", "ticker": "ITC", "name": "ITC", "source_symbol": "ITC.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "LT", "name": "Larsen & Toubro", "source_symbol": "LT.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+]
 SECTORS = [
     {"key": "technology", "name": "Technology", "icon": "▚",
      "theme": "AI infra · Digital banking", "constituents": [
