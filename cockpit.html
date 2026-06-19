@@ -199,6 +199,9 @@ a{color:inherit;text-decoration:none;}
 .heatcell.tiny{padding:2px;text-align:center;}
 .heatcell.tiny .htk{font-size:7px;}
 .heatcell.tiny .hpct,.heatcell.tiny .hnm{display:none;}
+.heatcell.priceonly{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);}
+.heatcell .htier{position:absolute;right:4px;top:3px;font-size:6.5px;letter-spacing:.08em;color:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.24);border-radius:3px;padding:1px 3px;background:rgba(0,0,0,.22);}
+.heatcell.tiny .htier{display:none;}
 .heatempty{min-height:150px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;border:1px dashed var(--line);border-radius:8px;}
 @media(max-width:760px){.heatgrid{height:620px;}.heatsector-title{font-size:7px;}.heatcell .hnm{display:none;}}
 
@@ -299,6 +302,7 @@ footer .g{color:var(--green);}
 .scorepill.neutral{border-color:rgba(245,158,11,.42);color:var(--amber);background:rgba(245,158,11,.08);}
 .scorepill.weak{border-color:rgba(239,68,68,.45);color:var(--red);background:rgba(239,68,68,.08);}
 .scorepill.insufficient{border-color:var(--line);color:var(--ink3);}
+.scorepill.priceonly{border-color:rgba(45,212,191,.32);color:var(--cyan);background:rgba(45,212,191,.07);}
 .scoresummary{margin-top:12px;border:1px solid var(--line);border-radius:8px;background:#0b0b0e;padding:12px;display:flex;align-items:center;gap:13px;}
 .scoresummary .scorebig{font-size:32px;min-width:48px;}
 .scorebtn{margin-left:auto;background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.35);border-radius:7px;color:var(--cyan);font-family:var(--mono);font-size:9px;padding:8px 10px;cursor:pointer;white-space:nowrap;}
@@ -1101,6 +1105,8 @@ function bestRiskPrice(c){
   const signal=upside==null?'risk-adjusted':upside>=20?'undervalued':(buyBelow!=null&&current!=null&&current<=buyBelow?'buy zone':upside<=-20?'expensive':'fair');
   return {score:clampScore(raw),upside_pct:upside,signal};
 }
+function isPriceOnly(c){return c&&c.data_tier==='price_only';}
+function hasScore(c){return invScore(c).score!=null&&!isPriceOnly(c);}
 function localMoverBucket(geo){
   const rows=[];
   (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(geoMatches(c,geo))rows.push(c);}));
@@ -1130,7 +1136,7 @@ function drawMovers(){
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
     `${moverScoreBadges(m)}`+
     `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></button>`).join('')||
-    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveGeo==='others'?'Global leaders universe is mapped; activate it in the next scoring batch to populate this tab.':moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
+    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveGeo==='others'&&(moveType==='top_score'||moveType==='best_value')?'Others is price-only for now; use gainers/losers until scoring is enabled.':moveGeo==='others'?'Others price coverage appears after the next bake.':moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
   [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
 }
 function moverGeoLabel(){
@@ -1151,13 +1157,14 @@ function moverDetailRows(){
 }
 function openMoverDetails(){
   const rows=moverDetailRows();
-  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart, score, and news</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
+  const hasPriceOnly=rows.some(isPriceOnly);
+  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart${hasPriceOnly?', source, and available news':', score, and news'}${hasPriceOnly?' · price-only rows show PX':''}</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
   const body=rows.length?`<div class="screener"><div class="srow head"><div>Ticker</div><div>Name</div><div class="hide-sm">Sector</div><div>Return</div><div>Score</div><div class="hide-sm">Risk/Price</div><div class="hide-sm">Mkt cap</div></div>`+
     rows.map(c=>{
       const sc=invScore(c),rp=bestRiskPrice(c),dp=qDelta(c);
       return `<div class="srow" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}">`+
         `<div class="stk">${flagOf(c)} ${esc(c.ticker)}</div><div class="snm">${esc(c.name)}</div><div class="muted hide-sm">${esc(c.sector_name||'')}</div>`+
-        `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${sc.score==null?'--':Math.round(sc.score)}</div>`+
+        `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${isPriceOnly(c)?'PX':(sc.score==null?'--':Math.round(sc.score))}</div>`+
         `<div class="metricval hide-sm">${rp&&rp.score!=null?Math.round(rp.score):'--'}</div><div class="metricval muted hide-sm">${esc(c.mktcap||'--')}</div></div>`;
     }).join('')+`</div>`:`<div class="heatempty">Global leaders are mapped; activate the backend pricing pass to populate this table.</div>`;
   $('moverDetail').innerHTML=header+body;
@@ -1313,8 +1320,9 @@ function drawHeatmap(){
     const tiles=tileRects.map(tr=>{
       const c=tr.item.row,dp=qDelta(c),tx=Math.round(tr.x),ty=Math.round(tr.y),tw=Math.max(1,Math.round(tr.w)-1),th=Math.max(1,Math.round(tr.h)-1);
       const cls=heatClass(tw,th);
-      return `<button class="heatcell ${cls}" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}" type="button" style="left:${tx}px;top:${ty}px;width:${tw}px;height:${th}px;background:${heatColor(dp)}" title="${esc(c.name)} · ${esc(g.name)} · ${sign(dp)}">`+
-        `<div class="htk">${flagOf(c)} ${esc(c.ticker)}</div><div class="hpct">${sign(dp)}</div><div class="hnm">${esc(c.name)}</div></button>`;
+      const tier=isPriceOnly(c)?'<div class="htier">PX</div>':'';
+      return `<button class="heatcell ${cls} ${isPriceOnly(c)?'priceonly':''}" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}" type="button" style="left:${tx}px;top:${ty}px;width:${tw}px;height:${th}px;background:${heatColor(dp)}" title="${esc(c.name)} · ${esc(g.name)} · ${sign(dp)}${isPriceOnly(c)?' · price-only':''}">`+
+        `<div class="htk">${flagOf(c)} ${esc(c.ticker)}</div>${tier}<div class="hpct">${sign(dp)}</div><div class="hnm">${esc(c.name)}</div></button>`;
     }).join('');
     return `<div class="heatsector" style="left:${x}px;top:${y}px;width:${sw}px;height:${sh}px"><div class="heatsector-title">${esc(g.name)}</div>${tiles}</div>`;
   }).join('');
@@ -1796,6 +1804,7 @@ function invScore(c){return c.fundamental_score||{};}
 function scoreClass(sc){const label=String((sc&&sc.label)||'insufficient').toLowerCase();return label.replace(/\s+/g,'')||'insufficient';}
 function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var(--ink3)';return n>=75?'var(--green)':n>=60?'var(--blue)':n>=45?'var(--amber)':'var(--red)';}
 function scorePill(c){
+  if(isPriceOnly(c))return `<span class="scorepill priceonly" title="Price-only global leader coverage; scoring is not enabled yet">PX</span>`;
   const sc=invScore(c),n=sc.score;
   return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} investment score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
 }
@@ -1890,6 +1899,11 @@ function scorePanel(c){
   return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
 function scoreSummary(c){
+  if(isPriceOnly(c)){
+    return `<div class="scoresummary"><div class="scorebig" style="color:var(--cyan)">PX</div>`+
+      `<div><div class="scorelabel" style="color:var(--cyan)">PRICE-ONLY COVERAGE</div>`+
+      `<div class="scoremeta">${esc(regionLabel(c)||countryLabel(c)||'Global')} · 30m quote/sparkline · scoring and valuation not enabled for this universe yet</div></div></div>`;
+  }
   const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
   return `<div class="scoresummary"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div>`+

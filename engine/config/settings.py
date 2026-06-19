@@ -52,6 +52,7 @@ ANOMALY_WATCHLIST = ("^JKSE", "^IXIC")
 SECTOR_SIGNAL_PCT = {"alert": 1.5, "watch": 0.8}  # |aggregate %| thresholds
 FUNDAMENTAL_REFRESH_HOURS = 24       # reuse real Yahoo metrics between daily refreshes
 FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-summary calls
+GLOBAL_LEADERS_PRICE_ACTIVE = True   # price-only coverage; no fundamentals/news expansion yet
 
 # Country / region metadata used by the dashboard and by the next universe
 # expansion. "OTHERS" is intentionally separate from US and Indonesia so sector

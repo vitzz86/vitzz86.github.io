@@ -13,22 +13,7 @@ import sys
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
 from config import settings
 
-YF_QUOTE = "https://finance.yahoo.com/quote/"
-COINGECKO = "https://www.coingecko.com/en/coins/"
-CG_IDS = {"BTC-USD": "bitcoin", "ETH-USD": "ethereum", "SOL-USD": "solana",
-          "BNB-USD": "binancecoin", "XRP-USD": "ripple", "ADA-USD": "cardano",
-          "DOGE-USD": "dogecoin", "AVAX-USD": "avalanche-2", "LINK-USD": "chainlink",
-          "MATIC-USD": "polygon-ecosystem-token"}
-CG_SLUGS = {"MATIC-USD": "polygon"}
-
-
-def _country_meta(country: str) -> dict:
-    meta = getattr(settings, "COUNTRY_META", {}).get(country, {})
-    return {
-        "country_name": meta.get("name", country),
-        "country_flag": meta.get("flag", ""),
-        "region": meta.get("region", country),
-    }
+from tools import universe
 
 
 def _signal(agg: float) -> str:
@@ -68,10 +53,11 @@ def _previous_rows(previous_sectors: list | None) -> dict:
 
 
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
-    symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]]
+    sector_rows = universe.priced_rows_by_sector()
+    symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows]
     prices = _batch_prices(symbols)
-    crypto_symbols = [c[2] for sec in settings.SECTORS for c in sec["constituents"]
-                      if c[4] == "CR" and c[2] in CG_IDS]
+    crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
+                      if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
     if crypto_symbols:
         try:
             from tools import crypto_quotes
@@ -92,22 +78,14 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     out = []
     for sec in settings.SECTORS:
         rows, id_d, us_d = [], [], []
-        for c in sec["constituents"]:
-            ticker, name, ysym, exch, country, mktcap, tier = c[:7]
+        for base in sector_rows.get(sec["key"], []):
+            ticker = base["ticker"]
+            ysym = base["source_symbol"]
+            country = base["country"]
             p = prices.get(ysym)
             delta = p["delta_pct"] if p else 0.0
             spark = p["spark"] if p else []
-            url = (COINGECKO + CG_SLUGS.get(ysym, CG_IDS[ysym])) if (country == "CR" and ysym in CG_IDS) \
-                else (YF_QUOTE + ysym)
-            meta = _country_meta(country)
-            rows.append({
-                "ticker": ticker, "name": name, "exchange": exch,
-                "country": country, "mktcap": mktcap, "tier": tier,
-                "country_name": meta["country_name"],
-                "country_flag": meta["country_flag"],
-                "region": meta["region"],
-                "universe": ["SECTOR_FLOW"],
-                "source_symbol": ysym,
+            rows.append(base | {
                 "delta_pct": delta, "spark": spark,
                 "spark_ts": (p or {}).get("spark_ts", []),
                 "value": (p or {}).get("value", 0.0),
@@ -118,7 +96,6 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "mkt_start": (p or {}).get("mkt_start"),
                 "mkt_end": (p or {}).get("mkt_end"),
                 "intraday": (p or {}).get("intraday", []),
-                "url": url,
             })
             if country == "ID":
                 id_d.append(delta)
@@ -128,7 +105,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
         try:
             from tools import fundamentals
             risk_benchmarks = fundamentals.risk_benchmarks_from_telemetry(telemetry)
-            fundamentals.enrich(rows, _previous_rows(previous_sectors),
+            fundamentals.enrich(universe.scored_rows(rows), _previous_rows(previous_sectors),
                                 refresh_hours=getattr(settings, "FUNDAMENTAL_REFRESH_HOURS", 24),
                                 workers=getattr(settings, "FUNDAMENTAL_WORKERS", 6),
                                 risk_benchmarks=risk_benchmarks)

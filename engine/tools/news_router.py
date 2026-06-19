@@ -756,6 +756,8 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     cons = []
     for s in sectors:
         for c in s["constituents"]:
+            if c.get("news_priority") != "priority":
+                continue
             cons.append({"sector": s["key"], "ticker": c["ticker"],
                          "name": c["name"].split(" (")[0], "country": c["country"],
                          "tier": c.get("tier") or c.get("mktcap"),

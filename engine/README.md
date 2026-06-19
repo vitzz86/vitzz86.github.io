@@ -2,7 +2,8 @@
 
 Autonomous data-generation architecture behind [`/cockpit.html`](../cockpit.html).
 Four agents run sequentially as a LangGraph state machine and compile the strict
-`data.json` contract the dashboard reads client-side (no runtime API calls).
+`data.json` contract the dashboard reads client-side. The static page also adds
+lightweight live overlays for crypto, selected US quotes, and media playback.
 
 ```
 [Quant] → Δ>1.2% check → [OSINT Hunter (Tavily override on anomaly)]
@@ -11,14 +12,19 @@ Four agents run sequentially as a LangGraph state machine and compile the strict
 
 ## v2 — Sector Flow Matrix & universal link layer
 
-`data.json` also carries two v2 surfaces, baked at cron time so the static
-dashboard needs no live backend:
+`data.json` also carries the v2 cockpit surfaces, baked at cron time so the
+dashboard has a stable payload even when optional live overlays fail:
 
-- **`sectors`** — 10-sector-style equity universe (`config/settings.py → SECTORS`,
+- **`sectors`** — 11-sector-style equity universe (`config/settings.py → SECTORS`,
   extensible with no code changes). `tools/sectors.py` fetches each constituent's
-  day delta + 20-pt sparkline via yfinance, computes ID-vs-US aggregates, a
-  Mega/Large/Mid/Small tier, an ALERT/WATCH/NORMAL signal, and a synthesis line.
-  Falls back to flat 0.0 when yfinance is unreachable, so the grid always renders.
+  day delta + 6-month sparkline via Yahoo/CoinGecko, computes regional
+  aggregates, a Mega/Large/Mid/Small tier, an ALERT/WATCH/NORMAL signal, and a
+  synthesis line. Falls back to flat 0.0 when providers are unreachable, so the
+  grid always renders.
+- **`universe`** — shared registry layer for active Sector Flow rows and
+  price-only global leaders. It owns country/region tags, source URLs, data
+  tiers, refresh-frequency labels, and coverage summaries so heatmap, movers,
+  scoring, and future universe expansion do not fork separate schemas.
 - **`news`** — `tools/news_router.py` turns RSS headlines into a deduped list
   where **every item has a verified source URL** (items without a link are
   suppressed, per PRD D3), tagged with a category and routed to sectors.

@@ -12,6 +12,7 @@ import urllib.request
 
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
 from config import settings
+from tools import universe
 
 
 def _get(url: str, timeout: int = 12) -> str:
@@ -37,6 +38,10 @@ def _score(row: dict) -> float:
         return float(val)
     except Exception:  # noqa: BLE001
         return -1.0
+
+
+def _region(row: dict) -> str:
+    return row.get("region") or universe.country_meta(row.get("country", "")).get("region", "")
 
 
 def _dedupe(rows: list) -> list:
@@ -67,6 +72,11 @@ def _movers(rows: list) -> dict:
                 "ticker": r["ticker"],
                 "name": r["name"],
                 "country": r["country"],
+                "country_name": r.get("country_name"),
+                "country_flag": r.get("country_flag"),
+                "region": _region(r),
+                "universe": r.get("universe", []),
+                "data_tier": r.get("data_tier"),
                 "delta_pct": r["delta_pct"],
                 "url": r["url"],
                 "score": fs.get("score"),
@@ -92,7 +102,7 @@ def collect(sectors_list: list) -> dict:
     id_rows = [r for r in rows if r["country"] == "ID"]
     us_rows = [r for r in rows if r["country"] == "US"]
     crypto_rows = [r for r in rows if r["country"] == "CR"]
-    other_rows = [r for r in rows if r.get("region") == "OTHERS"]
+    other_rows = [r for r in rows if _region(r) == "OTHERS"]
     out = {
         "id": _movers(id_rows),
         "us": _movers(us_rows),

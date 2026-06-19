@@ -24,7 +24,7 @@ from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (daily_brief, enterprise_osint, env_context,  # noqa: E402
                    macro_alerts, market_telemetry, news_router, podcasts,
-                   sectors, spotify, trending, videos)
+                   sectors, spotify, trending, universe, videos)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -87,30 +87,7 @@ def _tel_line(r: dict) -> str:
 
 
 def _coverage_universe_summary(sectors_list: list) -> dict:
-    active_rows = [c for s in sectors_list for c in s.get("constituents", [])]
-    leaders = getattr(settings, "GLOBAL_LEADERS_V1", [])
-
-    def counts(rows: list, key: str) -> dict:
-        out: dict[str, int] = {}
-        for row in rows:
-            val = row.get(key) or "UNKNOWN"
-            out[val] = out.get(val, 0) + 1
-        return dict(sorted(out.items()))
-
-    return {
-        "active_sector_flow": {
-            "count": len(active_rows),
-            "countries": counts(active_rows, "country"),
-            "regions": counts(active_rows, "region"),
-        },
-        "global_leaders_v1": {
-            "count": len(leaders),
-            "countries": counts(leaders, "country"),
-            "sectors": counts(leaders, "sector"),
-            "status": "mapped_not_active",
-        },
-        "next_targets": ["full_idx", "sp500", "nasdaq100", "crypto_top100"],
-    }
+    return universe.coverage_summary(sectors_list)
 
 
 def node_hunter(state: dict) -> dict:
