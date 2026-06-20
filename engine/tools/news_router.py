@@ -37,10 +37,13 @@ CATEGORY_KEYWORDS = {
                         "apple", "microsoft", "meta", "gojek", "goto", "digital", "tech"],
     "MARKETS_FINANCE": ["stock", "shares", "equity", "earnings", "dividend", "ipo", "bond",
                         "yield", "treasury", "gold", "oil", "commodity", "nickel", "coal",
-                        "saham", "ihsg", "bourse", "index", "buyback", "bank", "valuation"],
+                        "saham", "ihsg", "bourse", "index", "buyback", "bank", "valuation",
+                        "msci", "index review", "rebalancing"],
     "ECONOMY":         ["rate", "inflation", "gdp", "economy", "central bank", "the fed",
                         "bi-rate", "fiscal", "tariff", "trade", "jobs", "employment",
-                        "rupiah", "policy", "deficit", "budget", "recession", "ekonomi"],
+                        "rupiah", "policy", "deficit", "budget", "recession", "ekonomi",
+                        "sovereign rating", "credit rating", "moody", "fitch", "s&p global",
+                        "rating outlook", "upgrade", "downgrade"],
 }
 DEFAULT_CATEGORY = "ECONOMY"
 CRYPTO_SOURCE_HINTS = {
@@ -66,7 +69,7 @@ TRUSTED_BY_NAME = {
 }
 SOURCE_TIER_SCORE = {
     "tier1_global": 45, "official": 45, "indonesia": 40,
-    "apac_sea": 35, "crypto": 30, "us_equity": 20,
+    "ratings": 45, "apac_sea": 35, "crypto": 30, "us_equity": 20,
 }
 
 

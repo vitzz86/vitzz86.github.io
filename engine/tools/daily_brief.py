@@ -19,6 +19,8 @@ sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__fi
 from config import settings
 from tools import env_context
 
+DAILY_BRIEF_CARD_MAX_AGE_S = 24 * 3600
+
 
 def _window_key(now: dt.datetime | None = None) -> str:
     now = now or env_context.now_wib()
@@ -56,6 +58,20 @@ def _clamp(n) -> int:
         return 50
 
 
+def _now_ts() -> int:
+    return int(dt.datetime.now(dt.timezone.utc).timestamp())
+
+
+def _fresh_items(items: list, max_age_s: int = DAILY_BRIEF_CARD_MAX_AGE_S) -> list:
+    now = _now_ts()
+    out = []
+    for item in items or []:
+        ts = int(item.get("ts") or 0)
+        if ts and 0 <= now - ts <= max_age_s:
+            out.append(item)
+    return out
+
+
 def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
     aggs = [s.get("change", 0.0) for s in sectors]
     avg = sum(aggs) / len(aggs) if aggs else 0.0
@@ -71,8 +87,8 @@ def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
         tag = "BULLISH" if ch > 0.3 else ("BEARISH" if ch < -0.3 else "WATCH")
         themes.append({"title": s["name"], "tag": tag,
                        "text": (s.get("ai") or "; ".join(s.get("themes", [])[:1]))[:300]})
-    videos = _rank_videos(videos)
-    news = _rank_news(news)
+    videos = _fresh_items(_rank_videos(videos))
+    news = _fresh_items(_rank_news(news))
     return _finalize_cards({
         "sentiment": {"score": score, "label": label, "indonesia": idn,
                       "us": us, "global": glob, "crypto": cr},
@@ -88,6 +104,7 @@ def _deterministic(telemetry, sectors, news, videos, arbiter) -> dict:
 DIGEST_TOPICS = (
     ("IHSG and Indonesian equities", ("ihsg", "jci", "saham", "emiten", "idx", "bei", "bursa")),
     ("rupiah and Bank Indonesia policy", ("rupiah", "bank indonesia", "bi-rate", "suku bunga", "idr")),
+    ("Indonesia sovereign ratings and MSCI index review", ("sovereign rating", "credit rating", "moody", "fitch", "s&p global", "msci", "index review", "upgrade", "downgrade")),
     ("US rates and Fed policy", ("federal reserve", "fed", "rate", "rates", "warsh", "treasury")),
     ("US indices and stock-market breadth", ("s&p", "s p 500", "nasdaq", "dow", "wall street")),
     ("BOJ and Japan rate policy", ("boj", "bank of japan", "japan rate", "japanese rate", "naikkan suku bunga")),
@@ -505,7 +522,7 @@ def _regional_digest(items: list, title_key: str, geo_key: str, telemetry: list 
             label = "US/global"
         topics = _digest_topics(rows[:16], title_key)
         if not rows:
-            return f"{label}: no high-confidence items in the current 7-day window."
+            return f"{label}: no high-confidence items in the current 24-hour Daily Brief window."
         tone, indicators = _regional_indicators(telemetry, region, topics)
         prefix = f"{label}: {tone} tone"
         if indicators:
@@ -528,8 +545,10 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
     brief = None
     videos = _rank_videos(videos)
     news = _rank_news(news)
+    brief_videos = _fresh_items(videos)
+    brief_news = _fresh_items(news)
     if summarize:
-        vlist, nlist = videos[:12], news[:14]
+        vlist, nlist = brief_videos[:12], brief_news[:14]
         def snippet(x):
             return _one_sentence(x.get("summary") or x.get("title") or "", 260)
         vstr = "\n".join(f"{i}. [{v['category']}/{v.get('geo','')}] {v['channel']}: {v['title']} — {snippet(v)}"
@@ -582,11 +601,11 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
                     if isinstance(i, int) and 0 <= i < len(nlist):
                         mr.append({"news": nlist[i], "why": _clean_why(it.get("why") or "", nlist[i], "news")})
                 if not mw:
-                    mw = _balanced_watch_cards([], videos)
+                    mw = _balanced_watch_cards([], brief_videos)
                 if not mr:
-                    mr = _balanced_read_cards([], news)
-                mw = _balanced_watch_cards(mw, videos)
-                mr = _balanced_read_cards(mr, news)
+                    mr = _balanced_read_cards([], brief_news)
+                mw = _balanced_watch_cards(mw, brief_videos)
+                mr = _balanced_read_cards(mr, brief_news)
                 sent = obj.get("sentiment") or {}
                 brief = {
                     "sentiment": {
@@ -618,9 +637,9 @@ def compile_brief(telemetry, sectors, news, videos, arbiter,
 
     if brief is None:
         print("[daily_brief] deterministic fallback")
-        brief = _deterministic(telemetry, sectors, news, videos, arbiter)
-    nd_fallback = _regional_digest(news, "title", "geo", telemetry)
-    vd_fallback = _regional_digest(videos, "title", "geo", telemetry)
+        brief = _deterministic(telemetry, sectors, brief_news, brief_videos, arbiter)
+    nd_fallback = _regional_digest(brief_news, "title", "geo", telemetry)
+    vd_fallback = _regional_digest(brief_videos, "title", "geo", telemetry)
     brief["news_digest"] = {
         "indonesia": ((brief.get("news_digest") or {}).get("indonesia") or nd_fallback["indonesia"]),
         "us": ((brief.get("news_digest") or {}).get("us") or nd_fallback["us"]),

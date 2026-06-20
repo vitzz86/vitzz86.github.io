@@ -34,6 +34,7 @@ def _batch_prices(symbols: list) -> dict:
     for sym, r in yquote.fetch(symbols).items():
         out[sym] = {"delta_pct": r["delta_pct"], "value": round(r["value"], 2),
                     "turnover": round(r["value"] * r.get("volume", 0.0), 0),
+                    "volume": r.get("volume", 0.0),
                     "spark": r["spark"], "open": r["open"],
                     "spark_ts": r.get("spark_ts", []),
                     "intraday": r.get("intraday", []),
@@ -90,6 +91,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "spark_ts": (p or {}).get("spark_ts", []),
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
+                "volume": (p or {}).get("volume", 0.0),
                 "market_cap_value": (p or {}).get("market_cap_value"),
                 "volume_24h": (p or {}).get("volume_24h"),
                 "state": "open" if (p or {}).get("open") else "closed",

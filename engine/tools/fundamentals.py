@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 9
+SCORE_SCHEMA_VERSION = 10
 
 BANK_KEYWORDS = (
     "bank", "bancorp", "chase", "wells fargo", "syariah", "btpn", "bpd",
@@ -426,6 +426,14 @@ def _fetch_equity(sym: str) -> dict:
     fcf = _num(info.get("freeCashflow"))
     fcf_yield = round(fcf / market_cap * 100, 2) if fcf and market_cap else None
     current_price = _num(info.get("currentPrice")) or _num(info.get("regularMarketPrice"))
+    volume = (_num(info.get("regularMarketVolume")) or _num(info.get("volume"))
+              or _num(info.get("regularMarketVolume3Month")))
+    avg_volume = (_num(info.get("averageVolume")) or _num(info.get("averageDailyVolume3Month"))
+                  or _num(info.get("regularMarketVolume3Month")))
+    avg_volume_10d = _num(info.get("averageVolume10days")) or _num(info.get("averageDailyVolume10Day"))
+    avg_liquidity_volume = avg_volume_10d or avg_volume
+    avg_daily_value_traded = (current_price * avg_liquidity_volume
+                              if current_price and avg_liquidity_volume else None)
     return {
         "currency": quote_currency or financial_currency,
         "quote_currency": quote_currency or financial_currency,
@@ -448,6 +456,10 @@ def _fetch_equity(sym: str) -> dict:
         "free_cash_flow": fcf,
         "fcf_yield_pct": fcf_yield,
         "market_cap": market_cap,
+        "volume": volume,
+        "average_volume": avg_volume,
+        "average_volume_10d": avg_volume_10d,
+        "avg_daily_value_traded": avg_daily_value_traded,
         "source": "Yahoo Finance",
         "as_of": _now_iso(),
     }
@@ -507,6 +519,38 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     return metrics
 
 
+def _equity_liquidity(row: dict, metrics: dict) -> dict:
+    current = _num(metrics.get("current_price")) or _num(row.get("value"))
+    market_cap = _num(metrics.get("market_cap")) or _num(row.get("market_cap_value"))
+    volume = _num(metrics.get("volume")) or _num(row.get("volume"))
+    avg_volume = (_num(metrics.get("average_volume_10d"))
+                  or _num(metrics.get("average_volume")))
+    traded_value = _num(row.get("turnover")) or (current * volume if current and volume else None)
+    avg_daily_value = (_num(metrics.get("avg_daily_value_traded"))
+                       or (current * avg_volume if current and avg_volume else None))
+    liquidity_value = avg_daily_value or traded_value
+    liquidity_pct = (liquidity_value / market_cap * 100) if liquidity_value and market_cap else None
+    currency = (metrics.get("quote_currency") or metrics.get("currency") or "").upper()
+    country = row.get("country")
+    absolute_value = liquidity_value or traded_value
+
+    pct_score = _score_high(liquidity_pct, 0.02, 0.35)
+    if country == "ID" or currency == "IDR":
+        abs_score = _score_high(absolute_value, 1_000_000_000, 25_000_000_000)
+    else:
+        abs_score = _score_high(absolute_value, 2_000_000, 50_000_000)
+
+    return {
+        "volume": volume,
+        "average_volume": _num(metrics.get("average_volume")),
+        "average_volume_10d": _num(metrics.get("average_volume_10d")),
+        "traded_value": traded_value,
+        "avg_daily_value_traded": avg_daily_value,
+        "liquidity_pct": round(liquidity_pct, 2) if liquidity_pct is not None else None,
+        "liquidity_score": _avg([pct_score, abs_score]),
+    }
+
+
 def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = _normalize_currencies(row, metrics, risk_context)
     metrics["_ticker"] = row.get("ticker")
@@ -524,6 +568,8 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
     metrics["_valuation_cached"] = valuation
     valuation_score = _valuation_value_score(valuation)
     profile = _sector_profile(metrics)
+    liquidity = _equity_liquidity(row, metrics)
+    metrics.update({k: v for k, v in liquidity.items() if v is not None})
 
     if profile["family"] == "bank":
         value = _avg([
@@ -576,6 +622,7 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
         {"key": "quality", "label": "Quality", "score": quality},
         {"key": "growth", "label": "Growth", "score": growth},
         {"key": "momentum", "label": "Momentum", "score": momentum},
+        {"key": "liquidity", "label": "Liquidity", "score": metrics.get("liquidity_score")},
         {"key": "risk", "label": "Risk", "score": risk},
     ]
     return _pack_score("equity", axes, metrics, one_month, six_month, vol)
@@ -1222,6 +1269,13 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("Free Cash Flow", _fmt_metric_value(metrics.get("free_cash_flow"), "money"), "money", currency, "TTM" + note("free_cash_flow")),
         _metric("FCF Yield", _fmt_metric_value(metrics.get("fcf_yield_pct"), "percent"), "percent", period="TTM FCF / market cap"),
         _metric("Market Cap", _fmt_metric_value(metrics.get("market_cap"), "money"), "money", currency, "latest quote"),
+        _metric("Volume", _fmt_metric_value(metrics.get("volume"), "number"), "number", period="latest session shares"),
+        _metric("Avg Volume 10D", _fmt_metric_value(metrics.get("average_volume_10d") or metrics.get("average_volume"), "number"), "number",
+                period="average daily shares"),
+        _metric("Value Traded", _fmt_metric_value(metrics.get("traded_value"), "money"), "money", currency, "latest session"),
+        _metric("Avg Daily Value", _fmt_metric_value(metrics.get("avg_daily_value_traded"), "money"), "money", currency, "10D/3M average"),
+        _metric("Equity Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent",
+                period="avg daily value / market cap"),
         _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency, "24H"),
         _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent", period="24H volume / market cap"),
         _metric("1M Return", one_month, "percent", period=one_month_period),
@@ -1245,6 +1299,14 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
                 period=f"downside vs {risk.get('risk_free_label') or 'risk-free'}, 6M daily"),
         _metric("Max Drawdown", _fmt_metric_value(risk.get("max_drawdown_pct"), "percent"), "percent", period="peak-to-trough, 6M"),
     ]
+    if mode == "equity":
+        metric_rows = [m for m in metric_rows if m["label"] not in {"24h Volume", "Liquidity"}]
+    elif mode == "crypto":
+        equity_only = {"P/E", "Fwd P/E", "EV/EBITDA", "P/B", "Book Value", "Beta", "EPS", "ROE",
+                       "Debt/Equity", "Revenue Growth", "EPS Growth", "Dividend Yield", "Gross Profit",
+                       "Total Cash", "Free Cash Flow", "FCF Yield", "Volume", "Avg Volume 10D",
+                       "Value Traded", "Avg Daily Value", "Equity Liquidity"}
+        metric_rows = [m for m in metric_rows if m["label"] not in equity_only]
     valuation = metrics.get("_valuation_cached") if mode == "equity" else None
     if mode == "equity" and "_valuation_cached" not in metrics:
         valuation = _valuation(metrics)
@@ -1288,6 +1350,9 @@ def _previous_metrics(previous_by_symbol: dict, row: dict, ttl_hours: int) -> di
             "EPS Growth": "eps_growth_pct", "Dividend Yield": "dividend_yield_pct",
             "Gross Profit": "gross_profit", "Total Cash": "total_cash",
             "Free Cash Flow": "free_cash_flow", "FCF Yield": "fcf_yield_pct", "Market Cap": "market_cap",
+            "Volume": "volume", "Avg Volume 10D": "average_volume_10d",
+            "Value Traded": "traded_value", "Avg Daily Value": "avg_daily_value_traded",
+            "Equity Liquidity": "liquidity_pct",
             "24h Volume": "volume_24h", "Liquidity": "liquidity_pct",
         }.get(label)
         if key:

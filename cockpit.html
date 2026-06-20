@@ -1499,6 +1499,7 @@ function durLabel(sec){sec=Number(sec||0);if(!sec)return '';const h=Math.floor(s
 function goodVideo(v){const t=(v&&v.title||'').trim().toLowerCase();return !!(v&&v.video_id&&t&&t!=='private video'&&t!=='deleted video'&&!t.includes('video unavailable'));}
 const WHY_TOPICS=[
   ['Rupiah, Bank Indonesia, and IHSG signals frame local liquidity and foreign-flow risk for Indonesian equities.',['rupiah','bank indonesia','bi','ihsg','jci','saham']],
+  ['Indonesia rating and MSCI-review signals can shift foreign-flow appetite, index inclusion risk, and the country-risk premium.',['sovereign rating','credit rating','moody','fitch','s&p global','msci','index review','upgrade','downgrade']],
   ['Fed, rate, and yield signals set the discount-rate backdrop, making this important for Nasdaq multiples, banks, and the Rupiah.',['fed','federal reserve','rates','yield','treasury','warsh','suku bunga']],
   ['AI and semiconductor capex are driving market leadership, so this helps separate durable demand from bubble-risk headlines.',['ai','artificial intelligence','nvidia','semiconductor','chip','data center']],
   ["Oil, gold, nickel, and shipping moves feed inflation and Indonesia's commodity exposure, so they can quickly change sector leadership.",['oil','brent','gold','nickel','coal','commodity','hormuz','shipping']],
@@ -1822,6 +1823,13 @@ function fmtMetric(m){
     if(Math.abs(n)>=1e6)return prefix+(n/1e6).toFixed(1)+'M';
     return prefix+Math.round(n).toLocaleString();
   }
+  if(fmt==='number'&&/volume/i.test(label)){
+    const n=Number(v);if(!isFinite(n))return esc(String(v));
+    if(Math.abs(n)>=1e12)return (n/1e12).toFixed(2)+'T sh';
+    if(Math.abs(n)>=1e9)return (n/1e9).toFixed(2)+'B sh';
+    if(Math.abs(n)>=1e6)return (n/1e6).toFixed(1)+'M sh';
+    return Math.round(n).toLocaleString()+' sh';
+  }
   if(fmt==='number'&&cur&&/price|eps|book/i.test(label))return cur+' '+Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
   if(fmt==='ratio'){
     if(/p\/e|p\/b|ev\/ebitda|beta/i.test(label))return Number(v).toFixed(2)+'x';
@@ -1850,8 +1858,13 @@ function metricPeriod(m){
   if(label.includes('sharpe'))return 'annualized vs risk-free, 6M daily';
   if(label.includes('sortino'))return 'downside vs risk-free, 6M daily';
   if(label.includes('max drawdown'))return 'peak-to-trough, 6M';
-  if(label.includes('liquidity'))return '24H volume / market cap';
+  if(label.includes('equity liquidity'))return 'avg daily value / market cap';
+  if(label==='volume')return 'latest session shares';
+  if(label.includes('avg volume'))return 'average daily shares';
+  if(label.includes('value traded'))return 'latest session';
+  if(label.includes('avg daily value'))return '10D/3M average';
   if(label.includes('24h volume'))return '24H';
+  if(label.includes('liquidity'))return '24H volume / market cap';
   if(label==='roe')return 'TTM';
   if(label.includes('volatility'))return 'daily realized, ~6M window';
   if(label.includes('return'))return label.includes('1m')?'22 sessions / 30D crypto':'6M price return';

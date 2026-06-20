@@ -656,6 +656,10 @@ NEWS_TRUSTED_SOURCES = {
         ("BOJ", "boj.or.jp"), ("ECB", "ecb.europa.eu"), ("IMF", "imf.org"),
         ("World Bank", "worldbank.org"),
     ],
+    "ratings": [
+        ("S&P Global Ratings", "spglobal.com"), ("Moody's Ratings", "moodys.com"),
+        ("Fitch Ratings", "fitchratings.com"), ("MSCI", "msci.com"),
+    ],
     "crypto": [
         ("CoinDesk", "coindesk.com"), ("The Block", "theblock.co"),
         ("Decrypt", "decrypt.co"), ("Cointelegraph", "cointelegraph.com"),
@@ -688,6 +692,7 @@ NEWS_SOURCE_TARGETS = {
                       "beincrypto.com", "sec.gov"],
     "OFFICIAL": ["bi.go.id", "ojk.go.id", "idx.co.id", "federalreserve.gov",
                  "treasury.gov", "bls.gov", "eia.gov", "boj.or.jp", "ecb.europa.eu"],
+    "RATINGS": ["spglobal.com", "moodys.com", "fitchratings.com", "msci.com"],
 }
 
 NEWS_SOURCE_QUERY_TOPICS = [
@@ -705,6 +710,9 @@ NEWS_SOURCE_QUERY_TOPICS = [
     ("bitcoin kripto exchange Indonesia aset digital", "ID", "CRYPTO", "CRYPTO_ID"),
     ("stablecoin token blockchain ETF crypto exchange", "US", "CRYPTO", "CRYPTO_GLOBAL"),
     ("central bank policy Fed BI BOJ ECB", "US", "ECONOMY", "OFFICIAL"),
+    ("Indonesia sovereign rating outlook upgrade downgrade", "ID", "ECONOMY", "RATINGS"),
+    ("Indonesia MSCI index review upgrade downgrade foreign inflows", "ID", "MARKETS_FINANCE", "RATINGS"),
+    ("Indonesia credit rating S&P Moody's Fitch outlook", "ID", "ECONOMY", "RATINGS"),
 ]
 
 # Intelligence Wire taxonomy (v3): Economy · Tech · Markets & Finance · Crypto.
@@ -715,6 +723,8 @@ WIRE_TOPICS = {
         ("Bank Indonesia suku bunga inflasi", "ECONOMY"),
         ("APBN fiskal kebijakan pemerintah Indonesia", "ECONOMY"),
         ("rupiah nilai tukar dollar", "ECONOMY"),
+        ("Indonesia sovereign credit rating outlook Moody Fitch S&P", "ECONOMY"),
+        ("MSCI Indonesia index review upgrade downgrade rebalancing", "MARKETS_FINANCE"),
         ("IHSG saham bursa efek Indonesia", "MARKETS_FINANCE"),
         ("saham bank BBCA BBRI BMRI emiten", "MARKETS_FINANCE"),
         ("berita emiten aksi korporasi dividen RUPST saham", "MARKETS_FINANCE"),
