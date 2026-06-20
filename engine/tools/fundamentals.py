@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 10
+SCORE_SCHEMA_VERSION = 11
 
 BANK_KEYWORDS = (
     "bank", "bancorp", "chase", "wells fargo", "syariah", "btpn", "bpd",
@@ -485,21 +485,64 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     converted_fields = []
     if needs_conversion:
         current = _num(metrics.get("current_price"))
+        market_cap = _num(metrics.get("market_cap")) or _num(row.get("market_cap_value"))
         for key in ("gross_profit", "total_cash", "free_cash_flow"):
             val = _num(metrics.get(key))
             if val is not None:
-                metrics[key] = val * factor
-                converted_fields.append(key)
+                converted = val * factor
+                raw_pct = abs(val / market_cap * 100) if market_cap else None
+                converted_pct = abs(converted / market_cap * 100) if market_cap else None
+                raw_plausible = raw_pct is not None and 0.005 <= raw_pct <= 300
+                converted_plausible = converted_pct is not None and 0.005 <= converted_pct <= 300
+                if converted_plausible and not raw_plausible:
+                    metrics[key] = converted
+                    converted_fields.append(key)
+                elif not raw_plausible and not converted_plausible:
+                    metrics[key] = None
+                else:
+                    metrics[key] = val
         for key in ("book_value", "eps"):
             val = _num(metrics.get(key))
-            # Some Yahoo non-US per-share fields are already quote-currency-like
-            # despite financialCurrency being different. Convert only tiny values
-            # that are clearly not on the same scale as the traded share price.
-            converted = val * factor if val is not None else None
-            scale = abs(converted / current) if converted is not None and current else None
-            if val is not None and scale is not None and 0.01 <= scale <= 100:
-                metrics[key] = converted
-                converted_fields.append(key)
+            if val is None:
+                continue
+            converted = val * factor
+            raw_ratio = abs(current / val) if current and val else None
+            converted_ratio = abs(current / converted) if current and converted else None
+            provider_ratio = _sanitize_ratio(metrics.get("pe" if key == "eps" else "pb"), 1_000_000.0)
+
+            def close_to_provider(ratio) -> bool:
+                if ratio is None or provider_ratio is None or provider_ratio <= 0:
+                    return False
+                return abs(ratio / provider_ratio - 1) <= 0.25
+
+            if key == "eps":
+                # Yahoo often marks IDX financials as USD while trailing EPS is
+                # already aligned with the IDR share price. If raw EPS recreates
+                # Yahoo's own P/E, never convert it again.
+                if close_to_provider(raw_ratio) or (raw_ratio is not None and 0.5 <= raw_ratio <= 500):
+                    metrics[key] = val
+                elif close_to_provider(converted_ratio) or (converted_ratio is not None and 0.5 <= converted_ratio <= 500):
+                    metrics[key] = converted
+                    converted_fields.append(key)
+                else:
+                    metrics[key] = None
+            else:
+                raw_plausible = raw_ratio is not None and 0.05 <= raw_ratio <= 100
+                converted_plausible = converted_ratio is not None and 0.05 <= converted_ratio <= 100
+                if converted_plausible and not raw_plausible:
+                    metrics[key] = converted
+                    converted_fields.append(key)
+                elif raw_plausible and not converted_plausible:
+                    metrics[key] = val
+                elif close_to_provider(converted_ratio):
+                    metrics[key] = converted
+                    converted_fields.append(key)
+                elif close_to_provider(raw_ratio):
+                    metrics[key] = val
+                else:
+                    metrics[key] = converted if converted_plausible else val
+                    if converted_plausible:
+                        converted_fields.append(key)
         metrics["_conversion_note"] = (
             f" · converted from {financial_currency} to {quote_currency} "
             f"using USD/IDR {factor:,.2f}" if financial_currency == "USD" and quote_currency == "IDR"
@@ -516,6 +559,10 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     metrics["pb"] = round(current / book, 2) if current and book and book > 0 else _sanitize_ratio(metrics.get("pb"))
     metrics["ev_ebitda"] = _sanitize_ratio(metrics.get("ev_ebitda"), 300.0)
     metrics["fcf_yield_pct"] = round(fcf / market_cap * 100, 2) if fcf and market_cap else metrics.get("fcf_yield_pct")
+    fcf_yield = _num(metrics.get("fcf_yield_pct"))
+    if fcf_yield is not None and abs(fcf_yield) > 100:
+        metrics["fcf_yield_pct"] = None
+        metrics["free_cash_flow"] = None
     return metrics
 
 
@@ -932,7 +979,7 @@ def _valuation_components(metrics: dict, eps_multiple: float, pb_multiple: float
             })
 
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
-    if current and current > 0 and fcf_yield and fcf_yield > 0 and required_fcf_yield > 0:
+    if current and current > 0 and fcf_yield and 0 < fcf_yield <= 50 and required_fcf_yield > 0:
         candidates.append({
             "method": f"Current price × FCF yield / {required_fcf_yield:g}%",
             "price": current * (fcf_yield / required_fcf_yield),
