@@ -337,6 +337,18 @@ footer .g{color:var(--green);}
 .scoremodalhead .meta{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:4px;}
 .scoremodalgrid{display:grid;grid-template-columns:minmax(440px,1.1fr) minmax(320px,.9fr);gap:16px;align-items:start;}
 .scoremodal .metricsgrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+.metricpanel{border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.018);padding:10px;position:sticky;top:14px;}
+.metricpanelhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px;border-bottom:1px solid var(--line2);padding-bottom:8px;}
+.metricpanelhead .mh{font-size:13px;font-weight:800;color:var(--ink);}
+.metricpanelhead .ms{font-family:var(--mono);font-size:8px;color:var(--ink3);margin-top:3px;}
+.metricnav{display:flex;gap:6px;align-items:center;white-space:nowrap;}
+.metricnav button{width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:#17171d;color:var(--ink2);font-family:var(--mono);font-size:14px;cursor:pointer;}
+.metricnav button:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(45,212,191,.08);}
+.metricnav button:disabled{opacity:.35;cursor:not-allowed;border-color:var(--line);color:var(--ink3);background:#111116;}
+.metricpage{font-family:var(--mono);font-size:8px;color:var(--ink3);min-width:32px;text-align:center;}
+.metricchips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px;}
+.metricchips span{font-family:var(--mono);font-size:7.5px;color:var(--ink3);border:1px solid var(--line2);border-radius:999px;padding:3px 6px;background:rgba(255,255,255,.025);}
+.metricchips span.on{color:#111;background:var(--amber);border-color:var(--amber);}
 .radar.big svg{width:100%;min-height:390px;overflow:visible;}
 .valuationbox{margin-bottom:12px;border:1px solid rgba(45,212,191,.22);border-radius:9px;background:rgba(45,212,191,.045);padding:11px;}
 .valuationbox .vh{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--cyan);margin-bottom:7px;}
@@ -1938,6 +1950,40 @@ function scoreMetricHTML(sc,limit=null,c=null){
   const metrics=displayScoreMetrics(sc,c);const list=limit?metrics.slice(0,limit):metrics;
   return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
 }
+const METRIC_GROUPS=[
+  {key:'essential',name:'Essential Snapshot',subtitle:'price, valuation score, size, and liquidity first',labels:['Current Price','P/E','Fwd P/E','P/B','Market Cap','Equity Liquidity','1M Return','6M Return']},
+  {key:'valuation',name:'Valuation',subtitle:'multiple and per-share anchors',labels:['P/E','Fwd P/E','EV/EBITDA','P/B','Book Value','EPS','FCF Yield','Dividend Yield']},
+  {key:'profit',name:'Profitability & Growth',subtitle:'business quality and operating trend',labels:['ROE','Revenue Growth','EPS Growth','Gross Profit','Free Cash Flow','Total Cash']},
+  {key:'liquidity',name:'Liquidity',subtitle:'trading activity and market depth',labels:['Volume','Avg Volume 10D','Value Traded','Avg Daily Value','Equity Liquidity','24h Volume','Liquidity']},
+  {key:'risk',name:'Risk Benchmark',subtitle:'balance sheet, beta, volatility, and drawdown',labels:['Debt/Equity','Beta','Volatility','Risk-Free Rate','Hurdle Rate','Annual Volatility','Downside Volatility','Max Drawdown']},
+  {key:'returns',name:'Returns & Risk-Adjusted',subtitle:'momentum and excess-return quality',labels:['1M Return','6M Return','Annualized Return','Excess Return','Sharpe Ratio','Sortino Ratio']},
+];
+let scoreMetricPage=0;
+function metricCardHTML(m){
+  return `<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`;
+}
+function metricPanelHTML(sc,c=null,page=0){
+  const metrics=displayScoreMetrics(sc,c);
+  const byLabel=new Map(metrics.map(m=>[String(m.label||'').toLowerCase(),m]));
+  const groups=METRIC_GROUPS.map(g=>{
+    const items=g.labels.map(l=>byLabel.get(String(l).toLowerCase())).filter(Boolean);
+    return {...g,items};
+  }).filter(g=>g.items.length);
+  if(!groups.length)return `<div class="metricpanel"><div class="scoremeta">Fundamental fields unavailable this cycle.</div></div>`;
+  const idx=Math.max(0,Math.min(page,groups.length-1));
+  const g=groups[idx];
+  const chips=groups.map((x,i)=>`<span class="${i===idx?'on':''}">${esc(x.name)}</span>`).join('');
+  return `<div class="metricpanel" data-score-metric-count="${groups.length}"><div class="metricpanelhead"><div><div class="mh">${esc(g.name)}</div><div class="ms">${esc(g.subtitle)}</div></div>`+
+    `<div class="metricnav"><button type="button" id="metricPrev" ${idx===0?'disabled':''}>‹</button><span class="metricpage">${idx+1}/${groups.length}</span><button type="button" id="metricNext" ${idx===groups.length-1?'disabled':''}>›</button></div></div>`+
+    `<div class="metricchips">${chips}</div><div class="metricsgrid">${g.items.map(metricCardHTML).join('')}</div></div>`;
+}
+function bindMetricPager(sc,c){
+  const n=Number($('metricPanelWrap')?.querySelector('.metricpanel')?.dataset?.scoreMetricCount||0);
+  const render=()=>{$('metricPanelWrap').innerHTML=metricPanelHTML(sc,c,scoreMetricPage);bindMetricPager(sc,c);};
+  const prev=$('metricPrev'),next=$('metricNext');
+  if(prev)prev.onclick=()=>{scoreMetricPage=Math.max(0,scoreMetricPage-1);render();};
+  if(next)next.onclick=()=>{scoreMetricPage=Math.min(Math.max(0,n-1),scoreMetricPage+1);render();};
+}
 function scoreMetric(sc,label){
   return (sc.metrics||[]).find(m=>String(m.label||'').toLowerCase()===String(label).toLowerCase())||null;
 }
@@ -2149,13 +2195,15 @@ function lensDetail(c,type){
 }
 function openScoreModal(c,s){
   const sc=invScore(c),n=sc.score;
+  scoreMetricPage=0;
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
     `<div class="meta">${esc(s.name)} · ${esc(countryLabel(c))} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
-    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div class="metricsgrid">${scoreMetricHTML(sc,null,c)}</div></div>`+
+    `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div>${priceRangeBox(c)}${riskBenchmarkBox(sc)}${valuationBox(sc,c)}</div><div id="metricPanelWrap">${metricPanelHTML(sc,c,scoreMetricPage)}</div></div>`+
     `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, risk ratios, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});
+  bindMetricPager(sc,c);
   $('scoreModal').classList.add('open');
 }
 function renderConsts(s){
