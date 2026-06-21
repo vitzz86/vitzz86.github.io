@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-21T22:32:30Z",
+  "timestamp": "2026-06-21T23:03:21Z",
   "opening": {
     "greeting": "Good morning, Vito. Let's process the boards.",
     "focus_state": "Deep Work Priority (Low Sync Load)",
@@ -8,7 +8,7 @@
       "jakarta": "Light drizzle, 25°C.",
       "insight": "High precipitation across the corridor. Pad commute windows and maximize internal focus blocks."
     },
-    "verse_of_the_day": "We know that all things work together for good for those who love God, to those who are called according to his purpose. — Romans 8:28",
+    "verse_of_the_day": "Commit your deeds to Yahweh, and your plans shall succeed. — Proverbs 16:3",
     "ambient_soundtrack": {
       "track_name": "Instrumental Concentration (High-Volatility Desk)",
       "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX3PFzdbtx1Us?utm_source=generator"
@@ -778,11 +778,11 @@
       "symbol": "BTC-USD",
       "label": "Bitcoin / USD",
       "kind": "crypto",
-      "value": 63658.0,
+      "value": 63727.0,
       "value_unit": null,
-      "delta_pct": -0.91,
+      "delta_pct": -0.76,
       "delta_unit": "percent",
-      "prev_close": 64244.48,
+      "prev_close": 64215.24,
       "state": "open",
       "mkt_start": null,
       "mkt_end": null,
@@ -916,7 +916,7 @@
         62896.4727,
         63540.8359,
         64239.6758,
-        63537.4805
+        63624.3008
       ],
       "intraday": [
         64192.0,
@@ -964,7 +964,8 @@
         63607.0586,
         63723.9883,
         63635.3984,
-        63537.4805
+        63724.9102,
+        63624.3008
       ],
       "url": "https://www.coingecko.com/en/coins/bitcoin"
     },
@@ -972,9 +973,9 @@
       "symbol": "GC=F",
       "label": "Gold Spot",
       "kind": "commodity",
-      "value": 4169.5,
+      "value": 4171.0,
       "value_unit": null,
-      "delta_pct": -1.8,
+      "delta_pct": -1.76,
       "delta_unit": "percent",
       "prev_close": 4245.9,
       "state": "open",
@@ -1104,11 +1105,12 @@
         4330.8999,
         4358.8999,
         4224.1001,
-        4169.5
+        4171.0
       ],
       "intraday": [
         4168.3999,
-        4169.5
+        4172.7998,
+        4171.0
       ],
       "url": "https://finance.yahoo.com/quote/GC=F"
     },
@@ -1116,9 +1118,9 @@
       "symbol": "BZ=F",
       "label": "Brent Crude",
       "kind": "commodity",
-      "value": 81.7,
+      "value": 81.28,
       "value_unit": null,
-      "delta_pct": 2.32,
+      "delta_pct": 1.79,
       "delta_unit": "percent",
       "prev_close": 79.85,
       "state": "open",
@@ -1248,11 +1250,12 @@
         78.96,
         79.55,
         79.85,
-        81.7
+        81.28
       ],
       "intraday": [
-        80.59,
-        81.7
+        81.65,
+        81.49,
+        81.28
       ],
       "url": "https://finance.yahoo.com/quote/BZ=F"
     },
@@ -1260,9 +1263,9 @@
       "symbol": "CL=F",
       "label": "Crude Oil (WTI)",
       "kind": "commodity",
-      "value": 77.7,
+      "value": 77.28,
       "value_unit": null,
-      "delta_pct": 2.44,
+      "delta_pct": 1.89,
       "delta_unit": "percent",
       "prev_close": 75.85,
       "state": "open",
@@ -1392,11 +1395,12 @@
         76.05,
         76.79,
         76.6,
-        77.7
+        77.28
       ],
       "intraday": [
         77.64,
-        77.7
+        77.46,
+        77.28
       ],
       "url": "https://finance.yahoo.com/quote/CL=F"
     },
@@ -1695,11 +1699,10 @@
       "delta_pct": 0.0,
       "delta_unit": "percent",
       "prev_close": 17821.0,
-      "state": "closed",
-      "mkt_start": 1781823600,
-      "mkt_end": 1781909940,
+      "state": "open",
+      "mkt_start": 1782082800,
+      "mkt_end": 1782169140,
       "spark": [
-        16685.1992,
         16678.5,
         16756.4004,
         16735.0,
@@ -1830,29 +1833,7 @@
         17794.4004,
         17821.0
       ],
-      "intraday": [
-        17821.0,
-        17821.0,
-        17780.0,
-        17810.0,
-        17813.0,
-        17818.0,
-        17818.0,
-        17820.0,
-        17820.0,
-        17795.0,
-        17780.0,
-        17780.0,
-        17780.0,
-        17780.0,
-        17821.0,
-        17821.0,
-        17821.0,
-        17821.0,
-        17821.0,
-        17775.0,
-        17821.0
-      ],
+      "intraday": [],
       "url": "https://finance.yahoo.com/quote/USDIDR=X"
     },
     {
@@ -1903,9 +1884,9 @@
       "symbol": "DX-Y.NYB",
       "label": "US Dollar Index",
       "kind": "fx",
-      "value": 100.82,
+      "value": 100.85,
       "value_unit": null,
-      "delta_pct": -0.03,
+      "delta_pct": -0.0,
       "delta_unit": "percent",
       "prev_close": 100.85,
       "state": "open",
@@ -2035,11 +2016,12 @@
         99.54,
         100.09,
         100.85,
-        100.818
+        100.847
       ],
       "intraday": [
-        100.826,
-        100.818
+        100.835,
+        100.851,
+        100.847
       ],
       "url": "https://finance.yahoo.com/quote/DX-Y.NYB"
     },
@@ -2493,27 +2475,27 @@
   },
   "intelligence_quadrants": {
     "market": [
-      "JCI flat at 6,177, Nasdaq surges 1.91% on AI bets.",
-      "US risk-on mood provides tailwind but IDR at 17,821 caps foreign flows."
+      "JCI barely budged at +0.08% while Nasdaq surged 1.91%, signaling foreign caution.",
+      "US 10Y yield at 4.451% and VIX up 2.32% cap risk appetite for Jakarta."
     ],
     "economic": [
-      "BI rate hiked to 5.75%, raising carry cost and deterring hot money.",
-      "Brent crude up 2.32% supports energy, nickel down 0.98% weighs on heavyweights."
+      "BI hiked 25bp to 5.75%, raising hurdle rates for domestic projects.",
+      "Brent crude up 1.79% but coal and nickel proxies slipped, muting export demand."
     ],
     "tech_ai": [
-      "ByteDance nears $1 trillion valuation, sidelines listing plans for SEA.",
-      "Railway secures $100 million for AI-native cloud to challenge AWS."
+      "ByteDance nears $1 trillion valuation, sidelining listing plans.",
+      "Google redesigns search box for first time in 25 years, signaling AI shift."
     ],
     "political": [
-      "Prabowo mandates state banks as economic motor with $1,100 trillion capitalization.",
-      "US-Iran talks in Switzerland add geopolitical risk to commodity supply chains."
+      "Prabowo asserts Himbara as national economic motor with Rp1,100 trillion capitalization.",
+      "US-Iran peace talks in Switzerland add geopolitical uncertainty."
     ]
   },
-  "arbiter_brief": "Overnight Nasdaq strength on AI infrastructure bets offers a risk-on tailwind for JCI, but the Rupiah's stubborn hold at 17,821 and BI's rate hike to 5.75% cap foreign institutional appetite. Mixed commodities—Brent up 2.32% versus nickel down 0.98%—keep Jakarta heavyweights in check. Prabowo's state-bank mandate signals domestic liquidity push, potentially crowding out private venture funding. JCI grinds higher without conviction.",
+  "arbiter_brief": "Overnight Nasdaq surge of 1.91% provided a positive tailwind, but JCI barely moved at +0.08%, reflecting foreign institutional caution. USD/IDR flat at 17,821 and BI's 25bp hike to 5.75% keep carry trade intact yet fail to ignite fresh inflows. The US 10Y yield at 4.451% caps risk appetite, while VIX rising 2.32% hints at residual volatility aversion. Commodity proxies slipped despite Brent crude's gain, muting export demand. Tech valuation spillover from ByteDance and Google may lift local digital sentiment, but high cost of capital constrains venture climate. JCI needs a decisive catalyst beyond Wall Street's glow.",
   "executive_brief": [
-    "Lock in energy exposure on Brent rally, but hedge nickel downside.",
-    "Monitor IDR stability at 17,821 before increasing foreign equity allocation.",
-    "Prepare for state-bank crowding effect on private tech and climate venture funding."
+    "Watch for foreign flow reversal if US yields rise further.",
+    "Factor BI's 25bp hike into all project hurdle rates immediately.",
+    "Track commodity proxy weakness as signal of muted export demand."
   ],
   "sectors": [
     {
@@ -36015,8 +35997,8 @@
           "market_cap_value": null,
           "volume_24h": null,
           "state": "closed",
-          "mkt_start": 1781852400,
-          "mkt_end": 1781883000,
+          "mkt_start": 1782111600,
+          "mkt_end": 1782142200,
           "intraday": [
             1435.8,
             1439.6,
@@ -50328,8 +50310,8 @@
           "market_cap_value": null,
           "volume_24h": null,
           "state": "closed",
-          "mkt_start": 1781852400,
-          "mkt_end": 1781883000,
+          "mkt_start": 1782111600,
+          "mkt_end": 1782142200,
           "intraday": [
             2983.0,
             2982.5,
@@ -66095,12 +66077,12 @@
         101.99,
         104.35
       ],
-      "ai": "Indonesia's renewables sector is at an inflection point: US clean-tech strength (+4.33%) is spilling over to IDX-listed names like VKTR (+3.94%), while global supply-chain tailwinds from Enphase (+9.42%) and SolarEdge (+6.16%) signal rising demand for solar inverters and storage—key for Java's grid modernization. Buy VKTR on dips for EV-bus exposure; add ENPH for US-linked inverter upside.",
+      "ai": "Indonesia's renewables sector is underperforming the US, but the sharp US rally signals a global rotation into climate-tech that will eventually lift local names like VKTR. Buy VKTR on this dip for exposure to Indonesia's EV bus transition, as the US momentum confirms institutional appetite for clean energy plays.",
       "volume": "23 tickers",
       "themes": [
-        "Indonesia's 2060 net-zero target and new presidential decree on renewable energy certificates are creating a durable regulatory tailwind for domestic solar and EV-battery supply chains.",
-        "Global solar-inverter demand, driven by US IRA incentives and European energy security, is lifting Indonesian component suppliers via export linkages to Enphase and SolarEdge.",
-        "Rising nickel prices and the government's downstreaming policy are structurally boosting Indonesian battery-metal producers, making them core holdings for climate-tech exposure."
+        "Indonesia's nickel downstreaming policy is creating a durable competitive advantage for domestic battery and EV supply chain companies, making VKTR a direct beneficiary of the country's push to electr",
+        "Global solar and storage demand is structurally accelerating as US IRA incentives and European REPowerEU targets drive multi-year installation cycles, supporting companies like ENPH and SEDG despite s",
+        "Indonesian geothermal and hydropower capacity additions are locked in by the 2060 net-zero roadmap and PLN's grid expansion, providing a stable, non-cyclical growth base for local developers and EPC c"
       ],
       "constituents": [
         {
@@ -94422,8 +94404,8 @@
           "market_cap_value": null,
           "volume_24h": null,
           "state": "closed",
-          "mkt_start": 1781852400,
-          "mkt_end": 1781883000,
+          "mkt_start": 1782111600,
+          "mkt_end": 1782142200,
           "intraday": [
             4411.5,
             4419.0,
@@ -102997,12 +102979,12 @@
         97.99,
         97.27
       ],
-      "ai": "Indonesia's infrastructure sector underperforms the US, but select movers like CARR and MLM signal resilience. Focus on domestic heavyweights WIKA and LT for near-term catalysts, as government spending and mining demand drive upside. Avoid broad exposure; pick stocks tied to nickel smelters and new capital projects.",
+      "ai": "Indonesia's infrastructure underperformance vs US signals a tactical entry point: focus on CARR, MLM, VMC, URI for US exposure, while WIKA's flatness suggests domestic caution. Structural demand from Indonesia's new capital Nusantara and US reshoring capex cycles will drive long-term outperformance, but wait for ID macro stability before adding local names.",
       "volume": "24 tickers",
       "themes": [
-        "Government's accelerated infrastructure spending on new capital Nusantara and toll roads creates durable demand for local contractors like WIKA and LT.",
-        "Nickel downstreaming mandates boost mining-related infrastructure, benefiting heavy equipment and construction material suppliers.",
-        "US rate stabilization supports global infrastructure plays (CARR, MLM), but Indonesia's rupiah volatility and fiscal discipline cap sector-wide gains."
+        "Indonesia's Nusantara capital relocation will sustain multi-year demand for heavy construction materials and equipment, benefiting local players like WIKA once fiscal clarity improves.",
+        "US reshoring and CHIPS Act spending create durable tailwinds for US-listed infrastructure firms (CARR, MLM, VMC, URI) as data center and manufacturing buildouts accelerate.",
+        "Global infrastructure investment is shifting toward climate-resilient projects, favoring companies with exposure to water management (VMC) and renewable energy grid upgrades."
       ],
       "constituents": [
         {
@@ -125403,8 +125385,8 @@
           "market_cap_value": null,
           "volume_24h": null,
           "state": "closed",
-          "mkt_start": 1781852400,
-          "mkt_end": 1781883000,
+          "mkt_start": 1782111600,
+          "mkt_end": 1782142200,
           "intraday": [
             13330.0,
             13362.0,
@@ -169582,12 +169564,12 @@
         93.09,
         92.24
       ],
-      "ai": "Indonesia property underperforms US REITs, but select names like PSA and MTLA show resilience. Watch for Jakarta land-bank monetization and rising mortgage rates as key near-term headwinds; position tactically in high-footfall retail and logistics assets.",
+      "ai": "Indonesia property underperforms regional peers (-2.12% vs -0.20% US), signaling caution. PSA and MTLA lead gains on local demand resilience, but aggregate weakness suggests headwinds from rising rates and slowing pre-sales. Maintain WATCH; wait for clearer catalyst from policy easing or absorption data before adding exposure.",
       "volume": "22 tickers",
       "themes": [
-        "Jakarta's new capital relocation (IKN) is driving speculative land banking in Kalimantan, but execution risk remains high for developers without clear monetization timelines.",
-        "Rising BI interest rates are compressing residential mortgage demand, favoring developers with strong pre-sales and affordable housing exposure over luxury segments.",
-        "Foreign capital rotation into US REITs (C38U, SPG) signals risk-off sentiment on Indonesia property, but local logistics and data-center demand offers structural growth."
+        "Rising mortgage rates in Indonesia are compressing affordability and slowing primary market transactions, pressuring developer cash flows and margins.",
+        "Urbanization and infrastructure spending in Greater Jakarta and new growth corridors provide structural demand, but near-term absorption lags due to elevated inventory.",
+        "REITs like C38U and A17U offer defensive yield appeal amid volatility, but IDR depreciation risk and foreign ownership caps limit upside for global allocators."
       ],
       "constituents": [
         {
@@ -185997,7 +185979,7 @@
       "name": "Crypto & Digital Assets",
       "icon": "₿",
       "theme": "BTC dominance · L1 rotation",
-      "change": -1.41,
+      "change": -1.37,
       "idChange": null,
       "usChange": null,
       "signal": "WATCH",
@@ -186131,14 +186113,14 @@
         84.86,
         84.7,
         85.97,
-        84.76
+        84.79
       ],
-      "ai": "Indonesia's crypto sector is under broad selling pressure with BTC leading the decline, but BNB's relative resilience signals selective capital rotation. Watch for a potential stabilization near support levels before re-entering; avoid adding to positions now.",
+      "ai": "Crypto's broad selloff signals a risk-off rotation from speculative digital assets into traditional safe havens, with ETH and XRP leading losses. For Indonesia, where retail crypto adoption is high but regulatory clarity remains patchy, this week's price action suggests a tactical pause: watch for a potential capitulation bottom in BTC near $60k before re-entering, as local exchange volumes will confirm sentiment.",
       "volume": "10 tickers",
       "themes": [
-        "Regulatory clarity from Indonesia's Bappebti is creating a durable framework for compliant exchanges, potentially attracting institutional capital once global sentiment turns.",
-        "Retail adoption in Indonesia remains structurally supported by high unbanked rates and mobile-first demographics, providing a long-term demand base for digital assets.",
-        "Global correlation with BTC and ETH means Indonesia's crypto market will continue to track macro risk appetite, but local altcoin activity may decouple as domestic use cases mature."
+        "Indonesia's crypto regulatory framework under Bappebti is tightening, which will structurally reduce retail leverage and shift trading toward compliant, large-cap tokens like BTC and ETH.",
+        "Global monetary policy divergence, particularly US rate expectations, remains the dominant macro driver for crypto volatility, overriding local Indonesia-specific catalysts.",
+        "The rise of on-chain real-world asset tokenization in Southeast Asia is creating a durable demand floor for Ethereum and Solana as institutional infrastructure layers, independent of speculative retai"
       ],
       "constituents": [
         {
@@ -186295,7 +186277,7 @@
             578.0147,
             581.1638,
             587.6139,
-            585.0
+            585.3
           ],
           "spark_ts": [
             1770854400,
@@ -186429,11 +186411,11 @@
             1781913600,
             1782000000
           ],
-          "value": 586.37,
-          "turnover": 437682548160.0,
-          "volume": 748175296.0,
-          "market_cap_value": 79051321761.80008,
-          "volume_24h": 440996865.4914238,
+          "value": 586.32,
+          "turnover": 438089988941.0,
+          "volume": 748487936.0,
+          "market_cap_value": 79127161592.07697,
+          "volume_24h": 439451806.40973544,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -186483,7 +186465,9 @@
             586.69,
             586.7,
             586.42,
-            585.0
+            587.1,
+            585.9,
+            585.3
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -186521,14 +186505,14 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 79051321762.0,
+                "value": 79127161592.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 440996865.0,
+                "value": 439451806.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
@@ -186541,13 +186525,13 @@
               },
               {
                 "label": "1M Return",
-                "value": -10.78,
+                "value": -10.74,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -4.68,
+                "value": -4.63,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -186571,13 +186555,13 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -12.68,
+                "value": -12.55,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -16.34,
+                "value": -16.21,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
@@ -186589,7 +186573,7 @@
               },
               {
                 "label": "Downside Volatility",
-                "value": 24.21,
+                "value": 24.22,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
@@ -186601,7 +186585,7 @@
               },
               {
                 "label": "Sortino Ratio",
-                "value": -0.33,
+                "value": -0.32,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -186622,12 +186606,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -12.68,
-              "annual_excess_return_pct": -16.34,
+              "annual_return_pct": -12.55,
+              "annual_excess_return_pct": -16.21,
               "annual_volatility_pct": 43.25,
-              "downside_volatility_pct": 24.21,
+              "downside_volatility_pct": 24.22,
               "sharpe": -0.18,
-              "sortino": -0.33,
+              "sortino": -0.32,
               "peak_price": 717.9338,
               "peak_ts": 1780099200,
               "bottom_price": 572.1069,
@@ -186653,7 +186637,524 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
+          }
+        },
+        {
+          "ticker": "SOL",
+          "name": "Solana",
+          "source_symbol": "SOL-USD",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$95B",
+          "tier": "large",
+          "flags": [],
+          "sector_key": "crypto",
+          "sector_name": "Crypto & Digital Assets",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "active": true,
+          "price_frequency": "30m",
+          "fundamental_frequency_hours": 24,
+          "news_priority": "priority",
+          "url": "https://www.coingecko.com/en/coins/solana",
+          "delta_pct": -0.71,
+          "spark": [
+            78.3484,
+            84.3225,
+            88.1608,
+            86.0051,
+            86.4288,
+            85.1976,
+            81.5669,
+            82.3932,
+            84.6351,
+            85.2111,
+            82.791,
+            77.7533,
+            79.0365,
+            87.9156,
+            85.9091,
+            81.9515,
+            84.3662,
+            83.5777,
+            86.6345,
+            87.0198,
+            90.8343,
+            88.6911,
+            84.6818,
+            83.18,
+            81.6246,
+            84.9362,
+            85.8382,
+            86.5649,
+            86.8678,
+            88.1533,
+            88.0707,
+            92.2518,
+            96.2237,
+            94.706,
+            90.0657,
+            88.9178,
+            89.8536,
+            87.4654,
+            86.1283,
+            91.4241,
+            90.8224,
+            91.7082,
+            86.4439,
+            83.0188,
+            82.0156,
+            81.4224,
+            82.4441,
+            83.1065,
+            81.1953,
+            78.9513,
+            80.3685,
+            80.8084,
+            81.8545,
+            80.1516,
+            85.648,
+            82.5817,
+            83.2977,
+            84.8285,
+            84.9488,
+            81.5352,
+            86.6566,
+            83.7746,
+            84.9193,
+            88.9942,
+            88.8742,
+            86.2027,
+            83.5809,
+            85.333,
+            86.0295,
+            86.9158,
+            86.1411,
+            86.2319,
+            86.1512,
+            86.9704,
+            84.8178,
+            84.039,
+            83.0269,
+            83.0238,
+            83.7235,
+            84.2766,
+            83.8996,
+            84.0899,
+            86.3192,
+            89.145,
+            88.4048,
+            91.9498,
+            93.1455,
+            96.427,
+            97.3502,
+            94.2843,
+            91.0855,
+            92.1487,
+            89.2004,
+            86.5365,
+            85.173,
+            85.2969,
+            84.2086,
+            86.0419,
+            87.1562,
+            84.3071,
+            85.6585,
+            85.2497,
+            85.0105,
+            83.5865,
+            82.3681,
+            81.9854,
+            81.9325,
+            82.5473,
+            82.2983,
+            81.087,
+            74.1429,
+            71.6124,
+            68.7189,
+            63.4869,
+            62.1898,
+            66.3106,
+            66.795,
+            64.9621,
+            63.161,
+            66.822,
+            66.7493,
+            68.8728,
+            71.1662,
+            73.9793,
+            73.4138,
+            71.931,
+            69.6265,
+            69.7206,
+            73.1727,
+            72.73
+          ],
+          "spark_ts": [
+            1770854400,
+            1770940800,
+            1771027200,
+            1771113600,
+            1771200000,
+            1771286400,
+            1771372800,
+            1771459200,
+            1771545600,
+            1771632000,
+            1771718400,
+            1771804800,
+            1771891200,
+            1771977600,
+            1772064000,
+            1772150400,
+            1772236800,
+            1772323200,
+            1772409600,
+            1772496000,
+            1772582400,
+            1772668800,
+            1772755200,
+            1772841600,
+            1772928000,
+            1773014400,
+            1773100800,
+            1773187200,
+            1773273600,
+            1773360000,
+            1773446400,
+            1773532800,
+            1773619200,
+            1773705600,
+            1773792000,
+            1773878400,
+            1773964800,
+            1774051200,
+            1774137600,
+            1774224000,
+            1774310400,
+            1774396800,
+            1774483200,
+            1774569600,
+            1774656000,
+            1774742400,
+            1774828800,
+            1774915200,
+            1775001600,
+            1775088000,
+            1775174400,
+            1775260800,
+            1775347200,
+            1775433600,
+            1775520000,
+            1775606400,
+            1775692800,
+            1775779200,
+            1775865600,
+            1775952000,
+            1776038400,
+            1776124800,
+            1776211200,
+            1776297600,
+            1776384000,
+            1776470400,
+            1776556800,
+            1776643200,
+            1776729600,
+            1776816000,
+            1776902400,
+            1776988800,
+            1777075200,
+            1777161600,
+            1777248000,
+            1777334400,
+            1777420800,
+            1777507200,
+            1777593600,
+            1777680000,
+            1777766400,
+            1777852800,
+            1777939200,
+            1778025600,
+            1778112000,
+            1778198400,
+            1778284800,
+            1778371200,
+            1778457600,
+            1778544000,
+            1778630400,
+            1778716800,
+            1778803200,
+            1778889600,
+            1778976000,
+            1779062400,
+            1779148800,
+            1779235200,
+            1779321600,
+            1779408000,
+            1779494400,
+            1779580800,
+            1779667200,
+            1779753600,
+            1779840000,
+            1779926400,
+            1780012800,
+            1780099200,
+            1780185600,
+            1780272000,
+            1780358400,
+            1780444800,
+            1780531200,
+            1780617600,
+            1780704000,
+            1780790400,
+            1780876800,
+            1780963200,
+            1781049600,
+            1781136000,
+            1781222400,
+            1781308800,
+            1781395200,
+            1781481600,
+            1781568000,
+            1781654400,
+            1781740800,
+            1781827200,
+            1781913600,
+            1782000000
+          ],
+          "value": 72.97,
+          "turnover": 138080937550.0,
+          "volume": 1898541696.0,
+          "market_cap_value": 42383717989.61656,
+          "volume_24h": 2078844460.1307755,
+          "state": "open",
+          "mkt_start": null,
+          "mkt_end": null,
+          "intraday": [
+            72.98,
+            73.13,
+            72.88,
+            73.11,
+            73.1,
+            73.25,
+            73.43,
+            73.56,
+            73.7,
+            73.37,
+            73.13,
+            73.0,
+            73.15,
+            73.16,
+            73.19,
+            73.12,
+            72.93,
+            73.07,
+            73.49,
+            73.94,
+            74.08,
+            73.81,
+            73.49,
+            73.09,
+            72.98,
+            73.55,
+            73.67,
+            73.83,
+            73.74,
+            74.02,
+            74.08,
+            74.06,
+            73.92,
+            74.26,
+            74.41,
+            74.17,
+            74.03,
+            74.12,
+            74.17,
+            74.34,
+            74.02,
+            73.35,
+            72.68,
+            73.06,
+            72.9,
+            72.98,
+            72.82,
+            72.73
+          ],
+          "fundamental_score": {
+            "mode": "crypto",
+            "schema_version": 11,
+            "score": 48,
+            "label": "Neutral",
+            "coverage": 1.0,
+            "axes": [
+              {
+                "key": "size",
+                "label": "Size",
+                "score": 42
+              },
+              {
+                "key": "liquidity",
+                "label": "Liquidity",
+                "score": 59
+              },
+              {
+                "key": "momentum",
+                "label": "Momentum",
+                "score": 22
+              },
+              {
+                "key": "trend",
+                "label": "Trend",
+                "score": 27
+              },
+              {
+                "key": "risk",
+                "label": "Risk",
+                "score": 90
+              }
+            ],
+            "metrics": [
+              {
+                "label": "Market Cap",
+                "value": 42383717990.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "latest quote"
+              },
+              {
+                "label": "24h Volume",
+                "value": 2078844460.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "24H"
+              },
+              {
+                "label": "Liquidity",
+                "value": 4.9,
+                "fmt": "percent",
+                "period": "24H volume / market cap"
+              },
+              {
+                "label": "1M Return",
+                "value": -15.09,
+                "fmt": "percent",
+                "period": "30D price return"
+              },
+              {
+                "label": "6M Return",
+                "value": -7.17,
+                "fmt": "percent",
+                "period": "6M price return"
+              },
+              {
+                "label": "Volatility",
+                "value": 3.12,
+                "fmt": "percent",
+                "period": "daily realized, 6M window"
+              },
+              {
+                "label": "Risk-Free Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "annual benchmark: US 3M T-Bill"
+              },
+              {
+                "label": "Hurdle Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "valuation anchor: US 3M T-Bill"
+              },
+              {
+                "label": "Annualized Return",
+                "value": -18.99,
+                "fmt": "percent",
+                "period": "geometric, 6M daily window"
+              },
+              {
+                "label": "Excess Return",
+                "value": -22.65,
+                "fmt": "percent",
+                "period": "annualized minus US 3M T-Bill"
+              },
+              {
+                "label": "Annual Volatility",
+                "value": 59.54,
+                "fmt": "percent",
+                "period": "annualized from 6M daily returns"
+              },
+              {
+                "label": "Downside Volatility",
+                "value": 33.79,
+                "fmt": "percent",
+                "period": "annualized downside vs risk-free"
+              },
+              {
+                "label": "Sharpe Ratio",
+                "value": -0.12,
+                "fmt": "ratio",
+                "period": "annualized vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Sortino Ratio",
+                "value": -0.21,
+                "fmt": "ratio",
+                "period": "downside vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Max Drawdown",
+                "value": -36.12,
+                "fmt": "percent",
+                "period": "peak-to-trough, 6M"
+              }
+            ],
+            "valuation": null,
+            "risk_stats": {
+              "period": "6M daily closes",
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "annual_return_pct": -18.99,
+              "annual_excess_return_pct": -22.65,
+              "annual_volatility_pct": 59.54,
+              "downside_volatility_pct": 33.79,
+              "sharpe": -0.12,
+              "sortino": -0.21,
+              "peak_price": 97.3502,
+              "peak_ts": 1778457600,
+              "bottom_price": 62.1898,
+              "bottom_ts": 1780704000,
+              "max_drawdown_pct": -36.12,
+              "max_drawdown_peak_price": 97.3502,
+              "max_drawdown_peak_ts": 1778457600,
+              "max_drawdown_trough_price": 62.1898,
+              "max_drawdown_trough_ts": 1780704000,
+              "risk_adjusted_signal": "Weak risk-adjusted"
+            },
+            "risk_context": {
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "fx_rates": {
+                "USDIDR": 17821.0
+              }
+            },
+            "currency": "USD",
+            "source": "CoinGecko + price history",
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
@@ -186679,7 +187180,7 @@
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
           "url": "https://www.coingecko.com/en/coins/bitcoin",
-          "delta_pct": -1.01,
+          "delta_pct": -0.88,
           "spark": [
             66221.8438,
             68857.8438,
@@ -186810,7 +187311,7 @@
             62896.4727,
             63540.8359,
             64239.6758,
-            63529.0781
+            63597.1211
           ],
           "spark_ts": [
             1770854400,
@@ -186944,11 +187445,11 @@
             1781913600,
             1782000000
           ],
-          "value": 63595.0,
-          "turnover": 981301240990679.0,
-          "volume": 15446489088.0,
-          "market_cap_value": 1276142154793.6746,
-          "volume_24h": 16530389617.053974,
+          "value": 63650.0,
+          "turnover": 971533065843180.0,
+          "volume": 15276368896.0,
+          "market_cap_value": 1277733158668.8955,
+          "volume_24h": 16460881749.17469,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -186998,8 +187499,9 @@
             63607.0586,
             63723.9883,
             63635.3984,
-            63512.1094,
-            63529.0781
+            63724.9102,
+            63624.3008,
+            63597.1211
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -187037,33 +187539,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 1276142154794.0,
+                "value": 1277733158669.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 16530389617.0,
+                "value": 16460881749.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 1.3,
+                "value": 1.29,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -17.14,
+                "value": -17.05,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -4.07,
+                "value": -3.96,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -187087,37 +187589,37 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -11.08,
+                "value": -10.81,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -14.74,
+                "value": -14.47,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
               {
                 "label": "Annual Volatility",
-                "value": 41.61,
+                "value": 41.6,
                 "fmt": "percent",
                 "period": "annualized from 6M daily returns"
               },
               {
                 "label": "Downside Volatility",
-                "value": 24.84,
+                "value": 24.85,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -0.16,
+                "value": -0.15,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
               {
                 "label": "Sortino Ratio",
-                "value": -0.27,
+                "value": -0.26,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -187138,12 +187640,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -11.08,
-              "annual_excess_return_pct": -14.74,
-              "annual_volatility_pct": 41.61,
-              "downside_volatility_pct": 24.84,
-              "sharpe": -0.16,
-              "sortino": -0.27,
+              "annual_return_pct": -10.81,
+              "annual_excess_return_pct": -14.47,
+              "annual_volatility_pct": 41.6,
+              "downside_volatility_pct": 24.85,
+              "sharpe": -0.15,
+              "sortino": -0.26,
               "peak_price": 82138.9297,
               "peak_ts": 1778371200,
               "bottom_price": 60867.4141,
@@ -187169,522 +187671,7 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
-          }
-        },
-        {
-          "ticker": "AVAX",
-          "name": "Avalanche",
-          "source_symbol": "AVAX-USD",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$15B",
-          "tier": "mid",
-          "flags": [],
-          "sector_key": "crypto",
-          "sector_name": "Crypto & Digital Assets",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "active": true,
-          "price_frequency": "30m",
-          "fundamental_frequency_hours": 24,
-          "news_priority": "priority",
-          "url": "https://www.coingecko.com/en/coins/avalanche-2",
-          "delta_pct": -1.09,
-          "spark": [
-            8.8882,
-            9.1469,
-            9.5877,
-            9.2859,
-            9.2594,
-            9.1388,
-            8.8537,
-            8.8962,
-            9.1685,
-            9.1209,
-            8.8715,
-            8.357,
-            8.2951,
-            9.4974,
-            9.3044,
-            8.96,
-            9.1646,
-            9.0309,
-            9.1751,
-            9.1788,
-            9.4963,
-            9.3838,
-            9.0262,
-            8.9062,
-            8.8205,
-            9.2509,
-            9.532,
-            9.5492,
-            9.6776,
-            9.7209,
-            9.7207,
-            9.9351,
-            10.4891,
-            10.1962,
-            9.6755,
-            9.4707,
-            9.5662,
-            9.2041,
-            9.0185,
-            9.5485,
-            9.6118,
-            9.671,
-            9.1005,
-            8.7874,
-            8.7497,
-            8.5957,
-            8.7892,
-            8.9093,
-            9.1239,
-            8.752,
-            8.9119,
-            8.9844,
-            9.055,
-            8.906,
-            9.4749,
-            9.056,
-            9.3514,
-            9.4047,
-            9.3768,
-            9.0334,
-            9.6689,
-            9.3073,
-            9.433,
-            9.7276,
-            9.7413,
-            9.3418,
-            9.0102,
-            9.2795,
-            9.3868,
-            9.3484,
-            9.3922,
-            9.3961,
-            9.3659,
-            9.4652,
-            9.267,
-            9.1738,
-            9.1206,
-            9.0881,
-            9.0842,
-            9.1807,
-            9.0849,
-            9.1706,
-            9.404,
-            9.612,
-            9.5026,
-            9.897,
-            9.952,
-            10.2316,
-            10.1364,
-            9.836,
-            9.751,
-            9.8967,
-            9.5369,
-            9.2909,
-            9.18,
-            9.2339,
-            9.099,
-            9.2832,
-            9.4412,
-            9.1466,
-            9.3846,
-            9.2071,
-            9.3026,
-            9.1302,
-            9.0375,
-            8.9128,
-            8.8159,
-            8.9237,
-            8.9599,
-            8.9159,
-            8.1676,
-            8.0504,
-            7.6883,
-            6.7078,
-            6.6709,
-            6.7961,
-            6.7579,
-            6.6396,
-            6.3873,
-            6.6402,
-            6.5649,
-            6.7155,
-            6.7758,
-            6.8372,
-            6.8695,
-            6.7515,
-            6.307,
-            5.9057,
-            6.2334,
-            6.14
-          ],
-          "spark_ts": [
-            1770854400,
-            1770940800,
-            1771027200,
-            1771113600,
-            1771200000,
-            1771286400,
-            1771372800,
-            1771459200,
-            1771545600,
-            1771632000,
-            1771718400,
-            1771804800,
-            1771891200,
-            1771977600,
-            1772064000,
-            1772150400,
-            1772236800,
-            1772323200,
-            1772409600,
-            1772496000,
-            1772582400,
-            1772668800,
-            1772755200,
-            1772841600,
-            1772928000,
-            1773014400,
-            1773100800,
-            1773187200,
-            1773273600,
-            1773360000,
-            1773446400,
-            1773532800,
-            1773619200,
-            1773705600,
-            1773792000,
-            1773878400,
-            1773964800,
-            1774051200,
-            1774137600,
-            1774224000,
-            1774310400,
-            1774396800,
-            1774483200,
-            1774569600,
-            1774656000,
-            1774742400,
-            1774828800,
-            1774915200,
-            1775001600,
-            1775088000,
-            1775174400,
-            1775260800,
-            1775347200,
-            1775433600,
-            1775520000,
-            1775606400,
-            1775692800,
-            1775779200,
-            1775865600,
-            1775952000,
-            1776038400,
-            1776124800,
-            1776211200,
-            1776297600,
-            1776384000,
-            1776470400,
-            1776556800,
-            1776643200,
-            1776729600,
-            1776816000,
-            1776902400,
-            1776988800,
-            1777075200,
-            1777161600,
-            1777248000,
-            1777334400,
-            1777420800,
-            1777507200,
-            1777593600,
-            1777680000,
-            1777766400,
-            1777852800,
-            1777939200,
-            1778025600,
-            1778112000,
-            1778198400,
-            1778284800,
-            1778371200,
-            1778457600,
-            1778544000,
-            1778630400,
-            1778716800,
-            1778803200,
-            1778889600,
-            1778976000,
-            1779062400,
-            1779148800,
-            1779235200,
-            1779321600,
-            1779408000,
-            1779494400,
-            1779580800,
-            1779667200,
-            1779753600,
-            1779840000,
-            1779926400,
-            1780012800,
-            1780099200,
-            1780185600,
-            1780272000,
-            1780358400,
-            1780444800,
-            1780531200,
-            1780617600,
-            1780704000,
-            1780790400,
-            1780876800,
-            1780963200,
-            1781049600,
-            1781136000,
-            1781222400,
-            1781308800,
-            1781395200,
-            1781481600,
-            1781568000,
-            1781654400,
-            1781740800,
-            1781827200,
-            1781913600,
-            1782000000
-          ],
-          "value": 6.16,
-          "turnover": 1460346933.0,
-          "volume": 237841520.0,
-          "market_cap_value": 2659149330.9054008,
-          "volume_24h": 182468353.2102918,
-          "state": "open",
-          "mkt_start": null,
-          "mkt_end": null,
-          "intraday": [
-            6.26,
-            6.25,
-            6.23,
-            6.25,
-            6.23,
-            6.23,
-            6.24,
-            6.25,
-            6.26,
-            6.22,
-            6.24,
-            6.21,
-            6.21,
-            6.24,
-            6.22,
-            6.28,
-            6.27,
-            6.28,
-            6.29,
-            6.3,
-            6.28,
-            6.29,
-            6.29,
-            6.26,
-            6.25,
-            6.28,
-            6.29,
-            6.3,
-            6.31,
-            6.32,
-            6.33,
-            6.32,
-            6.25,
-            6.27,
-            6.26,
-            6.24,
-            6.23,
-            6.26,
-            6.26,
-            6.26,
-            6.22,
-            6.19,
-            6.15,
-            6.16,
-            6.16,
-            6.14
-          ],
-          "fundamental_score": {
-            "mode": "crypto",
-            "schema_version": 11,
-            "score": 41,
-            "label": "Weak",
-            "coverage": 1.0,
-            "axes": [
-              {
-                "key": "size",
-                "label": "Size",
-                "score": 2
-              },
-              {
-                "key": "liquidity",
-                "label": "Liquidity",
-                "score": 85
-              },
-              {
-                "key": "momentum",
-                "label": "Momentum",
-                "score": 20
-              },
-              {
-                "key": "trend",
-                "label": "Trend",
-                "score": 8
-              },
-              {
-                "key": "risk",
-                "label": "Risk",
-                "score": 88
-              }
-            ],
-            "metrics": [
-              {
-                "label": "Market Cap",
-                "value": 2659149331.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "latest quote"
-              },
-              {
-                "label": "24h Volume",
-                "value": 182468353.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "24H"
-              },
-              {
-                "label": "Liquidity",
-                "value": 6.86,
-                "fmt": "percent",
-                "period": "24H volume / market cap"
-              },
-              {
-                "label": "1M Return",
-                "value": -34.57,
-                "fmt": "percent",
-                "period": "30D price return"
-              },
-              {
-                "label": "6M Return",
-                "value": -30.92,
-                "fmt": "percent",
-                "period": "6M price return"
-              },
-              {
-                "label": "Volatility",
-                "value": 3.25,
-                "fmt": "percent",
-                "period": "daily realized, 6M window"
-              },
-              {
-                "label": "Risk-Free Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "annual benchmark: US 3M T-Bill"
-              },
-              {
-                "label": "Hurdle Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "valuation anchor: US 3M T-Bill"
-              },
-              {
-                "label": "Annualized Return",
-                "value": -64.89,
-                "fmt": "percent",
-                "period": "geometric, 6M daily window"
-              },
-              {
-                "label": "Excess Return",
-                "value": -68.55,
-                "fmt": "percent",
-                "period": "annualized minus US 3M T-Bill"
-              },
-              {
-                "label": "Annual Volatility",
-                "value": 62.03,
-                "fmt": "percent",
-                "period": "annualized from 6M daily returns"
-              },
-              {
-                "label": "Downside Volatility",
-                "value": 41.48,
-                "fmt": "percent",
-                "period": "annualized downside vs risk-free"
-              },
-              {
-                "label": "Sharpe Ratio",
-                "value": -1.43,
-                "fmt": "ratio",
-                "period": "annualized vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Sortino Ratio",
-                "value": -2.14,
-                "fmt": "ratio",
-                "period": "downside vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Max Drawdown",
-                "value": -43.7,
-                "fmt": "percent",
-                "period": "peak-to-trough, 6M"
-              }
-            ],
-            "valuation": null,
-            "risk_stats": {
-              "period": "6M daily closes",
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -64.89,
-              "annual_excess_return_pct": -68.55,
-              "annual_volatility_pct": 62.03,
-              "downside_volatility_pct": 41.48,
-              "sharpe": -1.43,
-              "sortino": -2.14,
-              "peak_price": 10.4891,
-              "peak_ts": 1773619200,
-              "bottom_price": 5.9057,
-              "bottom_ts": 1781827200,
-              "max_drawdown_pct": -43.7,
-              "max_drawdown_peak_price": 10.4891,
-              "max_drawdown_peak_ts": 1773619200,
-              "max_drawdown_trough_price": 5.9057,
-              "max_drawdown_trough_ts": 1781827200,
-              "risk_adjusted_signal": "Weak risk-adjusted"
-            },
-            "risk_context": {
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "fx_rates": {
-                "USDIDR": 17821.0
-              }
-            },
-            "currency": "USD",
-            "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
@@ -187710,7 +187697,7 @@
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
           "url": "https://www.coingecko.com/en/coins/dogecoin",
-          "delta_pct": -1.19,
+          "delta_pct": -1.15,
           "spark": [
             0.093,
             0.0966,
@@ -187841,7 +187828,7 @@
             0.0834,
             0.0835,
             0.0836,
-            0.0826
+            0.0825
           ],
           "spark_ts": [
             1770854400,
@@ -187976,10 +187963,10 @@
             1782000000
           ],
           "value": 0.0828,
-          "turnover": 24952411.0,
-          "volume": 302087296.0,
-          "market_cap_value": 12820368740.810743,
-          "volume_24h": 316050336.26985383,
+          "turnover": 24907228.0,
+          "volume": 301905792.0,
+          "market_cap_value": 12813756414.146503,
+          "volume_24h": 315831607.05388594,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -188029,8 +188016,9 @@
             0.0826,
             0.0828,
             0.0828,
-            0.0826,
-            0.0826
+            0.0828,
+            0.0827,
+            0.0825
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -188068,33 +188056,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 12820368741.0,
+                "value": 12813756414.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 316050336.0,
+                "value": 315831607.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 2.47,
+                "value": 2.46,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -19.81,
+                "value": -19.9,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -11.18,
+                "value": -11.29,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -188118,13 +188106,13 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -28.51,
+                "value": -28.75,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -32.17,
+                "value": -32.41,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
@@ -188136,19 +188124,19 @@
               },
               {
                 "label": "Downside Volatility",
-                "value": 34.44,
+                "value": 34.43,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -0.32,
+                "value": -0.33,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
               {
                 "label": "Sortino Ratio",
-                "value": -0.56,
+                "value": -0.57,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -188169,12 +188157,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -28.51,
-              "annual_excess_return_pct": -32.17,
+              "annual_return_pct": -28.75,
+              "annual_excess_return_pct": -32.41,
               "annual_volatility_pct": 60.03,
-              "downside_volatility_pct": 34.44,
-              "sharpe": -0.32,
-              "sortino": -0.56,
+              "downside_volatility_pct": 34.43,
+              "sharpe": -0.33,
+              "sortino": -0.57,
               "peak_price": 0.1153,
               "peak_ts": 1778716800,
               "bottom_price": 0.0814,
@@ -188200,523 +188188,7 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
-          }
-        },
-        {
-          "ticker": "SOL",
-          "name": "Solana",
-          "source_symbol": "SOL-USD",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$95B",
-          "tier": "large",
-          "flags": [],
-          "sector_key": "crypto",
-          "sector_name": "Crypto & Digital Assets",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "active": true,
-          "price_frequency": "30m",
-          "fundamental_frequency_hours": 24,
-          "news_priority": "priority",
-          "url": "https://www.coingecko.com/en/coins/solana",
-          "delta_pct": -1.3,
-          "spark": [
-            78.3484,
-            84.3225,
-            88.1608,
-            86.0051,
-            86.4288,
-            85.1976,
-            81.5669,
-            82.3932,
-            84.6351,
-            85.2111,
-            82.791,
-            77.7533,
-            79.0365,
-            87.9156,
-            85.9091,
-            81.9515,
-            84.3662,
-            83.5777,
-            86.6345,
-            87.0198,
-            90.8343,
-            88.6911,
-            84.6818,
-            83.18,
-            81.6246,
-            84.9362,
-            85.8382,
-            86.5649,
-            86.8678,
-            88.1533,
-            88.0707,
-            92.2518,
-            96.2237,
-            94.706,
-            90.0657,
-            88.9178,
-            89.8536,
-            87.4654,
-            86.1283,
-            91.4241,
-            90.8224,
-            91.7082,
-            86.4439,
-            83.0188,
-            82.0156,
-            81.4224,
-            82.4441,
-            83.1065,
-            81.1953,
-            78.9513,
-            80.3685,
-            80.8084,
-            81.8545,
-            80.1516,
-            85.648,
-            82.5817,
-            83.2977,
-            84.8285,
-            84.9488,
-            81.5352,
-            86.6566,
-            83.7746,
-            84.9193,
-            88.9942,
-            88.8742,
-            86.2027,
-            83.5809,
-            85.333,
-            86.0295,
-            86.9158,
-            86.1411,
-            86.2319,
-            86.1512,
-            86.9704,
-            84.8178,
-            84.039,
-            83.0269,
-            83.0238,
-            83.7235,
-            84.2766,
-            83.8996,
-            84.0899,
-            86.3192,
-            89.145,
-            88.4048,
-            91.9498,
-            93.1455,
-            96.427,
-            97.3502,
-            94.2843,
-            91.0855,
-            92.1487,
-            89.2004,
-            86.5365,
-            85.173,
-            85.2969,
-            84.2086,
-            86.0419,
-            87.1562,
-            84.3071,
-            85.6585,
-            85.2497,
-            85.0105,
-            83.5865,
-            82.3681,
-            81.9854,
-            81.9325,
-            82.5473,
-            82.2983,
-            81.087,
-            74.1429,
-            71.6124,
-            68.7189,
-            63.4869,
-            62.1898,
-            66.3106,
-            66.795,
-            64.9621,
-            63.161,
-            66.822,
-            66.7493,
-            68.8728,
-            71.1662,
-            73.9793,
-            73.4138,
-            71.931,
-            69.6265,
-            69.7206,
-            73.1727,
-            72.6
-          ],
-          "spark_ts": [
-            1770854400,
-            1770940800,
-            1771027200,
-            1771113600,
-            1771200000,
-            1771286400,
-            1771372800,
-            1771459200,
-            1771545600,
-            1771632000,
-            1771718400,
-            1771804800,
-            1771891200,
-            1771977600,
-            1772064000,
-            1772150400,
-            1772236800,
-            1772323200,
-            1772409600,
-            1772496000,
-            1772582400,
-            1772668800,
-            1772755200,
-            1772841600,
-            1772928000,
-            1773014400,
-            1773100800,
-            1773187200,
-            1773273600,
-            1773360000,
-            1773446400,
-            1773532800,
-            1773619200,
-            1773705600,
-            1773792000,
-            1773878400,
-            1773964800,
-            1774051200,
-            1774137600,
-            1774224000,
-            1774310400,
-            1774396800,
-            1774483200,
-            1774569600,
-            1774656000,
-            1774742400,
-            1774828800,
-            1774915200,
-            1775001600,
-            1775088000,
-            1775174400,
-            1775260800,
-            1775347200,
-            1775433600,
-            1775520000,
-            1775606400,
-            1775692800,
-            1775779200,
-            1775865600,
-            1775952000,
-            1776038400,
-            1776124800,
-            1776211200,
-            1776297600,
-            1776384000,
-            1776470400,
-            1776556800,
-            1776643200,
-            1776729600,
-            1776816000,
-            1776902400,
-            1776988800,
-            1777075200,
-            1777161600,
-            1777248000,
-            1777334400,
-            1777420800,
-            1777507200,
-            1777593600,
-            1777680000,
-            1777766400,
-            1777852800,
-            1777939200,
-            1778025600,
-            1778112000,
-            1778198400,
-            1778284800,
-            1778371200,
-            1778457600,
-            1778544000,
-            1778630400,
-            1778716800,
-            1778803200,
-            1778889600,
-            1778976000,
-            1779062400,
-            1779148800,
-            1779235200,
-            1779321600,
-            1779408000,
-            1779494400,
-            1779580800,
-            1779667200,
-            1779753600,
-            1779840000,
-            1779926400,
-            1780012800,
-            1780099200,
-            1780185600,
-            1780272000,
-            1780358400,
-            1780444800,
-            1780531200,
-            1780617600,
-            1780704000,
-            1780790400,
-            1780876800,
-            1780963200,
-            1781049600,
-            1781136000,
-            1781222400,
-            1781308800,
-            1781395200,
-            1781481600,
-            1781568000,
-            1781654400,
-            1781740800,
-            1781827200,
-            1781913600,
-            1782000000
-          ],
-          "value": 72.89,
-          "turnover": 142709761920.0,
-          "volume": 1965699200.0,
-          "market_cap_value": 42337467569.412994,
-          "volume_24h": 2054392076.058592,
-          "state": "open",
-          "mkt_start": null,
-          "mkt_end": null,
-          "intraday": [
-            72.98,
-            73.13,
-            72.88,
-            73.11,
-            73.1,
-            73.25,
-            73.43,
-            73.56,
-            73.7,
-            73.37,
-            73.13,
-            73.0,
-            73.15,
-            73.16,
-            73.19,
-            73.12,
-            72.93,
-            73.07,
-            73.49,
-            73.94,
-            74.08,
-            73.81,
-            73.49,
-            73.09,
-            72.98,
-            73.55,
-            73.67,
-            73.83,
-            73.74,
-            74.02,
-            74.08,
-            74.06,
-            73.92,
-            74.26,
-            74.41,
-            74.17,
-            74.03,
-            74.12,
-            74.17,
-            74.34,
-            74.02,
-            73.35,
-            72.68,
-            73.06,
-            72.9,
-            72.58,
-            72.6
-          ],
-          "fundamental_score": {
-            "mode": "crypto",
-            "schema_version": 11,
-            "score": 47,
-            "label": "Neutral",
-            "coverage": 1.0,
-            "axes": [
-              {
-                "key": "size",
-                "label": "Size",
-                "score": 42
-              },
-              {
-                "key": "liquidity",
-                "label": "Liquidity",
-                "score": 58
-              },
-              {
-                "key": "momentum",
-                "label": "Momentum",
-                "score": 18
-              },
-              {
-                "key": "trend",
-                "label": "Trend",
-                "score": 27
-              },
-              {
-                "key": "risk",
-                "label": "Risk",
-                "score": 90
-              }
-            ],
-            "metrics": [
-              {
-                "label": "Market Cap",
-                "value": 42337467569.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "latest quote"
-              },
-              {
-                "label": "24h Volume",
-                "value": 2054392076.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "24H"
-              },
-              {
-                "label": "Liquidity",
-                "value": 4.85,
-                "fmt": "percent",
-                "period": "24H volume / market cap"
-              },
-              {
-                "label": "1M Return",
-                "value": -15.24,
-                "fmt": "percent",
-                "period": "30D price return"
-              },
-              {
-                "label": "6M Return",
-                "value": -7.34,
-                "fmt": "percent",
-                "period": "6M price return"
-              },
-              {
-                "label": "Volatility",
-                "value": 3.12,
-                "fmt": "percent",
-                "period": "daily realized, 6M window"
-              },
-              {
-                "label": "Risk-Free Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "annual benchmark: US 3M T-Bill"
-              },
-              {
-                "label": "Hurdle Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "valuation anchor: US 3M T-Bill"
-              },
-              {
-                "label": "Annualized Return",
-                "value": -19.39,
-                "fmt": "percent",
-                "period": "geometric, 6M daily window"
-              },
-              {
-                "label": "Excess Return",
-                "value": -23.05,
-                "fmt": "percent",
-                "period": "annualized minus US 3M T-Bill"
-              },
-              {
-                "label": "Annual Volatility",
-                "value": 59.55,
-                "fmt": "percent",
-                "period": "annualized from 6M daily returns"
-              },
-              {
-                "label": "Downside Volatility",
-                "value": 33.75,
-                "fmt": "percent",
-                "period": "annualized downside vs risk-free"
-              },
-              {
-                "label": "Sharpe Ratio",
-                "value": -0.13,
-                "fmt": "ratio",
-                "period": "annualized vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Sortino Ratio",
-                "value": -0.22,
-                "fmt": "ratio",
-                "period": "downside vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Max Drawdown",
-                "value": -36.12,
-                "fmt": "percent",
-                "period": "peak-to-trough, 6M"
-              }
-            ],
-            "valuation": null,
-            "risk_stats": {
-              "period": "6M daily closes",
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -19.39,
-              "annual_excess_return_pct": -23.05,
-              "annual_volatility_pct": 59.55,
-              "downside_volatility_pct": 33.75,
-              "sharpe": -0.13,
-              "sortino": -0.22,
-              "peak_price": 97.3502,
-              "peak_ts": 1778457600,
-              "bottom_price": 62.1898,
-              "bottom_ts": 1780704000,
-              "max_drawdown_pct": -36.12,
-              "max_drawdown_peak_price": 97.3502,
-              "max_drawdown_peak_ts": 1778457600,
-              "max_drawdown_trough_price": 62.1898,
-              "max_drawdown_trough_ts": 1780704000,
-              "risk_adjusted_signal": "Weak risk-adjusted"
-            },
-            "risk_context": {
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "fx_rates": {
-                "USDIDR": 17821.0
-              }
-            },
-            "currency": "USD",
-            "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
@@ -188742,7 +188214,7 @@
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
           "url": "https://www.coingecko.com/en/coins/polygon",
-          "delta_pct": -1.3,
+          "delta_pct": -1.23,
           "spark": [
             0.096,
             0.1007,
@@ -188873,7 +188345,7 @@
             0.0777,
             0.0806,
             0.0798,
-            0.0794
+            0.0793
           ],
           "spark_ts": [
             1770940800,
@@ -189005,23 +188477,17 @@
             1781827200,
             1781913600,
             1782000000,
-            1782081063
+            1782082906
           ],
-          "value": 0.0794,
+          "value": 0.0793,
           "turnover": 0.0,
           "volume": 0.0,
-          "market_cap_value": 846714808.8962213,
-          "volume_24h": 30647701.91753176,
+          "market_cap_value": 846150153.0869823,
+          "volume_24h": 29544727.792422242,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
           "intraday": [
-            0.0804,
-            0.0804,
-            0.0803,
-            0.0803,
-            0.0803,
-            0.0803,
             0.0802,
             0.0803,
             0.0802,
@@ -189304,7 +188770,13 @@
             0.0796,
             0.0796,
             0.0794,
-            0.0794
+            0.0794,
+            0.0793,
+            0.0793,
+            0.0794,
+            0.0794,
+            0.0793,
+            0.0793
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -189321,12 +188793,12 @@
               {
                 "key": "liquidity",
                 "label": "Liquidity",
-                "score": 42
+                "score": 40
               },
               {
                 "key": "momentum",
                 "label": "Momentum",
-                "score": 21
+                "score": 22
               },
               {
                 "key": "trend",
@@ -189342,33 +188814,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 846714809.0,
+                "value": 846150153.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 30647702.0,
+                "value": 29544728.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 3.62,
+                "value": 3.49,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -12.84,
+                "value": -12.95,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -17.29,
+                "value": -17.4,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -189392,37 +188864,37 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -41.56,
+                "value": -41.77,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -45.22,
+                "value": -45.43,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
               {
                 "label": "Annual Volatility",
-                "value": 54.28,
+                "value": 54.29,
                 "fmt": "percent",
                 "period": "annualized from 6M daily returns"
               },
               {
                 "label": "Downside Volatility",
-                "value": 35.14,
+                "value": 35.11,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -0.78,
+                "value": -0.79,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
               {
                 "label": "Sortino Ratio",
-                "value": -1.21,
+                "value": -1.22,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -189443,12 +188915,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -41.56,
-              "annual_excess_return_pct": -45.22,
-              "annual_volatility_pct": 54.28,
-              "downside_volatility_pct": 35.14,
-              "sharpe": -0.78,
-              "sortino": -1.21,
+              "annual_return_pct": -41.77,
+              "annual_excess_return_pct": -45.43,
+              "annual_volatility_pct": 54.29,
+              "downside_volatility_pct": 35.11,
+              "sharpe": -0.79,
+              "sortino": -1.22,
               "peak_price": 0.1133,
               "peak_ts": 1772064000,
               "bottom_price": 0.0722,
@@ -189474,7 +188946,524 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
+          }
+        },
+        {
+          "ticker": "AVAX",
+          "name": "Avalanche",
+          "source_symbol": "AVAX-USD",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$15B",
+          "tier": "mid",
+          "flags": [],
+          "sector_key": "crypto",
+          "sector_name": "Crypto & Digital Assets",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "active": true,
+          "price_frequency": "30m",
+          "fundamental_frequency_hours": 24,
+          "news_priority": "priority",
+          "url": "https://www.coingecko.com/en/coins/avalanche-2",
+          "delta_pct": -1.56,
+          "spark": [
+            8.8882,
+            9.1469,
+            9.5877,
+            9.2859,
+            9.2594,
+            9.1388,
+            8.8537,
+            8.8962,
+            9.1685,
+            9.1209,
+            8.8715,
+            8.357,
+            8.2951,
+            9.4974,
+            9.3044,
+            8.96,
+            9.1646,
+            9.0309,
+            9.1751,
+            9.1788,
+            9.4963,
+            9.3838,
+            9.0262,
+            8.9062,
+            8.8205,
+            9.2509,
+            9.532,
+            9.5492,
+            9.6776,
+            9.7209,
+            9.7207,
+            9.9351,
+            10.4891,
+            10.1962,
+            9.6755,
+            9.4707,
+            9.5662,
+            9.2041,
+            9.0185,
+            9.5485,
+            9.6118,
+            9.671,
+            9.1005,
+            8.7874,
+            8.7497,
+            8.5957,
+            8.7892,
+            8.9093,
+            9.1239,
+            8.752,
+            8.9119,
+            8.9844,
+            9.055,
+            8.906,
+            9.4749,
+            9.056,
+            9.3514,
+            9.4047,
+            9.3768,
+            9.0334,
+            9.6689,
+            9.3073,
+            9.433,
+            9.7276,
+            9.7413,
+            9.3418,
+            9.0102,
+            9.2795,
+            9.3868,
+            9.3484,
+            9.3922,
+            9.3961,
+            9.3659,
+            9.4652,
+            9.267,
+            9.1738,
+            9.1206,
+            9.0881,
+            9.0842,
+            9.1807,
+            9.0849,
+            9.1706,
+            9.404,
+            9.612,
+            9.5026,
+            9.897,
+            9.952,
+            10.2316,
+            10.1364,
+            9.836,
+            9.751,
+            9.8967,
+            9.5369,
+            9.2909,
+            9.18,
+            9.2339,
+            9.099,
+            9.2832,
+            9.4412,
+            9.1466,
+            9.3846,
+            9.2071,
+            9.3026,
+            9.1302,
+            9.0375,
+            8.9128,
+            8.8159,
+            8.9237,
+            8.9599,
+            8.9159,
+            8.1676,
+            8.0504,
+            7.6883,
+            6.7078,
+            6.6709,
+            6.7961,
+            6.7579,
+            6.6396,
+            6.3873,
+            6.6402,
+            6.5649,
+            6.7155,
+            6.7758,
+            6.8372,
+            6.8695,
+            6.7515,
+            6.307,
+            5.9057,
+            6.2334,
+            6.12
+          ],
+          "spark_ts": [
+            1770854400,
+            1770940800,
+            1771027200,
+            1771113600,
+            1771200000,
+            1771286400,
+            1771372800,
+            1771459200,
+            1771545600,
+            1771632000,
+            1771718400,
+            1771804800,
+            1771891200,
+            1771977600,
+            1772064000,
+            1772150400,
+            1772236800,
+            1772323200,
+            1772409600,
+            1772496000,
+            1772582400,
+            1772668800,
+            1772755200,
+            1772841600,
+            1772928000,
+            1773014400,
+            1773100800,
+            1773187200,
+            1773273600,
+            1773360000,
+            1773446400,
+            1773532800,
+            1773619200,
+            1773705600,
+            1773792000,
+            1773878400,
+            1773964800,
+            1774051200,
+            1774137600,
+            1774224000,
+            1774310400,
+            1774396800,
+            1774483200,
+            1774569600,
+            1774656000,
+            1774742400,
+            1774828800,
+            1774915200,
+            1775001600,
+            1775088000,
+            1775174400,
+            1775260800,
+            1775347200,
+            1775433600,
+            1775520000,
+            1775606400,
+            1775692800,
+            1775779200,
+            1775865600,
+            1775952000,
+            1776038400,
+            1776124800,
+            1776211200,
+            1776297600,
+            1776384000,
+            1776470400,
+            1776556800,
+            1776643200,
+            1776729600,
+            1776816000,
+            1776902400,
+            1776988800,
+            1777075200,
+            1777161600,
+            1777248000,
+            1777334400,
+            1777420800,
+            1777507200,
+            1777593600,
+            1777680000,
+            1777766400,
+            1777852800,
+            1777939200,
+            1778025600,
+            1778112000,
+            1778198400,
+            1778284800,
+            1778371200,
+            1778457600,
+            1778544000,
+            1778630400,
+            1778716800,
+            1778803200,
+            1778889600,
+            1778976000,
+            1779062400,
+            1779148800,
+            1779235200,
+            1779321600,
+            1779408000,
+            1779494400,
+            1779580800,
+            1779667200,
+            1779753600,
+            1779840000,
+            1779926400,
+            1780012800,
+            1780099200,
+            1780185600,
+            1780272000,
+            1780358400,
+            1780444800,
+            1780531200,
+            1780617600,
+            1780704000,
+            1780790400,
+            1780876800,
+            1780963200,
+            1781049600,
+            1781136000,
+            1781222400,
+            1781308800,
+            1781395200,
+            1781481600,
+            1781568000,
+            1781654400,
+            1781740800,
+            1781827200,
+            1781913600,
+            1782000000
+          ],
+          "value": 6.14,
+          "turnover": 1433023851.0,
+          "volume": 234154224.0,
+          "market_cap_value": 2653265549.8520093,
+          "volume_24h": 178919100.80506697,
+          "state": "open",
+          "mkt_start": null,
+          "mkt_end": null,
+          "intraday": [
+            6.26,
+            6.25,
+            6.23,
+            6.25,
+            6.23,
+            6.23,
+            6.24,
+            6.25,
+            6.26,
+            6.22,
+            6.24,
+            6.21,
+            6.21,
+            6.24,
+            6.22,
+            6.28,
+            6.27,
+            6.28,
+            6.29,
+            6.3,
+            6.28,
+            6.29,
+            6.29,
+            6.26,
+            6.25,
+            6.28,
+            6.29,
+            6.3,
+            6.31,
+            6.32,
+            6.33,
+            6.32,
+            6.25,
+            6.27,
+            6.26,
+            6.24,
+            6.23,
+            6.26,
+            6.26,
+            6.26,
+            6.22,
+            6.19,
+            6.15,
+            6.16,
+            6.16,
+            6.14,
+            6.12,
+            6.12
+          ],
+          "fundamental_score": {
+            "mode": "crypto",
+            "schema_version": 11,
+            "score": 39,
+            "label": "Weak",
+            "coverage": 1.0,
+            "axes": [
+              {
+                "key": "size",
+                "label": "Size",
+                "score": 2
+              },
+              {
+                "key": "liquidity",
+                "label": "Liquidity",
+                "score": 83
+              },
+              {
+                "key": "momentum",
+                "label": "Momentum",
+                "score": 17
+              },
+              {
+                "key": "trend",
+                "label": "Trend",
+                "score": 7
+              },
+              {
+                "key": "risk",
+                "label": "Risk",
+                "score": 88
+              }
+            ],
+            "metrics": [
+              {
+                "label": "Market Cap",
+                "value": 2653265550.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "latest quote"
+              },
+              {
+                "label": "24h Volume",
+                "value": 178919101.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "24H"
+              },
+              {
+                "label": "Liquidity",
+                "value": 6.74,
+                "fmt": "percent",
+                "period": "24H volume / market cap"
+              },
+              {
+                "label": "1M Return",
+                "value": -34.79,
+                "fmt": "percent",
+                "period": "30D price return"
+              },
+              {
+                "label": "6M Return",
+                "value": -31.14,
+                "fmt": "percent",
+                "period": "6M price return"
+              },
+              {
+                "label": "Volatility",
+                "value": 3.25,
+                "fmt": "percent",
+                "period": "daily realized, 6M window"
+              },
+              {
+                "label": "Risk-Free Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "annual benchmark: US 3M T-Bill"
+              },
+              {
+                "label": "Hurdle Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "valuation anchor: US 3M T-Bill"
+              },
+              {
+                "label": "Annualized Return",
+                "value": -65.21,
+                "fmt": "percent",
+                "period": "geometric, 6M daily window"
+              },
+              {
+                "label": "Excess Return",
+                "value": -68.87,
+                "fmt": "percent",
+                "period": "annualized minus US 3M T-Bill"
+              },
+              {
+                "label": "Annual Volatility",
+                "value": 62.05,
+                "fmt": "percent",
+                "period": "annualized from 6M daily returns"
+              },
+              {
+                "label": "Downside Volatility",
+                "value": 41.44,
+                "fmt": "percent",
+                "period": "annualized downside vs risk-free"
+              },
+              {
+                "label": "Sharpe Ratio",
+                "value": -1.45,
+                "fmt": "ratio",
+                "period": "annualized vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Sortino Ratio",
+                "value": -2.17,
+                "fmt": "ratio",
+                "period": "downside vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Max Drawdown",
+                "value": -43.7,
+                "fmt": "percent",
+                "period": "peak-to-trough, 6M"
+              }
+            ],
+            "valuation": null,
+            "risk_stats": {
+              "period": "6M daily closes",
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "annual_return_pct": -65.21,
+              "annual_excess_return_pct": -68.87,
+              "annual_volatility_pct": 62.05,
+              "downside_volatility_pct": 41.44,
+              "sharpe": -1.45,
+              "sortino": -2.17,
+              "peak_price": 10.4891,
+              "peak_ts": 1773619200,
+              "bottom_price": 5.9057,
+              "bottom_ts": 1781827200,
+              "max_drawdown_pct": -43.7,
+              "max_drawdown_peak_price": 10.4891,
+              "max_drawdown_peak_ts": 1773619200,
+              "max_drawdown_trough_price": 5.9057,
+              "max_drawdown_trough_ts": 1781827200,
+              "risk_adjusted_signal": "Weak risk-adjusted"
+            },
+            "risk_context": {
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "fx_rates": {
+                "USDIDR": 17821.0
+              }
+            },
+            "currency": "USD",
+            "source": "CoinGecko + price history",
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
@@ -189500,7 +189489,7 @@
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
           "url": "https://www.coingecko.com/en/coins/ethereum",
-          "delta_pct": -1.72,
+          "delta_pct": -1.6,
           "spark": [
             1946.9407,
             2048.5273,
@@ -189631,7 +189620,7 @@
             1709.5334,
             1710.9824,
             1739.3014,
-            1707.23
+            1710.3101
           ],
           "spark_ts": [
             1770854400,
@@ -189765,11 +189754,11 @@
             1781913600,
             1782000000
           ],
-          "value": 1712.19,
-          "turnover": 14328499819971.0,
-          "volume": 8392835072.0,
-          "market_cap_value": 206861792468.82675,
-          "volume_24h": 9187486415.775696,
+          "value": 1713.56,
+          "turnover": 14227538338156.0,
+          "volume": 8318689792.0,
+          "market_cap_value": 207193637234.29907,
+          "volume_24h": 9109403259.107788,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -189819,8 +189808,9 @@
             1712.25,
             1716.36,
             1712.51,
-            1707.28,
-            1707.23
+            1715.55,
+            1712.4,
+            1710.3101
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -189837,12 +189827,12 @@
               {
                 "key": "liquidity",
                 "label": "Liquidity",
-                "score": 53
+                "score": 52
               },
               {
                 "key": "momentum",
                 "label": "Momentum",
-                "score": 16
+                "score": 17
               },
               {
                 "key": "trend",
@@ -189858,33 +189848,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 206861792469.0,
+                "value": 207193637234.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 9187486416.0,
+                "value": 9109403259.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 4.44,
+                "value": 4.4,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -19.32,
+                "value": -19.17,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -12.31,
+                "value": -12.15,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -189908,37 +189898,37 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -31.05,
+                "value": -30.7,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -34.71,
+                "value": -34.36,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
               {
                 "label": "Annual Volatility",
-                "value": 57.62,
+                "value": 57.61,
                 "fmt": "percent",
                 "period": "annualized from 6M daily returns"
               },
               {
                 "label": "Downside Volatility",
-                "value": 36.01,
+                "value": 36.02,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -0.42,
+                "value": -0.41,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
               {
                 "label": "Sortino Ratio",
-                "value": -0.67,
+                "value": -0.66,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -189959,12 +189949,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -31.05,
-              "annual_excess_return_pct": -34.71,
-              "annual_volatility_pct": 57.62,
-              "downside_volatility_pct": 36.01,
-              "sharpe": -0.42,
-              "sortino": -0.67,
+              "annual_return_pct": -30.7,
+              "annual_excess_return_pct": -34.36,
+              "annual_volatility_pct": 57.61,
+              "downside_volatility_pct": 36.02,
+              "sharpe": -0.41,
+              "sortino": -0.66,
               "peak_price": 2421.0718,
               "peak_ts": 1776384000,
               "bottom_price": 1568.7677,
@@ -189990,523 +189980,7 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
-          }
-        },
-        {
-          "ticker": "LINK",
-          "name": "Chainlink",
-          "source_symbol": "LINK-USD",
-          "exchange": "CRYPTO",
-          "country": "CR",
-          "mktcap": "$11B",
-          "tier": "mid",
-          "flags": [],
-          "sector_key": "crypto",
-          "sector_name": "Crypto & Digital Assets",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "active": true,
-          "price_frequency": "30m",
-          "fundamental_frequency_hours": 24,
-          "news_priority": "priority",
-          "url": "https://www.coingecko.com/en/coins/chainlink",
-          "delta_pct": -1.85,
-          "spark": [
-            8.4027,
-            8.7683,
-            9.0885,
-            8.7819,
-            8.9255,
-            8.8306,
-            8.5989,
-            8.5695,
-            8.9414,
-            8.876,
-            8.6727,
-            8.2652,
-            8.2031,
-            9.2563,
-            9.0985,
-            8.7088,
-            8.8437,
-            8.6723,
-            8.9485,
-            8.8124,
-            9.3485,
-            9.1969,
-            8.7937,
-            8.695,
-            8.5234,
-            8.86,
-            8.9831,
-            8.9955,
-            9.0585,
-            9.088,
-            9.1615,
-            9.4821,
-            9.9271,
-            9.7952,
-            9.2258,
-            9.0473,
-            9.1132,
-            8.8074,
-            8.6852,
-            9.1027,
-            9.2465,
-            9.3747,
-            8.9145,
-            8.5638,
-            8.4282,
-            8.4053,
-            8.6107,
-            8.7775,
-            8.9378,
-            8.6285,
-            8.6582,
-            8.6929,
-            8.8116,
-            8.8051,
-            9.2956,
-            8.8605,
-            8.9428,
-            9.0878,
-            9.0694,
-            8.7372,
-            9.3629,
-            9.0228,
-            9.2615,
-            9.5808,
-            9.6251,
-            9.2929,
-            9.0707,
-            9.2911,
-            9.3982,
-            9.2987,
-            9.3559,
-            9.3774,
-            9.3462,
-            9.4941,
-            9.321,
-            9.2396,
-            9.1182,
-            9.1044,
-            9.0927,
-            9.1744,
-            9.1315,
-            9.3532,
-            9.766,
-            9.9942,
-            9.8517,
-            10.3302,
-            10.3719,
-            10.7125,
-            10.5936,
-            10.2838,
-            10.2116,
-            10.4731,
-            10.0662,
-            9.7199,
-            9.5541,
-            9.5928,
-            9.4498,
-            9.6219,
-            9.7406,
-            9.4154,
-            9.5584,
-            9.429,
-            9.4978,
-            9.3748,
-            9.1281,
-            8.9884,
-            9.0152,
-            9.1652,
-            9.1267,
-            9.038,
-            8.3624,
-            8.335,
-            8.0008,
-            7.3507,
-            7.398,
-            7.8985,
-            7.9875,
-            7.837,
-            7.563,
-            7.8823,
-            7.8557,
-            7.9774,
-            8.1662,
-            8.2952,
-            8.2645,
-            8.0773,
-            8.0017,
-            7.9419,
-            7.9769,
-            7.799
-          ],
-          "spark_ts": [
-            1770854400,
-            1770940800,
-            1771027200,
-            1771113600,
-            1771200000,
-            1771286400,
-            1771372800,
-            1771459200,
-            1771545600,
-            1771632000,
-            1771718400,
-            1771804800,
-            1771891200,
-            1771977600,
-            1772064000,
-            1772150400,
-            1772236800,
-            1772323200,
-            1772409600,
-            1772496000,
-            1772582400,
-            1772668800,
-            1772755200,
-            1772841600,
-            1772928000,
-            1773014400,
-            1773100800,
-            1773187200,
-            1773273600,
-            1773360000,
-            1773446400,
-            1773532800,
-            1773619200,
-            1773705600,
-            1773792000,
-            1773878400,
-            1773964800,
-            1774051200,
-            1774137600,
-            1774224000,
-            1774310400,
-            1774396800,
-            1774483200,
-            1774569600,
-            1774656000,
-            1774742400,
-            1774828800,
-            1774915200,
-            1775001600,
-            1775088000,
-            1775174400,
-            1775260800,
-            1775347200,
-            1775433600,
-            1775520000,
-            1775606400,
-            1775692800,
-            1775779200,
-            1775865600,
-            1775952000,
-            1776038400,
-            1776124800,
-            1776211200,
-            1776297600,
-            1776384000,
-            1776470400,
-            1776556800,
-            1776643200,
-            1776729600,
-            1776816000,
-            1776902400,
-            1776988800,
-            1777075200,
-            1777161600,
-            1777248000,
-            1777334400,
-            1777420800,
-            1777507200,
-            1777593600,
-            1777680000,
-            1777766400,
-            1777852800,
-            1777939200,
-            1778025600,
-            1778112000,
-            1778198400,
-            1778284800,
-            1778371200,
-            1778457600,
-            1778544000,
-            1778630400,
-            1778716800,
-            1778803200,
-            1778889600,
-            1778976000,
-            1779062400,
-            1779148800,
-            1779235200,
-            1779321600,
-            1779408000,
-            1779494400,
-            1779580800,
-            1779667200,
-            1779753600,
-            1779840000,
-            1779926400,
-            1780012800,
-            1780099200,
-            1780185600,
-            1780272000,
-            1780358400,
-            1780444800,
-            1780531200,
-            1780617600,
-            1780704000,
-            1780790400,
-            1780876800,
-            1780963200,
-            1781049600,
-            1781136000,
-            1781222400,
-            1781308800,
-            1781395200,
-            1781481600,
-            1781568000,
-            1781654400,
-            1781740800,
-            1781827200,
-            1781913600,
-            1782000000
-          ],
-          "value": 7.83,
-          "turnover": 1248521820.0,
-          "volume": 160087424.0,
-          "market_cap_value": 5861512977.923451,
-          "volume_24h": 130983649.34595942,
-          "state": "open",
-          "mkt_start": null,
-          "mkt_end": null,
-          "intraday": [
-            7.96,
-            7.963,
-            7.945,
-            7.952,
-            7.941,
-            7.94,
-            7.951,
-            7.96,
-            7.965,
-            7.931,
-            7.928,
-            7.916,
-            7.924,
-            7.932,
-            7.927,
-            7.939,
-            7.922,
-            7.934,
-            7.95,
-            7.975,
-            7.989,
-            7.964,
-            7.948,
-            7.927,
-            7.897,
-            7.93,
-            7.939,
-            7.946,
-            7.937,
-            7.954,
-            7.963,
-            7.975,
-            7.934,
-            7.942,
-            7.937,
-            7.933,
-            7.919,
-            7.947,
-            7.947,
-            7.942,
-            7.925,
-            7.877,
-            7.822,
-            7.845,
-            7.825,
-            7.798,
-            7.799
-          ],
-          "fundamental_score": {
-            "mode": "crypto",
-            "schema_version": 11,
-            "score": 33,
-            "label": "Weak",
-            "coverage": 1.0,
-            "axes": [
-              {
-                "key": "size",
-                "label": "Size",
-                "score": 5
-              },
-              {
-                "key": "liquidity",
-                "label": "Liquidity",
-                "score": 23
-              },
-              {
-                "key": "momentum",
-                "label": "Momentum",
-                "score": 16
-              },
-              {
-                "key": "trend",
-                "label": "Trend",
-                "score": 27
-              },
-              {
-                "key": "risk",
-                "label": "Risk",
-                "score": 92
-              }
-            ],
-            "metrics": [
-              {
-                "label": "Market Cap",
-                "value": 5861512978.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "latest quote"
-              },
-              {
-                "label": "24h Volume",
-                "value": 130983649.0,
-                "fmt": "money",
-                "currency": "USD",
-                "period": "24H"
-              },
-              {
-                "label": "Liquidity",
-                "value": 2.23,
-                "fmt": "percent",
-                "period": "24H volume / market cap"
-              },
-              {
-                "label": "1M Return",
-                "value": -18.41,
-                "fmt": "percent",
-                "period": "30D price return"
-              },
-              {
-                "label": "6M Return",
-                "value": -7.18,
-                "fmt": "percent",
-                "period": "6M price return"
-              },
-              {
-                "label": "Volatility",
-                "value": 2.99,
-                "fmt": "percent",
-                "period": "daily realized, 6M window"
-              },
-              {
-                "label": "Risk-Free Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "annual benchmark: US 3M T-Bill"
-              },
-              {
-                "label": "Hurdle Rate",
-                "value": 3.66,
-                "fmt": "percent",
-                "period": "valuation anchor: US 3M T-Bill"
-              },
-              {
-                "label": "Annualized Return",
-                "value": -19.02,
-                "fmt": "percent",
-                "period": "geometric, 6M daily window"
-              },
-              {
-                "label": "Excess Return",
-                "value": -22.68,
-                "fmt": "percent",
-                "period": "annualized minus US 3M T-Bill"
-              },
-              {
-                "label": "Annual Volatility",
-                "value": 57.2,
-                "fmt": "percent",
-                "period": "annualized from 6M daily returns"
-              },
-              {
-                "label": "Downside Volatility",
-                "value": 32.71,
-                "fmt": "percent",
-                "period": "annualized downside vs risk-free"
-              },
-              {
-                "label": "Sharpe Ratio",
-                "value": -0.15,
-                "fmt": "ratio",
-                "period": "annualized vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Sortino Ratio",
-                "value": -0.26,
-                "fmt": "ratio",
-                "period": "downside vs US 3M T-Bill, 6M daily"
-              },
-              {
-                "label": "Max Drawdown",
-                "value": -31.38,
-                "fmt": "percent",
-                "period": "peak-to-trough, 6M"
-              }
-            ],
-            "valuation": null,
-            "risk_stats": {
-              "period": "6M daily closes",
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -19.02,
-              "annual_excess_return_pct": -22.68,
-              "annual_volatility_pct": 57.2,
-              "downside_volatility_pct": 32.71,
-              "sharpe": -0.15,
-              "sortino": -0.26,
-              "peak_price": 10.7125,
-              "peak_ts": 1778371200,
-              "bottom_price": 7.3507,
-              "bottom_ts": 1780617600,
-              "max_drawdown_pct": -31.38,
-              "max_drawdown_peak_price": 10.7125,
-              "max_drawdown_peak_ts": 1778371200,
-              "max_drawdown_trough_price": 7.3507,
-              "max_drawdown_trough_ts": 1780617600,
-              "risk_adjusted_signal": "Weak risk-adjusted"
-            },
-            "risk_context": {
-              "risk_free_rate": 3.658,
-              "risk_free_label": "US 3M T-Bill",
-              "risk_free_symbol": "^IRX",
-              "risk_free_source": "Yahoo Finance",
-              "hurdle_rate": 3.658,
-              "hurdle_label": "US 3M T-Bill",
-              "hurdle_source": "Yahoo Finance",
-              "fx_rates": {
-                "USDIDR": 17821.0
-              }
-            },
-            "currency": "USD",
-            "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
@@ -190532,7 +190006,7 @@
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
           "url": "https://www.coingecko.com/en/coins/ripple",
-          "delta_pct": -1.89,
+          "delta_pct": -1.87,
           "spark": [
             1.3621,
             1.4075,
@@ -190663,7 +190137,7 @@
             1.1454,
             1.1364,
             1.1491,
-            1.1267
+            1.1272
           ],
           "spark_ts": [
             1770854400,
@@ -190798,10 +190272,10 @@
             1782000000
           ],
           "value": 1.13,
-          "turnover": 980500490.0,
-          "volume": 870240960.0,
-          "market_cap_value": 70219690207.51028,
-          "volume_24h": 846146131.2956892,
+          "turnover": 984306389.0,
+          "volume": 873231360.0,
+          "market_cap_value": 70158557051.37154,
+          "volume_24h": 962724024.9797838,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -190851,8 +190325,9 @@
             1.1294,
             1.1334,
             1.1307,
-            1.1272,
-            1.1267
+            1.1304,
+            1.128,
+            1.1272
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -190869,7 +190344,7 @@
               {
                 "key": "liquidity",
                 "label": "Liquidity",
-                "score": 9
+                "score": 12
               },
               {
                 "key": "momentum",
@@ -190890,33 +190365,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 70219690208.0,
+                "value": 70158557051.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 846146131.0,
+                "value": 962724025.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 1.2,
+                "value": 1.37,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -17.0,
+                "value": -16.97,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -17.28,
+                "value": -17.25,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -190940,13 +190415,13 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -41.54,
+                "value": -41.47,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -45.2,
+                "value": -45.13,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
@@ -190964,7 +190439,7 @@
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -1.0,
+                "value": -0.99,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
@@ -190991,11 +190466,11 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -41.54,
-              "annual_excess_return_pct": -45.2,
+              "annual_return_pct": -41.47,
+              "annual_excess_return_pct": -45.13,
               "annual_volatility_pct": 46.61,
               "downside_volatility_pct": 25.73,
-              "sharpe": -1.0,
+              "sharpe": -0.99,
               "sortino": -1.8,
               "peak_price": 1.5436,
               "peak_ts": 1773619200,
@@ -191022,16 +190497,16 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
           }
         },
         {
-          "ticker": "ADA",
-          "name": "Cardano",
-          "source_symbol": "ADA-USD",
+          "ticker": "LINK",
+          "name": "Chainlink",
+          "source_symbol": "LINK-USD",
           "exchange": "CRYPTO",
           "country": "CR",
-          "mktcap": "$22B",
+          "mktcap": "$11B",
           "tier": "mid",
           "flags": [],
           "sector_key": "crypto",
@@ -191047,139 +190522,139 @@
           "price_frequency": "30m",
           "fundamental_frequency_hours": 24,
           "news_priority": "priority",
-          "url": "https://www.coingecko.com/en/coins/cardano",
-          "delta_pct": -2.51,
+          "url": "https://www.coingecko.com/en/coins/chainlink",
+          "delta_pct": -1.94,
           "spark": [
-            0.2642,
-            0.2727,
-            0.2953,
-            0.2818,
-            0.2855,
-            0.281,
-            0.2736,
-            0.2725,
-            0.2849,
-            0.28,
-            0.2714,
-            0.2623,
-            0.2588,
-            0.2967,
-            0.287,
-            0.2776,
-            0.2816,
-            0.2736,
-            0.2768,
-            0.2629,
-            0.2761,
-            0.269,
-            0.259,
-            0.2547,
-            0.2492,
-            0.255,
-            0.262,
-            0.2625,
-            0.2632,
-            0.2657,
-            0.2634,
-            0.2698,
-            0.2904,
-            0.2891,
-            0.2742,
-            0.2674,
-            0.2661,
-            0.2578,
-            0.2506,
-            0.2616,
-            0.2662,
-            0.2703,
-            0.2548,
-            0.246,
-            0.2457,
-            0.2396,
-            0.2432,
-            0.2416,
-            0.2481,
-            0.2394,
-            0.2462,
-            0.2479,
-            0.2504,
-            0.2461,
-            0.2638,
-            0.2507,
-            0.2538,
-            0.2543,
-            0.2497,
-            0.2363,
-            0.2486,
-            0.2397,
-            0.2459,
-            0.2592,
-            0.2589,
-            0.2495,
-            0.2425,
-            0.2483,
-            0.2497,
-            0.2486,
-            0.25,
-            0.2504,
-            0.2503,
-            0.2523,
-            0.2482,
-            0.2468,
-            0.2445,
-            0.2462,
-            0.2481,
-            0.2501,
-            0.2494,
-            0.2499,
-            0.2621,
-            0.2667,
-            0.2626,
-            0.2733,
-            0.2708,
-            0.2825,
-            0.2805,
-            0.2709,
-            0.2647,
-            0.2702,
-            0.2615,
-            0.255,
-            0.2519,
-            0.2514,
-            0.2482,
-            0.249,
-            0.2503,
-            0.2424,
-            0.2459,
-            0.2421,
-            0.2435,
-            0.2398,
-            0.2371,
-            0.2344,
-            0.2326,
-            0.2354,
-            0.2353,
-            0.2306,
-            0.2126,
-            0.2005,
-            0.1796,
-            0.1566,
-            0.1573,
-            0.165,
-            0.1703,
-            0.1653,
-            0.1608,
-            0.1703,
-            0.1698,
-            0.1718,
-            0.1828,
-            0.1786,
-            0.1721,
-            0.1666,
-            0.1634,
-            0.1621,
-            0.1631,
-            0.1581
+            8.4027,
+            8.7683,
+            9.0885,
+            8.7819,
+            8.9255,
+            8.8306,
+            8.5989,
+            8.5695,
+            8.9414,
+            8.876,
+            8.6727,
+            8.2652,
+            8.2031,
+            9.2563,
+            9.0985,
+            8.7088,
+            8.8437,
+            8.6723,
+            8.9485,
+            8.8124,
+            9.3485,
+            9.1969,
+            8.7937,
+            8.695,
+            8.5234,
+            8.86,
+            8.9831,
+            8.9955,
+            9.0585,
+            9.088,
+            9.1615,
+            9.4821,
+            9.9271,
+            9.7952,
+            9.2258,
+            9.0473,
+            9.1132,
+            8.8074,
+            8.6852,
+            9.1027,
+            9.2465,
+            9.3747,
+            8.9145,
+            8.5638,
+            8.4282,
+            8.4053,
+            8.6107,
+            8.7775,
+            8.9378,
+            8.6285,
+            8.6582,
+            8.6929,
+            8.8116,
+            8.8051,
+            9.2956,
+            8.8605,
+            8.9428,
+            9.0878,
+            9.0694,
+            8.7372,
+            9.3629,
+            9.0228,
+            9.2615,
+            9.5808,
+            9.6251,
+            9.2929,
+            9.0707,
+            9.2911,
+            9.3982,
+            9.2987,
+            9.3559,
+            9.3774,
+            9.3462,
+            9.4941,
+            9.321,
+            9.2396,
+            9.1182,
+            9.1044,
+            9.0927,
+            9.1744,
+            9.1315,
+            9.3532,
+            9.766,
+            9.9942,
+            9.8517,
+            10.3302,
+            10.3719,
+            10.7125,
+            10.5936,
+            10.2838,
+            10.2116,
+            10.4731,
+            10.0662,
+            9.7199,
+            9.5541,
+            9.5928,
+            9.4498,
+            9.6219,
+            9.7406,
+            9.4154,
+            9.5584,
+            9.429,
+            9.4978,
+            9.3748,
+            9.1281,
+            8.9884,
+            9.0152,
+            9.1652,
+            9.1267,
+            9.038,
+            8.3624,
+            8.335,
+            8.0008,
+            7.3507,
+            7.398,
+            7.8985,
+            7.9875,
+            7.837,
+            7.563,
+            7.8823,
+            7.8557,
+            7.9774,
+            8.1662,
+            8.2952,
+            8.2645,
+            8.0773,
+            8.0017,
+            7.9419,
+            7.9769,
+            7.801
           ],
           "spark_ts": [
             1770854400,
@@ -191313,11 +190788,528 @@
             1781913600,
             1782000000
           ],
-          "value": 0.1591,
-          "turnover": 35317101.0,
-          "volume": 223384576.0,
-          "market_cap_value": 5919261938.744808,
-          "volume_24h": 240058355.469498,
+          "value": 7.83,
+          "turnover": 1246211248.0,
+          "volume": 159750192.0,
+          "market_cap_value": 5857430660.088909,
+          "volume_24h": 130233532.01928803,
+          "state": "open",
+          "mkt_start": null,
+          "mkt_end": null,
+          "intraday": [
+            7.96,
+            7.963,
+            7.945,
+            7.952,
+            7.941,
+            7.94,
+            7.951,
+            7.96,
+            7.965,
+            7.931,
+            7.928,
+            7.916,
+            7.924,
+            7.932,
+            7.927,
+            7.939,
+            7.922,
+            7.934,
+            7.95,
+            7.975,
+            7.989,
+            7.964,
+            7.948,
+            7.927,
+            7.897,
+            7.93,
+            7.939,
+            7.946,
+            7.937,
+            7.954,
+            7.963,
+            7.975,
+            7.934,
+            7.942,
+            7.937,
+            7.933,
+            7.919,
+            7.947,
+            7.947,
+            7.942,
+            7.925,
+            7.877,
+            7.822,
+            7.845,
+            7.825,
+            7.828,
+            7.811,
+            7.801
+          ],
+          "fundamental_score": {
+            "mode": "crypto",
+            "schema_version": 11,
+            "score": 33,
+            "label": "Weak",
+            "coverage": 1.0,
+            "axes": [
+              {
+                "key": "size",
+                "label": "Size",
+                "score": 5
+              },
+              {
+                "key": "liquidity",
+                "label": "Liquidity",
+                "score": 23
+              },
+              {
+                "key": "momentum",
+                "label": "Momentum",
+                "score": 16
+              },
+              {
+                "key": "trend",
+                "label": "Trend",
+                "score": 27
+              },
+              {
+                "key": "risk",
+                "label": "Risk",
+                "score": 92
+              }
+            ],
+            "metrics": [
+              {
+                "label": "Market Cap",
+                "value": 5857430660.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "latest quote"
+              },
+              {
+                "label": "24h Volume",
+                "value": 130233532.0,
+                "fmt": "money",
+                "currency": "USD",
+                "period": "24H"
+              },
+              {
+                "label": "Liquidity",
+                "value": 2.22,
+                "fmt": "percent",
+                "period": "24H volume / market cap"
+              },
+              {
+                "label": "1M Return",
+                "value": -18.39,
+                "fmt": "percent",
+                "period": "30D price return"
+              },
+              {
+                "label": "6M Return",
+                "value": -7.16,
+                "fmt": "percent",
+                "period": "6M price return"
+              },
+              {
+                "label": "Volatility",
+                "value": 2.99,
+                "fmt": "percent",
+                "period": "daily realized, 6M window"
+              },
+              {
+                "label": "Risk-Free Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "annual benchmark: US 3M T-Bill"
+              },
+              {
+                "label": "Hurdle Rate",
+                "value": 3.66,
+                "fmt": "percent",
+                "period": "valuation anchor: US 3M T-Bill"
+              },
+              {
+                "label": "Annualized Return",
+                "value": -18.96,
+                "fmt": "percent",
+                "period": "geometric, 6M daily window"
+              },
+              {
+                "label": "Excess Return",
+                "value": -22.62,
+                "fmt": "percent",
+                "period": "annualized minus US 3M T-Bill"
+              },
+              {
+                "label": "Annual Volatility",
+                "value": 57.2,
+                "fmt": "percent",
+                "period": "annualized from 6M daily returns"
+              },
+              {
+                "label": "Downside Volatility",
+                "value": 32.71,
+                "fmt": "percent",
+                "period": "annualized downside vs risk-free"
+              },
+              {
+                "label": "Sharpe Ratio",
+                "value": -0.15,
+                "fmt": "ratio",
+                "period": "annualized vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Sortino Ratio",
+                "value": -0.26,
+                "fmt": "ratio",
+                "period": "downside vs US 3M T-Bill, 6M daily"
+              },
+              {
+                "label": "Max Drawdown",
+                "value": -31.38,
+                "fmt": "percent",
+                "period": "peak-to-trough, 6M"
+              }
+            ],
+            "valuation": null,
+            "risk_stats": {
+              "period": "6M daily closes",
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "annual_return_pct": -18.96,
+              "annual_excess_return_pct": -22.62,
+              "annual_volatility_pct": 57.2,
+              "downside_volatility_pct": 32.71,
+              "sharpe": -0.15,
+              "sortino": -0.26,
+              "peak_price": 10.7125,
+              "peak_ts": 1778371200,
+              "bottom_price": 7.3507,
+              "bottom_ts": 1780617600,
+              "max_drawdown_pct": -31.38,
+              "max_drawdown_peak_price": 10.7125,
+              "max_drawdown_peak_ts": 1778371200,
+              "max_drawdown_trough_price": 7.3507,
+              "max_drawdown_trough_ts": 1780617600,
+              "risk_adjusted_signal": "Weak risk-adjusted"
+            },
+            "risk_context": {
+              "risk_free_rate": 3.658,
+              "risk_free_label": "US 3M T-Bill",
+              "risk_free_symbol": "^IRX",
+              "risk_free_source": "Yahoo Finance",
+              "hurdle_rate": 3.658,
+              "hurdle_label": "US 3M T-Bill",
+              "hurdle_source": "Yahoo Finance",
+              "fx_rates": {
+                "USDIDR": 17821.0
+              }
+            },
+            "currency": "USD",
+            "source": "CoinGecko + price history",
+            "as_of": "2026-06-21T23:01:56Z"
+          }
+        },
+        {
+          "ticker": "ADA",
+          "name": "Cardano",
+          "source_symbol": "ADA-USD",
+          "exchange": "CRYPTO",
+          "country": "CR",
+          "mktcap": "$22B",
+          "tier": "mid",
+          "flags": [],
+          "sector_key": "crypto",
+          "sector_name": "Crypto & Digital Assets",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "active": true,
+          "price_frequency": "30m",
+          "fundamental_frequency_hours": 24,
+          "news_priority": "priority",
+          "url": "https://www.coingecko.com/en/coins/cardano",
+          "delta_pct": -2.56,
+          "spark": [
+            0.2642,
+            0.2727,
+            0.2953,
+            0.2818,
+            0.2855,
+            0.281,
+            0.2736,
+            0.2725,
+            0.2849,
+            0.28,
+            0.2714,
+            0.2623,
+            0.2588,
+            0.2967,
+            0.287,
+            0.2776,
+            0.2816,
+            0.2736,
+            0.2768,
+            0.2629,
+            0.2761,
+            0.269,
+            0.259,
+            0.2547,
+            0.2492,
+            0.255,
+            0.262,
+            0.2625,
+            0.2632,
+            0.2657,
+            0.2634,
+            0.2698,
+            0.2904,
+            0.2891,
+            0.2742,
+            0.2674,
+            0.2661,
+            0.2578,
+            0.2506,
+            0.2616,
+            0.2662,
+            0.2703,
+            0.2548,
+            0.246,
+            0.2457,
+            0.2396,
+            0.2432,
+            0.2416,
+            0.2481,
+            0.2394,
+            0.2462,
+            0.2479,
+            0.2504,
+            0.2461,
+            0.2638,
+            0.2507,
+            0.2538,
+            0.2543,
+            0.2497,
+            0.2363,
+            0.2486,
+            0.2397,
+            0.2459,
+            0.2592,
+            0.2589,
+            0.2495,
+            0.2425,
+            0.2483,
+            0.2497,
+            0.2486,
+            0.25,
+            0.2504,
+            0.2503,
+            0.2523,
+            0.2482,
+            0.2468,
+            0.2445,
+            0.2462,
+            0.2481,
+            0.2501,
+            0.2494,
+            0.2499,
+            0.2621,
+            0.2667,
+            0.2626,
+            0.2733,
+            0.2708,
+            0.2825,
+            0.2805,
+            0.2709,
+            0.2647,
+            0.2702,
+            0.2615,
+            0.255,
+            0.2519,
+            0.2514,
+            0.2482,
+            0.249,
+            0.2503,
+            0.2424,
+            0.2459,
+            0.2421,
+            0.2435,
+            0.2398,
+            0.2371,
+            0.2344,
+            0.2326,
+            0.2354,
+            0.2353,
+            0.2306,
+            0.2126,
+            0.2005,
+            0.1796,
+            0.1566,
+            0.1573,
+            0.165,
+            0.1703,
+            0.1653,
+            0.1608,
+            0.1703,
+            0.1698,
+            0.1718,
+            0.1828,
+            0.1786,
+            0.1721,
+            0.1666,
+            0.1634,
+            0.1621,
+            0.1631,
+            0.1586
+          ],
+          "spark_ts": [
+            1770854400,
+            1770940800,
+            1771027200,
+            1771113600,
+            1771200000,
+            1771286400,
+            1771372800,
+            1771459200,
+            1771545600,
+            1771632000,
+            1771718400,
+            1771804800,
+            1771891200,
+            1771977600,
+            1772064000,
+            1772150400,
+            1772236800,
+            1772323200,
+            1772409600,
+            1772496000,
+            1772582400,
+            1772668800,
+            1772755200,
+            1772841600,
+            1772928000,
+            1773014400,
+            1773100800,
+            1773187200,
+            1773273600,
+            1773360000,
+            1773446400,
+            1773532800,
+            1773619200,
+            1773705600,
+            1773792000,
+            1773878400,
+            1773964800,
+            1774051200,
+            1774137600,
+            1774224000,
+            1774310400,
+            1774396800,
+            1774483200,
+            1774569600,
+            1774656000,
+            1774742400,
+            1774828800,
+            1774915200,
+            1775001600,
+            1775088000,
+            1775174400,
+            1775260800,
+            1775347200,
+            1775433600,
+            1775520000,
+            1775606400,
+            1775692800,
+            1775779200,
+            1775865600,
+            1775952000,
+            1776038400,
+            1776124800,
+            1776211200,
+            1776297600,
+            1776384000,
+            1776470400,
+            1776556800,
+            1776643200,
+            1776729600,
+            1776816000,
+            1776902400,
+            1776988800,
+            1777075200,
+            1777161600,
+            1777248000,
+            1777334400,
+            1777420800,
+            1777507200,
+            1777593600,
+            1777680000,
+            1777766400,
+            1777852800,
+            1777939200,
+            1778025600,
+            1778112000,
+            1778198400,
+            1778284800,
+            1778371200,
+            1778457600,
+            1778544000,
+            1778630400,
+            1778716800,
+            1778803200,
+            1778889600,
+            1778976000,
+            1779062400,
+            1779148800,
+            1779235200,
+            1779321600,
+            1779408000,
+            1779494400,
+            1779580800,
+            1779667200,
+            1779753600,
+            1779840000,
+            1779926400,
+            1780012800,
+            1780099200,
+            1780185600,
+            1780272000,
+            1780358400,
+            1780444800,
+            1780531200,
+            1780617600,
+            1780704000,
+            1780790400,
+            1780876800,
+            1780963200,
+            1781049600,
+            1781136000,
+            1781222400,
+            1781308800,
+            1781395200,
+            1781481600,
+            1781568000,
+            1781654400,
+            1781740800,
+            1781827200,
+            1781913600,
+            1782000000
+          ],
+          "value": 0.1589,
+          "turnover": 36245944.0,
+          "volume": 228536848.0,
+          "market_cap_value": 5918120767.479167,
+          "volume_24h": 251843960.74864838,
           "state": "open",
           "mkt_start": null,
           "mkt_end": null,
@@ -191367,7 +191359,9 @@
             0.159,
             0.1594,
             0.1591,
-            0.1581
+            0.1589,
+            0.1588,
+            0.1586
           ],
           "fundamental_score": {
             "mode": "crypto",
@@ -191384,7 +191378,7 @@
               {
                 "key": "liquidity",
                 "label": "Liquidity",
-                "score": 47
+                "score": 50
               },
               {
                 "key": "momentum",
@@ -191405,33 +191399,33 @@
             "metrics": [
               {
                 "label": "Market Cap",
-                "value": 5919261939.0,
+                "value": 5918120767.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "latest quote"
               },
               {
                 "label": "24h Volume",
-                "value": 240058355.0,
+                "value": 251843961.0,
                 "fmt": "money",
                 "currency": "USD",
                 "period": "24H"
               },
               {
                 "label": "Liquidity",
-                "value": 4.06,
+                "value": 4.26,
                 "fmt": "percent",
                 "period": "24H volume / market cap"
               },
               {
                 "label": "1M Return",
-                "value": -35.71,
+                "value": -35.5,
                 "fmt": "percent",
                 "period": "30D price return"
               },
               {
                 "label": "6M Return",
-                "value": -40.16,
+                "value": -39.97,
                 "fmt": "percent",
                 "period": "6M price return"
               },
@@ -191455,37 +191449,37 @@
               },
               {
                 "label": "Annualized Return",
-                "value": -76.61,
+                "value": -76.4,
                 "fmt": "percent",
                 "period": "geometric, 6M daily window"
               },
               {
                 "label": "Excess Return",
-                "value": -80.27,
+                "value": -80.06,
                 "fmt": "percent",
                 "period": "annualized minus US 3M T-Bill"
               },
               {
                 "label": "Annual Volatility",
-                "value": 67.24,
+                "value": 67.21,
                 "fmt": "percent",
                 "period": "annualized from 6M daily returns"
               },
               {
                 "label": "Downside Volatility",
-                "value": 42.01,
+                "value": 42.0,
                 "fmt": "percent",
                 "period": "annualized downside vs risk-free"
               },
               {
                 "label": "Sharpe Ratio",
-                "value": -1.87,
+                "value": -1.86,
                 "fmt": "ratio",
                 "period": "annualized vs US 3M T-Bill, 6M daily"
               },
               {
                 "label": "Sortino Ratio",
-                "value": -3.0,
+                "value": -2.98,
                 "fmt": "ratio",
                 "period": "downside vs US 3M T-Bill, 6M daily"
               },
@@ -191506,12 +191500,12 @@
               "hurdle_rate": 3.658,
               "hurdle_label": "US 3M T-Bill",
               "hurdle_source": "Yahoo Finance",
-              "annual_return_pct": -76.61,
-              "annual_excess_return_pct": -80.27,
-              "annual_volatility_pct": 67.24,
-              "downside_volatility_pct": 42.01,
-              "sharpe": -1.87,
-              "sortino": -3.0,
+              "annual_return_pct": -76.4,
+              "annual_excess_return_pct": -80.06,
+              "annual_volatility_pct": 67.21,
+              "downside_volatility_pct": 42.0,
+              "sharpe": -1.86,
+              "sortino": -2.98,
               "peak_price": 0.2967,
               "peak_ts": 1771977600,
               "bottom_price": 0.1566,
@@ -191537,7 +191531,7 @@
             },
             "currency": "USD",
             "source": "CoinGecko + price history",
-            "as_of": "2026-06-21T22:31:21Z"
+            "as_of": "2026-06-21T23:01:56Z"
           }
         }
       ],
@@ -192140,9 +192134,9 @@
       "score": 100
     },
     {
-      "title": "US Stocks Draw Record Weekly Inflows as Investors Pile Into Tech - Bloomberg",
+      "title": "US Stocks Draw Record Weekly Inflows as Investors Pile Into Tech - Bloomberg.com",
       "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPdUxiQUx0bTNINk0wNWlxUzVnSThPcXV4TU5QQ1cyMldqQm94bVhHYnd0WE9oaDFEcHBQOGJldG15QTZiWE4wZE5SRUx2aTdHSWkzUjREbWtfWDlYZFlzRUNpU1ZMYWtzQzIwRGlWZE9QakVaVEhDOHNHdS12VW0wMmk5STFvOG9JM1VTVHVzRlJXWVk5S2lFeDA3VGtGN1M0dFFESElpLVJrMEFxWENaSWs3c2FaQQ?oc=5",
-      "source": "Bloomberg",
+      "source": "Bloomberg.com",
       "geo": "US",
       "category": "TECH",
       "summary": "",
@@ -192488,21 +192482,6 @@
       "score": 93
     },
     {
-      "title": "IHSG Hari Ini Masih Rawan Terkoreksi, Cermati Analisa 4 Saham Berikut - IDX Channel",
-      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQMldMNUZQdVNmTFNKWUtuaXo2V21ma0M4UGpMWklmd0xGREwtZVBSU0hsM2Z1dFRzWFhtZ1VmXzJ2T0J6NEtOYlNRSE5EN3kxYzRQZnM3blhhaTVhQWZKZWhZVHdZMkdaMEpHam1rSHBWalF6RU5WUUtZQlk0Mk5QOTVSTWZ1OHdlZmY1b0Q4UkYzZE80bEYyS0JHelg0ZzJjWVRDRlNTWFJDNU9xSFHSAbMBQVVfeXFMUDY1MlZ0QWF4bDI0ZkthOUxiMzVCcldVeGp5UDFTVTVlN3EtYXBNTUZ6aG8xNmsyeHlIZHd2dmFvVnh3RnFFZjdWaGo2Qm9QdHY2T3VhTkxZdjEyQXI0WWV2cXltb3FvZEFXRHZSeWF0SS1Uc2pQLXMyQUVJZUJCSjV0ZmlwdmJ4U3pTdWpjWjZ1WnZyMnF5VlBKeGttd3NSV044WVYwY1dOeGp2NVd5bkpQcEU?oc=5",
-      "source": "IDX Channel",
-      "geo": "ID",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781823600,
-      "source_tier": "indonesia",
-      "source_score": 40,
-      "query_type": "trusted",
-      "query": "Bank Indonesia rupiah suku bunga IHSG",
-      "target_site": "idxchannel.com",
-      "score": 93
-    },
-    {
       "title": "The Iran Deal Gives Little Relief to the Freight Industry - Bloomberg",
       "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQQmVVN2ZVVnptX0xLZWZwY29lTTJPNVlfMHhNV2YyNE11eE9oTWJKS3BxTWFlQXFjSWYtVHItN29Sc1U3V242YmNSN3JpczR6MlV4YzdOdlBjSlMxb3VGX2xDUFJJVGFjRUxDdjAyTUFvaXgweThkSzhBTjZOYWxxN0xJVmY0bXJjdDQwc0FKVDBjT1BmcnlUNW9KYkhBeEkxc3FOQlFsQzNrYks0cEcw?oc=5",
       "source": "Bloomberg",
@@ -192564,6 +192543,36 @@
       "query": "Bank Indonesia suku bunga inflasi",
       "target_site": "",
       "score": 91
+    },
+    {
+      "title": "Check out Dow Industrials's stock price (.DJI) in real time - CNBC",
+      "url": "https://news.google.com/rss/articles/CBMiR0FVX3lxTE1sQlFlZms2c2ZzZ19TQ2c3aVdjZVFaVWYyOWVmMEZxa0s4VE9NN1JGN0pjYkdlYjJpcmRCUkpGYlpTc3NFdDln?oc=5",
+      "source": "CNBC",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1782079390,
+      "source_tier": "tier1_global",
+      "source_score": 45,
+      "query_type": "trusted",
+      "query": "Nasdaq S&P 500 Nvidia earnings yields",
+      "target_site": "cnbc.com",
+      "score": 90
+    },
+    {
+      "title": "Warning: The S&P 500 Could Be on the Verge of Doing Something for the First Time in 155 Years, and It's Not Good News for Investors - Yahoo Finance",
+      "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNOEQ1eVM0NXl2WV9fcjFUaE1jOUktMzZkZWlCMnNBTUhUajZkTjRCVUFWeEphWUJXMGFuZEZJbHJwZlBwUjBDdUpSX0paRjZEMEZDNW5Oc0RMbDMtQl9icjBfRDhFa3FpRUJoU1RGWmVMemZHSjZjOVhXaDVRRDJ4UFpMQUxUdWtRUTAtZ1RYZ3ZpUUkw?oc=5",
+      "source": "Yahoo Finance",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1782054300,
+      "source_tier": "tier1_global",
+      "source_score": 45,
+      "query_type": "trusted",
+      "query": "Nasdaq S&P 500 Nvidia earnings yields",
+      "target_site": "finance.yahoo.com",
+      "score": 90
     },
     {
       "title": "Micron’s earnings are a must-watch market event — with profit growth approaching 1,000% - MarketWatch",
@@ -192842,6 +192851,21 @@
       "score": 88
     },
     {
+      "title": "Stock market today: S&P 500, Nasdaq, Dow futures slide with US-Iran peace and inflation in focus - Yahoo Finance UK",
+      "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOVUNYelFpM2tzTnFTaGN2aVdsTm5nZTdjbWh6VzRXY2ROUk4wR3Rhb1ZHNl9Ud3VyaEh4MFdsRHZTRm1aLXVLRlFHZ3NxcU9RNk9vS04yVmZaR0FDU1V3VFliZXh4TDJGSUxlWXQwMDhZOXZMN0ZZeWVQYWFqRTMwSXlqQ1Jrb1BEZkE?oc=5",
+      "source": "Yahoo Finance UK",
+      "geo": "US",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1782082777,
+      "source_tier": "tier1_global",
+      "source_score": 45,
+      "query_type": "topic",
+      "query": "S&P 500 Nasdaq Dow stock market",
+      "target_site": "",
+      "score": 87
+    },
+    {
       "title": "Harga Bitcoin Hari Ini: Grafik, Berita & Data Pasar Lengkap BTC/USD - CoinGecko",
       "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTFBXNnpCUEdrNlJzdXJrRWpHRVg4QmtLWXZRbW5IUDlLUUpsQTVRdEdJbFZVbVpJY0xOX2gxNWdHWnRuVGNQYk10eDRUSXdONlJqVXpldw?oc=5",
       "source": "CoinGecko",
@@ -192921,21 +192945,6 @@
       "sectors": [
         "property"
       ]
-    },
-    {
-      "title": "Blue Bird (BIRD) Tebar Dividen Rp415,35 Miliar, Setara Rp166 per Saham - Bisnis.com",
-      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQYWFtRlp5aDVMblRyRjB6NDBmS2o5ejlaT05EQ1B3WTl1bXBqQ0x5S2gzWXdET2k4Ul94MXpKZW1vUXlHR1ZBMjZMSUpJeWZGcFd6aHJoQUE2ZmNLUDZDSGRkTUFSaVpIbGhzazgtUFY0WUZaOHpGc0JXSmo5cXlDNmtUNHFkdm8xSThzQnliNDlIbnVXdzRHVXJ2UGRXcWNxOEIxVVR4MkJCeERrRXR1emNzV2huS1R2Y2c?oc=5",
-      "source": "Bisnis.com",
-      "geo": "ID",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781822135,
-      "source_tier": "indonesia",
-      "source_score": 40,
-      "query_type": "trusted",
-      "query": "emiten saham aksi korporasi dividen RUPST IHSG",
-      "target_site": "bisnis.com",
-      "score": 87
     },
     {
       "title": "Q1 Earnings Highlights: M&T Bank (NYSE:MTB) Vs The Rest Of The Regional Banks Stocks - Yahoo Finance",
@@ -193109,6 +193118,21 @@
       "query_type": "index",
       "query": "Brent crude oil",
       "target_site": "",
+      "score": 83
+    },
+    {
+      "title": "IHSG Hari Ini Masih Rawan Terkoreksi, Cermati Analisa 4 Saham Berikut - IDX Channel",
+      "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQMldMNUZQdVNmTFNKWUtuaXo2V21ma0M4UGpMWklmd0xGREwtZVBSU0hsM2Z1dFRzWFhtZ1VmXzJ2T0J6NEtOYlNRSE5EN3kxYzRQZnM3blhhaTVhQWZKZWhZVHdZMkdaMEpHam1rSHBWalF6RU5WUUtZQlk0Mk5QOTVSTWZ1OHdlZmY1b0Q4UkYzZE80bEYyS0JHelg0ZzJjWVRDRlNTWFJDNU9xSFHSAbMBQVVfeXFMUDY1MlZ0QWF4bDI0ZkthOUxiMzVCcldVeGp5UDFTVTVlN3EtYXBNTUZ6aG8xNmsyeHlIZHd2dmFvVnh3RnFFZjdWaGo2Qm9QdHY2T3VhTkxZdjEyQXI0WWV2cXltb3FvZEFXRHZSeWF0SS1Uc2pQLXMyQUVJZUJCSjV0ZmlwdmJ4U3pTdWpjWjZ1WnZyMnF5VlBKeGttd3NSV044WVYwY1dOeGp2NVd5bkpQcEU?oc=5",
+      "source": "IDX Channel",
+      "geo": "ID",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1781823600,
+      "source_tier": "indonesia",
+      "source_score": 40,
+      "query_type": "trusted",
+      "query": "Bank Indonesia rupiah suku bunga IHSG",
+      "target_site": "idxchannel.com",
       "score": 83
     },
     {
@@ -193499,9 +193523,9 @@
       "score": 82
     },
     {
-      "title": "Long-End Yields Will End 2026 at Levels Rarely Seen in Last Decade, Survey Shows - Bloomberg",
+      "title": "Long-End Yields Will End 2026 at Levels Rarely Seen in Last Decade, Survey Shows - Bloomberg.com",
       "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNTnlCSHZld1JkUWFLd29VV29ZeTNqVy1XS3BzTDMwaFl0cUNvN3hIQmdEMHB5a0IxZm1KV3EwNHNMUW9SX1ItU2ZvLWVmTE1yR3hNd2ZHMTlIUXNYRFItZkZoX29kMDVUbklUandXWmZWQ1g3WFVNOThCa3MxMlAyVTRsRVVXbmhETGU0ZW1HM25XV3VYMzhOU2Qwa3JYUHZLRGhzTFhLcWU1MGdnblE?oc=5",
-      "source": "Bloomberg",
+      "source": "Bloomberg.com",
       "geo": "US",
       "category": "ECONOMY",
       "summary": "",
@@ -193880,6 +193904,21 @@
       "query_type": "trusted",
       "query": "ASEAN markets currencies economy",
       "target_site": "channelnewsasia.com",
+      "score": 80
+    },
+    {
+      "title": "SpaceX's debut fires first salvo in new era of mega-IPOs - Nikkei Asia",
+      "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPZ0IwdEQ5NmNzMjFXSTJxSEo3Y1R5eWJUQVZjZjlMVzFid2tqRXU2NnphSUh0MHlZX1hXWlZtaVotcFJ5TERCR01VTW5QUnQzMW5qWDZ2UUh3M0piR3RnaXl6N0RVcU1sT2dGbndLdDZIRnhseEJBaHR0b0M4VFlQbXByTFNBdFlZbWYwRDRnV2R6Z1hrQ18yeGlHUTBMVTlRZmc?oc=5",
+      "source": "Nikkei Asia",
+      "geo": "US",
+      "category": "ECONOMY",
+      "summary": "",
+      "ts": 1782032400,
+      "source_tier": "apac_sea",
+      "source_score": 35,
+      "query_type": "trusted",
+      "query": "ASEAN markets currencies economy",
+      "target_site": "asia.nikkei.com",
       "score": 80
     },
     {
@@ -194669,6 +194708,21 @@
       "score": 77
     },
     {
+      "title": "Blue Bird (BIRD) Tebar Dividen Rp415,35 Miliar, Setara Rp166 per Saham - Bisnis.com",
+      "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQYWFtRlp5aDVMblRyRjB6NDBmS2o5ejlaT05EQ1B3WTl1bXBqQ0x5S2gzWXdET2k4Ul94MXpKZW1vUXlHR1ZBMjZMSUpJeWZGcFd6aHJoQUE2ZmNLUDZDSGRkTUFSaVpIbGhzazgtUFY0WUZaOHpGc0JXSmo5cXlDNmtUNHFkdm8xSThzQnliNDlIbnVXdzRHVXJ2UGRXcWNxOEIxVVR4MkJCeERrRXR1emNzV2huS1R2Y2c?oc=5",
+      "source": "Bisnis.com",
+      "geo": "ID",
+      "category": "MARKETS_FINANCE",
+      "summary": "",
+      "ts": 1781822135,
+      "source_tier": "indonesia",
+      "source_score": 40,
+      "query_type": "trusted",
+      "query": "emiten saham aksi korporasi dividen RUPST IHSG",
+      "target_site": "bisnis.com",
+      "score": 77
+    },
+    {
       "title": "Era Suku Bunga Tinggi, Saham Properti Masih Menarik? - kontan.co.id",
       "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxPUkVfVkNnTXVxZ3gyZWNGRHpuWVBlT0dZcUZEek9hSS00RzRGMmtaMU1IOGM2cXlPR2d2Xy1CeFNDdVJUaDNBdGZQNHN2Z0ZjYmJZbGhiWjNQcUdacXh6SHRiRUhpR0tPZUI4NU9QV3RhVXd6MWx6MnhqeEhIbmpuREFub2t1aFoyXzdQV2lUWdIBhwFBVV95cUxQYVZrZEktMEFSdmp3UXgyOVdQN0UwTE9oYUpKVmF3VnNQNzVhUzhFQUQxb0NJcmFheUVDT0ZSWXpTTkpjMS1ZVm5IOUxBdWZGUHVVcFZGODJMbHpSSDN2bFpWN3JBeF9kNVN6ODZwRERQcjhLczlRUmt0a2xDb0hXems1blVwbVU?oc=5",
       "source": "kontan.co.id",
@@ -194918,66 +194972,6 @@
       "query_type": "trusted",
       "query": "stablecoin token blockchain ETF crypto exchange",
       "target_site": "theblock.co",
-      "score": 73
-    },
-    {
-      "title": "Gold prices today, Thursday, June 18, 2026: Prices feeling a Fed hangover despite Iran peace deal - Yahoo Finance",
-      "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxPNHdSdGdlb09EN1BwYVRDZjJ1bWwxZDBVa2loSkVfYlpnYmN5YXpuTnFJNDR6OEtBc2V3eGxhV1RoYjZ1dHB1XzNWNS1YLTJjZ29TZE1KanFvV0lYd2VMOW5tMW1PX2pJaWNxb2tWc2c1Z2lkcU55QVFlS2FRWS1qVXNxZzc3Ny1RNS1tUGpGV3MzN3BjeWwxQkdvSVd6bTJzOE16cVE2TXhvdWt1dmFQVlJDamc0bWJGN3FCZHZNZlVPNmdlTlV0dFZzalRFVVlHT0tRX19OaUFBekJFVXBDdHA0LUFXTEVqd19PMTFMakg5VUhRbnhXRHJSd1VBdw?oc=5",
-      "source": "Yahoo Finance",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781780774,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "index",
-      "query": "gold price",
-      "target_site": "",
-      "score": 73
-    },
-    {
-      "title": "Fed holds rates steady, pares down statement to remove cutting bias - CNBC",
-      "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTFBlWXhkamcxNXR6bjk4X3F0QUZHbTFMMS1WcXFVQmRWTmhUUmxHVENUTDhKeXJ5bENiUnBiTFpBd0RSaHVlZktINnBCY1h4NGpaRU1jYnhtZWdySWk5WVB2cmF5T3h5TldGeHZoT2dGWTlKVk11eFl2TXEzNDdNQdIBgwFBVV95cUxPTmxOek1YN250TlNsbThkVTdvcnRRT0ROT3NrYURHcVM2dUMwb1dNcFVLYXloaTZQWWtQOFFBck9TOFlJMVNUOERqNWI3RDNOWU5NX2I1aU5wV1ZmeEJCYldaNHYzaUhBZXpMQ1FEN0tGM205RUNHWmZaZG1DMndJY1lGZw?oc=5",
-      "source": "CNBC",
-      "geo": "US",
-      "category": "ECONOMY",
-      "summary": "",
-      "ts": 1781719211,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "topic",
-      "query": "Federal Reserve interest rates inflation",
-      "target_site": "",
-      "score": 73
-    },
-    {
-      "title": "Bank of America (BAC) Stock Draws Fresh Price Target Split After Mixed Analyst Revisions - Yahoo Finance",
-      "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPMHJULU9EaWJpbHlUb3pyaWoxRTgyTnVZODVFNU9QMUFJM05JUV9ia3BSNmdEWlM0djdMQ28tVzNVUlY5WVJOMjM5b0lWOWQwODUzb1lEY29LTDhpWGxCVnBBWGtlaTN3Vmxub25hNExEZ2hlc0d3LWNpUXo3bDBVaUxHMGpQZWNsWWtvTkFYTWd0c1AzUGZUdw?oc=5",
-      "source": "Yahoo Finance",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781709486,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "topic",
-      "query": "US bank earnings JPMorgan Goldman Sachs",
-      "target_site": "",
-      "score": 73
-    },
-    {
-      "title": "Commodity wrap: Oil rebounds over 2% amid fragile US-Iran deal; gold steady - TradingView",
-      "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQRGQ0dms4Ynk2YWhmai16QksxVUppcF9uUmttSzBBZ0ltdlNWN2NtM2NCNVNRUkQ5d1VRRzdsTVh2bzFLNEZ0V1FPT1pNQlpwaWZRc2YwY2RjSjZnTDFzVm8tMGkxaVJMcFJmZlpfRFYzdTlUVkQtOUI1VVV5cVd2eW15QVBMUVRJQU9KajBvQlk1VlgtRUJBS3NDVDFYUGJ6S3VnVTVhVEhIV1BQcGk2Y29JcE4yYnNKSWdDbmNuRGo4YUs2OGdXNw?oc=5",
-      "source": "TradingView",
-      "geo": "US",
-      "category": "MARKETS_FINANCE",
-      "summary": "",
-      "ts": 1781708579,
-      "source_tier": "tier1_global",
-      "source_score": 45,
-      "query_type": "topic",
-      "query": "gold oil commodities prices",
-      "target_site": "",
       "score": 73
     }
   ],
@@ -201248,7 +201242,7 @@
         "query_type": "ticker",
         "query": "NFLX Netflix stock earnings shares",
         "target_site": "",
-        "score": 43
+        "score": 33
       }
     ],
     "CBRE": [
@@ -205695,20 +205689,20 @@
         "MARKETS_FINANCE": 72
       },
       "query_type": {
-        "trusted": 178,
-        "topic": 28,
-        "index": 5,
+        "trusted": 181,
+        "topic": 26,
+        "index": 4,
         "sector": 9
       },
       "top_sources": {
-        "Yahoo Finance": 29,
+        "Yahoo Finance": 28,
         "CNBC Indonesia": 17,
         "Reuters": 17,
         "kontan.co.id": 15,
         "CNBC": 12,
+        "Bloomberg.com": 12,
         "Pluang": 11,
         "Bisnis.com": 10,
-        "Bloomberg.com": 10,
         "MarketWatch": 10,
         "KONTAN": 8,
         "Bloomberg Technoz": 6,
@@ -205820,7 +205814,7 @@
         "FDX",
         "SHIP"
       ],
-      "stale_ticker_count": 83,
+      "stale_ticker_count": 84,
       "ticker_queries": 60,
       "ticker_query_budget": 60,
       "window_days": 7
@@ -205892,47 +205886,47 @@
   },
   "daily_brief": {
     "sentiment": {
-      "score": 50,
-      "label": "Neutral Mixed",
-      "indonesia": 45,
-      "us": 55,
+      "score": 45,
+      "label": "Cautious Mixed",
+      "indonesia": 48,
+      "us": 42,
       "global": 50,
-      "crypto": 55
+      "crypto": 40
     },
-    "synthesis": "Today's cross-market picture shows a cautiously optimistic tone in US equities with the Nasdaq and S&P 500 rising over 1%, while Indonesia's IHSG barely budged at +0.08% amid a 25bp BI rate hike to 5.75% and the Rupiah steady near 17,821. Renewables and crypto sectors outperformed, but property and mining lagged. Key themes include AI infrastructure spending by Big Tech, Japanese pension fund crypto allocation, and Indonesia's nickel stock catalysts. The US dollar index dipped slightly, while gold fell 1.72% and oil edged up. For Indonesia-focused investors, the BI rate hike and steady Rupiah suggest a defensive posture, while global tech earnings and AI capex provide tailwinds for US exposure.",
+    "synthesis": "Today's cross-market picture shows a cautious tone for Indonesia-focused investors. The IHSG barely moved (+0.08%) while the Rupiah held steady at 17,821, but the BI rate hike of +25bp to 5.75% signals tightening. US equities rallied (Nasdaq +1.91%, S&P +1.08%) on tech optimism, but the VIX rose 2.32% and the S&P 500 faces a rare 155-year warning. Commodities are mixed: Brent crude jumped 1.79% to $81.28, while gold fell 1.76% and Bitcoin dropped 0.76%. Key themes include Japan pension funds allocating 1% to crypto, Indonesian nickel stocks catalysts, strong SBN retail yields, and AI data center debates. The BI rate hike and US yield stability at 4.451% create a watchful environment for Indonesian bonds and equities.",
     "news_digest": {
-      "indonesia": "Mixed: IHSG faces a crucial week with MSCI rebalancing and Hormuz tensions, while Finance Minister Purbaya highlights Indonesia's above-G20-average growth and strong SBN retail yields, but retail sector sentiment is weighed by purchasing power concerns.",
-      "us": "Bullish: US equities rallied on AI capex optimism as Microsoft, Meta, and Google's combined $725B spending silenced critics, with Nvidia's price outlook and Micron's near-1,000% profit growth driving tech momentum, though AI data center location debates persis"
+      "indonesia": "Mixed: IHSG flat at 6,177 (+0.08%), Rupiah stable at 17,821, BI rate hiked 25bp to 5.75%; topics include Japan pension crypto allocation, nickel stock catalysts, strong SBN retail yields, retail sector buying power concerns, and government mining dividend payo",
+      "us": "Bullish: Nasdaq up 1.91%, S&P 500 up 1.08%, Dow up 0.14%; topics include Nvidia 1-year price outlook, S&P 500 155-year warning, Micron earnings with near-1,000% profit growth, Fed rate hikes under Warsh, and Big Tech capex swelling to $725B."
     },
     "video_digest": {
-      "indonesia": "No Indonesia-specific videos in the list.",
-      "us": "Bearish: Altcoin Daily warns of 'Deep State' efforts to destroy the Bitcoin rally, citing regulatory headwinds as a key risk for crypto markets."
+      "indonesia": "No videos available for Indonesia.",
+      "us": "No videos available for US."
     },
     "key_themes": [
       {
-        "title": "AI Capex Surge",
+        "title": "Japan Pension Crypto Allocation",
         "tag": "BULLISH",
-        "text": "Big Tech's $725B combined capex, led by Microsoft, Meta, and Google, signals sustained AI infrastructure spending, benefiting Nvidia and inference-focused firms."
-      },
-      {
-        "title": "BI Rate Hike Impact",
-        "tag": "WATCH",
-        "text": "Bank Indonesia's 25bp hike to 5.75% aims to stabilize the Rupiah near 17,821, but may pressure IHSG and rate-sensitive sectors like property and financials."
+        "text": "A Japanese pension fund allocating 1% of assets to crypto, as reported by Nikkei, signals institutional adoption that could boost Bitcoin and crypto markets, with Indonesia's crypto sector also benefiting."
       },
       {
         "title": "Nickel Stock Catalysts",
         "tag": "BULLISH",
-        "text": "New catalysts for Indonesian nickel stocks emerge, potentially boosting INCO and related miners amid global EV demand and supply chain shifts."
+        "text": "New catalysts for Indonesian nickel stocks, as highlighted by Bisnis Indonesia, could drive gains in nickel proxies like INCO, supported by global EV demand and Indonesia's dominant nickel supply."
       },
       {
-        "title": "Crypto Institutional Adoption",
+        "title": "SBN Retail Yield Appeal",
         "tag": "BULLISH",
-        "text": "A Japanese pension fund allocating 1% to crypto, per Nikkei, signals growing institutional interest, supporting Bitcoin near $64,144."
+        "text": "Strong yields on Indonesian government retail bonds (SBN) attract investors amid BI's 25bp rate hike to 5.75%, offering a safe haven with attractive returns in a tightening cycle."
       },
       {
-        "title": "Hormuz & Oil Risks",
+        "title": "AI Data Center Space Debate",
+        "tag": "WATCH",
+        "text": "CNBC's report on AI data centers in space raises questions about Earth-based constraints, potentially impacting tech stocks and Nvidia's growth narrative, which is crucial for US markets."
+      },
+      {
+        "title": "S&P 500 155-Year Warning",
         "tag": "BEARISH",
-        "text": "Strait of Hormuz tensions could disrupt oil supply, with Brent at $80.59 and WTI at $76.54, adding inflationary pressure for Indonesia."
+        "text": "A warning that the S&P 500 could do something for the first time in 155 years, as per Yahoo Finance, suggests a potential correction, contrasting with the current bull market and Fed rate hike expectations under Warsh."
       }
     ],
     "must_watch": [],
@@ -205956,7 +205950,7 @@
             "energy"
           ]
         },
-        "why": "New catalysts for Indonesian nickel stocks could drive INCO and other miners, benefiting from EV demand and supply chain shifts."
+        "why": "New catalysts for Indonesian nickel stocks, as reported by Bisnis Indonesia, could boost nickel proxies like INCO, directly affecting your commodity-linked holdings amid rising EV demand."
       },
       {
         "news": {
@@ -205992,7 +205986,7 @@
           "target_site": "marketwatch.com",
           "score": 90
         },
-        "why": "Micron's near-1,000% profit growth makes its earnings a key event for semiconductor and AI-related stock momentum."
+        "why": "Earnings, guidance, and stock-mover breadth show whether index moves are broadening beyond a few large names."
       },
       {
         "news": {
@@ -206010,7 +206004,7 @@
           "target_site": "pluang.com",
           "score": 105
         },
-        "why": "A Japanese pension fund's 1% crypto allocation, reported by Nikkei, signals institutional adoption that could boost Bitcoin demand and prices."
+        "why": "Japan pension funds allocating 1% to crypto, as per Nikkei, could drive institutional inflows into Bitcoin and altcoins, impacting Indonesia's crypto sector and your portfolio's digital asset exposure."
       }
     ],
     "quality_audit": {
@@ -206030,78 +206024,63 @@
       },
       "duplicate_read_sources": 0
     },
-    "generated_for": "2026-06-22T03",
-    "generated_at": "2026-06-21T20:02:39Z"
+    "generated_for": "2026-06-22T06",
+    "generated_at": "2026-06-21T23:03:08Z"
   },
   "macro_analysis": [
     {
-      "point": "The Fed's rate hold and hawkish signals, combined with BI's surprise 25bp hike to 5.75%, have kept the Rupiah under pressure at Rp17,804 despite the domestic tightening, as the rate differential remains insufficient to stem capital outflows. This forces BI to maintain a hawkish stance, which will weigh on JCI growth-sensitive sectors like property and infrastructure.",
+      "point": "The Fed's rate hold and hawkish stance, combined with BI's surprise 25bp hike to 5.75%, have failed to stem Rupiah weakness as USD/IDR remains near 17,821. This reflects market skepticism that BI's tightening alone can offset the dollar strength from a delayed Fed easing cycle, pressuring foreign flows out of Indonesian assets.",
       "sources": [
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "BI Rate",
+          "url": "https://www.bi.go.id/en/statistik/indikator/bi-rate.aspx"
+        },
         {
           "name": "IDX Channel",
           "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeXNXTlhDbFY4ZUdZOUd5Z2JaM1VrYzVpTExKSk9rOU5jaXlwbmRGVjFqZnkyWHRUeGNmV01nMGhHaGNGNzUzUjlNWkN0bU5oZ1JTNTdybkFCTXl4bGFYZVpka2paMmtoNEtaX00xTVhaY1FJNkVTYWZhdTVTX2VtNG9nV1lHekE2UmlObkxqeVgwdFZ5VGNPOURoanNVZ2J5RzRxOVNFRDdrZHFKdHo0Smpaa9IBtgFBVV95cUxNdi1LS1p1b0RqZUx1N1JJRHZpRHQ0aTNhdW1UWm9PSkl6VWptOTRxSjdncXNhaTJXZThFWE5mRWhuUFY0LUd2ZzlmX05iRGFxb2VBdkNxOGVqaVpnUzMtZ0lJOGlyX1hSdWNqSWZrUGszZERDcGJmVnVINHVwekZNZkVSM0VrZ24wV0xsUXAwQkVsTlZ1cmV4dXgySjZkQW8wMWRSTnF2WDA1QnB0MmhDVVlHeDJSQQ?oc=5"
         },
         {
-          "name": "Katadata.co.id",
-          "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPRW9KYmZvZ0JKVmtwUEVHUktsaTRjOVhibm1qM0Q4cjRwQVg0QUV3SFFoaDVHM2hhRTRtemhNTUxyRHF3Y3ZnbklVZVN3eFZObU5Cak1ZbXByNW1UU2ladjcxWUo2aUw3b3ZwUV9kZVVJdWZFeDFBeXA4azVEUXJ1LXRiSDBjalJyeEw0OVpaVjctVkxCdWZ4TmpnOGFnZzBWeF9TSmVybjlmNGV6aDc5S2QwMkhSc2pVZkJHTy1FZ9IBxAFBVV95cUxQNGFTa095SFVtazhqYjJmbXNyNWRXVmRNT2pqU0JFRzJST3g3blRCTnFLVHpLSzhQVnZ5T09EbjEwOFdkVnFsMHAwMGxIS3lhTXV4X3k4Y2p2eEtpR3FDSWtoZkJZZmJ2V1ZMbnNUd3V1RE1DcUFRUmxQbnB2QjljS2hYWmsySEpodGlHeWNiX0pEdVA1YUViSjFscWhibWZTMFF5cjV6b1NoWUpmVWc1bVBlaC1BdzZzVnlZVkE3d2xWRmVL?oc=5"
+          "name": "Bisnis.com",
+          "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPUExkYWVfQTk5eHNZb1dIRXIzSDF3amRJNlNFbmxQaTJtNW9aQk1OYUVMelJ1ZVJOYV9TWlZ2aHRsTlEzbVZIT3NiLU1fcHE0Z2RYLV8zWGZPN01jMkwxQ2FienJmbHZWTm5vV1p4aGcwbFJNS1JXaEtxWVV1Y2dOU0c5clMxUXNxOWhoT0tLeGpLQUZDaFpTRjdiVEFkdGFiX2J3dTJEOTZSdmVoNXc5SG9fSTd2bGt6YWpzUVBMUGFjdDhJSUhVNl9Ndw?oc=5"
         }
       ]
     },
     {
-      "point": "Crude oil surged 2.44% on escalating Middle East tensions after Iran threatened to close the Strait of Hormuz, while gold sold off 1.80% on a stronger dollar narrative. For Indonesia, higher oil prices boost coal and energy stocks but raise import costs for the Rupiah, while the gold selloff signals risk-off rotation away from safe havens into cash.",
+      "point": "The 1.91% rally in the Nasdaq and 1.08% gain in the S&P 500 suggest risk-on sentiment in global tech, but Indonesia's Technology sector fell 0.56%, indicating that local duration-sensitive names are being punished by the higher BI rate and Rupiah weakness. Foreign investors rotated into bank stocks like BMRI, BBCA, and BBNI during the session, a defensive shift favoring high-dividend, rate-resilient sectors.",
       "sources": [
         {
-          "name": "IDX Channel",
-          "url": "https://www.youtube.com/watch?v=nqkEB6FCguM"
+          "name": "Nasdaq",
+          "url": "https://finance.yahoo.com/quote/^IXIC"
         },
         {
-          "name": "IDX Channel",
-          "url": "https://www.youtube.com/watch?v=twL3LMyspiU"
-        }
-      ]
-    },
-    {
-      "point": "Nasdaq surged 1.91% on AI optimism despite geopolitical noise, but Indonesian tech and crypto sectors fell 0.56% and 1.41% respectively as local liquidity tightened. The divergence suggests foreign flows are bypassing EM tech for US AI names, pressuring JCI's growth stocks.",
-      "sources": [
-        {
-          "name": "CNBC",
-          "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNckN0aU9QN2xCT0MxZGN1NnZkN19ZY3loUTdJUHc5dlBiUzV2bjgyVW85OTQ5czEzUDgxYU8tTnVMMnBEQUNOdUhGdGU0NmRDODJ1SGlEUGVxQm8wYVg0bVRRR0Y3U2g4djFUdFF4SEx0SS1lV3p3czM5NU9KWEROby1DNzdBcGhVb2VTakxOMTXSAZYBQVVfeXFMT05mN21fLUdwQTV1UnRjWHVneHAtR3RYTV9jMW9GMldVYmJNVlRmT055alVGTnJfVkU0Y2RWVElydzFJTUI3bkxxSGxYeE1BVFFlLWVwU1BmWFZGNVFDUXlNVHgwVkYyM1VhOF9zdHBrWXdYNUtHN1ZzWDBOYXE0cWx3SzFxRzY2S2ZWUWxBNnFQU2lRdlFn?oc=5"
-        }
-      ]
-    },
-    {
-      "point": "The key risk is that BI's rate hike fails to stabilize the Rupiah if the Fed signals further tightening, as seen in the Rupiah's continued weakness post-hike. This could force BI into another hike, further compressing domestic credit and hurting bank stocks like BMRI and BBRI, despite foreign buying in the sector.",
-      "sources": [
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
         {
           "name": "KabarBursa.com",
           "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOOXVYX2hqamhJRVZybTBnSEhZQWkwTkwzcFNDQjFyYWREV1Y5NjBka3dnWld1M2ZiVXBjdzZnT1hTLW5IRFotazh6UVRQQ2p4VzN6UUNmNkhnSEhZRW1CWm8xalJGY1NUa3MyNmo4WV9uTzQ3bHVqbjBRREpPRmI1d045aWI0anRrZmtXNC1DTkhNUnRnclRna1VIbXltX1htcEE?oc=5"
-        },
-        {
-          "name": "IDX Channel",
-          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeXNXTlhDbFY4ZUdZOUd5Z2JaM1VrYzVpTExKSk9rOU5jaXlwbmRGVjFqZnkyWHRUeGNmV01nMGhHaGNGNzUzUjlNWkN0bU5oZ1JTNTdybkFCTXl4bGFYZVpka2paMmtoNEtaX00xTVhaY1FJNkVTYWZhdTVTX2VtNG9nV1lHekE2UmlObkxqeVgwdFZ5VGNPOURoanNVZ2J5RzRxOVNFRDdrZHFKdHo0Smpaa9IBtgFBVV95cUxNdi1LS1p1b0RqZUx1N1JJRHZpRHQ0aTNhdW1UWm9PSkl6VWptOTRxSjdncXNhaTJXZThFWE5mRWhuUFY0LUd2ZzlmX05iRGFxb2VBdkNxOGVqaVpnUzMtZ0lJOGlyX1hSdWNqSWZrUGszZERDcGJmVnVINHVwekZNZkVSM0VrZ24wV0xsUXAwQkVsTlZ1cmV4dXgySjZkQW8wMWRSTnF2WDA1QnB0MmhDVVlHeDJSQQ?oc=5"
-        }
-      ]
-    }
-  ],
-  "alerts": [
-    {
-      "title": "Rupiah Weakens Despite BI Rate Hike",
-      "desc": "Rupiah closed at Rp17,804 per USD after BI raised rates to 5.75%, indicating the market sees the hike as insufficient to counter Fed hawkishness.",
-      "sources": [
-        {
-          "name": "IDX Channel",
-          "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNeXNXTlhDbFY4ZUdZOUd5Z2JaM1VrYzVpTExKSk9rOU5jaXlwbmRGVjFqZnkyWHRUeGNmV01nMGhHaGNGNzUzUjlNWkN0bU5oZ1JTNTdybkFCTXl4bGFYZVpka2paMmtoNEtaX00xTVhaY1FJNkVTYWZhdTVTX2VtNG9nV1lHekE2UmlObkxqeVgwdFZ5VGNPOURoanNVZ2J5RzRxOVNFRDdrZHFKdHo0Smpaa9IBtgFBVV95cUxNdi1LS1p1b0RqZUx1N1JJRHZpRHQ0aTNhdW1UWm9PSkl6VWptOTRxSjdncXNhaTJXZThFWE5mRWhuUFY0LUd2ZzlmX05iRGFxb2VBdkNxOGVqaVpnUzMtZ0lJOGlyX1hSdWNqSWZrUGszZERDcGJmVnVINHVwekZNZkVSM0VrZ24wV0xsUXAwQkVsTlZ1cmV4dXgySjZkQW8wMWRSTnF2WDA1QnB0MmhDVVlHeDJSQQ?oc=5"
-        },
-        {
-          "name": "Katadata.co.id",
-          "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPRW9KYmZvZ0JKVmtwUEVHUktsaTRjOVhibm1qM0Q4cjRwQVg0QUV3SFFoaDVHM2hhRTRtemhNTUxyRHF3Y3ZnbklVZVN3eFZObU5Cak1ZbXByNW1UU2ladjcxWUo2aUw3b3ZwUV9kZVVJdWZFeDFBeXA4azVEUXJ1LXRiSDBjalJyeEw0OVpaVjctVkxCdWZ4TmpnOGFnZzBWeF9TSmVybjlmNGV6aDc5S2QwMkhSc2pVZkJHTy1FZ9IBxAFBVV95cUxQNGFTa095SFVtazhqYjJmbXNyNWRXVmRNT2pqU0JFRzJST3g3blRCTnFLVHpLSzhQVnZ5T09EbjEwOFdkVnFsMHAwMGxIS3lhTXV4X3k4Y2p2eEtpR3FDSWtoZkJZZmJ2V1ZMbnNUd3V1RE1DcUFRUmxQbnB2QjljS2hYWmsySEpodGlHeWNiX0pEdVA1YUViSjFscWhibWZTMFF5cjV6b1NoWUpmVWc1bVBlaC1BdzZzVnlZVkE3d2xWRmVL?oc=5"
         }
       ]
     },
     {
-      "title": "Oil Surge on Hormuz Threat",
-      "desc": "Crude oil jumped 2.44% after Iran threatened to close the Strait of Hormuz, boosting energy stocks but raising import costs for Indonesia.",
+      "point": "Brent crude rose 1.79% and WTI 1.89% amid escalating Middle East tensions, including Iran's threat to close the Strait of Hormuz and US-Iran peace talks in Switzerland. Higher oil prices are a double-edged sword for Indonesia: they boost coal and energy names (ITMG flat) but worsen the trade deficit and put additional pressure on the Rupiah, complicating BI's inflation fight.",
       "sources": [
+        {
+          "name": "Brent Crude",
+          "url": "https://finance.yahoo.com/quote/BZ=F"
+        },
+        {
+          "name": "Crude Oil (WTI)",
+          "url": "https://finance.yahoo.com/quote/CL=F"
+        },
+        {
+          "name": "Coal proxy (ITMG)",
+          "url": "https://finance.yahoo.com/quote/ITMG.JK"
+        },
         {
           "name": "IDX Channel",
           "url": "https://www.youtube.com/watch?v=nqkEB6FCguM"
@@ -206109,9 +206088,16 @@
       ]
     },
     {
-      "title": "Gold Selloff Signals Risk-Off",
-      "desc": "Gold fell 1.80% as the dollar strengthened, suggesting a shift away from safe havens into cash, which could pressure EM assets including JCI.",
+      "point": "Gold's 1.76% decline despite geopolitical risk suggests a dollar liquidity squeeze or profit-taking ahead of a potential Fed pivot. For Indonesia, this weakens the narrative for gold miners and reduces a traditional hedge against Rupiah depreciation, leaving the currency more exposed to external shocks.",
       "sources": [
+        {
+          "name": "Gold Spot",
+          "url": "https://finance.yahoo.com/quote/GC=F"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
         {
           "name": "Kitco News",
           "url": "https://www.youtube.com/watch?v=bNuljOP4Ric"
@@ -206119,9 +206105,54 @@
       ]
     },
     {
-      "title": "Foreign Buying in Bank Stocks",
-      "desc": "Foreign investors bought BMRI, BBCA, and BBNI in early trading, but BBRI lagged, signaling selective rotation into large-cap banks despite rate headwinds.",
+      "point": "The key risk is that BI's rate hike proves insufficient to stabilize the Rupiah if the Fed maintains its hawkish stance and oil prices continue to rise. The linchpin is the upcoming BI RDG in June: if BI signals a pause, Rupiah could strengthen, but if it hints at further hikes, it may crush growth-sensitive sectors like property and infrastructure, which already fell 0.89% and 0.98% respectively.",
       "sources": [
+        {
+          "name": "BI Rate",
+          "url": "https://www.bi.go.id/en/statistik/indikator/bi-rate.aspx"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "Bloomberg Technoz",
+          "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQeFVvdWQyLXFpVVlkWG5seUEwY2JIUlROSG9sMVhqSDkzODRyNjNDbGxhM1ZRamtCb2lORVZDNUlxcW1CdUo1OUxjWXg2a3pUWGp2MXJNcWY2MDlzVGxpVW9PT1RMRWVMY2FoUElPVmYwR29GTUg0WWpOYXVXTEVsQkUydjRwV3ZzejlUbFhZT1dhUFZHcHd5d2pkTThuekZQaWFVdDd3ckowS3lIZUlvSXlqV3FrR0pk?oc=5"
+        },
+        {
+          "name": "kontan.co.id",
+          "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOX2RFTHplYWxtZWZ5bktZZ3VuSGZLNkdwcjJhRi1hWERkbk9qUWRPbFA0ajFvSzQ3ZFJPRmVZM0dZbXpuZjcyQmoyYi1qME94VTR3WkVJd1YzbDNzX3drRF9rYUx2bS1hMjR2d0lxckdQYTNXb0syOEg1TnVjV2E2TkxlNGV2Mll1anM0NGpCZ0hPTllSelVKMlozVGdmMjlabnRaeUhyZlkwdV85dWfSAaYBQVVfeXFMUFlJcXZ1bUhiWmg3d3RoVVY1MEJvUkRIbEtoOE9nNmtKNjdtT3hRSEJVSnp5ak9TcWczSE05a3B4b2dJa2ZkeUx0eWNPUFd6UWtaa0dyM1Z4RVREVkc3bmpMSjRwTlVhM29rWmhheWFoVU9hTHhDMUMtVUNxWC15bXFlSzV2dWlsVW9WMEJKR3FYcDFMZ0JONHZaMU9IdHo2dktOaWI5dw?oc=5"
+        }
+      ]
+    }
+  ],
+  "alerts": [
+    {
+      "title": "BI Rate Hike Fails to Halt Rupiah Weakness",
+      "desc": "Despite BI raising rates to 5.75%, USD/IDR remains near 17,821 as the market doubts the central bank's ability to counter dollar strength from a hawkish Fed.",
+      "sources": [
+        {
+          "name": "BI Rate",
+          "url": "https://www.bi.go.id/en/statistik/indikator/bi-rate.aspx"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "Katadata.co.id",
+          "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPRW9KYmZvZ0JKVmtwUEVHUktsaTRjOVhibm1qM0Q4cjRwQVg0QUV3SFFoaDVHM2hhRTRtemhNTUxyRHF3Y3ZnbklVZVN3eFZObU5Cak1ZbXByNW1UU2ladjcxWUo2aUw3b3ZwUV9kZVVJdWZFeDFBeXA4azVEUXJ1LXRiSDBjalJyeEw0OVpaVjctVkxCdWZ4TmpnOGFnZzBWeF9TSmVybjlmNGV6aDc5S2QwMkhSc2pVZkJHTy1FZ9IBxAFBVV95cUxQNGFTa095SFVtazhqYjJmbXNyNWRXVmRNT2pqU0JFRzJST3g3blRCTnFLVHpLSzhQVnZ5T09EbjEwOFdkVnFsMHAwMGxIS3lhTXV4X3k4Y2p2eEtpR3FDSWtoZkJZZmJ2V1ZMbnNUd3V1RE1DcUFRUmxQbnB2QjljS2hYWmsySEpodGlHeWNiX0pEdVA1YUViSjFscWhibWZTMFF5cjV6b1NoWUpmVWc1bVBlaC1BdzZzVnlZVkE3d2xWRmVL?oc=5"
+        }
+      ]
+    },
+    {
+      "title": "Foreign Inflows Target Indonesian Bank Stocks Amid Selloff",
+      "desc": "Foreign investors bought BMRI, BBCA, and BBNI during the session, signaling a defensive rotation into high-dividend, rate-resilient bank stocks as the broader market weakens.",
+      "sources": [
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
         {
           "name": "KabarBursa.com",
           "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOOXVYX2hqamhJRVZybTBnSEhZQWkwTkwzcFNDQjFyYWREV1Y5NjBka3dnWld1M2ZiVXBjdzZnT1hTLW5IRFotazh6UVRQQ2p4VzN6UUNmNkhnSEhZRW1CWm8xalJGY1NUa3MyNmo4WV9uTzQ3bHVqbjBRREpPRmI1d045aWI0anRrZmtXNC1DTkhNUnRnclRna1VIbXltX1htcEE?oc=5"
@@ -206129,9 +206160,49 @@
       ]
     },
     {
-      "title": "Property Sector May Benefit from High Rates",
-      "desc": "Despite high rates, property stocks are seen as hedges against Rupiah weakness, as developers can pass on costs, offering a contrarian opportunity.",
+      "title": "Oil Price Surge on Strait of Hormuz Threat",
+      "desc": "Brent crude rose 1.79% and WTI 1.89% after Iran threatened to close the Strait of Hormuz, raising risks for Indonesia's trade balance and Rupiah stability.",
       "sources": [
+        {
+          "name": "Brent Crude",
+          "url": "https://finance.yahoo.com/quote/BZ=F"
+        },
+        {
+          "name": "Crude Oil (WTI)",
+          "url": "https://finance.yahoo.com/quote/CL=F"
+        },
+        {
+          "name": "IDX Channel",
+          "url": "https://www.youtube.com/watch?v=nqkEB6FCguM"
+        }
+      ]
+    },
+    {
+      "title": "Gold Selloff Undermines Rupiah Hedge",
+      "desc": "Gold fell 1.76% despite geopolitical tensions, reducing a traditional hedge against Rupiah depreciation and leaving the currency more exposed to external shocks.",
+      "sources": [
+        {
+          "name": "Gold Spot",
+          "url": "https://finance.yahoo.com/quote/GC=F"
+        },
+        {
+          "name": "USD/IDR",
+          "url": "https://finance.yahoo.com/quote/USDIDR=X"
+        },
+        {
+          "name": "Kitco News",
+          "url": "https://www.youtube.com/watch?v=bNuljOP4Ric"
+        }
+      ]
+    },
+    {
+      "title": "Property and Infrastructure Sectors Hit by Rate Hike",
+      "desc": "Property & Real Estate fell 0.98% and Infrastructure 0.89% as higher BI rates dampen growth-sensitive sectors, despite some analysts arguing rising rates benefit property via higher rents.",
+      "sources": [
+        {
+          "name": "JCI / IHSG",
+          "url": "https://finance.yahoo.com/quote/^JKSE"
+        },
         {
           "name": "kontan.co.id",
           "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOX2RFTHplYWxtZWZ5bktZZ3VuSGZLNkdwcjJhRi1hWERkbk9qUWRPbFA0ajFvSzQ3ZFJPRmVZM0dZbXpuZjcyQmoyYi1qME94VTR3WkVJd1YzbDNzX3drRF9rYUx2bS1hMjR2d0lxckdQYTNXb0syOEg1TnVjV2E2TkxlNGV2Mll1anM0NGpCZ0hPTllSelVKMlozVGdmMjlabnRaeUhyZlkwdV85dWfSAaYBQVVfeXFMUFlJcXZ1bUhiWmg3d3RoVVY1MEJvUkRIbEtoOE9nNmtKNjdtT3hRSEJVSnp5ak9TcWczSE05a3B4b2dJa2ZkeUx0eWNPUFd6UWtaa0dyM1Z4RVREVkc3bmpMSjRwTlVhM29rWmhheWFoVU9hTHhDMUMtVUNxWC15bXFlSzV2dWlsVW9WMEJKR3FYcDFMZ0JONHZaMU9IdHo2dktOaWI5dw?oc=5"
@@ -207596,6 +207667,22 @@
           "score_label": "Neutral"
         },
         {
+          "ticker": "SOL",
+          "name": "Solana",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -0.71,
+          "url": "https://www.coingecko.com/en/coins/solana",
+          "score": 48,
+          "score_label": "Neutral"
+        },
+        {
           "ticker": "BTC",
           "name": "Bitcoin",
           "country": "CR",
@@ -207606,26 +207693,10 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.01,
+          "delta_pct": -0.88,
           "url": "https://www.coingecko.com/en/coins/bitcoin",
           "score": 52,
           "score_label": "Neutral"
-        },
-        {
-          "ticker": "AVAX",
-          "name": "Avalanche",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.09,
-          "url": "https://www.coingecko.com/en/coins/avalanche-2",
-          "score": 41,
-          "score_label": "Weak"
         },
         {
           "ticker": "DOGE",
@@ -207638,26 +207709,10 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.19,
+          "delta_pct": -1.15,
           "url": "https://www.coingecko.com/en/coins/dogecoin",
           "score": 34,
           "score_label": "Weak"
-        },
-        {
-          "ticker": "SOL",
-          "name": "Solana",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.3,
-          "url": "https://www.coingecko.com/en/coins/solana",
-          "score": 47,
-          "score_label": "Neutral"
         },
         {
           "ticker": "MATIC",
@@ -207670,9 +207725,25 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.3,
+          "delta_pct": -1.23,
           "url": "https://www.coingecko.com/en/coins/polygon",
           "score": 35,
+          "score_label": "Weak"
+        },
+        {
+          "ticker": "AVAX",
+          "name": "Avalanche",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -1.56,
+          "url": "https://www.coingecko.com/en/coins/avalanche-2",
+          "score": 39,
           "score_label": "Weak"
         },
         {
@@ -207686,14 +207757,14 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.72,
+          "delta_pct": -1.6,
           "url": "https://www.coingecko.com/en/coins/ethereum",
           "score": 57,
           "score_label": "Neutral"
         },
         {
-          "ticker": "LINK",
-          "name": "Chainlink",
+          "ticker": "XRP",
+          "name": "XRP",
           "country": "CR",
           "country_name": "Crypto",
           "country_flag": "₿",
@@ -207702,9 +207773,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.85,
-          "url": "https://www.coingecko.com/en/coins/chainlink",
-          "score": 33,
+          "delta_pct": -1.87,
+          "url": "https://www.coingecko.com/en/coins/ripple",
+          "score": 43,
           "score_label": "Weak"
         }
       ],
@@ -207720,25 +207791,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -2.51,
+          "delta_pct": -2.56,
           "url": "https://www.coingecko.com/en/coins/cardano",
           "score": 30,
-          "score_label": "Weak"
-        },
-        {
-          "ticker": "XRP",
-          "name": "XRP",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.89,
-          "url": "https://www.coingecko.com/en/coins/ripple",
-          "score": 43,
           "score_label": "Weak"
         },
         {
@@ -207752,9 +207807,25 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.85,
+          "delta_pct": -1.94,
           "url": "https://www.coingecko.com/en/coins/chainlink",
           "score": 33,
+          "score_label": "Weak"
+        },
+        {
+          "ticker": "XRP",
+          "name": "XRP",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -1.87,
+          "url": "https://www.coingecko.com/en/coins/ripple",
+          "score": 43,
           "score_label": "Weak"
         },
         {
@@ -207768,58 +207839,10 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.72,
+          "delta_pct": -1.6,
           "url": "https://www.coingecko.com/en/coins/ethereum",
           "score": 57,
           "score_label": "Neutral"
-        },
-        {
-          "ticker": "MATIC",
-          "name": "Polygon",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.3,
-          "url": "https://www.coingecko.com/en/coins/polygon",
-          "score": 35,
-          "score_label": "Weak"
-        },
-        {
-          "ticker": "SOL",
-          "name": "Solana",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.3,
-          "url": "https://www.coingecko.com/en/coins/solana",
-          "score": 47,
-          "score_label": "Neutral"
-        },
-        {
-          "ticker": "DOGE",
-          "name": "Dogecoin",
-          "country": "CR",
-          "country_name": "Crypto",
-          "country_flag": "₿",
-          "region": "CRYPTO",
-          "universe": [
-            "SECTOR_FLOW"
-          ],
-          "data_tier": "scored",
-          "delta_pct": -1.19,
-          "url": "https://www.coingecko.com/en/coins/dogecoin",
-          "score": 34,
-          "score_label": "Weak"
         },
         {
           "ticker": "AVAX",
@@ -207832,10 +207855,58 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.09,
+          "delta_pct": -1.56,
           "url": "https://www.coingecko.com/en/coins/avalanche-2",
-          "score": 41,
+          "score": 39,
           "score_label": "Weak"
+        },
+        {
+          "ticker": "MATIC",
+          "name": "Polygon",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -1.23,
+          "url": "https://www.coingecko.com/en/coins/polygon",
+          "score": 35,
+          "score_label": "Weak"
+        },
+        {
+          "ticker": "DOGE",
+          "name": "Dogecoin",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -1.15,
+          "url": "https://www.coingecko.com/en/coins/dogecoin",
+          "score": 34,
+          "score_label": "Weak"
+        },
+        {
+          "ticker": "BTC",
+          "name": "Bitcoin",
+          "country": "CR",
+          "country_name": "Crypto",
+          "country_flag": "₿",
+          "region": "CRYPTO",
+          "universe": [
+            "SECTOR_FLOW"
+          ],
+          "data_tier": "scored",
+          "delta_pct": -0.88,
+          "url": "https://www.coingecko.com/en/coins/bitcoin",
+          "score": 52,
+          "score_label": "Neutral"
         }
       ],
       "top_score": [
@@ -207850,7 +207921,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.72,
+          "delta_pct": -1.6,
           "url": "https://www.coingecko.com/en/coins/ethereum",
           "score": 57,
           "score_label": "Neutral"
@@ -207866,7 +207937,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.01,
+          "delta_pct": -0.88,
           "url": "https://www.coingecko.com/en/coins/bitcoin",
           "score": 52,
           "score_label": "Neutral"
@@ -207898,9 +207969,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.3,
+          "delta_pct": -0.71,
           "url": "https://www.coingecko.com/en/coins/solana",
-          "score": 47,
+          "score": 48,
           "score_label": "Neutral"
         },
         {
@@ -207914,7 +207985,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.89,
+          "delta_pct": -1.87,
           "url": "https://www.coingecko.com/en/coins/ripple",
           "score": 43,
           "score_label": "Weak"
@@ -207930,9 +208001,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.09,
+          "delta_pct": -1.56,
           "url": "https://www.coingecko.com/en/coins/avalanche-2",
-          "score": 41,
+          "score": 39,
           "score_label": "Weak"
         },
         {
@@ -207946,7 +208017,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.3,
+          "delta_pct": -1.23,
           "url": "https://www.coingecko.com/en/coins/polygon",
           "score": 35,
           "score_label": "Weak"
@@ -207962,7 +208033,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.19,
+          "delta_pct": -1.15,
           "url": "https://www.coingecko.com/en/coins/dogecoin",
           "score": 34,
           "score_label": "Weak"
@@ -207980,7 +208051,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.01,
+          "delta_pct": -0.88,
           "url": "https://www.coingecko.com/en/coins/bitcoin",
           "score": 52,
           "score_label": "Neutral"
@@ -207996,7 +208067,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.72,
+          "delta_pct": -1.6,
           "url": "https://www.coingecko.com/en/coins/ethereum",
           "score": 57,
           "score_label": "Neutral"
@@ -208028,9 +208099,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.3,
+          "delta_pct": -0.71,
           "url": "https://www.coingecko.com/en/coins/solana",
-          "score": 47,
+          "score": 48,
           "score_label": "Neutral"
         },
         {
@@ -208044,9 +208115,9 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.09,
+          "delta_pct": -1.56,
           "url": "https://www.coingecko.com/en/coins/avalanche-2",
-          "score": 41,
+          "score": 39,
           "score_label": "Weak"
         },
         {
@@ -208060,7 +208131,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.85,
+          "delta_pct": -1.94,
           "url": "https://www.coingecko.com/en/coins/chainlink",
           "score": 33,
           "score_label": "Weak"
@@ -208076,7 +208147,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -1.89,
+          "delta_pct": -1.87,
           "url": "https://www.coingecko.com/en/coins/ripple",
           "score": 43,
           "score_label": "Weak"
@@ -208092,7 +208163,7 @@
             "SECTOR_FLOW"
           ],
           "data_tier": "scored",
-          "delta_pct": -2.51,
+          "delta_pct": -2.56,
           "url": "https://www.coingecko.com/en/coins/cardano",
           "score": 30,
           "score_label": "Weak"
