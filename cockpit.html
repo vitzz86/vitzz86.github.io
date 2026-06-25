@@ -865,6 +865,7 @@ function teleSparkColor(r,v){
   return n>=0?'#22c55e':'#ef4444';
 }
 function teleSourceName(r){return r&&r.source_name?r.source_name:(r&&r.kind==='crypto'?'CoinGecko':'Yahoo Finance');}
+function quoteSourceName(c){return c&&c.country==='CR'?'CoinGecko':(c&&c.source_name?c.source_name:'Yahoo Finance');}
 const SECTOR_ICON={
   technology:'🖥️',financials:'🏦',energy:'⛏️',renewables:'☀️',consumer:'🛒',
   infrastructure:'🏗️',healthcare:'💊',logistics:'🚢',entertainment:'🎬',
@@ -2290,7 +2291,7 @@ function openTicker(s,tk){
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
     scoreSummary(c)+
-    `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${c.country==='CR'?'CoinGecko':'Yahoo Finance'} ↗</a>`+
+    `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
   [...document.querySelectorAll('#smTicker .tab')].forEach(tab=>tab.onclick=()=>{tkTF=tab.dataset.tf;openTicker(s,tk);});

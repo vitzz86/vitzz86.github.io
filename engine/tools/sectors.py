@@ -53,9 +53,23 @@ def _previous_rows(previous_sectors: list | None) -> dict:
     return rows
 
 
+def _row_cap(row: dict) -> float:
+    try:
+        return float(row.get("market_cap_value") or 0)
+    except Exception:  # noqa: BLE001
+        return 0.0
+
+
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
     sector_rows = universe.priced_rows_by_sector()
     prices = {}
+    if getattr(settings, "IDX_ALL_PRICE_ACTIVE", False):
+        try:
+            from tools import idx_membership
+            prices.update(idx_membership.price_map())
+        except Exception as e:  # noqa: BLE001
+            print(f"[sectors] full IDX scanner overlay failed: {e}")
+
     if getattr(settings, "CRYPTO_TOP_PRICE_ACTIVE", False):
         try:
             from tools import crypto_quotes
@@ -84,15 +98,20 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     except Exception as e:  # noqa: BLE001
         print(f"[sectors] US index snapshot overlay failed: {e}")
 
-    unresolved_price_only = [r for r in price_only if r["source_symbol"] not in prices]
-    chart_rows = unresolved_price_only[:chart_limit]
-    lite_rows = unresolved_price_only[chart_limit:]
+    chart_candidates = sorted(
+        [r for r in price_only if not (prices.get(r["source_symbol"]) or {}).get("intraday")],
+        key=_row_cap,
+        reverse=True,
+    )
+    chart_rows = chart_candidates[:chart_limit]
+    chart_symbols = {r["source_symbol"] for r in chart_rows}
+    lite_rows = [r for r in price_only
+                 if r["source_symbol"] not in prices and r["source_symbol"] not in chart_symbols]
 
-    symbols = [row["source_symbol"] for row in rich_rows + chart_rows]
-    prices.update(_batch_prices(symbols))
-    if lite_rows:
+    prices.update(_batch_prices([row["source_symbol"] for row in rich_rows]))
+    if chart_rows or lite_rows:
         from tools import yquote
-        prices.update(yquote.fetch_lite([row["source_symbol"] for row in lite_rows]))
+        prices.update(yquote.fetch_lite([row["source_symbol"] for row in chart_rows + lite_rows]))
     crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
                       if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
     if crypto_symbols:

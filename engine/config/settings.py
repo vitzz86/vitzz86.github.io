@@ -54,10 +54,12 @@ FUNDAMENTAL_REFRESH_HOURS = 24       # reuse real Yahoo metrics between daily re
 FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-summary calls
 GLOBAL_LEADERS_PRICE_ACTIVE = True   # price-only coverage; no fundamentals/news expansion yet
 IDX_BROAD_PRICE_ACTIVE = True        # broad IDX quote-only heatmap coverage
+IDX_ALL_PRICE_ACTIVE = True          # full IDX price-only coverage via one scanner snapshot
 SP500_PRICE_ACTIVE = True            # dynamic S&P 500 quote-only heatmap coverage
 NASDAQ100_PRICE_ACTIVE = True        # dynamic Nasdaq 100 quote-only heatmap coverage
 CRYPTO_TOP_PRICE_ACTIVE = True       # CoinGecko top market-cap crypto quote-only coverage
 CRYPTO_TOP_PRICE_LIMIT = 100
+IDX_ALL_PRICE_LIMIT = 1200
 PRICE_ONLY_CHART_LIMIT = 160         # core rows get charts; broad rows above this use quote-lite
 US_INDEX_LIMITS = {"sp500": 520, "nasdaq100": 120}
 

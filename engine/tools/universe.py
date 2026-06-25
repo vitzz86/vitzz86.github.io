@@ -23,6 +23,7 @@ CRYPTO_SLUGS = {"MATIC-USD": "polygon"}
 ACTIVE_UNIVERSE = "SECTOR_FLOW"
 GLOBAL_LEADERS_UNIVERSE = "GLOBAL_LEADERS_V1"
 IDX_BROAD_UNIVERSE = "IDX_BROAD_V1"
+IDX_ALL_UNIVERSE = "IDX_ALL_TRADINGVIEW"
 US_INDEX_UNIVERSE = "US_INDEX_MEMBERSHIP"
 CRYPTO_TOP_UNIVERSE = "CRYPTO_TOP100"
 
@@ -32,7 +33,7 @@ DATA_TIER_MAPPED = "mapped_not_active"
 
 NEXT_TARGETS = [
     {"key": "idx_broad", "label": "Broad liquid IDX coverage", "status": "active_price_only"},
-    {"key": "full_idx", "label": "All IDX tickers", "status": "source_feed_pending"},
+    {"key": "full_idx", "label": "All IDX tickers", "status": "active_tradingview_price_only"},
     {"key": "sp500", "label": "S&P 500 constituents", "status": "active_dynamic_price_only"},
     {"key": "nasdaq100", "label": "Nasdaq 100 constituents", "status": "active_dynamic_price_only"},
     {"key": "crypto_top100", "label": "Top 100 crypto by market cap", "status": "active_coingecko_price_only"},
@@ -49,6 +50,8 @@ def country_meta(country: str) -> dict:
 
 
 def source_url(row: dict) -> str:
+    if row.get("source_url"):
+        return row["source_url"]
     symbol = row.get("source_symbol") or ""
     if row.get("country") == "CR" and row.get("coingecko_id"):
         return COINGECKO + row["coingecko_id"]
@@ -173,7 +176,10 @@ def _price_only_row(item: dict, universe_name: str, default_priority: str = "wat
         "fundamental_frequency_hours": None,
         "news_priority": default_priority,
     }
-    row["url"] = source_url(row)
+    for key in ("market_cap_value", "industry", "source_provider", "source_name", "source_url"):
+        if item.get(key) is not None:
+            row[key] = item.get(key)
+    row["url"] = item.get("url") or source_url(row)
     return row
 
 
@@ -181,6 +187,17 @@ def idx_broad_rows() -> list[dict]:
     if not getattr(settings, "IDX_BROAD_PRICE_ACTIVE", False):
         return []
     return [_price_only_row(item, IDX_BROAD_UNIVERSE) for item in getattr(settings, "IDX_BROAD_V1", [])]
+
+
+def idx_all_rows() -> list[dict]:
+    if not getattr(settings, "IDX_ALL_PRICE_ACTIVE", False):
+        return []
+    try:
+        from tools import idx_membership
+        return [_price_only_row(item, IDX_ALL_UNIVERSE) for item in idx_membership.idx_all_rows()]
+    except Exception as e:  # noqa: BLE001
+        print(f"[universe] full IDX membership failed: {e}")
+        return []
 
 
 def us_index_rows() -> list[dict]:
@@ -250,9 +267,13 @@ def crypto_top_rows(markets: list[dict]) -> list[dict]:
 def _merge_values(base: dict, extra: dict) -> dict:
     base["universe"] = list(dict.fromkeys((base.get("universe") or []) + (extra.get("universe") or [])))
     base["index_groups"] = list(dict.fromkeys((base.get("index_groups") or []) + (extra.get("index_groups") or [])))
-    for key in ("mktcap", "tier", "url"):
+    for key in ("mktcap", "tier", "market_cap_value", "industry"):
         if not base.get(key) and extra.get(key):
             base[key] = extra[key]
+    if base.get("data_tier") != DATA_TIER_ACTIVE:
+        for key in ("source_provider", "source_name", "source_url", "url"):
+            if extra.get(key):
+                base[key] = extra[key]
     return base
 
 
@@ -303,6 +324,7 @@ def priced_rows_by_sector() -> dict[str, list[dict]]:
             for row in leaders:
                 _upsert(rows[key], row)
     _extend_by_sector(rows, idx_broad_rows())
+    _extend_by_sector(rows, idx_all_rows())
     _extend_by_sector(rows, us_index_rows())
     return rows
 
@@ -367,6 +389,8 @@ def coverage_summary(sectors_list: list | None = None) -> dict:
             + ([GLOBAL_LEADERS_UNIVERSE] if getattr(settings, "GLOBAL_LEADERS_PRICE_ACTIVE", False)
                else [])
             + ([IDX_BROAD_UNIVERSE] if getattr(settings, "IDX_BROAD_PRICE_ACTIVE", False)
+               else [])
+            + ([IDX_ALL_UNIVERSE] if getattr(settings, "IDX_ALL_PRICE_ACTIVE", False)
                else [])
             + ([US_INDEX_UNIVERSE] if getattr(settings, "SP500_PRICE_ACTIVE", False)
                 or getattr(settings, "NASDAQ100_PRICE_ACTIVE", False) else [])
