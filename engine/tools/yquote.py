@@ -95,3 +95,56 @@ def fetch(symbols: list, workers: int = 8) -> dict:
         print(f"[yquote] fetch pool failed: {e}")
     print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo v8")
     return out
+
+
+def _one_lite(sym: str) -> dict | None:
+    """One-call quote for broad rows: price, official day %, state, 24h chart."""
+    day = _chart(sym, "1d", "30m")
+    if not day:
+        return None
+    m = day.get("meta") or {}
+    price, pc = m.get("regularMarketPrice"), m.get("chartPreviousClose")
+    if price is None or not pc:
+        return None
+    reg = (m.get("currentTradingPeriod") or {}).get("regular") or {}
+    start, end = reg.get("start"), reg.get("end")
+    now = int(time.time())
+    volume = 0.0
+    try:
+        vols = [v for v in (day["indicators"]["quote"][0].get("volume") or []) if v is not None]
+        volume = float(vols[-1]) if vols else 0.0
+    except Exception:  # noqa: BLE001
+        pass
+    return {
+        "value": round(float(price), 4),
+        "prev_close": round(float(pc), 4),
+        "delta_pct": round((price - pc) / pc * 100, 2),
+        "open": bool(start and end and start <= now <= end),
+        "mkt_start": start,
+        "mkt_end": end,
+        "intraday": _closes(day),
+        "spark": [],
+        "spark_ts": [],
+        "volume": volume,
+        "turnover": round(float(price) * volume, 0),
+    }
+
+
+def fetch_lite(symbols: list, workers: int = 10) -> dict:
+    """Fast price-only pass for broad heatmap rows.
+
+    Yahoo's batch quote endpoint currently returns 401 without a crumb, so this
+    uses the same proven chart source as ``fetch`` but skips the 6-month daily
+    call. Broad rows therefore get reliable 24h price/return and market state,
+    while market-cap sizing is available only when supplied elsewhere.
+    """
+    out, uniq = {}, [s for s in dict.fromkeys(symbols) if s]
+    try:
+        with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+            for sym, r in zip(uniq, ex.map(_one_lite, uniq)):
+                if r:
+                    out[sym] = r
+    except Exception as e:  # noqa: BLE001
+        print(f"[yquote] quote-lite pool failed: {e}")
+    print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo chart-lite")
+    return out

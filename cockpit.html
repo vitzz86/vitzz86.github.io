@@ -651,6 +651,8 @@ body{padding-bottom:40px;}
         <div class="heattools">
           <div class="trendtabs" id="heatGeo">
             <span class="ttab on" data-g="id">🇮🇩 Indonesia</span>
+            <span class="ttab" data-g="sp500">S&amp;P 500</span>
+            <span class="ttab" data-g="nasdaq100">Nasdaq 100</span>
             <span class="ttab" data-g="us">🇺🇸 US</span>
             <span class="ttab" data-g="crypto">₿ Crypto</span>
             <span class="ttab" data-g="others">🌐 Others</span>
@@ -663,7 +665,7 @@ body{padding-bottom:40px;}
     <div class="sec">
       <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2><button class="mini act" id="moverDetails" type="button">Details →</button></div>
       <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span><span class="ttab" data-t="best_value">◇ Best Risk/Price</span></div>
-      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="others">🌐 Others</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
+      <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="sp500">S&amp;P 500</span><span class="ttab" data-g="nasdaq100">Nasdaq 100</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="others">🌐 Others</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
       <div id="moveList"></div>
       <div class="lbl" style="margin:12px 0 6px;">Social buzz · StockTwits</div>
       <div class="trendtk" id="socialTk"></div>
@@ -822,6 +824,8 @@ function countryLabel(c){return c&&c.country_name?c.country_name:(c&&c.country)|
 function geoMatches(c,geo){
   const g=String(geo||'').toLowerCase();
   if(g==='all')return true;
+  const groups=(c&&Array.isArray(c.index_groups))?c.index_groups.map(x=>String(x).toLowerCase()):[];
+  if(g==='sp500'||g==='nasdaq100')return groups.includes(g);
   if(g==='crypto')return c.country==='CR'||regionOf(c)==='CRYPTO';
   if(g==='others')return regionOf(c)==='OTHERS';
   return c.country===g.toUpperCase()||regionOf(c)===g.toUpperCase();
@@ -830,6 +834,8 @@ function geoTabLabel(g){
   if(g==='ALL')return 'All';
   if(g==='ID')return '🇮🇩 Indonesia';
   if(g==='US')return '🇺🇸 US';
+  if(g==='SP500')return 'S&P 500';
+  if(g==='NASDAQ100')return 'Nasdaq 100';
   if(g==='OTHERS')return '🌐 Others';
   if(g==='CRYPTO'||g==='CR')return '₿ Crypto';
   return g;
@@ -1161,7 +1167,7 @@ function drawMovers(){
   [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
 }
 function moverGeoLabel(){
-  return moveGeo==='id'?'Indonesia':moveGeo==='us'?'US':moveGeo==='crypto'?'Crypto':'Others';
+  return moveGeo==='id'?'Indonesia':moveGeo==='sp500'?'S&P 500':moveGeo==='nasdaq100'?'Nasdaq 100':moveGeo==='us'?'US':moveGeo==='crypto'?'Crypto':'Others';
 }
 function moverTypeLabel(){
   return {gainers:'Top gainers',losers:'Top losers',top_score:'Top score',best_value:'Best risk/price'}[moveType]||moveType;
@@ -1260,7 +1266,9 @@ function activeRows(geo){
   rows.forEach(c=>{
     const k=(c.country||'')+'|'+(c.ticker||'');
     const cur=uniq.get(k);
-    if(!cur||capNumber(c)>capNumber(cur))uniq.set(k,c);
+    const richer=cur&&isPriceOnly(cur)&&!isPriceOnly(c);
+    const sameTierBetter=cur&&isPriceOnly(cur)===isPriceOnly(c)&&capNumber(c)>capNumber(cur);
+    if(!cur||richer||sameTierBetter)uniq.set(k,c);
   });
   return [...uniq.values()];
 }

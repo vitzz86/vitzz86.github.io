@@ -53,6 +53,13 @@ SECTOR_SIGNAL_PCT = {"alert": 1.5, "watch": 0.8}  # |aggregate %| thresholds
 FUNDAMENTAL_REFRESH_HOURS = 24       # reuse real Yahoo metrics between daily refreshes
 FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-summary calls
 GLOBAL_LEADERS_PRICE_ACTIVE = True   # price-only coverage; no fundamentals/news expansion yet
+IDX_BROAD_PRICE_ACTIVE = True        # broad IDX quote-only heatmap coverage
+SP500_PRICE_ACTIVE = True            # dynamic S&P 500 quote-only heatmap coverage
+NASDAQ100_PRICE_ACTIVE = True        # dynamic Nasdaq 100 quote-only heatmap coverage
+CRYPTO_TOP_PRICE_ACTIVE = True       # CoinGecko top market-cap crypto quote-only coverage
+CRYPTO_TOP_PRICE_LIMIT = 100
+PRICE_ONLY_CHART_LIMIT = 160         # core rows get charts; broad rows above this use quote-lite
+US_INDEX_LIMITS = {"sp500": 520, "nasdaq100": 120}
 
 # Country / region metadata used by the dashboard and by the next universe
 # expansion. "OTHERS" is intentionally separate from US and Indonesia so sector
@@ -196,6 +203,88 @@ GLOBAL_LEADERS_V1 = [
     {"sector": "consumer", "ticker": "HINDUNILVR", "name": "Hindustan Unilever", "source_symbol": "HINDUNILVR.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
     {"sector": "consumer", "ticker": "ITC", "name": "ITC", "source_symbol": "ITC.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
     {"sector": "infrastructure", "ticker": "LT", "name": "Larsen & Toubro", "source_symbol": "LT.NS", "exchange": "NSE", "country": "IN", "tier": "large"},
+]
+
+# Broad IDX V1 is quote-only. It expands the Indonesia heatmap and movers beyond
+# the scored Sector Flow core without forcing every listed name through daily
+# fundamentals, valuation, and DeepSeek reasoning.
+IDX_BROAD_V1 = [
+    {"sector": "technology", "ticker": "EDGE", "name": "Indointernet", "source_symbol": "EDGE.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "technology", "ticker": "DMMX", "name": "Digital Mediatama Maxima", "source_symbol": "DMMX.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "technology", "ticker": "NFCX", "name": "NFC Indonesia", "source_symbol": "NFCX.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "technology", "ticker": "KREN", "name": "Quantum Clovera Investama", "source_symbol": "KREN.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "technology", "ticker": "TFAS", "name": "Telefast Indonesia", "source_symbol": "TFAS.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "technology", "ticker": "CASH", "name": "Cashlez Worldwide Indonesia", "source_symbol": "CASH.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "financials", "ticker": "BBTN", "name": "Bank Tabungan Negara", "source_symbol": "BBTN.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "PNBN", "name": "Bank Pan Indonesia", "source_symbol": "PNBN.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "BNGA", "name": "Bank CIMB Niaga", "source_symbol": "BNGA.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "BNLI", "name": "Bank Permata", "source_symbol": "BNLI.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "NISP", "name": "Bank OCBC NISP", "source_symbol": "NISP.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "BDMN", "name": "Bank Danamon Indonesia", "source_symbol": "BDMN.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "financials", "ticker": "BFIN", "name": "BFI Finance Indonesia", "source_symbol": "BFIN.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "financials", "ticker": "TUGU", "name": "Asuransi Tugu Pratama Indonesia", "source_symbol": "TUGU.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "energy", "ticker": "AKRA", "name": "AKR Corporindo", "source_symbol": "AKRA.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "MEDC", "name": "Medco Energi Internasional", "source_symbol": "MEDC.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "INDY", "name": "Indika Energy", "source_symbol": "INDY.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "energy", "ticker": "HRUM", "name": "Harum Energy", "source_symbol": "HRUM.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "energy", "ticker": "BUMI", "name": "Bumi Resources", "source_symbol": "BUMI.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "DOID", "name": "Delta Dunia Makmur", "source_symbol": "DOID.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "energy", "ticker": "ADMR", "name": "Adaro Minerals Indonesia", "source_symbol": "ADMR.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "MBMA", "name": "Merdeka Battery Materials", "source_symbol": "MBMA.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "NCKL", "name": "Trimegah Bangun Persada", "source_symbol": "NCKL.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "PGAS", "name": "Perusahaan Gas Negara", "source_symbol": "PGAS.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "energy", "ticker": "ELSA", "name": "Elnusa", "source_symbol": "ELSA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "energy", "ticker": "RAJA", "name": "Rukun Raharja", "source_symbol": "RAJA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "renewables", "ticker": "BRPT", "name": "Barito Pacific", "source_symbol": "BRPT.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "renewables", "ticker": "TPIA", "name": "Chandra Asri Pacific", "source_symbol": "TPIA.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "renewables", "ticker": "ARKO", "name": "Arkora Hydro", "source_symbol": "ARKO.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "renewables", "ticker": "POWR", "name": "Cikarang Listrindo", "source_symbol": "POWR.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "ROTI", "name": "Nippon Indosari Corpindo", "source_symbol": "ROTI.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "CMRY", "name": "Cisarua Mountain Dairy", "source_symbol": "CMRY.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "consumer", "ticker": "CLEO", "name": "Sariguna Primatirta", "source_symbol": "CLEO.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "GOOD", "name": "Garudafood Putra Putri Jaya", "source_symbol": "GOOD.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "JPFA", "name": "Japfa Comfeed Indonesia", "source_symbol": "JPFA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "MAIN", "name": "Malindo Feedmill", "source_symbol": "MAIN.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "consumer", "ticker": "MAPA", "name": "Map Aktif Adiperkasa", "source_symbol": "MAPA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "MIDI", "name": "Midi Utama Indonesia", "source_symbol": "MIDI.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "RALS", "name": "Ramayana Lestari Sentosa", "source_symbol": "RALS.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "consumer", "ticker": "LPPF", "name": "Matahari Department Store", "source_symbol": "LPPF.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "infrastructure", "ticker": "EXCL", "name": "XL Axiata", "source_symbol": "EXCL.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "ISAT", "name": "Indosat", "source_symbol": "ISAT.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "LINK", "name": "Link Net", "source_symbol": "LINK.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "infrastructure", "ticker": "SMGR", "name": "Semen Indonesia", "source_symbol": "SMGR.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "INTP", "name": "Indocement Tunggal Prakarsa", "source_symbol": "INTP.JK", "exchange": "IDX", "country": "ID", "tier": "large"},
+    {"sector": "infrastructure", "ticker": "ADHI", "name": "Adhi Karya", "source_symbol": "ADHI.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "infrastructure", "ticker": "WTON", "name": "Wijaya Karya Beton", "source_symbol": "WTON.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "infrastructure", "ticker": "SSIA", "name": "Surya Semesta Internusa", "source_symbol": "SSIA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "healthcare", "ticker": "TSPC", "name": "Tempo Scan Pacific", "source_symbol": "TSPC.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "healthcare", "ticker": "KAEF", "name": "Kimia Farma", "source_symbol": "KAEF.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "healthcare", "ticker": "INAF", "name": "Indofarma", "source_symbol": "INAF.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "healthcare", "ticker": "SAME", "name": "Sarana Meditama Metropolitan", "source_symbol": "SAME.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "healthcare", "ticker": "SRAJ", "name": "Sejahteraraya Anugrahjaya", "source_symbol": "SRAJ.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "healthcare", "ticker": "SOHO", "name": "Soho Global Health", "source_symbol": "SOHO.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "healthcare", "ticker": "IRRA", "name": "Itama Ranoraya", "source_symbol": "IRRA.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "WEHA", "name": "WEHA Transportasi Indonesia", "source_symbol": "WEHA.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "HAIS", "name": "Hasnur Internasional Shipping", "source_symbol": "HAIS.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "HELI", "name": "Jaya Trishindo", "source_symbol": "HELI.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "GIAA", "name": "Garuda Indonesia", "source_symbol": "GIAA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "logistics", "ticker": "SAPX", "name": "Satria Antaran Prima", "source_symbol": "SAPX.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "MBSS", "name": "Mitrabahtera Segara Sejati", "source_symbol": "MBSS.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "TPMA", "name": "Trans Power Marine", "source_symbol": "TPMA.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "logistics", "ticker": "WINS", "name": "Wintermar Offshore Marine", "source_symbol": "WINS.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "entertainment", "ticker": "ERAA", "name": "Erajaya Swasembada", "source_symbol": "ERAA.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "entertainment", "ticker": "MAPB", "name": "Map Boga Adiperkasa", "source_symbol": "MAPB.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "entertainment", "ticker": "MSIN", "name": "MNC Digital Entertainment", "source_symbol": "MSIN.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "entertainment", "ticker": "IPTV", "name": "MNC Vision Networks", "source_symbol": "IPTV.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "entertainment", "ticker": "NETV", "name": "Net Visi Media", "source_symbol": "NETV.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "property", "ticker": "BEST", "name": "Bekasi Fajar Industrial Estate", "source_symbol": "BEST.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "property", "ticker": "JRPT", "name": "Jaya Real Property", "source_symbol": "JRPT.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "property", "ticker": "DILD", "name": "Intiland Development", "source_symbol": "DILD.JK", "exchange": "IDX", "country": "ID", "tier": "mid"},
+    {"sector": "property", "ticker": "MDLN", "name": "Modernland Realty", "source_symbol": "MDLN.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "property", "ticker": "BKSL", "name": "Sentul City", "source_symbol": "BKSL.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "property", "ticker": "GPRA", "name": "Perdana Gapuraprima", "source_symbol": "GPRA.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "property", "ticker": "RISE", "name": "Jaya Sukses Makmur Sentosa", "source_symbol": "RISE.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
+    {"sector": "property", "ticker": "PURI", "name": "Puri Global Sukses", "source_symbol": "PURI.JK", "exchange": "IDX", "country": "ID", "tier": "small"},
 ]
 SECTORS = [
     {"key": "technology", "name": "Technology", "icon": "▚",

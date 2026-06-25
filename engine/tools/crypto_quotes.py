@@ -81,3 +81,44 @@ def chart_series(sym: str, days: int, interval: str = "") -> dict:
         if pairs:
             return {"spark_ts": [p[0] for p in pairs], "spark": [p[1] for p in pairs]}
     return {"spark_ts": [], "spark": []}
+
+
+def top_markets(limit: int = 100) -> list[dict]:
+    """Top crypto assets by market cap from CoinGecko markets.
+
+    Used for price-only crypto heatmap coverage. Existing core crypto rows still
+    use the explicit IDS map above so BTC/ETH/etc stay consistent everywhere.
+    """
+    per_page = max(1, min(int(limit or 100), 250))
+    data = _get(
+        f"{API}/coins/markets?vs_currency=usd&order=market_cap_desc"
+        f"&per_page={per_page}&page=1&sparkline=false&price_change_percentage=24h"
+    )
+    return data if isinstance(data, list) else []
+
+
+def price_map_from_markets(markets: list[dict]) -> dict:
+    out = {}
+    for row in markets or []:
+        cid = row.get("id")
+        price = row.get("current_price")
+        dp = row.get("price_change_percentage_24h")
+        if not cid or price is None:
+            continue
+        prev = price / (1 + (dp or 0.0) / 100) if dp != -100 else price
+        out[f"CG:{cid}"] = {
+            "value": round(float(price), 6),
+            "delta_pct": round(float(dp or 0.0), 2),
+            "prev_close": round(float(prev), 6),
+            "open": True,
+            "mkt_start": None,
+            "mkt_end": None,
+            "market_cap_value": row.get("market_cap"),
+            "volume_24h": row.get("total_volume"),
+            "volume": row.get("total_volume") or 0.0,
+            "turnover": row.get("total_volume") or 0.0,
+            "spark": [],
+            "spark_ts": [],
+            "intraday": [],
+        }
+    return out

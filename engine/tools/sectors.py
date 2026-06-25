@@ -55,8 +55,44 @@ def _previous_rows(previous_sectors: list | None) -> dict:
 
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
     sector_rows = universe.priced_rows_by_sector()
-    symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows]
-    prices = _batch_prices(symbols)
+    prices = {}
+    if getattr(settings, "CRYPTO_TOP_PRICE_ACTIVE", False):
+        try:
+            from tools import crypto_quotes
+            markets = crypto_quotes.top_markets(getattr(settings, "CRYPTO_TOP_PRICE_LIMIT", 100))
+            universe._extend_by_sector(sector_rows, universe.crypto_top_rows(markets))
+            prices.update(crypto_quotes.price_map_from_markets(markets))
+            print(f"[sectors] CoinGecko top crypto rows: {len(markets)} markets")
+        except Exception as e:  # noqa: BLE001
+            print(f"[sectors] CoinGecko top crypto expansion failed: {e}")
+
+    all_rows = [row for rows in sector_rows.values() for row in rows]
+    rich_rows = [r for r in all_rows if r.get("data_tier") == universe.DATA_TIER_ACTIVE]
+    price_only = [r for r in all_rows
+                  if r.get("data_tier") != universe.DATA_TIER_ACTIVE
+                  and not str(r.get("source_symbol", "")).startswith("CG:")]
+    chart_limit = max(0, int(getattr(settings, "PRICE_ONLY_CHART_LIMIT", 160)))
+    try:
+        from tools import index_membership
+        us_snapshot = index_membership.us_market_snapshot()
+        for row in price_only:
+            if row.get("country") != "US" or not row.get("index_groups"):
+                continue
+            snap = us_snapshot.get(row["ticker"])
+            if snap and snap.get("value") is not None:
+                prices[row["source_symbol"]] = snap
+    except Exception as e:  # noqa: BLE001
+        print(f"[sectors] US index snapshot overlay failed: {e}")
+
+    unresolved_price_only = [r for r in price_only if r["source_symbol"] not in prices]
+    chart_rows = unresolved_price_only[:chart_limit]
+    lite_rows = unresolved_price_only[chart_limit:]
+
+    symbols = [row["source_symbol"] for row in rich_rows + chart_rows]
+    prices.update(_batch_prices(symbols))
+    if lite_rows:
+        from tools import yquote
+        prices.update(yquote.fetch_lite([row["source_symbol"] for row in lite_rows]))
     crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
                       if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
     if crypto_symbols:
@@ -92,7 +128,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "value": (p or {}).get("value", 0.0),
                 "turnover": (p or {}).get("turnover", 0.0),
                 "volume": (p or {}).get("volume", 0.0),
-                "market_cap_value": (p or {}).get("market_cap_value"),
+                "market_cap_value": (p or {}).get("market_cap_value") or base.get("market_cap_value"),
                 "volume_24h": (p or {}).get("volume_24h"),
                 "state": "open" if (p or {}).get("open") else "closed",
                 "mkt_start": (p or {}).get("mkt_start"),
@@ -148,6 +184,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
             "themes": settings.SECTOR_THEMES.get(sec["key"], []),
             "constituents": ranked,
         })
-    live = sum(1 for s in out for r in s["constituents"] if r["spark"])
-    print(f"[sectors] {len(out)} sectors, {live}/{len(symbols)} constituents with live data")
+    final_rows = [r for s in out for r in s["constituents"]]
+    live = sum(1 for r in final_rows if r.get("spark") or r.get("intraday") or r.get("value"))
+    print(f"[sectors] {len(out)} sectors, {live}/{len(final_rows)} constituents resolved")
     return out
