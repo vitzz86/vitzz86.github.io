@@ -1134,7 +1134,7 @@ function bestRiskPrice(c){
   return {score:clampScore(raw),upside_pct:upside,signal};
 }
 function isPriceOnly(c){return c&&c.data_tier==='price_only';}
-function hasScore(c){return invScore(c).score!=null&&!isPriceOnly(c);}
+function hasScore(c){return invScore(c).score!=null;}
 function localMoverBucket(geo){
   const rows=[];
   (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(geoMatches(c,geo))rows.push(c);}));
@@ -1835,8 +1835,8 @@ function invScore(c){return c.fundamental_score||{};}
 function scoreClass(sc){const label=String((sc&&sc.label)||'insufficient').toLowerCase();return label.replace(/\s+/g,'')||'insufficient';}
 function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var(--ink3)';return n>=75?'var(--green)':n>=60?'var(--blue)':n>=45?'var(--amber)':'var(--red)';}
 function scorePill(c){
-  if(isPriceOnly(c))return `<span class="scorepill priceonly" title="Price-only global leader coverage; scoring is not enabled yet">PX</span>`;
   const sc=invScore(c),n=sc.score;
+  if(isPriceOnly(c)&&n==null)return `<span class="scorepill priceonly" title="Price-only global leader coverage; scoring is not enabled yet">PX</span>`;
   return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} investment score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
 }
 function fmtMetric(m){
@@ -1889,6 +1889,9 @@ function metricPeriod(m){
   if(label.includes('sortino'))return 'downside vs risk-free, 6M daily';
   if(label.includes('max drawdown'))return 'peak-to-trough, 6M';
   if(label.includes('equity liquidity'))return 'avg daily value / market cap';
+  if(label.includes('relative volume'))return 'latest volume / 10D average';
+  if(label.includes('tradingview rating'))return '-1 sell to +1 buy';
+  if(label==='rsi')return '14-period technical';
   if(label==='volume')return 'latest session shares';
   if(label.includes('avg volume'))return 'average daily shares';
   if(label.includes('value traded'))return 'latest session';
@@ -1897,7 +1900,7 @@ function metricPeriod(m){
   if(label.includes('liquidity'))return '24H volume / market cap';
   if(label==='roe')return 'TTM';
   if(label.includes('volatility'))return 'daily realized, ~6M window';
-  if(label.includes('return'))return label.includes('1m')?'22 sessions / 30D crypto':'6M price return';
+  if(label.includes('return'))return label.includes('1w')?'TradingView 1W performance':label.includes('1m')?'22 sessions / 30D crypto':label.includes('3m')?'TradingView 3M performance':'6M price return';
   if(label.includes('beta'))return '5Y monthly';
   if(label.includes('price')||label.includes('market cap'))return 'latest quote';
   return '';
@@ -1908,7 +1911,7 @@ function fmtThreshold(label,val,dir){
   const n=Number(val);
   if(l.includes('sharpe')||l.includes('sortino'))return n.toFixed(2);
   if(l.includes('drawdown'))return n.toFixed(n%1?2:0)+'%';
-  if(l.includes('yield')||l.includes('growth')||l==='roe'||l.includes('volatility')||l.includes('return'))return n.toFixed(n%1?2:0)+'%';
+  if(l.includes('yield')||l.includes('growth')||l.includes('liquidity')||l==='roe'||l.includes('volatility')||l.includes('return'))return n.toFixed(n%1?2:0)+'%';
   if(l.includes('beta'))return n.toFixed(2)+'x';
   if(l.includes('debt/equity'))return n.toFixed(n%1?2:0)+'%';
   if(l.includes('p/e')||l.includes('p/b')||l.includes('ev/ebitda'))return n.toFixed(n%1?2:0)+'x';
@@ -1942,12 +1945,12 @@ function scorePanel(c){
   return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
 function scoreSummary(c){
-  if(isPriceOnly(c)){
+  const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
+  if(isPriceOnly(c)&&n==null){
     return `<div class="scoresummary"><div class="scorebig" style="color:var(--cyan)">PX</div>`+
       `<div><div class="scorelabel" style="color:var(--cyan)">PRICE-ONLY COVERAGE</div>`+
       `<div class="scoremeta">${esc(regionLabel(c)||countryLabel(c)||'Global')} · 30m quote/sparkline · scoring and valuation not enabled for this universe yet</div></div></div>`;
   }
-  const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
   return `<div class="scoresummary"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div>`+
     `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${metrics.length} indicators</div></div>`+
@@ -1969,12 +1972,13 @@ function scoreMetricHTML(sc,limit=null,c=null){
   return list.length?list.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
 }
 const METRIC_GROUPS=[
-  {key:'essential',name:'Essential Snapshot',subtitle:'price, valuation score, size, and liquidity first',labels:['Current Price','P/E','Fwd P/E','P/B','Market Cap','Equity Liquidity','1M Return','6M Return']},
+  {key:'essential',name:'Essential Snapshot',subtitle:'price, valuation score, size, and liquidity first',labels:['Current Price','P/E','Fwd P/E','P/B','Market Cap','Equity Liquidity','Relative Volume 10D','1M Return','6M Return']},
   {key:'valuation',name:'Valuation',subtitle:'multiple and per-share anchors',labels:['P/E','Fwd P/E','EV/EBITDA','P/B','Book Value','EPS','FCF Yield','Dividend Yield']},
   {key:'profit',name:'Profitability & Growth',subtitle:'business quality and operating trend',labels:['ROE','Revenue Growth','EPS Growth','Gross Profit','Free Cash Flow','Total Cash']},
-  {key:'liquidity',name:'Liquidity',subtitle:'trading activity and market depth',labels:['Volume','Avg Volume 10D','Value Traded','Avg Daily Value','Equity Liquidity','24h Volume','Liquidity']},
+  {key:'liquidity',name:'Liquidity',subtitle:'trading activity and market depth',labels:['Volume','Avg Volume 10D','Value Traded','Avg Daily Value','Equity Liquidity','Relative Volume 10D','24h Volume','Liquidity']},
+  {key:'technical',name:'Technical',subtitle:'TradingView trend and activity signals',labels:['TradingView Rating','RSI','1W Return','1M Return','3M Return','6M Return']},
   {key:'risk',name:'Risk Benchmark',subtitle:'balance sheet, beta, volatility, and drawdown',labels:['Debt/Equity','Beta','Volatility','Risk-Free Rate','Hurdle Rate','Annual Volatility','Downside Volatility','Max Drawdown']},
-  {key:'returns',name:'Returns & Risk-Adjusted',subtitle:'momentum and excess-return quality',labels:['1M Return','6M Return','Annualized Return','Excess Return','Sharpe Ratio','Sortino Ratio']},
+  {key:'returns',name:'Returns & Risk-Adjusted',subtitle:'momentum and excess-return quality',labels:['1W Return','1M Return','3M Return','6M Return','Annualized Return','Excess Return','Sharpe Ratio','Sortino Ratio']},
 ];
 let scoreMetricPage=0;
 function metricCardHTML(m){
@@ -2153,6 +2157,10 @@ function riskBenchmarkBox(sc){
 }
 function valuationBox(sc,c=null){
   if(staleCurrencyMismatch(c,sc))return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Temporarily hidden for this cached IDX payload because Yahoo mixed IDR quote prices with USD financial fields. The next bake recomputes this in IDR using USD/IDR conversion where needed.</div></div>`;
+  if(sc.mode==='idx_screen'){
+    const fallback=/absent from TradingView/i.test(sc.source||'');
+    return `<div class="valuationbox"><div class="vh">SCREENING FAIR VALUE</div><div class="vn">${fallback?'Not shown because this ticker is absent from the TradingView IDX scanner and only has a low-confidence fallback quote.':'Not shown for broad IDX screen rows. This score uses TradingView market data for coverage, liquidity, momentum, technicals, volatility, and risk.'} Full P/E, ROE, FCF, and fair-value valuation are reserved for curated tickers where provider fundamentals are available.</div></div>`;
+  }
   const v=sc.valuation;
   if(!v)return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Unavailable this cycle because Yahoo did not provide enough current price, EPS, book value, or free-cash-flow inputs. No estimate is filled in.</div></div>`;
   const col=v.upside_pct>=20?'var(--green)':v.upside_pct<=-20?'var(--red)':'var(--amber)';
@@ -2181,6 +2189,16 @@ function lensDetail(c,type){
   const sharpe=riskStat(sc,'sharpe','Sharpe Ratio'),sortino=riskStat(sc,'sortino','Sortino Ratio'),annualVol=riskStat(sc,'annual_volatility_pct','Annual Volatility'),drawdown=riskStat(sc,'max_drawdown_pct','Max Drawdown');
   if(sc.mode==='crypto'){
     return `<div class="lenscopy"><p>Crypto uses a different scoring stack: size, liquidity, momentum, trend, and volatility. Traditional P/E, ROE, P/B, and FCF valuation rules are not applied because CoinGecko does not provide operating fundamentals.</p></div>`;
+  }
+  if(sc.mode==='idx_screen'){
+    const fallback=/absent from TradingView/i.test(sc.source||'');
+    return `<div class="lenscopy"><p><b>${fallback?'IDX fallback screen':'TradingView IDX screen'}</b>: ${fallback?'this curated ticker was not returned by TradingView, so the dashboard treats it as low-confidence/stale until provider coverage returns.':'this is a broad-market screen for the full Indonesian universe, not a fundamental valuation model. It is designed to rank tradability and market quality consistently across hundreds of IDX tickers.'}</p><ul>`+
+      ruleLine(sc,'Equity Liquidity',metricValue(sc,'Equity Liquidity'),'high',.35,.02,'higher daily value traded relative to market cap improves tradability')+
+      ruleLine(sc,'Relative Volume 10D',metricValue(sc,'Relative Volume 10D'),'high',1,.5,'stronger current participation reduces stale-price risk')+
+      ruleLine(sc,'RSI',metricValue(sc,'RSI'),'high',45,35,'technical health should avoid deeply weak momentum')+
+      ruleLine(sc,'1M Return',metricValue(sc,'1M Return'),'high',0,-10,'recent price confirmation supports the momentum axis')+
+      ruleLineAbs(sc,'Max Drawdown',drawdown,25,40,'smaller drawdowns improve sizing discipline')+
+      `</ul><p>Conclusion: Size, Liquidity, Momentum, Technical, Activity, and Risk scores explain this screen-grade result. Use it to shortlist IDX names, then rely on full fundamentals where available before making investment decisions.</p></div>`;
   }
   if(staleCurrencyMismatch(c,sc)){
     return `<div class="lenscopy"><p>This cached IDX score mixed IDR quote prices with USD financial fields. Investor-style ratio checks are temporarily hidden until the next bake rebuilds this ticker with schema v6 currency normalization.</p></div>`;
@@ -2225,6 +2243,7 @@ function scoreAnalysisContent(c,key){
   const sc=invScore(c);
   if(key==='risk')return riskBenchmarkBox(sc)||`<div class="riskbox"><div class="rh">RISK BENCHMARK</div><div class="scoremeta">Risk-adjusted data unavailable this cycle.</div></div>`;
   if(key==='fair')return valuationBox(sc,c);
+  if(key==='lens'&&sc.mode==='idx_screen')return `<div class="lensbox"><div class="h">IDX SCREEN METHOD · TRADINGVIEW DATA</div><div id="lensContent">${lensDetail(c,'idx_screen')}</div></div>`;
   if(key==='lens')return `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`;
   return priceRangeBox(c)||`<div class="pricebox"><div class="ph">Price Targets</div><div class="scoremeta">Price-range data unavailable this cycle.</div></div>`;
 }

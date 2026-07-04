@@ -699,6 +699,146 @@ def _score_crypto(row: dict, metrics: dict, risk_context: dict | None = None) ->
     return _pack_score("crypto", axes, metrics, one_month, six_month, vol)
 
 
+def _score_mid(v, ideal: float, lo: float, hi: float):
+    v = _num(v)
+    if v is None:
+        return None
+    if v == ideal:
+        return 100
+    if v < ideal:
+        if v <= lo:
+            return 0
+        return round((v - lo) / (ideal - lo) * 100)
+    if v >= hi:
+        return 0
+    return round(100 - ((v - ideal) / (hi - ideal) * 100))
+
+
+def _score_idx_screen(row: dict, risk_context: dict | None = None) -> dict:
+    """Screen-grade score for full-IDX TradingView rows.
+
+    This intentionally avoids valuation/fundamental claims. It is a tradability
+    and market-quality screen built from TradingView scanner fields available for
+    the whole IDX universe.
+    """
+    current = _num(row.get("value"))
+    market_cap = _num(row.get("market_cap_value"))
+    volume = _num(row.get("volume"))
+    avg_volume = _num(row.get("avg_volume_10d")) or _num(row.get("avg_volume_30d"))
+    traded_value = _num(row.get("turnover")) or (current * volume if current and volume else None)
+    avg_daily_value = current * avg_volume if current and avg_volume else None
+    liquidity_value = avg_daily_value or traded_value
+    liquidity_pct = (liquidity_value / market_cap * 100) if liquidity_value and market_cap else None
+    rel_vol = _num(row.get("relative_volume_10d"))
+    rec = _num(row.get("recommend_all"))
+    rsi = _num(row.get("rsi"))
+    perf_1w = _num(row.get("perf_1w"))
+    perf_1m = _num(row.get("perf_1m"))
+    perf_3m = _num(row.get("perf_3m"))
+    perf_6m = _num(row.get("perf_6m"))
+    vol_1m = _num(row.get("volatility_1m"))
+    vol_1w = _num(row.get("volatility_1w"))
+    ctx = _risk_context(row, "equity", risk_context)
+    metrics = {
+        "currency": "IDR",
+        "quote_currency": "IDR",
+        "current_price": current,
+        "market_cap": market_cap,
+        "volume": volume,
+        "average_volume_10d": _num(row.get("avg_volume_10d")),
+        "average_volume": _num(row.get("avg_volume_30d")),
+        "traded_value": traded_value,
+        "avg_daily_value_traded": avg_daily_value,
+        "liquidity_pct": round(liquidity_pct, 2) if liquidity_pct is not None else None,
+        "relative_volume_10d": rel_vol,
+        "recommend_all": rec,
+        "rsi": rsi,
+        "perf_1w": perf_1w,
+        "perf_3m": perf_3m,
+        "volatility_1m": vol_1m,
+        "source": "TradingView IDX screen",
+        "as_of": _now_iso(),
+        "_risk_context": ctx,
+        "_risk_stats": _risk_stats(row, "equity", ctx),
+    }
+    liquidity_axis = _avg([
+        _score_high(liquidity_value, 1_000_000_000, 25_000_000_000),
+        _score_high(liquidity_pct, 0.02, 0.35),
+    ])
+    axes = [
+        {"key": "size", "label": "Size", "score": _score_high(market_cap, 500_000_000_000, 100_000_000_000_000)},
+        {"key": "liquidity", "label": "Liquidity", "score": liquidity_axis},
+        {"key": "momentum", "label": "Momentum", "score": _avg([
+            _score_high(row.get("delta_pct"), -3, 3),
+            _score_high(perf_1m, -10, 15),
+            _score_high(perf_6m, -35, 35),
+        ])},
+        {"key": "technical", "label": "Technical", "score": _avg([
+            _score_mid(rsi, 55, 25, 85),
+            _score_high(rec, -0.6, 0.6),
+        ])},
+        {"key": "activity", "label": "Activity", "score": _avg([
+            _score_mid(rel_vol, 1.15, 0.25, 3.0),
+            _score_high(traded_value, 500_000_000, 20_000_000_000),
+        ])},
+        {"key": "risk", "label": "Risk", "score": _avg([
+            _score_low(vol_1m or vol_1w, 2.0, 12.0),
+            _score_high(perf_3m, -25, 20),
+            _score_high(perf_6m, -45, 25),
+        ])},
+    ]
+    score = _pack_score("idx_screen", axes, metrics, perf_1m, perf_6m, vol_1m or vol_1w)
+    score["screen_grade"] = True
+    score["source"] = "TradingView IDX screen"
+    score["note"] = (
+        "Screen-grade IDX score from TradingView price, market cap, liquidity, "
+        "performance, volatility, RSI, and technical recommendation. It is not "
+        "a fundamental valuation score."
+    )
+    return score
+
+
+def _score_idx_fallback(row: dict, risk_context: dict | None = None) -> dict:
+    """Low-confidence score for curated IDX names absent from TradingView scanner."""
+    current = _num(row.get("value"))
+    volume = _num(row.get("volume"))
+    turnover = _num(row.get("turnover")) or (current * volume if current and volume else None)
+    ctx = _risk_context(row, "equity", risk_context)
+    metrics = {
+        "currency": "IDR",
+        "quote_currency": "IDR",
+        "current_price": current,
+        "volume": volume,
+        "traded_value": turnover,
+        "source": "Yahoo fallback: absent from TradingView IDX scanner",
+        "as_of": _now_iso(),
+        "_risk_context": ctx,
+        "_risk_stats": _risk_stats(row, "equity", ctx),
+    }
+    axes = [
+        {"key": "size", "label": "Size", "score": None},
+        {"key": "liquidity", "label": "Liquidity", "score": _score_high(turnover, 500_000_000, 20_000_000_000)},
+        {"key": "momentum", "label": "Momentum", "score": _avg([
+            _score_high(row.get("delta_pct"), -3, 3),
+            _score_high(_spark_return(row.get("spark"), 22), -8, 12),
+            _score_high(_spark_return(row.get("spark")), -20, 35),
+        ])},
+        {"key": "technical", "label": "Technical", "score": None},
+        {"key": "activity", "label": "Activity", "score": 0 if volume == 0 else _score_high(volume, 100_000, 10_000_000)},
+        {"key": "risk", "label": "Risk", "score": _score_low(_spark_volatility(row.get("spark")), 1.2, 5.0)},
+    ]
+    score = _pack_score("idx_screen", axes, metrics, _spark_return(row.get("spark"), 22),
+                        _spark_return(row.get("spark")), _spark_volatility(row.get("spark")))
+    score["screen_grade"] = True
+    score["source"] = "Yahoo fallback: absent from TradingView IDX scanner"
+    score["note"] = (
+        "Low-confidence fallback for a curated IDX ticker that TradingView's IDX "
+        "scanner did not return. Treat as stale or inactive until provider "
+        "coverage returns."
+    )
+    return score
+
+
 def _median(vals: list[float]) -> float | None:
     vals = sorted(v for v in vals if v and v > 0)
     if not vals:
@@ -1323,9 +1463,16 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("Avg Daily Value", _fmt_metric_value(metrics.get("avg_daily_value_traded"), "money"), "money", currency, "10D/3M average"),
         _metric("Equity Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent",
                 period="avg daily value / market cap"),
+        _metric("Relative Volume 10D", _fmt_metric_value(metrics.get("relative_volume_10d"), "ratio"), "ratio",
+                period="latest volume / 10D average"),
+        _metric("TradingView Rating", _fmt_metric_value(metrics.get("recommend_all"), "ratio"), "ratio",
+                period="-1 sell to +1 buy"),
+        _metric("RSI", _fmt_metric_value(metrics.get("rsi"), "number"), "number", period="14-period technical"),
         _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency, "24H"),
         _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent", period="24H volume / market cap"),
+        _metric("1W Return", _fmt_metric_value(metrics.get("perf_1w"), "percent"), "percent", period="TradingView 1W performance"),
         _metric("1M Return", one_month, "percent", period=one_month_period),
+        _metric("3M Return", _fmt_metric_value(metrics.get("perf_3m"), "percent"), "percent", period="TradingView 3M performance"),
         _metric("6M Return", six_month, "percent", period="6M price return"),
         _metric("Volatility", vol, "percent", period=vol_period),
         _metric("Risk-Free Rate", _fmt_metric_value(risk.get("risk_free_rate"), "percent"), "percent",
@@ -1346,7 +1493,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
                 period=f"downside vs {risk.get('risk_free_label') or 'risk-free'}, 6M daily"),
         _metric("Max Drawdown", _fmt_metric_value(risk.get("max_drawdown_pct"), "percent"), "percent", period="peak-to-trough, 6M"),
     ]
-    if mode == "equity":
+    if mode in {"equity", "idx_screen"}:
         metric_rows = [m for m in metric_rows if m["label"] not in {"24h Volume", "Liquidity"}]
     elif mode == "crypto":
         equity_only = {"P/E", "Fwd P/E", "EV/EBITDA", "P/B", "Book Value", "Beta", "EPS", "ROE",
@@ -1555,3 +1702,20 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
                     "_risk_stats": _risk_stats(row, "equity", risk_context)},
                 _spark_return(row.get("spark"), 22), _spark_return(row.get("spark")),
                 _spark_volatility(row.get("spark")))
+
+
+def enrich_idx_screen(rows: list[dict], risk_benchmarks: dict | None = None) -> None:
+    """Attach screen-grade TradingView scores to the expanded IDX universe."""
+    for row in rows:
+        if row.get("country") != "ID":
+            continue
+        existing = row.get("fundamental_score") or {}
+        if row.get("source_provider") == "tradingview":
+            if (row.get("data_tier") == "scored" and existing.get("score") is not None
+                    and existing.get("source") != "Price history only"):
+                existing["quote_source"] = "TradingView"
+                existing["screen_source"] = "TradingView IDX scanner"
+                continue
+            row["fundamental_score"] = _score_idx_screen(row, risk_benchmarks)
+        else:
+            row["fundamental_score"] = _score_idx_fallback(row, risk_benchmarks)

@@ -155,6 +155,7 @@ def global_leaders_by_sector(price_active: bool | None = None) -> dict[str, list
 
 def _price_only_row(item: dict, universe_name: str, default_priority: str = "watch") -> dict:
     meta = country_meta(item.get("country", ""))
+    sector = item.get("sector", item.get("sector_key", ""))
     row = {
         "ticker": item.get("ticker", ""),
         "name": item.get("name", ""),
@@ -163,8 +164,8 @@ def _price_only_row(item: dict, universe_name: str, default_priority: str = "wat
         "country": item.get("country", ""),
         "mktcap": item.get("mktcap", ""),
         "tier": item.get("tier", ""),
-        "sector_key": item.get("sector", item.get("sector_key", "")),
-        "sector_name": item.get("sector", item.get("sector_key", "")),
+        "sector_key": sector,
+        "sector_name": sector,
         "country_name": meta["country_name"],
         "country_flag": meta["country_flag"],
         "region": meta["region"],
@@ -176,7 +177,15 @@ def _price_only_row(item: dict, universe_name: str, default_priority: str = "wat
         "fundamental_frequency_hours": None,
         "news_priority": default_priority,
     }
-    for key in ("market_cap_value", "industry", "source_provider", "source_name", "source_url"):
+    passthrough = (
+        "market_cap_value", "industry", "source_provider", "source_name",
+        "source_url", "provider_sector_key", "provider_sector_raw",
+        "avg_volume_10d", "avg_volume_30d", "relative_volume_10d",
+        "perf_1w", "perf_1m", "perf_3m", "perf_6m", "perf_ytd", "perf_1y",
+        "volatility_1w", "volatility_1m", "volatility_1d", "recommend_all",
+        "rsi", "price_history_quality",
+    )
+    for key in passthrough:
         if item.get(key) is not None:
             row[key] = item.get(key)
     row["url"] = item.get("url") or source_url(row)
@@ -267,14 +276,59 @@ def crypto_top_rows(markets: list[dict]) -> list[dict]:
 def _merge_values(base: dict, extra: dict) -> dict:
     base["universe"] = list(dict.fromkeys((base.get("universe") or []) + (extra.get("universe") or [])))
     base["index_groups"] = list(dict.fromkeys((base.get("index_groups") or []) + (extra.get("index_groups") or [])))
-    for key in ("mktcap", "tier", "market_cap_value", "industry"):
+    for key in (
+        "mktcap", "tier", "market_cap_value", "industry", "provider_sector_key",
+        "provider_sector_raw", "avg_volume_10d", "avg_volume_30d",
+        "relative_volume_10d", "perf_1w", "perf_1m", "perf_3m", "perf_6m",
+        "perf_ytd", "perf_1y", "volatility_1w", "volatility_1m",
+        "volatility_1d", "recommend_all", "rsi", "price_history_quality",
+    ):
         if not base.get(key) and extra.get(key):
             base[key] = extra[key]
-    if base.get("data_tier") != DATA_TIER_ACTIVE:
+    if base.get("data_tier") != DATA_TIER_ACTIVE or (
+        base.get("country") == "ID" and extra.get("source_provider") == "tradingview"
+    ):
         for key in ("source_provider", "source_name", "source_url", "url"):
             if extra.get(key):
                 base[key] = extra[key]
     return base
+
+
+def _sector_names() -> dict:
+    return {s["key"]: s["name"] for s in getattr(settings, "SECTORS", [])}
+
+
+def _canonicalize_duplicates(rows_by_sector: dict[str, list[dict]]) -> dict[str, list[dict]]:
+    names = _sector_names()
+    grouped: dict[str, list[dict]] = {}
+    for sector_key, rows in rows_by_sector.items():
+        for row in rows:
+            row.setdefault("_payload_sector_key", sector_key)
+            grouped.setdefault(_row_key(row), []).append(row)
+
+    clean = {key: [] for key in rows_by_sector.keys()}
+    for items in grouped.values():
+        if len(items) == 1:
+            row = items[0]
+            clean.setdefault(row.get("sector_key") or row.get("_payload_sector_key") or "technology", []).append(row)
+            continue
+        provider_sector = next((r.get("provider_sector_key") for r in items if r.get("provider_sector_key")), None)
+        best = sorted(
+            items,
+            key=lambda r: (
+                1 if r.get("data_tier") == DATA_TIER_ACTIVE else 0,
+                1 if r.get("market_cap_value") else 0,
+                len(r.get("index_groups") or []),
+            ),
+            reverse=True,
+        )[0]
+        secondary = sorted({r.get("sector_key") or r.get("_payload_sector_key") for r in items if r.get("sector_key")})
+        if provider_sector:
+            best["sector_key"] = provider_sector
+            best["sector_name"] = names.get(provider_sector, provider_sector)
+        best["secondary_sector_keys"] = [s for s in secondary if s and s != best.get("sector_key")]
+        clean.setdefault(best.get("sector_key") or "technology", []).append(best)
+    return clean
 
 
 def _upsert(rows: list[dict], row: dict) -> None:
@@ -326,7 +380,7 @@ def priced_rows_by_sector() -> dict[str, list[dict]]:
     _extend_by_sector(rows, idx_broad_rows())
     _extend_by_sector(rows, idx_all_rows())
     _extend_by_sector(rows, us_index_rows())
-    return rows
+    return _canonicalize_duplicates(rows)
 
 
 def priced_rows() -> list[dict]:
@@ -364,6 +418,13 @@ def coverage_summary(sectors_list: list | None = None) -> dict:
     unique_active = dedupe(active)
     leaders = global_leader_rows(price_active=getattr(settings, "GLOBAL_LEADERS_PRICE_ACTIVE", False))
     active_tiers = counts(active, "data_tier")
+    source_health = {}
+    if getattr(settings, "IDX_ALL_PRICE_ACTIVE", False):
+        try:
+            from tools import idx_membership
+            source_health["idx_all"] = idx_membership.source_health(unique_active)
+        except Exception as e:  # noqa: BLE001
+            source_health["idx_all"] = {"provider": "TradingView scanner", "status": "error", "error": str(e)[:160]}
     return {
         "active_sector_flow": {
             "count": len(active),
@@ -400,4 +461,5 @@ def coverage_summary(sectors_list: list | None = None) -> dict:
             else [GLOBAL_LEADERS_UNIVERSE],
             "next_targets": NEXT_TARGETS,
         },
+        "source_health": source_health,
     }

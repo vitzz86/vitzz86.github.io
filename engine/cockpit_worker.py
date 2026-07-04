@@ -437,7 +437,7 @@ def write_atomic(payload: dict) -> None:
     target = os.path.abspath(settings.DATA_JSON_PATH)
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(target), suffix=".json")
     with os.fdopen(fd, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
+        json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
     os.replace(tmp, target)
     print(f"[worker] data contract written -> {target}")
 

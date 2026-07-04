@@ -60,13 +60,23 @@ def _row_cap(row: dict) -> float:
         return 0.0
 
 
+def _uses_tradingview_idx(row: dict) -> bool:
+    return row.get("country") == "ID" and row.get("source_provider") == "tradingview"
+
+
+def _pick_price_field(price: dict, base: dict, key: str):
+    return price.get(key) if price.get(key) is not None else base.get(key)
+
+
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
     sector_rows = universe.priced_rows_by_sector()
     prices = {}
+    idx_prices = {}
     if getattr(settings, "IDX_ALL_PRICE_ACTIVE", False):
         try:
             from tools import idx_membership
-            prices.update(idx_membership.price_map())
+            idx_prices = idx_membership.price_map()
+            prices.update(idx_prices)
         except Exception as e:  # noqa: BLE001
             print(f"[sectors] full IDX scanner overlay failed: {e}")
 
@@ -81,10 +91,12 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
             print(f"[sectors] CoinGecko top crypto expansion failed: {e}")
 
     all_rows = [row for rows in sector_rows.values() for row in rows]
-    rich_rows = [r for r in all_rows if r.get("data_tier") == universe.DATA_TIER_ACTIVE]
+    rich_rows = [r for r in all_rows
+                 if r.get("data_tier") == universe.DATA_TIER_ACTIVE and not _uses_tradingview_idx(r)]
     price_only = [r for r in all_rows
                   if r.get("data_tier") != universe.DATA_TIER_ACTIVE
-                  and not str(r.get("source_symbol", "")).startswith("CG:")]
+                  and not str(r.get("source_symbol", "")).startswith("CG:")
+                  and not _uses_tradingview_idx(r)]
     chart_limit = max(0, int(getattr(settings, "PRICE_ONLY_CHART_LIMIT", 160)))
     try:
         from tools import index_membership
@@ -112,6 +124,9 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     if chart_rows or lite_rows:
         from tools import yquote
         prices.update(yquote.fetch_lite([row["source_symbol"] for row in chart_rows + lite_rows]))
+    # TradingView is the IDX source of truth for price, cap, volume, 6M spark, and screen fields.
+    if idx_prices:
+        prices.update(idx_prices)
     crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
                       if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
     if crypto_symbols:
@@ -153,6 +168,21 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "mkt_start": (p or {}).get("mkt_start"),
                 "mkt_end": (p or {}).get("mkt_end"),
                 "intraday": (p or {}).get("intraday", []),
+                "avg_volume_10d": _pick_price_field(p or {}, base, "avg_volume_10d"),
+                "avg_volume_30d": _pick_price_field(p or {}, base, "avg_volume_30d"),
+                "relative_volume_10d": _pick_price_field(p or {}, base, "relative_volume_10d"),
+                "perf_1w": _pick_price_field(p or {}, base, "perf_1w"),
+                "perf_1m": _pick_price_field(p or {}, base, "perf_1m"),
+                "perf_3m": _pick_price_field(p or {}, base, "perf_3m"),
+                "perf_6m": _pick_price_field(p or {}, base, "perf_6m"),
+                "perf_ytd": _pick_price_field(p or {}, base, "perf_ytd"),
+                "perf_1y": _pick_price_field(p or {}, base, "perf_1y"),
+                "volatility_1w": _pick_price_field(p or {}, base, "volatility_1w"),
+                "volatility_1m": _pick_price_field(p or {}, base, "volatility_1m"),
+                "volatility_1d": _pick_price_field(p or {}, base, "volatility_1d"),
+                "recommend_all": _pick_price_field(p or {}, base, "recommend_all"),
+                "rsi": _pick_price_field(p or {}, base, "rsi"),
+                "price_history_quality": _pick_price_field(p or {}, base, "price_history_quality"),
             })
             if country == "ID":
                 id_d.append(delta)
@@ -166,6 +196,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                                 refresh_hours=getattr(settings, "FUNDAMENTAL_REFRESH_HOURS", 24),
                                 workers=getattr(settings, "FUNDAMENTAL_WORKERS", 6),
                                 risk_benchmarks=risk_benchmarks)
+            fundamentals.enrich_idx_screen(rows, risk_benchmarks=risk_benchmarks)
         except Exception as e:  # noqa: BLE001
             print(f"[sectors] fundamental scoring failed: {e}")
 
