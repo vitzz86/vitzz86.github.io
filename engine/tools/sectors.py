@@ -186,6 +186,21 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     if lite_rows:
         from tools import yquote
         prices.update(yquote.fetch_lite([row["source_symbol"] for row in lite_rows]))
+    if getattr(settings, "GLOBAL_TV_PRICE_ACTIVE", False):
+        global_rows = [r for r in price_only if r.get("country") not in ("US", "ID", "CR")]
+        if global_rows:
+            try:
+                from tools import tradingview_global
+                for sym, overlay in tradingview_global.price_map(global_rows).items():
+                    p = prices.setdefault(sym, {})
+                    prior_quality = dict(p.get("chart_quality") or {})
+                    p.update(overlay)
+                    q = dict(overlay.get("chart_quality") or {})
+                    if prior_quality.get("24h"):
+                        q["24h"] = prior_quality["24h"]
+                    p["chart_quality"] = {**prior_quality, **q}
+            except Exception as e:  # noqa: BLE001
+                print(f"[sectors] TradingView global overlay failed: {e}")
     _merge_cached_charts(prices, price_only, previous_sectors)
     finnhub_limit = max(0, int(getattr(settings, "PRICE_ONLY_FINNHUB_CHART_LIMIT", 0)))
     if finnhub_limit:

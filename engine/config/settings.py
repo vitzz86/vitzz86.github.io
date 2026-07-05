@@ -55,6 +55,7 @@ FUNDAMENTAL_WORKERS = 6              # bounded parallelism for yfinance quote-su
 GLOBAL_LEADERS_PRICE_ACTIVE = True   # price-only coverage; no fundamentals/news expansion yet
 IDX_BROAD_PRICE_ACTIVE = True        # broad IDX quote-only heatmap coverage
 IDX_ALL_PRICE_ACTIVE = True          # full IDX price-only coverage via one scanner snapshot
+GLOBAL_TV_PRICE_ACTIVE = True        # TradingView checkpoint charts for non-US/global benchmark rows
 SP500_PRICE_ACTIVE = True            # dynamic S&P 500 quote-only heatmap coverage
 NASDAQ100_PRICE_ACTIVE = True        # dynamic Nasdaq 100 quote-only heatmap coverage
 CRYPTO_TOP_PRICE_ACTIVE = True       # CoinGecko top market-cap crypto quote-only coverage
