@@ -90,6 +90,124 @@ def _coverage_universe_summary(sectors_list: list) -> dict:
     return universe.coverage_summary(sectors_list)
 
 
+SCORE_SUMMARY_METRICS = {
+    "Current Price", "P/E", "Fwd P/E", "P/B", "Market Cap", "Volume",
+    "Avg Volume 10D", "Value Traded", "Avg Daily Value", "Equity Liquidity",
+    "Relative Volume 10D", "TradingView Rating", "RSI", "1W Return",
+    "1M Return", "3M Return", "6M Return", "Volatility", "Risk-Free Rate",
+    "Hurdle Rate", "Annualized Return", "Excess Return", "Sharpe Ratio",
+    "Sortino Ratio", "Max Drawdown",
+}
+
+VALUATION_SUMMARY_KEYS = {
+    "status", "fair_value", "target_price", "range_low", "range_high",
+    "buy_below", "accumulate_below", "trim_above", "signal", "upside_pct",
+    "current_price", "currency", "valuation_model", "valuation_confidence",
+}
+
+RISK_SUMMARY_KEYS = {
+    "period", "risk_free_rate", "risk_free_label", "risk_free_symbol",
+    "risk_free_source", "hurdle_rate", "hurdle_label", "hurdle_source",
+    "annual_return_pct", "annual_excess_return_pct", "annual_volatility_pct",
+    "downside_volatility_pct", "sharpe", "sortino", "peak_price", "peak_ts",
+    "bottom_price", "bottom_ts", "max_drawdown_pct", "max_drawdown_peak_price",
+    "max_drawdown_peak_ts", "max_drawdown_trough_price",
+    "max_drawdown_trough_ts", "risk_adjusted_signal",
+}
+
+
+def _score_key(row: dict) -> str:
+    country = str(row.get("country") or "")
+    ticker = str(row.get("ticker") or row.get("source_symbol") or "")
+    source_symbol = str(row.get("source_symbol") or "")
+    sector_key = str(row.get("sector_key") or row.get("_payload_sector_key") or "")
+    return f"{country}|{ticker}|{source_symbol}|{sector_key}"
+
+
+def _score_summary(score: dict) -> dict:
+    """Small score object for data.json; full detail lives in scores.json."""
+    if not isinstance(score, dict):
+        return {}
+    out = {
+        key: score.get(key)
+        for key in (
+            "mode", "schema_version", "score", "label", "coverage", "axes",
+            "currency", "source", "as_of", "note", "screen_grade",
+            "quote_source", "screen_source", "data_warnings",
+        )
+        if key in score and score.get(key) is not None
+    }
+    metrics = []
+    for m in score.get("metrics") or []:
+        if m.get("label") in SCORE_SUMMARY_METRICS:
+            metrics.append(m)
+    if metrics:
+        out["metrics"] = metrics
+    valuation = score.get("valuation")
+    if isinstance(valuation, dict):
+        out["valuation"] = {
+            key: valuation.get(key)
+            for key in VALUATION_SUMMARY_KEYS
+            if valuation.get(key) is not None
+        }
+    risk = score.get("risk_stats")
+    if isinstance(risk, dict):
+        out["risk_stats"] = {
+            key: risk.get(key)
+            for key in RISK_SUMMARY_KEYS
+            if risk.get(key) is not None
+        }
+    ctx = score.get("risk_context")
+    if isinstance(ctx, dict):
+        out["risk_context"] = {
+            key: ctx.get(key)
+            for key in (
+                "risk_free_rate", "risk_free_label", "risk_free_source",
+                "hurdle_rate", "hurdle_label", "hurdle_source",
+            )
+            if ctx.get(key) is not None
+        }
+    return out
+
+
+def _load_previous_scores() -> dict:
+    try:
+        with open(settings.SCORES_JSON_PATH, encoding="utf-8") as f:
+            obj = json.load(f)
+        return obj.get("scores", {}) if isinstance(obj, dict) else {}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def _hydrate_previous_sector_scores(previous_sectors: list, score_map: dict) -> list:
+    if not previous_sectors or not score_map:
+        return previous_sectors
+    for sec in previous_sectors:
+        for row in sec.get("constituents", []) or []:
+            ref = row.get("score_ref") or _score_key(row)
+            if ref in score_map and row.get("fundamental_score"):
+                row["fundamental_score"] = score_map[ref]
+    return previous_sectors
+
+
+def _extract_score_payload(payload: dict) -> dict:
+    scores: dict[str, dict] = {}
+    for sec in payload.get("sectors", []) or []:
+        for row in sec.get("constituents", []) or []:
+            full = row.get("fundamental_score")
+            if not isinstance(full, dict) or not full:
+                continue
+            ref = _score_key(row)
+            scores[ref] = full
+            row["score_ref"] = ref
+            row["fundamental_score"] = _score_summary(full)
+    return {
+        "timestamp": payload.get("timestamp"),
+        "schema": 1,
+        "scores": scores,
+    }
+
+
 def node_hunter(state: dict) -> dict:
     headlines = enterprise_osint.scan_feeds()
     if state["anomaly"]:
@@ -308,11 +426,12 @@ def validate(payload: dict) -> None:
     _validate_intelligence(payload)
 
 
-def compile_payload(state: dict) -> dict:
+def compile_payload(state: dict) -> tuple[dict, dict]:
     wx = env_context.weather()
     rainy = wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
     previous_videos, previous_brief, previous_sectors = [], None, []
+    previous_score_map = _load_previous_scores()
     try:
         with open(settings.DATA_JSON_PATH, encoding="utf-8") as f:
             _prev = json.load(f)
@@ -321,6 +440,7 @@ def compile_payload(state: dict) -> dict:
             previous_videos = _prev.get("videos", [])
             previous_brief = _prev.get("daily_brief")
             previous_sectors = _prev.get("sectors", [])
+            previous_sectors = _hydrate_previous_sector_scores(previous_sectors, previous_score_map)
     except Exception:  # noqa: BLE001 — first run has no file
         pass
 
@@ -375,11 +495,12 @@ def compile_payload(state: dict) -> dict:
         "coverage_universe": _coverage_universe_summary(sec),
         "config": {"finnhub_key": settings.FINNHUB_API_KEY},
         "note_of_the_day": env_context.note_of_the_day(previous_note),
-        "generated_by": ("LangGraph pipeline · DeepSeek · yfinance / Google News / "
-                         "Finnhub / Spotify / StockTwits · GitHub Actions cron"),
+        "generated_by": ("LangGraph pipeline · DeepSeek · TradingView IDX / yfinance / "
+                         "Google News / Finnhub / Spotify / StockTwits · GitHub Actions cron"),
     }
+    scores_payload = _extract_score_payload(payload)
     validate(payload)
-    return payload
+    return payload, scores_payload
 
 
 def _deepseek_sector_intel(sectors_list: list, has_llm: bool,
@@ -433,20 +554,27 @@ def _deepseek_sector_intel(sectors_list: list, has_llm: bool,
                 s["themes_ai"] = True
 
 
-def write_atomic(payload: dict) -> None:
-    target = os.path.abspath(settings.DATA_JSON_PATH)
+def _write_json_atomic(path: str, payload: dict) -> None:
+    target = os.path.abspath(path)
     fd, tmp = tempfile.mkstemp(dir=os.path.dirname(target), suffix=".json")
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, separators=(",", ":"))
     os.replace(tmp, target)
-    print(f"[worker] data contract written -> {target}")
+
+
+def write_atomic(payload: dict, scores_payload: dict | None = None) -> None:
+    if scores_payload is not None:
+        _write_json_atomic(settings.SCORES_JSON_PATH, scores_payload)
+        print(f"[worker] score detail contract written -> {os.path.abspath(settings.SCORES_JSON_PATH)}")
+    _write_json_atomic(settings.DATA_JSON_PATH, payload)
+    print(f"[worker] data contract written -> {os.path.abspath(settings.DATA_JSON_PATH)}")
 
 
 def main() -> int:
     try:
         state = run_graph()
-        payload = compile_payload(state)
-        write_atomic(payload)
+        payload, scores_payload = compile_payload(state)
+        write_atomic(payload, scores_payload)
         return 0
     except Exception as e:  # noqa: BLE001 — failover: keep last valid data.json
         print(f"[worker] FATAL — existing data.json left undisturbed: {e}")

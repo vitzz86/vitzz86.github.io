@@ -898,7 +898,8 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 DAILY_BRIEF_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]   # every 3h WIB — tracks both ID & US sessions
 
 # Finnhub — baked into data.json so the client can poll live US quotes (free key,
-# US stocks only; IDX stays on Yahoo). Public exposure is acceptable for the free tier.
+# US stocks only; IDX is handled by TradingView scanner data). Public exposure is
+# acceptable for the free tier.
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "")
 
 # Spotify now-playing (one-time refresh token → access token each run → current track).
@@ -980,3 +981,4 @@ VERSES = [
 
 # ---------------------------------------------------------------- output contract
 DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data.json")
+SCORES_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "scores.json")

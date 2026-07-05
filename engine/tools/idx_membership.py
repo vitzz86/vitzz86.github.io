@@ -233,9 +233,9 @@ def _jakarta_now() -> dt.datetime:
 def idx_session_state() -> dict:
     """Lightweight fallback state for price-only IDX scanner rows.
 
-    Yahoo remains authoritative for scored/core rows. Scanner-only rows need a
-    consistent state so they do not all render as stale closed assets during the
-    Jakarta session.
+    TradingView is authoritative for IDX quote rows. Scanner-only rows need a
+    consistent session state so they do not all render as stale closed assets
+    during the Jakarta session.
     """
     now = _jakarta_now()
     if now.weekday() >= 5:
@@ -354,6 +354,13 @@ def _parsed(row: dict) -> dict | None:
         "spark": spark,
         "spark_ts": _checkpoint_ts(len(spark)) if spark else [],
         "price_history_quality": "tradingview_performance_checkpoints",
+        "chart_quality": {
+            "24h": "unavailable",
+            "1W": "performance_checkpoint",
+            "1M": "performance_checkpoint",
+            "3M": "performance_checkpoint",
+            "6M": "performance_checkpoint",
+        },
     }
 
 
@@ -403,8 +410,15 @@ def price_map(rows: list[dict] | None = None) -> dict[str, dict]:
             "mkt_end": state["mkt_end"],
             "spark": row.get("spark") or [],
             "spark_ts": row.get("spark_ts") or [],
-            "intraday": row.get("spark", [])[-10:],
+            "intraday": [],
             "price_history_quality": row.get("price_history_quality"),
+            "chart_quality": row.get("chart_quality") or {
+                "24h": "unavailable",
+                "1W": "performance_checkpoint",
+                "1M": "performance_checkpoint",
+                "3M": "performance_checkpoint",
+                "6M": "performance_checkpoint",
+            },
             "source": "tradingview_scanner",
         }
     return prices

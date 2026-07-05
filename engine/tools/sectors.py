@@ -1,10 +1,10 @@
 """Sector Flow Matrix (PRD v2 · Module C) — baked at cron time for static hosting.
 
-Batch-fetches the full 200-ticker universe via a single yfinance download, then
-computes per-ticker day delta + sparkline, ID-vs-US sector aggregates, a
-Mega/Large/Mid/Small tier badge, an ALERT/WATCH/NORMAL signal, and a synthesis
-line. Every ticker carries a Yahoo Finance source URL (PRD: tickers link to
-source). Degrades to flat 0.0 when offline so the grid always renders.
+Builds the active market universe from provider-specific feeds, computes
+per-ticker day delta + sparkline, ID-vs-US sector aggregates, a Mega/Large/Mid/
+Small tier badge, an ALERT/WATCH/NORMAL signal, and a synthesis line. IDX quote
+coverage is TradingView-first; Yahoo remains the generic fallback/feed for
+non-IDX equities and curated fundamentals.
 """
 from __future__ import annotations
 
@@ -38,6 +38,7 @@ def _batch_prices(symbols: list) -> dict:
                     "spark": r["spark"], "open": r["open"],
                     "spark_ts": r.get("spark_ts", []),
                     "intraday": r.get("intraday", []),
+                    "chart_quality": r.get("chart_quality"),
                     "mkt_start": r.get("mkt_start"), "mkt_end": r.get("mkt_end")}
     return out
 
@@ -183,6 +184,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "recommend_all": _pick_price_field(p or {}, base, "recommend_all"),
                 "rsi": _pick_price_field(p or {}, base, "rsi"),
                 "price_history_quality": _pick_price_field(p or {}, base, "price_history_quality"),
+                "chart_quality": _pick_price_field(p or {}, base, "chart_quality"),
             })
             if country == "ID":
                 id_d.append(delta)

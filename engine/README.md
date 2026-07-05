@@ -2,12 +2,13 @@
 
 Autonomous data-generation architecture behind [`/cockpit.html`](../cockpit.html).
 Four agents run sequentially as a LangGraph state machine and compile the strict
-`data.json` contract the dashboard reads client-side. The static page also adds
-lightweight live overlays for crypto, selected US quotes, and media playback.
+`data.json` contract the dashboard reads client-side, plus `scores.json` for
+lazy-loaded ticker score detail. The static page also adds lightweight live
+overlays for crypto, selected US quotes, and media playback.
 
 ```
 [Quant] → Δ>1.2% check → [OSINT Hunter (Tavily override on anomaly)]
-       → [Cross-Market Arbiter] → [Chief of Staff → data.json]
+       → [Cross-Market Arbiter] → [Chief of Staff → data.json + scores.json]
 ```
 
 ## v2 — Sector Flow Matrix & universal link layer
@@ -17,7 +18,7 @@ dashboard has a stable payload even when optional live overlays fail:
 
 - **`sectors`** — 11-sector-style equity universe (`config/settings.py → SECTORS`,
   extensible with no code changes). `tools/sectors.py` fetches each constituent's
-  day delta + 6-month sparkline via Yahoo/CoinGecko, computes regional
+  day delta + 6-month sparkline via TradingView IDX, Yahoo, and CoinGecko, computes regional
   aggregates, a Mega/Large/Mid/Small tier, an ALERT/WATCH/NORMAL signal, and a
   synthesis line. Falls back to flat 0.0 when providers are unreachable, so the
   grid always renders.
@@ -54,11 +55,12 @@ fallbacks (telemetry + raw headlines), so the dashboard never breaks.
 
 ```bash
 pip install -r engine/requirements.txt
-python engine/cockpit_worker.py        # writes ../data.json atomically
+python engine/cockpit_worker.py        # writes ../data.json + ../scores.json atomically
 ```
 
 ## Deploy
 
-`.github/workflows/cockpit_sync.yml` runs the pipeline at 06:00 & 18:00 WIB via
-GitHub Actions and commits `data.json` back to the repo. Add the env vars above
-as repository **Secrets**. Failures leave the previous `data.json` untouched.
+`.github/workflows/cockpit_sync.yml` is triggered by cron-job.org via
+`workflow_dispatch` and commits `data.json` plus `scores.json` back to the repo.
+Add the env vars above as repository **Secrets**. Failures leave the previous
+published payload untouched.

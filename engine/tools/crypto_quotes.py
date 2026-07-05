@@ -55,7 +55,14 @@ def simple(symbols: list[str]) -> dict:
                         "prev_close": round(float(prev), 4),
                         "open": True, "mkt_start": None, "mkt_end": None,
                         "market_cap_value": row.get("usd_market_cap"),
-                        "volume_24h": row.get("usd_24h_vol")}
+                        "volume_24h": row.get("usd_24h_vol"),
+                        "chart_quality": {
+                            "24h": "real_intraday",
+                            "1W": "historical_close",
+                            "1M": "historical_close",
+                            "3M": "historical_close",
+                            "6M": "historical_close",
+                        }}
             break
     return out
 
@@ -120,5 +127,12 @@ def price_map_from_markets(markets: list[dict]) -> dict:
             "spark": [],
             "spark_ts": [],
             "intraday": [],
+            "chart_quality": {
+                "24h": "unavailable",
+                "1W": "unavailable",
+                "1M": "unavailable",
+                "3M": "unavailable",
+                "6M": "unavailable",
+            },
         }
     return out

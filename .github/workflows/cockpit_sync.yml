@@ -38,17 +38,17 @@ jobs:
           COCKPIT_NOTE_URL:       ${{ secrets.COCKPIT_NOTE_URL }}
         run: python engine/cockpit_worker.py
 
-      - name: Commit refreshed data contract
+      - name: Commit refreshed data contracts
         run: |
           git config user.name  "cockpit-bot"
           git config user.email "actions@github.com"
-          if git diff --quiet data.json; then
-            echo "data.json unchanged — nothing to deploy"
+          if [ -z "$(git status --porcelain data.json scores.json)" ]; then
+            echo "data contracts unchanged — nothing to deploy"
             exit 0
           fi
-          git add data.json
+          git add data.json scores.json
           git commit -m "cockpit: refresh intelligence payload"
-          # Concurrent runs (cron + manual) both touch data.json. Rebase with
+          # Concurrent runs (cron + manual) both touch data.json/scores.json. Rebase with
           # "-X theirs" auto-resolves the conflict to OUR freshly-generated payload
           # (no "unmerged files" dead-end); --abort cleans up between retries.
           for i in 1 2 3 4 5; do
@@ -59,4 +59,4 @@ jobs:
             git rebase --abort 2>/dev/null || true
             echo "push attempt $i failed — retrying"; sleep 5
           done
-          echo "::error::could not push data.json after retries"; exit 1
+          echo "::error::could not push data contracts after retries"; exit 1

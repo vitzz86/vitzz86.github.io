@@ -68,13 +68,26 @@ def _one(sym: str) -> dict | None:
            "delta_pct": round((price - pc) / pc * 100, 2),
            "open": bool(start and end and start <= now <= end),
            "mkt_start": start, "mkt_end": end,
-           "intraday": _closes(day), "spark": [], "volume": 0.0}
+           "intraday": _closes(day), "spark": [], "volume": 0.0,
+           "chart_quality": {
+               "24h": "real_intraday",
+               "1W": "unavailable",
+               "1M": "unavailable",
+               "3M": "unavailable",
+               "6M": "unavailable",
+           }}
     # range=6mo&interval=1d → daily series for the 1W/1M/3M/6M sparkline + window returns
     six = _chart(sym, "6mo", "1d")
     if six:
         ser = _series(six)
         out["spark"] = ser["spark"][-130:]
         out["spark_ts"] = ser["spark_ts"][-130:]
+        out["chart_quality"].update({
+            "1W": "historical_close",
+            "1M": "historical_close",
+            "3M": "historical_close",
+            "6M": "historical_close",
+        })
         try:
             vols = [v for v in (six["indicators"]["quote"][0].get("volume") or []) if v is not None]
             out["volume"] = float(vols[-1]) if vols else 0.0
@@ -127,6 +140,13 @@ def _one_lite(sym: str) -> dict | None:
         "spark_ts": [],
         "volume": volume,
         "turnover": round(float(price) * volume, 0),
+        "chart_quality": {
+            "24h": "real_intraday",
+            "1W": "unavailable",
+            "1M": "unavailable",
+            "3M": "unavailable",
+            "6M": "unavailable",
+        },
     }
 
 

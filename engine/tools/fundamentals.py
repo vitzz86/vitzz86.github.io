@@ -296,6 +296,62 @@ def _valid_beta(v):
     return beta
 
 
+def _add_warning(metrics: dict, msg: str) -> None:
+    warnings = metrics.setdefault("_data_warnings", [])
+    if msg not in warnings:
+        warnings.append(msg)
+
+
+def _quarantine_metric_anomalies(row: dict, metrics: dict) -> dict:
+    """Hide provider fields that are internally impossible before valuation.
+
+    Yahoo fundamentals can mix IDX quote currency and financial reporting units.
+    When a field fails basic sanity checks, we remove only that field and keep
+    the market-screen score alive.
+    """
+    current = _num(metrics.get("current_price"))
+    market_cap = _num(metrics.get("market_cap")) or _num(row.get("market_cap_value"))
+    eps = _num(metrics.get("eps"))
+    pe = _sanitize_ratio(metrics.get("pe"), 1_000_000.0)
+    row_ticker = str(row.get("ticker") or "").upper()
+    row_name = str(row.get("name") or "").lower()
+    row_sector = str(row.get("sector_key") or "").lower()
+    row_bank_like = row_ticker in BANK_TICKERS or (
+        row_sector == "financials" and any(term in row_name for term in BANK_KEYWORDS)
+    )
+
+    if current and eps and eps > 0:
+        implied_pe = current / eps
+        if implied_pe < 0.5:
+            metrics["eps"] = None
+            metrics["pe"] = None
+            _add_warning(metrics, f"EPS quarantined: implied P/E {implied_pe:.2f}x is not credible")
+    elif pe is not None and pe < 0.5:
+        metrics["pe"] = None
+        _add_warning(metrics, f"P/E quarantined: {pe:.2f}x is not credible")
+
+    if market_cap and market_cap > 0 and not (_is_bank_like(metrics) or row_bank_like):
+        field_limits = (
+            ("gross_profit", "Gross profit", 5.0),
+            ("free_cash_flow", "Free cash flow", 2.0),
+            ("total_cash", "Total cash", 5.0),
+        )
+        for key, label, limit in field_limits:
+            val = _num(metrics.get(key))
+            if val is not None and abs(val) > market_cap * limit:
+                metrics[key] = None
+                if key == "free_cash_flow":
+                    metrics["fcf_yield_pct"] = None
+                _add_warning(metrics, f"{label} quarantined: provider value exceeds {limit:g}x market cap")
+
+    fcf_yield = _num(metrics.get("fcf_yield_pct"))
+    if fcf_yield is not None and abs(fcf_yield) > 100:
+        metrics["fcf_yield_pct"] = None
+        metrics["free_cash_flow"] = None
+        _add_warning(metrics, f"FCF yield quarantined: {fcf_yield:.2f}% is not credible")
+    return metrics
+
+
 def _sector_key(metrics: dict) -> str:
     return str(metrics.get("_sector_key") or "").lower()
 
@@ -559,10 +615,7 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     metrics["pb"] = round(current / book, 2) if current and book and book > 0 else _sanitize_ratio(metrics.get("pb"))
     metrics["ev_ebitda"] = _sanitize_ratio(metrics.get("ev_ebitda"), 300.0)
     metrics["fcf_yield_pct"] = round(fcf / market_cap * 100, 2) if fcf and market_cap else metrics.get("fcf_yield_pct")
-    fcf_yield = _num(metrics.get("fcf_yield_pct"))
-    if fcf_yield is not None and abs(fcf_yield) > 100:
-        metrics["fcf_yield_pct"] = None
-        metrics["free_cash_flow"] = None
+    metrics = _quarantine_metric_anomalies(row, metrics)
     return metrics
 
 
@@ -1518,6 +1571,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "currency": currency,
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
         "as_of": metrics.get("as_of") or _now_iso(),
+        "data_warnings": metrics.get("_data_warnings") or [],
     }
 
 

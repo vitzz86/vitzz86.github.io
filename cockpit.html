@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Project Cockpit v2.0 — Vito Christian Samudra</title>
-<meta name="description" content="Project Cockpit v2.0 — a terminal-style real-time intelligence dashboard: 14 indices, a 200-ticker / 10-sector equity universe, an AI intelligence wire, and a podcast agent.">
+<meta name="description" content="Project Cockpit v2.0 — a terminal-style real-time intelligence dashboard: market telemetry, expanded IDX-first equity coverage, heatmaps, intelligence wire, and knowledge hub.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -185,6 +185,11 @@ a{color:inherit;text-decoration:none;}
 .heatwrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;}
 .heattools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
 .heatnote{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase;}
+.heatselect{background:var(--panel2);border:1px solid var(--line);color:var(--ink2);font-family:var(--mono);font-size:9px;border-radius:5px;padding:5px 8px;max-width:190px;}
+.idxhealth{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 9px;font-family:var(--mono);font-size:8px;color:var(--ink3);}
+.idxhealth .healthchip{border:1px solid var(--line);background:rgba(255,255,255,.025);border-radius:999px;padding:4px 7px;letter-spacing:.04em;}
+.idxhealth .healthchip.good{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);}
+.idxhealth .healthchip.warn{color:var(--amber);border-color:rgba(245,158,11,.32);background:rgba(245,158,11,.07);}
 .heatgrid{position:relative;height:clamp(430px,48vw,660px);min-height:360px;background:#09090b;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
 .heatsector{position:absolute;border:1px solid rgba(255,255,255,.22);background:#101016;overflow:hidden;}
 .heatsector-title{position:absolute;left:4px;top:2px;right:4px;height:16px;font-family:var(--mono);font-size:8px;font-weight:700;color:#e7e7ed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.75);z-index:2;}
@@ -219,6 +224,9 @@ a{color:inherit;text-decoration:none;}
 .srow .metricval{font-size:11px;text-align:right;font-variant-numeric:tabular-nums;}
 .srow .muted{color:var(--ink3);}
 @media(max-width:760px){.srow{grid-template-columns:74px minmax(120px,1fr) 70px 58px;}.srow .hide-sm{display:none;}}
+.scorewarn{border:1px solid rgba(245,158,11,.28);background:rgba(245,158,11,.07);border-radius:8px;padding:10px 12px;margin-top:12px;color:#f5c36d;font-size:11px;line-height:1.55;}
+.scorewarn b{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:5px;color:var(--amber);}
+.scorewarn span{display:block;}
 
 /* arbiter + alerts */
 .arbiter{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;}
@@ -657,8 +665,15 @@ body{padding-bottom:40px;}
             <span class="ttab" data-g="crypto">₿ Crypto</span>
             <span class="ttab" data-g="others">🌐 Others</span>
           </div>
+          <div class="trendtabs" id="heatScope">
+            <span class="ttab on" data-s="top">Top 120</span>
+            <span class="ttab" data-s="all">All</span>
+            <span class="ttab" data-s="sector">By sector</span>
+          </div>
+          <select class="heatselect" id="heatSector" aria-label="Heatmap sector"></select>
           <span class="heatnote">size = market cap · color = selected return</span>
         </div>
+        <div class="idxhealth" id="idxHealth"></div>
         <div class="heatgrid" id="heatGrid"></div>
       </div>
     </div>
@@ -873,7 +888,7 @@ const SECTOR_ICON={
 };
 let DATA=null;
 let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false,payloadSource='local';
-let heatGeo='id';
+let heatGeo='id',heatScope='top',heatSector='';
 
 function tzLine(tz,label){
   const now=new Date();
@@ -1185,14 +1200,13 @@ function moverDetailRows(){
 }
 function openMoverDetails(){
   const rows=moverDetailRows();
-  const hasPriceOnly=rows.some(isPriceOnly);
-  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart${hasPriceOnly?', source, and available news':', score, and news'}${hasPriceOnly?' · price-only rows show PX':''}</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
+  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart, score, source, and news · PX only means score unavailable</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
   const body=rows.length?`<div class="screener"><div class="srow head"><div>Ticker</div><div>Name</div><div class="hide-sm">Sector</div><div>Return</div><div>Score</div><div class="hide-sm">Risk/Price</div><div class="hide-sm">Mkt cap</div></div>`+
     rows.map(c=>{
       const sc=invScore(c),rp=bestRiskPrice(c),dp=qDelta(c);
       return `<div class="srow" data-tk="${esc(c.ticker)}" data-country="${esc(c.country)}">`+
         `<div class="stk">${flagOf(c)} ${esc(c.ticker)}</div><div class="snm">${esc(c.name)}</div><div class="muted hide-sm">${esc(c.sector_name||'')}</div>`+
-        `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${isPriceOnly(c)?'PX':(sc.score==null?'--':Math.round(sc.score))}</div>`+
+        `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${sc.score==null?(isPriceOnly(c)?'PX':'--'):Math.round(sc.score)}</div>`+
         `<div class="metricval hide-sm">${rp&&rp.score!=null?Math.round(rp.score):'--'}</div><div class="metricval muted hide-sm">${esc(c.mktcap||'--')}</div></div>`;
     }).join('')+`</div>`:`<div class="heatempty">Global leaders are mapped; activate the backend pricing pass to populate this table.</div>`;
   $('moverDetail').innerHTML=header+body;
@@ -1211,6 +1225,12 @@ function stateBadgeHTML(o){
   const op=assetOpen(o),isCrypto=o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto');
   const label=isCrypto?'● 24/7':(op?'● OPEN':'● CLOSED');
   return `<span class="exch" style="color:${op?'var(--green)':'var(--ink3)'};border-color:${op?'var(--green)':'var(--ink3)'}">${label}</span>`;
+}
+function fallbackBadgeHTML(c){
+  const sc=invScore(c);
+  return /fallback|absent from TradingView/i.test((sc.source||'')+' '+(sc.note||''))
+    ?'<span class="exch" style="color:var(--amber);border-color:rgba(245,158,11,.45)">LOW CONFIDENCE</span>'
+    :'';
 }
 function quoteStamp(o,hasLive){
   if(o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto'))return 'live · CoinGecko';
@@ -1274,7 +1294,37 @@ function activeRows(geo){
   return [...uniq.values()];
 }
 function heatRows(geo){
-  return activeRows(geo).sort((a,b)=>capNumber(b)-capNumber(a)).slice(0,120);
+  let rows=activeRows(geo).sort((a,b)=>capNumber(b)-capNumber(a));
+  if(heatScope==='sector'&&heatSector)rows=rows.filter(c=>(c.sector_name||'Other')===heatSector);
+  return heatScope==='top'?rows.slice(0,120):rows;
+}
+function updateHeatControls(allRows){
+  [...document.querySelectorAll('#heatScope .ttab')].forEach(b=>{
+    b.classList.toggle('on',b.dataset.s===heatScope);
+    b.onclick=()=>{heatScope=b.dataset.s;drawHeatmap();};
+  });
+  const sectors=[...new Set((allRows||[]).map(c=>c.sector_name||'Other'))].sort();
+  if(heatScope==='sector'&&(!heatSector||!sectors.includes(heatSector)))heatSector=sectors[0]||'';
+  const sel=$('heatSector');
+  if(sel){
+    sel.style.display=heatScope==='sector'?'':'none';
+    sel.innerHTML=sectors.map(s=>`<option value="${esc(s)}"${s===heatSector?' selected':''}>${esc(s)}</option>`).join('');
+    sel.onchange=()=>{heatSector=sel.value;drawHeatmap();};
+  }
+}
+function renderIdxHealth(){
+  const el=$('idxHealth');if(!el||!DATA)return;
+  el.style.display=heatGeo==='id'?'flex':'none';
+  if(heatGeo!=='id'){el.innerHTML='';return;}
+  const h=((((DATA.coverage_universe||{}).source_health)||{}).idx_all)||null;
+  if(!h){el.innerHTML='';return;}
+  const fallbacks=[...new Set(activeRows('id')
+    .filter(c=>/fallback|absent from TradingView/i.test((invScore(c).source||'')+' '+(invScore(c).note||'')))
+    .map(c=>c.ticker).filter(Boolean))].sort();
+  el.innerHTML=`<span class="healthchip good">TradingView IDX ${Number(h.priced||0).toLocaleString()}/${Number(h.rows||0).toLocaleString()} priced</span>`+
+    `<span class="healthchip">${Number(h.with_market_cap||0).toLocaleString()} market caps</span>`+
+    `<span class="healthchip">${Number(h.with_6m_performance||0).toLocaleString()} 6M checkpoints</span>`+
+    `${fallbacks.length?`<span class="healthchip warn">fallback ${fallbacks.join(', ')}</span>`:''}`;
 }
 function heatColor(v){
   const n=Math.max(-5,Math.min(5,Number(v)||0));
@@ -1330,10 +1380,13 @@ function drawHeatmap(){
   if(!$('heatGrid')||!DATA)return;
   [...document.querySelectorAll('#heatGeo .ttab')].forEach(b=>{
     b.classList.toggle('on',b.dataset.g===heatGeo);
-    b.onclick=()=>{heatGeo=b.dataset.g;drawHeatmap();};
+    b.onclick=()=>{heatGeo=b.dataset.g;heatSector='';drawHeatmap();};
   });
+  const allRows=activeRows(heatGeo).sort((a,b)=>capNumber(b)-capNumber(a));
+  updateHeatControls(allRows);
+  renderIdxHealth();
   const rows=heatRows(heatGeo);
-  $('heatCount').textContent=`${rows.length} active assets`;
+  $('heatCount').textContent=`${rows.length} / ${allRows.length} active assets`;
   if(!rows.length){
     $('heatGrid').innerHTML=`<div class="heatempty">Global leaders are mapped; the next backend phase will activate prices and scores for this tab.</div>`;
     return;
@@ -1365,35 +1418,50 @@ addEventListener('resize',()=>{clearTimeout(heatResizeTimer);heatResizeTimer=set
 const TF={'24h':0,'1W':5,'1M':22,'3M':65,'6M':130};   // 24h=intraday; rest slice the daily series
 let idxTF='24h',tkTF='24h';
 function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
-// returns {view, pct} for the selected timeframe of a row/constituent object
+function chartQuality(o,tf){
+  const q=o&&o.chart_quality&&o.chart_quality[tf];
+  if(q)return q;
+  if(tf==='24h')return (o&&o.intraday&&o.intraday.length)?'real_intraday':'unavailable';
+  if(o&&o.price_history_quality==='tradingview_performance_checkpoints')return 'performance_checkpoint';
+  return (o&&o.spark&&o.spark.length)?'historical_close':'unavailable';
+}
+function chartQualityLabel(q){
+  return {
+    real_intraday:'true intraday',
+    historical_close:'historical closes',
+    performance_checkpoint:'TradingView checkpoint',
+    unavailable:'unavailable this cycle',
+  }[q]||'source pending';
+}
+// returns {view, pct, quality} for the selected timeframe of a row/constituent object
 function tfData(o,tf){
-  if(tf==='24h')return {view:(o.intraday||[]),pct:o.delta_pct};
+  const quality=chartQuality(o,tf);
+  if(tf==='24h')return {view:quality==='real_intraday'?(o.intraday||[]):[],pct:o.delta_pct,quality};
   const view=tfView(o.spark,tf);
   const pct=(view.length>1&&view[0])
     ?(o.delta_unit==='bp'?(view[view.length-1]-view[0])*100:(view[view.length-1]-view[0])/view[0]*100)
     :o.delta_pct;
-  return {view,pct};
+  return {view,pct,quality:view.length?quality:'unavailable'};
 }
 function expandIdx(i){
   const r=DATA.telemetry[i];if(!r)return;
   const td=tfData(r,idxTF);let view=td.view;const tfPct=td.pct;
-  if(!view.length)view=tfView(r.spark,'1W');           // graceful fallback if no intraday
-  const hi=Math.max(...view),lo=Math.min(...view);
+  const hi=view.length?Math.max(...view):r.value,lo=view.length?Math.min(...view):r.value;
   const col=teleSparkColor(r,tfPct);
   const stateTxt=r.kind==='policy'?'<span style="color:var(--cyan)">● OFFICIAL</span>'
                            :(mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
                            :'<span style="color:var(--ink3)">● CLOSED</span>');
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
-    `<div class="px">${teleValue(r)}</div><div class="ch mono" style="color:${teleColor(r,tfPct)}">${teleMove(r,tfPct)} · ${idxTF} · ${esc(r.label)}</div></div>`+
+    `<div class="px">${teleValue(r)}</div><div class="ch mono" style="color:${teleColor(r,tfPct)}">${teleMove(r,tfPct)} · ${idxTF} · ${esc(chartQualityLabel(td.quality))} · ${esc(r.label)}</div></div>`+
     `<div style="display:flex;align-items:center;gap:6px;"><div class="tabset">${Object.keys(TF).map(t=>`<span class="tab ${t===idxTF?'on':''}" data-tf="${t}">${t}</span>`).join('')}</div><button class="xclose" id="idxClose">✕</button></div></div>`+
-    `<div class="smchart" style="margin-top:13px;">${spark(view,720,150,col)}</div>`+
+    `<div class="smchart" style="margin-top:13px;">${view.length?spark(view,720,150,col):`<div style="height:150px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${idxTF} chart ${esc(chartQualityLabel(td.quality))}.</div>`}</div>`+
     `<div class="statrow"><div class="c"><div class="k">START (${idxTF})</div><div class="v">${teleValue(r,view[0]||r.value)}</div></div>`+
     `<div class="c"><div class="k">HIGH</div><div class="v">${teleValue(r,hi)}</div></div>`+
     `<div class="c"><div class="k">LOW</div><div class="v">${teleValue(r,lo)}</div></div>`+
     `<div class="c"><div class="k">LAST</div><div class="v">${teleValue(r,r.value)}</div></div>`+
     `<div class="c"><div class="k">RANGE</div><div class="v">${teleValue(r,lo)} – ${teleValue(r,hi)}</div></div></div>`+
-    `<div class="lbl" style="margin-top:9px;">Last ${teleValue(r)} · latest move <span style="color:${teleColor(r)}">${teleMove(r)}</span> · ${stateTxt} · as of ${esc(r.asof||wibStamp(DATA.timestamp))}</div>`+
+    `<div class="lbl" style="margin-top:9px;">Last ${teleValue(r)} · latest move <span style="color:${teleColor(r)}">${teleMove(r)}</span> · ${esc(chartQualityLabel(td.quality))} · ${stateTxt} · as of ${esc(r.asof||wibStamp(DATA.timestamp))}</div>`+
     `<a class="ylink" href="${encodeURI(r.url||'#')}" target="_blank" rel="noopener">View ${esc(r.symbol)} on ${esc(teleSourceName(r))} ↗</a>`;
   $('idxClose').onclick=()=>$('idxExp').classList.remove('open');
   [...document.querySelectorAll('#idxExp .tab')].forEach(t=>t.onclick=()=>{idxTF=t.dataset.tf;expandIdx(i);});
@@ -1832,6 +1900,34 @@ function openSector(i){
 function newsRow(n){const cat=newsCat(n);return `<div class="nrow"><div class="nh chiprow">${isMustRead(n)?'<span class="meta-chip priority">MUST READ</span>':''}<span class="ncat ${cat}">${CATLABEL[cat]||(cat||'').replace(/_/g,' ')}</span><span class="meta-chip source">${(GEOFLAG[n.geo]||'')} ${esc(n.source)}</span><span class="meta-chip date">${reltime(n.ts)}</span></div>`+
   `<a class="ttl" href="${encodeURI(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a></div>`;}
 function invScore(c){return c.fundamental_score||{};}
+const LIVE_SCORES_URL='https://vitzz86.github.io/scores.json';
+const RAW_SCORES_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/scores.json';
+let SCORE_BUNDLE=null,SCORE_PROMISE=null;
+function scoreKey(c){return c&&(c.score_ref||`${c.country||''}|${c.ticker||''}|${c.source_symbol||''}|${c.sector_key||''}`);}
+function fetchScoreSource(url,label){
+  const sep=url.includes('?')?'&':'?';
+  return fetch(url+sep+'t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(label+' '+r.status);return r.json();});
+}
+function fetchScores(){
+  if(SCORE_BUNDLE)return Promise.resolve(SCORE_BUNDLE);
+  if(SCORE_PROMISE)return SCORE_PROMISE;
+  const sources=location.protocol==='file:'
+    ?[[LIVE_SCORES_URL,'live scores'],[RAW_SCORES_URL,'raw scores'],['scores.json','local scores']]
+    :[['scores.json','site scores'],[LIVE_SCORES_URL,'live scores'],[RAW_SCORES_URL,'raw scores']];
+  SCORE_PROMISE=sources.reduce((chain,[url,label])=>chain.catch(()=>fetchScoreSource(url,label)),Promise.reject())
+    .then(d=>{SCORE_BUNDLE=d;return d;})
+    .catch(e=>{SCORE_PROMISE=null;throw e;});
+  return SCORE_PROMISE;
+}
+function hydrateScore(c){
+  const ref=scoreKey(c),sc=invScore(c);
+  if(!ref||sc._full_loaded)return Promise.resolve(c);
+  return fetchScores().then(bundle=>{
+    const full=bundle&&bundle.scores&&bundle.scores[ref];
+    if(full){full._full_loaded=true;c.fundamental_score=full;}
+    return c;
+  }).catch(()=>c);
+}
 function scoreClass(sc){const label=String((sc&&sc.label)||'insufficient').toLowerCase();return label.replace(/\s+/g,'')||'insufficient';}
 function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var(--ink3)';return n>=75?'var(--green)':n>=60?'var(--blue)':n>=45?'var(--amber)':'var(--red)';}
 function scorePill(c){
@@ -2261,7 +2357,24 @@ function bindScoreAnalysis(c){
   });
   [...document.querySelectorAll('#lensTabs .wtab')].forEach(tab=>tab.onclick=()=>{setActive('#lensTabs',tab);$('lensContent').innerHTML=lensDetail(c,tab.dataset.lens);});
 }
+function scoreWarnings(sc){
+  const warnings=(sc&&sc.data_warnings)||[];
+  if(!warnings.length)return '';
+  return `<div class="scorewarn"><b>Data guardrail</b>${warnings.map(w=>`<span>${esc(w)}</span>`).join('')}</div>`;
+}
 function openScoreModal(c,s){
+  const sc=invScore(c);
+  if(c&&c.score_ref&&!sc._full_loaded){
+    $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${sc.score==null?'--':Math.round(sc.score)}</div>`+
+      `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div><div class="meta">Loading full score detail…</div></div></div>`+
+      `<div class="scoremeta" style="padding:26px 0;">Fetching valuation, risk, and investor-standard detail from scores.json.</div>`;
+    $('scoreModal').classList.add('open');
+    hydrateScore(c).then(()=>renderScoreModal(c,s));
+    return;
+  }
+  renderScoreModal(c,s);
+}
+function renderScoreModal(c,s){
   const sc=invScore(c),n=sc.score;
   scoreMetricPage=0;
   scoreAnalysisPage=0;
@@ -2270,6 +2383,7 @@ function openScoreModal(c,s){
     `<div class="meta">${esc(s.name)} · ${esc(countryLabel(c))} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
     `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div></div><div id="metricPanelWrap">${metricPanelHTML(sc,c,scoreMetricPage)}</div></div>`+
     `<div id="scoreAnalysisWrap">${scoreAnalysisHTML(c,scoreAnalysisPage)}</div>`+
+    scoreWarnings(sc)+
     `<div class="scorefoot" style="margin-top:12px;">Provider values: ${esc(sc.source||'Price history only')}${sc.currency?` · ${esc(sc.currency)}`:''}. Computed fields: score, volatility, risk ratios, and valuation estimate. Updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div>`;
   bindMetricPager(sc,c);
   bindScoreAnalysis(c);
@@ -2296,19 +2410,19 @@ function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
   const live=liveQuote(tk);const dp=qDelta(c);
   const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
-  if(!view.length)view=tfView(c.spark,'1W');
   const waitingChart=c.country==='CR'&&CG_IDS[tk]&&!view.length;
   if(waitingChart)ensureCryptoChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
+  const fallbackBadge=fallbackBadgeHTML(c);
   const news=prioritySort('news',((DATA.ticker_news||{})[tk]||[]).filter(goodNews));
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}</div>`+
-    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · as of ${esc(quoteStamp(c,!!live))}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
+    `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':'Chart unavailable this cycle.'}</div>`}</div>`+
+    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`}</div>`}</div>`+
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
@@ -2368,6 +2482,9 @@ async function ensureCryptoChart(s,tk){
     }
     if(intr.length)c.intraday=intr;
     if(sp.length)c.spark=sp.slice(-130);
+    if(intr.length||sp.length)c.chart_quality={...(c.chart_quality||{}),
+      ...(intr.length?{'24h':'real_intraday'}:{}),
+      ...(sp.length?{'1W':'historical_close','1M':'historical_close','3M':'historical_close','6M':'historical_close'}:{})};
     if(intr.length){
       c.value=intr[intr.length-1];
       if(!CRYPTO[tk]&&intr[0])c.delta_pct=round2((intr[intr.length-1]-intr[0])/intr[0]*100);
