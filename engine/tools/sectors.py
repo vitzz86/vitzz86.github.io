@@ -113,6 +113,13 @@ def _cached_chart_status(row: dict, prev: dict, max_age_hours: float) -> str:
     return "fresh" if _chart_cache_fresh(cached, max_age_hours) else "stale"
 
 
+def _broad_chart_priority(row: dict) -> tuple:
+    # Other-region rows are deliberate macro benchmarks and have a much smaller
+    # universe than US names; protect them from being starved by S&P/Nasdaq gaps.
+    country_rank = 0 if row.get("country") not in ("US", "ID", "CR") else 1
+    return (country_rank, -_row_cap(row), row.get("ticker") or "")
+
+
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
     sector_rows = universe.priced_rows_by_sector()
     prices = {}
@@ -180,6 +187,23 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
         from tools import yquote
         prices.update(yquote.fetch_lite([row["source_symbol"] for row in lite_rows]))
     _merge_cached_charts(prices, price_only, previous_sectors)
+    finnhub_limit = max(0, int(getattr(settings, "PRICE_ONLY_FINNHUB_CHART_LIMIT", 0)))
+    if finnhub_limit:
+        missing_after_yahoo = sorted(
+            [r for r in price_only if not (prices.get(r["source_symbol"]) or {}).get("spark")],
+            key=_broad_chart_priority,
+        )
+        if missing_after_yahoo:
+            try:
+                from tools import finnhub
+                for sym, chart in finnhub.chart_series(
+                    [row["source_symbol"] for row in missing_after_yahoo],
+                    limit=finnhub_limit,
+                ).items():
+                    prices.setdefault(sym, {}).update(chart)
+                _merge_cached_charts(prices, price_only, previous_sectors)
+            except Exception as e:  # noqa: BLE001
+                print(f"[sectors] Finnhub chart fallback failed: {e}")
     # TradingView is the IDX source of truth for price, cap, volume, 6M spark, and screen fields.
     if idx_prices:
         prices.update(idx_prices)

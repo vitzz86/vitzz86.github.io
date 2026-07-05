@@ -2412,6 +2412,8 @@ function openTicker(s,tk){
   const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
   const waitingChart=c.country==='CR'&&cryptoCoinIds(c,tk).length&&!view.length;
   if(waitingChart)ensureCryptoChart(s,tk);
+  const waitingEquity=c.country!=='ID'&&c.country!=='CR'&&equityChartSymbol(c,tk)&&!view.length;
+  if(waitingEquity)ensureEquityChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
   const fallbackBadge=fallbackBadgeHTML(c);
@@ -2423,7 +2425,7 @@ function openTicker(s,tk){
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`}</div>`}</div>`+
+    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading Finnhub chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div>`}</div>`+
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
@@ -2459,6 +2461,7 @@ const CG_IDS={BTC:'bitcoin',ETH:'ethereum',SOL:'solana',BNB:'binancecoin',XRP:'r
   ADA:'cardano',DOGE:'dogecoin',AVAX:'avalanche-2',LINK:'chainlink',MATIC:'polygon-ecosystem-token'};
 const CG_ALIASES={MATIC:['polygon-ecosystem-token','matic-network']};
 const CRYPTO_CHART_LOADING={};
+const EQUITY_CHART_LOADING={};
 function cryptoCoinIds(c,tk){
   const ids=[];
   if(c&&c.coingecko_id)ids.push(c.coingecko_id);
@@ -2467,6 +2470,11 @@ function cryptoCoinIds(c,tk){
   if(CG_IDS[tk])ids.push(CG_IDS[tk]);
   (CG_ALIASES[tk]||[]).forEach(id=>ids.push(id));
   return [...new Set(ids.filter(Boolean))];
+}
+function equityChartSymbol(c,tk){
+  if(!(DATA.config||{}).finnhub_key)return '';
+  if(!c||c.country==='ID'||c.country==='CR')return '';
+  return (c.source_symbol||tk||'').replace(/-/g,'.');
 }
 function cryptoSector(){return (DATA&&DATA.sectors||[]).find(s=>s.key==='crypto');}
 function refreshOpenSectorUI(){
@@ -2507,6 +2515,30 @@ async function ensureCryptoChart(s,tk){
     console.warn('CoinGecko chart unavailable for '+tk);
   }finally{
     CRYPTO_CHART_LOADING[tk]=false;
+  }
+}
+async function ensureEquityChart(s,tk){
+  const c=s.constituents.find(x=>x.ticker===tk),sym=equityChartSymbol(c,tk),key=(DATA.config||{}).finnhub_key;
+  if(!c||!sym||!key||EQUITY_CHART_LOADING[tk])return;
+  EQUITY_CHART_LOADING[tk]=true;
+  try{
+    const now=Math.floor(Date.now()/1000),histFrom=now-190*86400,dayFrom=now-3*86400;
+    const url=(res,from)=>`https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(sym)}&resolution=${res}&from=${from}&to=${now}&token=${key}`;
+    const [hist,day]=await Promise.all([fetch(url('D',histFrom)),fetch(url('30',dayFrom))]);
+    const h=await hist.json(),d=await day.json();
+    if(h&&h.s==='ok'&&Array.isArray(h.c)&&h.c.length){
+      c.spark=h.c.filter(v=>v!=null).map(v=>round2(v)).slice(-130);
+      c.spark_ts=(h.t||[]).slice(-130);
+      c.chart_quality={...(c.chart_quality||{}), '1W':'historical_close','1M':'historical_close','3M':'historical_close','6M':'historical_close'};
+    }
+    if(d&&d.s==='ok'&&Array.isArray(d.c)&&d.c.length){
+      c.intraday=d.c.filter(v=>v!=null).map(v=>round2(v));
+      c.chart_quality={...(c.chart_quality||{}), '24h':'real_intraday'};
+    }
+    if($('smTicker').style.display!=='none'&&($('smTicker').dataset.tk||'')===tk)openTicker(s,tk);
+  }catch(e){
+  }finally{
+    EQUITY_CHART_LOADING[tk]=false;
   }
 }
 function startCrypto(){

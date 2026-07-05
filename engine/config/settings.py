@@ -62,6 +62,7 @@ CRYPTO_TOP_PRICE_LIMIT = 100
 IDX_ALL_PRICE_LIMIT = 1200
 PRICE_ONLY_CHART_LIMIT = 120         # progressive full-chart backfill per run for broad US/Others rows
 PRICE_ONLY_CHART_CACHE_HOURS = 36    # keep cached broad 6M charts; refresh stale slices gradually
+PRICE_ONLY_FINNHUB_CHART_LIMIT = 80  # fallback 6M candles when Yahoo throttles broad rows
 US_INDEX_LIMITS = {"sp500": 520, "nasdaq100": 120}
 
 # Country / region metadata used by the dashboard and by the next universe
