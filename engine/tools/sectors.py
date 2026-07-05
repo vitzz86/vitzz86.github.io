@@ -8,6 +8,7 @@ non-IDX equities and curated fundamentals.
 """
 from __future__ import annotations
 
+import time
 import sys
 
 sys.path.insert(0, __import__("os").path.join(__import__("os").path.dirname(__file__), ".."))
@@ -39,6 +40,7 @@ def _batch_prices(symbols: list) -> dict:
                     "spark_ts": r.get("spark_ts", []),
                     "intraday": r.get("intraday", []),
                     "chart_quality": r.get("chart_quality"),
+                    "chart_asof": r.get("chart_asof"),
                     "mkt_start": r.get("mkt_start"), "mkt_end": r.get("mkt_end")}
     return out
 
@@ -67,6 +69,48 @@ def _uses_tradingview_idx(row: dict) -> bool:
 
 def _pick_price_field(price: dict, base: dict, key: str):
     return price.get(key) if price.get(key) is not None else base.get(key)
+
+
+def _chart_cache_fresh(row: dict, max_age_hours: float) -> bool:
+    asof = row.get("chart_asof")
+    if not asof:
+        return False
+    try:
+        return (time.time() - float(asof)) <= max_age_hours * 3600
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _merge_cached_charts(prices: dict, rows: list[dict], previous_sectors: list | None) -> None:
+    """Reuse broad price-only 6M charts so Yahoo backfill can converge safely."""
+    prev = _previous_rows(previous_sectors)
+    max_age = float(getattr(settings, "PRICE_ONLY_CHART_CACHE_HOURS", 36))
+    for row in rows:
+        sym = row.get("source_symbol")
+        if not sym or sym not in prices:
+            continue
+        cached = prev.get(sym) or prev.get(row.get("ticker"))
+        if not cached or not cached.get("spark"):
+            continue
+        p = prices.setdefault(sym, {})
+        if not p.get("spark"):
+            p["spark"] = cached.get("spark") or []
+            p["spark_ts"] = cached.get("spark_ts") or []
+            p["price_history_quality"] = cached.get("price_history_quality")
+            p["chart_asof"] = cached.get("chart_asof")
+            p["_chart_cache_stale"] = not _chart_cache_fresh(cached, max_age)
+            q = dict(cached.get("chart_quality") or {})
+            if q:
+                q["24h"] = ((p.get("chart_quality") or {}).get("24h")
+                            or ("real_intraday" if p.get("intraday") else "unavailable"))
+                p["chart_quality"] = q
+
+
+def _cached_chart_status(row: dict, prev: dict, max_age_hours: float) -> str:
+    cached = prev.get(row.get("source_symbol")) or prev.get(row.get("ticker"))
+    if not cached or not cached.get("spark"):
+        return "missing"
+    return "fresh" if _chart_cache_fresh(cached, max_age_hours) else "stale"
 
 
 def collect(previous_sectors: list | None = None, telemetry: list | None = None) -> list:
@@ -111,10 +155,17 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     except Exception as e:  # noqa: BLE001
         print(f"[sectors] US index snapshot overlay failed: {e}")
 
+    previous_by_symbol = _previous_rows(previous_sectors)
+    cache_hours = float(getattr(settings, "PRICE_ONLY_CHART_CACHE_HOURS", 36))
+
     chart_candidates = sorted(
-        [r for r in price_only if not (prices.get(r["source_symbol"]) or {}).get("intraday")],
-        key=_row_cap,
-        reverse=True,
+        [r for r in price_only
+         if not (prices.get(r["source_symbol"]) or {}).get("spark")
+         and _cached_chart_status(r, previous_by_symbol, cache_hours) != "fresh"],
+        key=lambda r: (
+            0 if _cached_chart_status(r, previous_by_symbol, cache_hours) == "missing" else 1,
+            -_row_cap(r),
+        ),
     )
     chart_rows = chart_candidates[:chart_limit]
     chart_symbols = {r["source_symbol"] for r in chart_rows}
@@ -122,9 +173,13 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                  if r["source_symbol"] not in prices and r["source_symbol"] not in chart_symbols]
 
     prices.update(_batch_prices([row["source_symbol"] for row in rich_rows]))
-    if chart_rows or lite_rows:
+    if chart_rows:
         from tools import yquote
-        prices.update(yquote.fetch_lite([row["source_symbol"] for row in chart_rows + lite_rows]))
+        prices.update(yquote.fetch([row["source_symbol"] for row in chart_rows], workers=8))
+    if lite_rows:
+        from tools import yquote
+        prices.update(yquote.fetch_lite([row["source_symbol"] for row in lite_rows]))
+    _merge_cached_charts(prices, price_only, previous_sectors)
     # TradingView is the IDX source of truth for price, cap, volume, 6M spark, and screen fields.
     if idx_prices:
         prices.update(idx_prices)
@@ -140,10 +195,14 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 p = prices.setdefault(sym, {})
                 if not p.get("intraday"):
                     p["intraday"] = crypto_quotes.chart(sym, 1)
+                    if p["intraday"]:
+                        p["chart_asof"] = int(time.time())
                 if not p.get("spark"):
                     ser = crypto_quotes.chart_series(sym, 180, "daily")
                     p["spark"] = ser["spark"][-130:]
                     p["spark_ts"] = ser["spark_ts"][-130:]
+                    if p["spark"]:
+                        p["chart_asof"] = int(time.time())
         except Exception as e:  # noqa: BLE001
             print(f"[sectors] CoinGecko crypto overlay failed: {e}")
 
@@ -185,6 +244,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "rsi": _pick_price_field(p or {}, base, "rsi"),
                 "price_history_quality": _pick_price_field(p or {}, base, "price_history_quality"),
                 "chart_quality": _pick_price_field(p or {}, base, "chart_quality"),
+                "chart_asof": _pick_price_field(p or {}, base, "chart_asof"),
             })
             if country == "ID":
                 id_d.append(delta)

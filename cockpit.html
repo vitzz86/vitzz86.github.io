@@ -2410,7 +2410,7 @@ function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
   const live=liveQuote(tk);const dp=qDelta(c);
   const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
-  const waitingChart=c.country==='CR'&&CG_IDS[tk]&&!view.length;
+  const waitingChart=c.country==='CR'&&cryptoCoinIds(c,tk).length&&!view.length;
   if(waitingChart)ensureCryptoChart(s,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
@@ -2418,6 +2418,7 @@ function openTicker(s,tk){
   const news=prioritySort('news',((DATA.ticker_news||{})[tk]||[]).filter(goodNews));
   $('smConstPanel').style.display='none';
   const t=$('smTicker');t.style.display='';
+  t.dataset.tk=tk;
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
@@ -2458,6 +2459,15 @@ const CG_IDS={BTC:'bitcoin',ETH:'ethereum',SOL:'solana',BNB:'binancecoin',XRP:'r
   ADA:'cardano',DOGE:'dogecoin',AVAX:'avalanche-2',LINK:'chainlink',MATIC:'polygon-ecosystem-token'};
 const CG_ALIASES={MATIC:['polygon-ecosystem-token','matic-network']};
 const CRYPTO_CHART_LOADING={};
+function cryptoCoinIds(c,tk){
+  const ids=[];
+  if(c&&c.coingecko_id)ids.push(c.coingecko_id);
+  const sym=c&&String(c.source_symbol||'');
+  if(sym.startsWith('CG:'))ids.push(sym.slice(3));
+  if(CG_IDS[tk])ids.push(CG_IDS[tk]);
+  (CG_ALIASES[tk]||[]).forEach(id=>ids.push(id));
+  return [...new Set(ids.filter(Boolean))];
+}
 function cryptoSector(){return (DATA&&DATA.sectors||[]).find(s=>s.key==='crypto');}
 function refreshOpenSectorUI(){
   drawSectors();
@@ -2466,11 +2476,11 @@ function refreshOpenSectorUI(){
 }
 async function ensureCryptoChart(s,tk){
   if(CRYPTO_CHART_LOADING[tk])return;
-  const c=s.constituents.find(x=>x.ticker===tk),id=CG_IDS[tk];if(!c||!id)return;
+  const c=s.constituents.find(x=>x.ticker===tk),ids=cryptoCoinIds(c,tk);if(!c||!ids.length)return;
   CRYPTO_CHART_LOADING[tk]=true;
   try{
     let intr=[],sp=[];
-    for(const coinId of (CG_ALIASES[tk]||[id])){
+    for(const coinId of ids){
       const [day,hist]=await Promise.all([
         fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=1`),
         fetch(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=180&interval=daily`)
@@ -2490,8 +2500,7 @@ async function ensureCryptoChart(s,tk){
       if(!CRYPTO[tk]&&intr[0])c.delta_pct=round2((intr[intr.length-1]-intr[0])/intr[0]*100);
     }
     if($('smTicker').style.display!=='none'){
-      const open=$('smTicker').querySelector('.tk');
-      const openTk=open?open.textContent.replace(/[^A-Z0-9]/g,''):'';
+      const openTk=$('smTicker').dataset.tk||'';
       if(openTk===tk)openTicker(s,tk);
     }
   }catch(e){
@@ -2501,8 +2510,13 @@ async function ensureCryptoChart(s,tk){
   }
 }
 function startCrypto(){
-  const ids=[...new Set(Object.values(CG_IDS).concat(...Object.values(CG_ALIASES)))].join(',');
-  const idToTk=Object.fromEntries(Object.entries(CG_IDS).flatMap(([t,i])=>[[i,t],...((CG_ALIASES[t]||[]).map(a=>[a,t]))]));
+  const cryptoRows=(cryptoSector()||{}).constituents||[];
+  const pairs=[];
+  Object.entries(CG_IDS).forEach(([t,i])=>{pairs.push([i,t]);(CG_ALIASES[t]||[]).forEach(a=>pairs.push([a,t]));});
+  cryptoRows.forEach(c=>cryptoCoinIds(c,c.ticker).forEach(id=>pairs.push([id,c.ticker])));
+  const ids=[...new Set(pairs.map(p=>p[0]).filter(Boolean))].join(',');
+  const idToTk=Object.fromEntries(pairs);
+  if(!ids)return;
   async function poll(){
     try{const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
       const d=await r.json();
@@ -2512,8 +2526,8 @@ function startCrypto(){
       if(cs)for(const c of cs.constituents){const q=CRYPTO[c.ticker];if(q){c.value=q.c;c.delta_pct=q.dp;c.state='open';}}
       refreshOpenSectorUI();
       // live-refresh an open crypto ticker view
-      if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],open=$('smTicker').querySelector('.tk');
-        if(s&&s.key==='crypto'&&open){const tk=open.textContent.replace(/[^A-Z0-9]/g,'');if(CRYPTO[tk])openTicker(s,tk);}}
+      if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],tk=$('smTicker').dataset.tk||'';
+        if(s&&s.key==='crypto'&&tk&&CRYPTO[tk])openTicker(s,tk);}
       $('freshPill').innerHTML='<span class="d dgreen"></span>CRYPTO 24/7 · '+ago(DATA.timestamp).toUpperCase();
     }catch(e){}
   }

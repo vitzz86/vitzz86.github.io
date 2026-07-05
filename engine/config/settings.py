@@ -60,7 +60,8 @@ NASDAQ100_PRICE_ACTIVE = True        # dynamic Nasdaq 100 quote-only heatmap cov
 CRYPTO_TOP_PRICE_ACTIVE = True       # CoinGecko top market-cap crypto quote-only coverage
 CRYPTO_TOP_PRICE_LIMIT = 100
 IDX_ALL_PRICE_LIMIT = 1200
-PRICE_ONLY_CHART_LIMIT = 160         # core rows get charts; broad rows above this use quote-lite
+PRICE_ONLY_CHART_LIMIT = 120         # progressive full-chart backfill per run for broad US/Others rows
+PRICE_ONLY_CHART_CACHE_HOURS = 36    # keep cached broad 6M charts; refresh stale slices gradually
 US_INDEX_LIMITS = {"sp500": 520, "nasdaq100": 120}
 
 # Country / region metadata used by the dashboard and by the next universe

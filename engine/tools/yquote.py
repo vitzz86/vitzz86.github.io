@@ -82,6 +82,7 @@ def _one(sym: str) -> dict | None:
         ser = _series(six)
         out["spark"] = ser["spark"][-130:]
         out["spark_ts"] = ser["spark_ts"][-130:]
+        out["chart_asof"] = int(time.time())
         out["chart_quality"].update({
             "1W": "historical_close",
             "1M": "historical_close",
