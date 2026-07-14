@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A public wall of hopes, dreams, gratitude, feedback, and music from visitors to Vito Christian Samudra's website.">
+  <meta name="theme-color" content="#f8f8fc">
+  <meta property="og:title" content="Dream Board — Vito Christian Samudra">
+  <meta property="og:description" content="Leave a hope, share some motivation, or add the playlist that keeps you going.">
+  <title>Dream Board — Vito Christian Samudra</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/hope.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="assets/hope-config.js" defer></script>
+  <script src="assets/hope.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#board">Skip to the board</a>
+
+  <header class="topbar">
+    <a class="hope-brand" href="index.html" aria-label="Return to Vito's portfolio">
+      <span class="brand-sparkles" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>Vito's Dream Board</span>
+    </a>
+    <div class="top-actions">
+      <div class="theme-switch" role="group" aria-label="Color theme">
+        <button type="button" class="theme-option" data-theme-value="light" aria-label="Use light theme" aria-pressed="true">☼</button>
+        <button type="button" class="theme-option" data-theme-value="dark" aria-label="Use dark theme" aria-pressed="false">☾</button>
+      </div>
+      <a class="about-link" href="index.html">About Vito</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">Dream Board <span aria-hidden="true">✨</span></h1>
+        <p>Share your hopes, dreams, motivation, feedback, and everything in between.<br>Read. Inspire. Be inspired.</p>
+      </div>
+      <div class="stats" aria-label="Board statistics">
+        <article class="stat-card">
+          <span class="stat-icon heart" aria-hidden="true">♥</span>
+          <span><strong id="messageCount">0</strong><small>Messages shared</small></span>
+        </article>
+        <article class="stat-card">
+          <img class="stat-icon spotify" src="assets/spotify-logo.png" alt="" width="28" height="28">
+          <span><strong id="playlistCount">0</strong><small>Playlists shared</small></span>
+        </article>
+      </div>
+    </section>
+
+    <section class="composer-shell" aria-labelledby="composer-title">
+      <form id="postForm" novalidate>
+        <div class="composer-lead">
+          <span class="mood-face" aria-hidden="true">😎</span>
+          <div>
+            <h2 id="composer-title">What's on your mind?</h2>
+            <p>Share your hope, dream, or anything that matters to you.</p>
+          </div>
+        </div>
+
+        <div class="message-wrap">
+          <label class="sr-only" for="message">Your message</label>
+          <textarea id="message" name="message" maxlength="500" minlength="3" required placeholder="Write your message here… (max 500 characters)"></textarea>
+          <span class="character-count" id="characterCount">0 / 500</span>
+        </div>
+
+        <div class="composer-grid">
+          <fieldset class="field-group type-group">
+            <legend>Type</legend>
+            <div class="choice-row" id="composerTypes"></div>
+          </fieldset>
+
+          <fieldset class="field-group identity-group">
+            <legend>Post as</legend>
+            <div class="identity-control">
+              <label class="identity-choice"><input type="radio" name="identity" value="anonymous" checked><span>Anonymous</span></label>
+              <label class="identity-choice"><input type="radio" name="identity" value="named"><span>Add my name</span></label>
+            </div>
+            <div class="name-field" id="nameField" hidden>
+              <label class="sr-only" for="displayName">Your name or nickname</label>
+              <input id="displayName" name="displayName" type="text" minlength="2" maxlength="40" placeholder="Your name or nickname" autocomplete="nickname">
+            </div>
+          </fieldset>
+
+          <div class="field-group spotify-field">
+            <label for="spotifyUrl">Optional Spotify playlist</label>
+            <div class="spotify-input-wrap">
+              <img src="assets/spotify-logo.png" alt="" width="18" height="18">
+              <input id="spotifyUrl" name="spotifyUrl" type="url" inputmode="url" placeholder="Paste Spotify playlist link" autocomplete="off">
+              <button type="button" id="clearSpotify" aria-label="Remove Spotify playlist" hidden>×</button>
+            </div>
+            <p class="field-status" id="spotifyStatus" aria-live="polite"></p>
+            <div class="spotify-preview" id="spotifyPreview" hidden>
+              <div class="preview-art" aria-hidden="true"><img src="assets/spotify-logo.png" alt="" width="22" height="22"></div>
+              <span><strong>Spotify playlist</strong><small>Ready to embed</small></span>
+              <button type="button" id="removeSpotify">Remove</button>
+            </div>
+          </div>
+
+          <button class="publish-button" type="submit" id="publishButton">
+            <span aria-hidden="true">↗</span><span id="publishLabel">Post Anonymously</span>
+          </button>
+        </div>
+
+        <p class="public-notice"><span aria-hidden="true">◇</span>Your post will appear publicly on the board. Please avoid sharing sensitive personal information.</p>
+        <p class="form-error" id="formError" role="alert"></p>
+      </form>
+    </section>
+
+    <section class="board-tools" aria-label="Filter Dream Board posts">
+      <div class="filter-topline">
+        <div class="filter-scroll" id="categoryFilters"></div>
+        <label class="search-box">
+          <span aria-hidden="true">⌕</span>
+          <span class="sr-only">Search messages or playlists</span>
+          <input id="searchInput" type="search" placeholder="Search messages or playlists…" autocomplete="off">
+        </label>
+      </div>
+      <div class="filter-bottomline">
+        <div class="sort-control" id="sortControl" role="group" aria-label="Sort posts">
+          <button type="button" data-sort="latest" class="active"><span aria-hidden="true">◷</span>Latest</button>
+          <button type="button" data-sort="loved"><span aria-hidden="true">♡</span>Most Loved</button>
+          <button type="button" data-sort="random"><span aria-hidden="true">⌘</span>Random</button>
+          <button type="button" data-sort="oldest"><span aria-hidden="true">▣</span>Oldest</button>
+        </div>
+        <label class="time-filter">
+          <span aria-hidden="true">▣</span>
+          <span class="sr-only">Time period</span>
+          <select id="timeFilter">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section id="board" class="board" aria-label="Dream Board posts" aria-live="polite"></section>
+    <div class="empty-state" id="emptyState" hidden>
+      <span aria-hidden="true">✦</span>
+      <h2>No messages found</h2>
+      <p>Try a different search or clear the active filters.</p>
+      <button type="button" id="clearFilters">Clear search and filters</button>
+    </div>
+
+    <footer class="hope-footer">
+      <p>Made with hope by <a href="index.html">Vito Christian Samudra</a>.</p>
+      <p>Every message belongs to a real person.</p>
+    </footer>
+  </main>
+
+  <dialog id="reportDialog" class="report-dialog">
+    <form method="dialog" id="reportForm">
+      <button class="dialog-close" value="cancel" aria-label="Close report dialog">×</button>
+      <span class="dialog-icon" aria-hidden="true">◇</span>
+      <h2>Report this post</h2>
+      <p>Tell us what feels wrong. Reports help keep this board safe and welcoming.</p>
+      <label for="reportReason">Reason</label>
+      <select id="reportReason" required>
+        <option value="">Choose a reason</option>
+        <option>Spam</option>
+        <option>Harassment or abusive content</option>
+        <option>Hate speech</option>
+        <option>Sexual or explicit content</option>
+        <option>Personal information</option>
+        <option>Dangerous content</option>
+        <option>Other</option>
+      </select>
+      <div class="dialog-actions">
+        <button value="cancel" class="secondary">Cancel</button>
+        <button value="submit" id="submitReport" class="primary">Submit report</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
