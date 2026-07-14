@@ -113,6 +113,61 @@ def _cached_chart_status(row: dict, prev: dict, max_age_hours: float) -> str:
     return "fresh" if _chart_cache_fresh(cached, max_age_hours) else "stale"
 
 
+def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list | None) -> None:
+    """Rotate true 30-minute Yahoo charts across IDX while TradingView owns quotes."""
+    limit = max(0, int(getattr(settings, "IDX_INTRADAY_BATCH_LIMIT", 0)))
+    if not limit or not rows:
+        return
+    previous = _previous_rows(previous_sectors)
+
+    def prior(row: dict) -> dict:
+        return previous.get(row.get("source_symbol")) or previous.get(row.get("ticker")) or {}
+
+    def priority(row: dict) -> tuple:
+        cached = prior(row)
+        missing = 0 if not cached.get("intraday") else 1
+        try:
+            asof = float(cached.get("chart_asof") or 0)
+        except Exception:  # noqa: BLE001
+            asof = 0.0
+        return (missing, asof, -_row_cap(row), row.get("ticker") or "")
+
+    selected = sorted(rows, key=priority)[:limit]
+    selected_symbols = {r.get("source_symbol") for r in selected}
+    fetched = {}
+    try:
+        from tools import yquote
+        fetched = yquote.fetch_intraday([r.get("source_symbol") for r in selected], workers=16)
+    except Exception as e:  # noqa: BLE001
+        print(f"[sectors] IDX intraday rotation failed: {e}")
+
+    resolved = 0
+    for row in rows:
+        sym = row.get("source_symbol")
+        current = prices.setdefault(sym, {})
+        live = fetched.get(sym) if sym in selected_symbols else None
+        cached = prior(row)
+        source = live if live and live.get("intraday") else cached if cached.get("intraday") else None
+        if not source:
+            continue
+        current["intraday"] = source.get("intraday") or []
+        current["chart_asof"] = source.get("chart_asof") or cached.get("chart_asof")
+        # Session bounds/state still come from the TradingView IDX calendar layer.
+        quality = dict(current.get("chart_quality") or {})
+        if source is live:
+            quality["24h"] = "real_intraday"
+        else:
+            max_age = float(getattr(settings, "IDX_INTRADAY_CACHE_HOURS", 3.0))
+            try:
+                age_hours = (time.time() - float(source.get("chart_asof") or 0)) / 3600
+            except Exception:  # noqa: BLE001
+                age_hours = max_age + 1
+            quality["24h"] = "cached_intraday" if age_hours <= max_age else "stale_intraday"
+        current["chart_quality"] = quality
+        resolved += 1
+    print(f"[sectors] IDX intraday routes: {resolved}/{len(rows)} cached; {len(fetched)}/{len(selected)} refreshed")
+
+
 def _broad_chart_priority(row: dict) -> tuple:
     # Other-region rows are deliberate macro benchmarks and have a much smaller
     # universe than US names; protect them from being starved by S&P/Nasdaq gaps.
@@ -222,6 +277,8 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     # TradingView is the IDX source of truth for price, cap, volume, 6M spark, and screen fields.
     if idx_prices:
         prices.update(idx_prices)
+        idx_rows = [r for r in all_rows if _uses_tradingview_idx(r)]
+        _idx_intraday_overlay(prices, idx_rows, previous_sectors)
     crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
                       if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
     if crypto_symbols:
@@ -238,8 +295,8 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                         p["chart_asof"] = int(time.time())
                 if not p.get("spark"):
                     ser = crypto_quotes.chart_series(sym, 180, "daily")
-                    p["spark"] = ser["spark"][-130:]
-                    p["spark_ts"] = ser["spark_ts"][-130:]
+                    p["spark"] = ser["spark"][-180:]
+                    p["spark_ts"] = ser["spark_ts"][-180:]
                     if p["spark"]:
                         p["chart_asof"] = int(time.time())
         except Exception as e:  # noqa: BLE001

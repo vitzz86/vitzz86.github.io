@@ -423,6 +423,11 @@ def validate(payload: dict) -> None:
         arr = iq.get(key)
         if not isinstance(arr, list) or not arr or not all(isinstance(s, str) for s in arr):
             raise ValueError(f"contract violation: intelligence_quadrants.{key}")
+    chart_health = (((payload.get("coverage_universe") or {}).get("source_health") or {}).get("charts") or {})
+    _expect(chart_health.get("status") == "complete_routes",
+            f"chart routes incomplete: {chart_health.get('missing_routes') or 'audit missing'}")
+    _expect(chart_health.get("route_ready") == chart_health.get("total"),
+            "chart route count does not cover the active universe")
     _validate_intelligence(payload)
 
 

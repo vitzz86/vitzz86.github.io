@@ -411,6 +411,62 @@ def dedupe(rows: list[dict]) -> list[dict]:
     return list(out.values())
 
 
+def _chart_source_health(rows: list[dict]) -> dict:
+    """Compact audit of baked chart data plus the browser fallback route."""
+    timeframes = ("24h", "1W", "1M", "3M", "6M")
+
+    def market(row: dict) -> str:
+        country = row.get("country")
+        if country == "ID":
+            return "Indonesia"
+        if country == "US":
+            return "US"
+        if country == "CR":
+            return "Crypto"
+        return "Others"
+
+    def route_ready(row: dict) -> bool:
+        if row.get("country") == "CR":
+            symbol = str(row.get("source_symbol") or "")
+            return bool(row.get("coingecko_id") or symbol.startswith("CG:") or symbol in CRYPTO_IDS)
+        return bool(row.get("ticker") or row.get("source_symbol"))
+
+    def baked(row: dict, timeframe: str) -> bool:
+        quality = (row.get("chart_quality") or {}).get(timeframe)
+        if quality in (None, "unavailable"):
+            return False
+        series = row.get("intraday") if timeframe == "24h" else row.get("spark")
+        return len(series or []) > 1
+
+    by_market = {}
+    for label in ("Indonesia", "US", "Crypto", "Others"):
+        subset = [r for r in rows if market(r) == label]
+        by_market[label] = {
+            "total": len(subset),
+            "route_ready": sum(1 for r in subset if route_ready(r)),
+            **{f"baked_{tf.lower()}": sum(1 for r in subset if baked(r, tf)) for tf in timeframes},
+        }
+    missing = [f"{r.get('country')}:{r.get('ticker')}" for r in rows if not route_ready(r)]
+    mismatches = []
+    for row in rows:
+        for timeframe in timeframes:
+            quality = (row.get("chart_quality") or {}).get(timeframe)
+            if quality in (None, "unavailable"):
+                continue
+            series = row.get("intraday") if timeframe == "24h" else row.get("spark")
+            if len(series or []) <= 1:
+                mismatches.append(f"{row.get('country')}:{row.get('ticker')}:{timeframe}")
+    return {
+        "status": "complete_routes" if not missing else "missing_routes",
+        "total": len(rows),
+        "route_ready": len(rows) - len(missing),
+        "missing_routes": missing[:50],
+        "quality_mismatches": mismatches[:50],
+        "by_market": by_market,
+        "fallbacks": {"equities": "TradingView interactive", "crypto": "CoinGecko on demand"},
+    }
+
+
 def coverage_summary(sectors_list: list | None = None) -> dict:
     if sectors_list is None:
         active = priced_rows()
@@ -426,6 +482,7 @@ def coverage_summary(sectors_list: list | None = None) -> dict:
             source_health["idx_all"] = idx_membership.source_health(unique_active)
         except Exception as e:  # noqa: BLE001
             source_health["idx_all"] = {"provider": "TradingView scanner", "status": "error", "error": str(e)[:160]}
+    source_health["charts"] = _chart_source_health(unique_active)
     return {
         "active_sector_flow": {
             "count": len(active),

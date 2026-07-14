@@ -286,6 +286,9 @@ footer .g{color:var(--green);}
 .smstats .k{font-family:var(--mono);font-size:8px;letter-spacing:.06em;color:var(--ink3);}
 .smstats .v{font-family:var(--mono);font-size:14px;margin-top:3px;}
 .smchart{margin-top:13px;background:#0b0b0e;border:1px solid var(--line);border-radius:8px;padding:10px;}
+.tvchart-shell{height:260px;padding:0;overflow:hidden;position:relative;}
+.tvchart-host{height:100%;width:100%;background:#0b0b0e;}
+.tvchart-note{position:absolute;left:10px;bottom:7px;z-index:2;padding:3px 6px;background:rgba(11,11,14,.84);border:1px solid var(--line);border-radius:4px;color:var(--cyan);font-family:var(--mono);font-size:8px;text-decoration:none;}
 .smthemes{list-style:none;margin:14px 0 0;}
 .smthemes li{position:relative;padding-left:16px;font-size:11.5px;color:#c2c2cc;line-height:1.55;margin-bottom:7px;}
 .smthemes li:before{content:"▸";position:absolute;left:0;color:var(--amber);}
@@ -1417,10 +1420,17 @@ addEventListener('resize',()=>{clearTimeout(heatResizeTimer);heatResizeTimer=set
 /* ---- index expand ---- */
 const TF={'24h':0,'1W':5,'1M':22,'3M':65,'6M':130};   // 24h=intraday; rest slice the daily series
 let idxTF='24h',tkTF='24h';
-function tfView(sl,tf){return (sl||[]).slice(-TF[tf]);}
+const CRYPTO_TF={'1W':7,'1M':30,'3M':90,'6M':180};
+function tfView(o,tf){
+  const points=o&&o.country==='CR'?(CRYPTO_TF[tf]||TF[tf]):TF[tf];
+  return (o&&o.spark||[]).slice(-points);
+}
 function chartQuality(o,tf){
   const q=o&&o.chart_quality&&o.chart_quality[tf];
-  if(q)return q;
+  if(q){
+    if(tf==='24h'&&['real_intraday','cached_intraday','stale_intraday'].includes(q)&&!(o&&o.intraday&&o.intraday.length>1))return 'unavailable';
+    return q;
+  }
   if(tf==='24h')return (o&&o.intraday&&o.intraday.length)?'real_intraday':'unavailable';
   if(o&&o.price_history_quality==='tradingview_performance_checkpoints')return 'performance_checkpoint';
   return (o&&o.spark&&o.spark.length)?'historical_close':'unavailable';
@@ -1428,6 +1438,8 @@ function chartQuality(o,tf){
 function chartQualityLabel(q){
   return {
     real_intraday:'true intraday',
+    cached_intraday:'cached intraday',
+    stale_intraday:'stale intraday · refresh pending',
     historical_close:'historical closes',
     performance_checkpoint:'TradingView checkpoint',
     unavailable:'unavailable this cycle',
@@ -1436,8 +1448,9 @@ function chartQualityLabel(q){
 // returns {view, pct, quality} for the selected timeframe of a row/constituent object
 function tfData(o,tf){
   const quality=chartQuality(o,tf);
-  if(tf==='24h')return {view:quality==='real_intraday'?(o.intraday||[]):[],pct:o.delta_pct,quality};
-  const view=tfView(o.spark,tf);
+  if(tf==='24h')return {view:['real_intraday','cached_intraday','stale_intraday'].includes(quality)?(o.intraday||[]):[],pct:o.delta_pct,quality};
+  if(quality==='unavailable')return {view:[],pct:o.delta_pct,quality};
+  const view=tfView(o,tf);
   const pct=(view.length>1&&view[0])
     ?(o.delta_unit==='bp'?(view[view.length-1]-view[0])*100:(view[view.length-1]-view[0])/view[0]*100)
     :o.delta_pct;
@@ -2414,6 +2427,8 @@ function openTicker(s,tk){
   if(waitingChart)ensureCryptoChart(s,tk);
   const waitingEquity=c.country!=='ID'&&c.country!=='CR'&&equityChartSymbol(c,tk)&&!view.length;
   if(waitingEquity)ensureEquityChart(s,tk);
+  const tvFallback=!view.length&&c.country!=='CR'&&!(c.country==='ID'&&tkTF==='24h')&&!!tradingViewSymbol(c,tk);
+  const idxChartQueued=!view.length&&c.country==='ID'&&tkTF==='24h';
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
   const fallbackBadge=fallbackBadgeHTML(c);
@@ -2425,11 +2440,12 @@ function openTicker(s,tk){
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `<div class="smchart">${view.length?spark(view,420,110,col):`<div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading Finnhub chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div>`}</div>`+
+    `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(idxChartQueued?'24h intraday is queued for the rotating IDX backfill. Longer TradingView checkpoints remain available.':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`))}</div></div>`)}`+
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
     `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
+  if(tvFallback)mountTradingViewChart(c,tk,tkTF);
   [...document.querySelectorAll('#smTicker .tab')].forEach(tab=>tab.onclick=()=>{tkTF=tab.dataset.tf;openTicker(s,tk);});
   const sb=$('scoreDetailBtn');if(sb)sb.onclick=()=>openScoreModal(c,s);
   $('tkBack').onclick=()=>{t.style.display='none';$('smConstPanel').style.display='';};
@@ -2476,6 +2492,40 @@ function equityChartSymbol(c,tk){
   if(!c||c.country==='ID'||c.country==='CR')return '';
   return (c.source_symbol||tk||'').replace(/-/g,'.');
 }
+const TV_EXCHANGE={ID:'IDX',JP:'TSE',KR:'KRX',HK:'HKEX',TW:'TWSE',SG:'SGX',AU:'ASX',
+  FR:'EURONEXT',GB:'LSE',DE:'XETR',CH:'SIX',NL:'EURONEXT',ES:'BME',DK:'OMXCOP',IN:'NSE'};
+function tradingViewSymbol(c,tk){
+  if(!c||c.country==='CR')return '';
+  const ticker=String(tk||c.ticker||'').replace(/-/g,c.country==='US'?'.':'-');
+  if(!ticker)return '';
+  if(c.country==='US')return ticker;
+  const exchange=TV_EXCHANGE[c.country]||String(c.exchange||'').replace(/\s+/g,'');
+  return exchange?`${exchange}:${ticker}`:ticker;
+}
+function tradingViewRange(tf){return ({'24h':'1D','1W':'5D','1M':'1M','3M':'3M','6M':'6M'})[tf]||'1M';}
+function tradingViewInterval(c,tf){
+  if(c&&c.country==='ID')return 'D';
+  return tf==='24h'?'30':(tf==='1W'?'60':'D');
+}
+function tradingViewFallbackHTML(c,tk,tf){
+  const symbol=tradingViewSymbol(c,tk);if(!symbol)return '';
+  const href=`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`;
+  return `<div class="smchart tvchart-shell"><div class="tvchart-host" id="tvFallbackChart"></div>`+
+    `<a class="tvchart-note" href="${href}" target="_blank" rel="noopener">${esc(tf)} interactive fallback · TradingView ↗</a></div>`;
+}
+function mountTradingViewChart(c,tk,tf){
+  const host=$('tvFallbackChart'),symbol=tradingViewSymbol(c,tk);if(!host||!symbol)return;
+  host.innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Loading TradingView chart…</div>';
+  const wrap=document.createElement('div');wrap.className='tradingview-widget-container';wrap.style.cssText='height:100%;width:100%';
+  const widget=document.createElement('div');widget.className='tradingview-widget-container__widget';widget.style.cssText='height:100%;width:100%';
+  const script=document.createElement('script');script.type='text/javascript';script.async=true;
+  script.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.text=JSON.stringify({autosize:true,symbol,interval:tradingViewInterval(c,tf),range:tradingViewRange(tf),
+    timezone:'Asia/Jakarta',theme:'dark',style:'2',locale:'en',backgroundColor:'#0b0b0e',
+    gridColor:'rgba(42,43,50,0.45)',hide_side_toolbar:true,hide_top_toolbar:false,hide_legend:false,
+    hide_volume:false,allow_symbol_change:false,calendar:false,support_host:'https://www.tradingview.com'});
+  wrap.append(widget,script);host.replaceChildren(wrap);
+}
 function cryptoSector(){return (DATA&&DATA.sectors||[]).find(s=>s.key==='crypto');}
 function refreshOpenSectorUI(){
   drawSectors();
@@ -2499,7 +2549,7 @@ async function ensureCryptoChart(s,tk){
       if(intr.length||sp.length)break;
     }
     if(intr.length)c.intraday=intr;
-    if(sp.length)c.spark=sp.slice(-130);
+    if(sp.length)c.spark=sp.slice(-180);
     if(intr.length||sp.length)c.chart_quality={...(c.chart_quality||{}),
       ...(intr.length?{'24h':'real_intraday'}:{}),
       ...(sp.length?{'1W':'historical_close','1M':'historical_close','3M':'historical_close','6M':'historical_close'}:{})};

@@ -99,9 +99,20 @@ def top_markets(limit: int = 100) -> list[dict]:
     per_page = max(1, min(int(limit or 100), 250))
     data = _get(
         f"{API}/coins/markets?vs_currency=usd&order=market_cap_desc"
-        f"&per_page={per_page}&page=1&sparkline=false&price_change_percentage=24h"
+        f"&per_page={per_page}&page=1&sparkline=true&price_change_percentage=24h"
     )
     return data if isinstance(data, list) else []
+
+
+def _daily_checkpoints(hourly: list) -> list[float]:
+    """Downsample CoinGecko's 7D hourly sparkline to calendar-day checkpoints."""
+    clean = [round(float(v), 6) for v in hourly or [] if v is not None]
+    if not clean:
+        return []
+    points = [clean[max(0, len(clean) - 1 - offset)] for offset in range(6 * 24, -1, -24)]
+    if points[-1] != clean[-1]:
+        points.append(clean[-1])
+    return points
 
 
 def price_map_from_markets(markets: list[dict]) -> dict:
@@ -113,6 +124,9 @@ def price_map_from_markets(markets: list[dict]) -> dict:
         if not cid or price is None:
             continue
         prev = price / (1 + (dp or 0.0) / 100) if dp != -100 else price
+        hourly = ((row.get("sparkline_in_7d") or {}).get("price") or [])
+        intraday = [round(float(v), 6) for v in hourly[-25:] if v is not None]
+        week = _daily_checkpoints(hourly)
         out[f"CG:{cid}"] = {
             "value": round(float(price), 6),
             "delta_pct": round(float(dp or 0.0), 2),
@@ -124,12 +138,13 @@ def price_map_from_markets(markets: list[dict]) -> dict:
             "volume_24h": row.get("total_volume"),
             "volume": row.get("total_volume") or 0.0,
             "turnover": row.get("total_volume") or 0.0,
-            "spark": [],
+            "spark": week,
             "spark_ts": [],
-            "intraday": [],
+            "intraday": intraday,
+            "chart_asof": int(time.time()),
             "chart_quality": {
-                "24h": "unavailable",
-                "1W": "unavailable",
+                "24h": "real_intraday" if len(intraday) > 1 else "unavailable",
+                "1W": "historical_close" if len(week) > 1 else "unavailable",
                 "1M": "unavailable",
                 "3M": "unavailable",
                 "6M": "unavailable",

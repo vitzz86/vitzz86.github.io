@@ -17,12 +17,12 @@ import urllib.request
 CHART = "https://query1.finance.yahoo.com/v8/finance/chart/"
 
 
-def _chart(sym: str, rng: str, interval: str) -> dict | None:
+def _chart(sym: str, rng: str, interval: str, attempts: int = 3, timeout: int = 20) -> dict | None:
     url = f"{CHART}{urllib.parse.quote(sym)}?range={rng}&interval={interval}"
-    for attempt in range(3):
+    for attempt in range(attempts):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            with urllib.request.urlopen(req, timeout=20) as r:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
                 return json.load(r)["chart"]["result"][0]
         except Exception:  # noqa: BLE001
             time.sleep(1.0 * (attempt + 1))
@@ -63,14 +63,15 @@ def _one(sym: str) -> dict | None:
     reg = (m.get("currentTradingPeriod") or {}).get("regular") or {}
     start, end = reg.get("start"), reg.get("end")
     now = int(time.time())
+    intraday = _closes(day)
     out = {"value": round(float(price), 4),
            "prev_close": round(float(pc), 4),
            "delta_pct": round((price - pc) / pc * 100, 2),
            "open": bool(start and end and start <= now <= end),
            "mkt_start": start, "mkt_end": end,
-           "intraday": _closes(day), "spark": [], "volume": 0.0,
+           "intraday": intraday, "spark": [], "volume": 0.0,
            "chart_quality": {
-               "24h": "real_intraday",
+               "24h": "real_intraday" if len(intraday) > 1 else "unavailable",
                "1W": "unavailable",
                "1M": "unavailable",
                "3M": "unavailable",
@@ -82,13 +83,14 @@ def _one(sym: str) -> dict | None:
         ser = _series(six)
         out["spark"] = ser["spark"][-130:]
         out["spark_ts"] = ser["spark_ts"][-130:]
-        out["chart_asof"] = int(time.time())
-        out["chart_quality"].update({
-            "1W": "historical_close",
-            "1M": "historical_close",
-            "3M": "historical_close",
-            "6M": "historical_close",
-        })
+        if len(out["spark"]) > 1:
+            out["chart_asof"] = int(time.time())
+            out["chart_quality"].update({
+                "1W": "historical_close",
+                "1M": "historical_close",
+                "3M": "historical_close",
+                "6M": "historical_close",
+            })
         try:
             vols = [v for v in (six["indicators"]["quote"][0].get("volume") or []) if v is not None]
             out["volume"] = float(vols[-1]) if vols else 0.0
@@ -111,9 +113,7 @@ def fetch(symbols: list, workers: int = 8) -> dict:
     return out
 
 
-def _one_lite(sym: str) -> dict | None:
-    """One-call quote for broad rows: price, official day %, state, 24h chart."""
-    day = _chart(sym, "1d", "30m")
+def _lite_from_day(day: dict | None) -> dict | None:
     if not day:
         return None
     m = day.get("meta") or {}
@@ -129,6 +129,7 @@ def _one_lite(sym: str) -> dict | None:
         volume = float(vols[-1]) if vols else 0.0
     except Exception:  # noqa: BLE001
         pass
+    intraday = _closes(day)
     return {
         "value": round(float(price), 4),
         "prev_close": round(float(pc), 4),
@@ -136,19 +137,30 @@ def _one_lite(sym: str) -> dict | None:
         "open": bool(start and end and start <= now <= end),
         "mkt_start": start,
         "mkt_end": end,
-        "intraday": _closes(day),
+        "intraday": intraday,
         "spark": [],
         "spark_ts": [],
+        "chart_asof": int(time.time()),
         "volume": volume,
         "turnover": round(float(price) * volume, 0),
         "chart_quality": {
-            "24h": "real_intraday",
+            "24h": "real_intraday" if len(intraday) > 1 else "unavailable",
             "1W": "unavailable",
             "1M": "unavailable",
             "3M": "unavailable",
             "6M": "unavailable",
         },
     }
+
+
+def _one_lite(sym: str) -> dict | None:
+    """One-call quote for broad rows: price, official day %, state, 24h chart."""
+    return _lite_from_day(_chart(sym, "1d", "30m"))
+
+
+def _one_intraday_fast(sym: str) -> dict | None:
+    """Bounded single-attempt intraday fetch for large rotating universes."""
+    return _lite_from_day(_chart(sym, "1d", "30m", attempts=1, timeout=8))
 
 
 def fetch_lite(symbols: list, workers: int = 10) -> dict:
@@ -168,4 +180,18 @@ def fetch_lite(symbols: list, workers: int = 10) -> dict:
     except Exception as e:  # noqa: BLE001
         print(f"[yquote] quote-lite pool failed: {e}")
     print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo chart-lite")
+    return out
+
+
+def fetch_intraday(symbols: list, workers: int = 16) -> dict:
+    """Fast rotating 24h coverage; failures retain the prior cached chart."""
+    out, uniq = {}, [s for s in dict.fromkeys(symbols) if s]
+    try:
+        with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+            for sym, row in zip(uniq, ex.map(_one_intraday_fast, uniq)):
+                if row and row.get("intraday"):
+                    out[sym] = row
+    except Exception as e:  # noqa: BLE001
+        print(f"[yquote] intraday rotation pool failed: {e}")
+    print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo intraday rotation")
     return out
