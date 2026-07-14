@@ -550,7 +550,7 @@
     head.append(typePill);
     const menuWrap = document.createElement("div");
     menuWrap.className = "menu-wrap";
-    const menuButton = makeText("button", "menu-button", "•••");
+    const menuButton = makeText("button", "menu-button", "⋮");
     menuButton.type = "button";
     menuButton.setAttribute("aria-label", "Post options");
     menuButton.setAttribute("aria-expanded", "false");
