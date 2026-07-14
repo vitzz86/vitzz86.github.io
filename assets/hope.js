@@ -16,7 +16,7 @@
     gratitude: { label: "Gratitude", icon: "💜" },
     feedback: { label: "Feedback", icon: "💬" },
     advice: { label: "Advice", icon: "💡" },
-    general: { label: "General", icon: "•••" }
+    general: { label: "General", icon: "🌈" }
   };
 
   const SPOTIFY_TYPES = {
@@ -245,7 +245,11 @@
       input.value = value;
       input.checked = index === 0;
       const span = document.createElement("span");
-      span.textContent = `${info.icon} ${info.label}`;
+      span.className = "choice-content";
+      const icon = makeText("span", "category-icon", info.icon);
+      icon.setAttribute("aria-hidden", "true");
+      span.append(icon, makeText("span", "category-label", info.label));
+      label.dataset.type = value;
       label.append(input, span);
       el.composerTypes.append(label);
     });
@@ -256,7 +260,7 @@
     const filters = [
       ["all", "▦", "All"],
       ...Object.entries(TYPES).map(([key, info]) => [key, info.icon, info.label]),
-      ["music", "♫", "With Music"]
+      ["music", "🎵", "With Music"]
     ];
     filters.forEach(([key, icon, label]) => {
       const button = document.createElement("button");
@@ -264,7 +268,9 @@
       button.className = `filter-chip${state.filter === key ? " active" : ""}`;
       button.dataset.filter = key;
       button.setAttribute("aria-pressed", String(state.filter === key));
-      button.textContent = `${icon} ${label}`;
+      const iconNode = makeText("span", "category-icon", icon);
+      iconNode.setAttribute("aria-hidden", "true");
+      button.append(iconNode, makeText("span", "category-label", label));
       el.categoryFilters.append(button);
     });
   }
@@ -431,7 +437,12 @@
     const head = document.createElement("div");
     head.className = "card-head";
     const type = TYPES[post.type] || TYPES.general;
-    head.append(makeText("span", "type-pill", `${type.label} ${type.icon}`));
+    const typePill = document.createElement("span");
+    typePill.className = "type-pill";
+    const typeIcon = makeText("span", "category-icon", type.icon);
+    typeIcon.setAttribute("aria-hidden", "true");
+    typePill.append(makeText("span", "category-label", type.label), typeIcon);
+    head.append(typePill);
     const menuWrap = document.createElement("div");
     menuWrap.className = "menu-wrap";
     const menuButton = makeText("button", "menu-button", "•••");
@@ -495,7 +506,8 @@
     const loved = state.loved.has(post.id);
     card.dataset.type = post.type;
     card.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
-    card.querySelector(".type-pill").textContent = `${type.label} ${type.icon}`;
+    card.querySelector(".type-pill .category-label").textContent = type.label;
+    card.querySelector(".type-pill .category-icon").textContent = type.icon;
     card.querySelector(".post-message").textContent = post.message;
     card.querySelector(".author-avatar").textContent = post.isAnonymous ? "👤" : "✦";
     card.querySelector(".author-name").textContent = post.displayName || "Anonymous";
