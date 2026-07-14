@@ -37,6 +37,10 @@
     /^sb_publishable_|^eyJ/i.test(BACKEND_CONFIG.supabasePublishableKey || "")
   );
   let database = null;
+  const postCardCache = new Map();
+  const spotifyControllers = new Map();
+  const playingSpotifyPosts = new Set();
+  let spotifyIframeApi = null;
 
   const el = {
     html: document.documentElement,
@@ -266,6 +270,9 @@
   }
 
   function updateUrl() {
+    // Changing the parent URL can reset third-party media embeds in some browsers.
+    // Apply the URL state once playback pauses instead of interrupting the listener.
+    if (playingSpotifyPosts.size) return;
     const query = new URLSearchParams();
     if (state.filter === "music") query.set("music", "true");
     else if (state.filter !== "all") query.set("type", state.filter);
@@ -342,15 +349,14 @@
   function makePlaylist(post) {
     const wrapper = document.createElement("div");
     wrapper.className = "playlist-card";
+    wrapper.dataset.postId = String(post.id);
+    wrapper.dataset.spotifyType = post.spotify.type;
+    wrapper.dataset.spotifyUrl = post.spotify.canonicalUrl || post.spotify.embedUrl;
     const spotifyLabel = SPOTIFY_TYPES[post.spotify.type] || "music";
-    const iframe = document.createElement("iframe");
-    iframe.src = post.spotify.embedUrl;
-    iframe.loading = "lazy";
-    iframe.allowFullscreen = true;
-    iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-    iframe.setAttribute("scrolling", "no");
-    iframe.className = post.spotify.type === "track" ? "spotify-track-frame" : "spotify-collection-frame";
-    iframe.title = `Spotify ${spotifyLabel}: ${post.spotify.title}`;
+    const embed = document.createElement("div");
+    embed.className = "spotify-embed-host";
+    embed.setAttribute("role", "group");
+    embed.setAttribute("aria-label", `Spotify ${spotifyLabel}: ${post.spotify.title}`);
 
     const actions = document.createElement("div");
     actions.className = "player-actions";
@@ -359,10 +365,60 @@
     open.target = "_blank";
     open.rel = "noopener";
     actions.append(open);
-    wrapper.append(iframe, actions);
+    wrapper.append(embed, actions);
 
     return wrapper;
   }
+
+  function setSpotifyPlaying(postId, playing) {
+    const key = String(postId);
+    const changed = playing ? !playingSpotifyPosts.has(key) : playingSpotifyPosts.has(key);
+    if (!changed) return;
+    if (playing) playingSpotifyPosts.add(key);
+    else playingSpotifyPosts.delete(key);
+    renderBoard();
+  }
+
+  function initializeSpotifyEmbed(wrapper) {
+    if (!spotifyIframeApi || wrapper.dataset.spotifyReady === "true") return;
+    const host = wrapper.querySelector(".spotify-embed-host");
+    if (!host) return;
+    const postId = wrapper.dataset.postId;
+    wrapper.dataset.spotifyReady = "true";
+    spotifyIframeApi.createController(host, {
+      url: wrapper.dataset.spotifyUrl,
+      width: "100%",
+      height: wrapper.dataset.spotifyType === "track" ? 152 : 352
+    }, (controller) => {
+      spotifyControllers.set(postId, controller);
+      controller.addListener("playback_started", () => setSpotifyPlaying(postId, true));
+      controller.addListener("playback_update", (event) => {
+        if (typeof event?.data?.isPaused === "boolean") {
+          setSpotifyPlaying(postId, !event.data.isPaused);
+        }
+      });
+    });
+  }
+
+  function initializeSpotifyEmbeds(root = document) {
+    root.querySelectorAll(".playlist-card").forEach(initializeSpotifyEmbed);
+  }
+
+  function preserveSpotifyPlayback() {
+    const activeControllers = [...playingSpotifyPosts]
+      .map((postId) => spotifyControllers.get(postId))
+      .filter(Boolean);
+    if (!activeControllers.length) return;
+    activeControllers.forEach((controller) => controller.resume());
+    requestAnimationFrame(() => {
+      activeControllers.forEach((controller) => controller.resume());
+    });
+  }
+
+  window.onSpotifyIframeApiReady = (api) => {
+    spotifyIframeApi = api;
+    initializeSpotifyEmbeds();
+  };
 
   function makePostCard(post, index) {
     const card = document.createElement("article");
@@ -399,7 +455,9 @@
     const author = document.createElement("span");
     author.className = "author";
     author.append(makeText("span", "author-avatar", post.isAnonymous ? "👤" : "✦"), makeText("span", "author-name", post.displayName || "Anonymous"));
-    meta.append(author, makeText("time", "", relativeTime(post.createdAt)));
+    const time = makeText("time", "post-time", relativeTime(post.createdAt));
+    time.dateTime = post.createdAt;
+    meta.append(author, time);
     const footer = document.createElement("div");
     footer.className = "card-footer";
     const love = document.createElement("button");
@@ -408,7 +466,7 @@
     love.setAttribute("aria-label", state.loved.has(post.id) ? "Remove love reaction" : "Love this post");
     const heart = makeText("span", "heart-glyph", state.loved.has(post.id) ? "♥" : "♡");
     heart.setAttribute("aria-hidden", "true");
-    const count = makeText("span", "", String(post.reactionCount || 0));
+    const count = makeText("span", "love-count", String(post.reactionCount || 0));
     love.append(heart, count);
     footer.append(love);
     card.append(meta, footer);
@@ -429,6 +487,38 @@
     });
 
     love.addEventListener("click", () => toggleLove(post.id));
+    return card;
+  }
+
+  function updatePostCard(card, post, index) {
+    const type = TYPES[post.type] || TYPES.general;
+    const loved = state.loved.has(post.id);
+    card.dataset.type = post.type;
+    card.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
+    card.querySelector(".type-pill").textContent = `${type.label} ${type.icon}`;
+    card.querySelector(".post-message").textContent = post.message;
+    card.querySelector(".author-avatar").textContent = post.isAnonymous ? "👤" : "✦";
+    card.querySelector(".author-name").textContent = post.displayName || "Anonymous";
+    const time = card.querySelector(".post-time");
+    time.dateTime = post.createdAt;
+    time.textContent = relativeTime(post.createdAt);
+    const love = card.querySelector(".love-button");
+    love.classList.toggle("loved", loved);
+    love.setAttribute("aria-label", loved ? "Remove love reaction" : "Love this post");
+    love.querySelector(".heart-glyph").textContent = loved ? "♥" : "♡";
+    love.querySelector(".love-count").textContent = String(post.reactionCount || 0);
+  }
+
+  function getPersistentPostCard(post, index) {
+    const key = String(post.id);
+    let card = postCardCache.get(key);
+    if (!card) {
+      card = makePostCard(post, index);
+      postCardCache.set(key, card);
+      el.board.append(card);
+      initializeSpotifyEmbeds(card);
+    }
+    updatePostCard(card, post, index);
     return card;
   }
 
@@ -453,7 +543,27 @@
 
     el.boardLoading.hidden = true;
     const posts = getVisiblePosts();
-    el.board.replaceChildren(...posts.map(makePostCard));
+    const liveIds = new Set(state.posts.map((post) => String(post.id)));
+    postCardCache.forEach((card, id) => {
+      if (!liveIds.has(id)) {
+        spotifyControllers.get(id)?.destroy();
+        spotifyControllers.delete(id);
+        playingSpotifyPosts.delete(id);
+        card.remove();
+        postCardCache.delete(id);
+      }
+    });
+    const visibleOrder = new Map(posts.map((post, index) => [String(post.id), index]));
+    state.posts.forEach((post, index) => {
+      const card = getPersistentPostCard(post, index);
+      const order = visibleOrder.get(String(post.id));
+      const visible = order !== undefined;
+      const isPlayingOutsideFilter = !visible && post.spotify && playingSpotifyPosts.has(String(post.id));
+      card.hidden = !visible && !isPlayingOutsideFilter;
+      card.classList.toggle("is-playing-filtered", Boolean(isPlayingOutsideFilter));
+      card.setAttribute("aria-label", isPlayingOutsideFilter ? "Spotify music continues playing" : "Dream Board post");
+      card.style.order = String(order ?? (posts.length + index));
+    });
     el.emptyState.hidden = posts.length > 0;
     if (!posts.length) {
       const boardIsEmpty = state.posts.length === 0;
@@ -470,6 +580,7 @@
     }
     el.messageCount.textContent = state.posts.length.toLocaleString();
     el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();
+    preserveSpotifyPlayback();
   }
 
   function renderEmojiPicker() {

@@ -486,6 +486,25 @@ main {
   animation: card-in 300ms ease both;
 }
 
+/* Keep an active player reachable when its post does not match the current filter. */
+.post-card.is-playing-filtered {
+  position: fixed;
+  z-index: 30;
+  right: 16px;
+  bottom: 16px;
+  width: min(420px, calc(100vw - 32px));
+  height: auto;
+  min-height: 0;
+  padding: 8px;
+  overflow: visible;
+  border-color: color-mix(in srgb, var(--green) 45%, var(--card-border));
+  box-shadow: 0 20px 55px rgba(8, 10, 18, 0.28);
+  animation: none;
+}
+.post-card.is-playing-filtered > :not(.playlist-card) { display: none; }
+.post-card.is-playing-filtered .playlist-card { margin: 0; padding: 0; border: 0; background: transparent; }
+.post-card.is-playing-filtered .playlist-card iframe { height: 152px; }
+
 html[data-theme="dark"] .post-card { --card-bg: #11171f; --card-border: #36404d; }
 .post-card[data-type="hope"] { --card-bg: #fffaf0; --card-border: #eadba9; --type-color: #ba8a00; }
 .post-card[data-type="dream"] { --card-bg: #fff4f8; --card-border: #f1cad9; --type-color: #e23973; }
@@ -545,6 +564,7 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #241d16; --
 .playlist-card { min-width: 0; margin: -2px 0 13px; padding: 8px 8px 6px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--type-color) 24%, var(--card-border)); border-radius: 12px; background: color-mix(in srgb, var(--type-color) 8%, var(--surface-solid)); }
 .playlist-card iframe { display: block; width: 100%; min-width: 0; height: 352px; overflow: hidden; border: 0; border-radius: 10px; background: #151515; }
 .playlist-card iframe.spotify-track-frame { height: 152px; }
+.playlist-card[data-spotify-type="track"] iframe { height: 152px; }
 .player-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; }
 .player-actions { justify-content: flex-end; padding: 0 2px; }
 .player-actions a { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 9px; text-decoration: none; }
