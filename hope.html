@@ -11,10 +11,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/hope.css?v=20260714-4">
+  <link rel="stylesheet" href="assets/hope.css?v=20260714-5">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="assets/hope-config.js?v=20260714-4" defer></script>
-  <script src="assets/hope.js?v=20260714-4" defer></script>
+  <script src="assets/hope-config.js?v=20260714-5" defer></script>
+  <script src="assets/hope.js?v=20260714-5" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#board">Skip to the board</a>
@@ -64,6 +64,10 @@
         <div class="message-wrap">
           <label class="sr-only" for="message">Your message</label>
           <textarea id="message" name="message" maxlength="500" minlength="3" required placeholder="Write your message here… (max 500 characters)"></textarea>
+          <div class="emoji-control">
+            <button class="emoji-button" type="button" id="emojiButton" aria-label="Add an emoji" aria-expanded="false" aria-controls="emojiPicker"><span aria-hidden="true">😊</span><span>Emoji</span></button>
+            <div class="emoji-picker" id="emojiPicker" role="dialog" aria-label="Choose an emoji" hidden></div>
+          </div>
           <span class="character-count" id="characterCount">0 / 500</span>
         </div>
 
@@ -142,6 +146,10 @@
     </section>
 
     <section id="board" class="board" aria-label="Dream Board posts" aria-live="polite"></section>
+    <div class="board-loading" id="boardLoading" role="status" aria-live="polite" hidden>
+      <span aria-hidden="true">✦</span>
+      <p>Loading the shared Dream Board…</p>
+    </div>
     <div class="empty-state" id="emptyState" hidden>
       <span aria-hidden="true">✦</span>
       <h2>Be the first to share</h2>

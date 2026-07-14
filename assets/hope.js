@@ -25,6 +25,12 @@
     track: "song"
   };
 
+  const EMOJIS = [
+    "✨", "💜", "🌈", "🚀", "🌱", "☀️", "🌟", "💪",
+    "🙏", "😊", "🥰", "😂", "😭", "❤️", "🔥", "🎉",
+    "🎵", "☁️", "💡", "👏", "🤞", "🫶", "🌍", "☕"
+  ];
+
   const BACKEND_CONFIG = window.DREAM_BOARD_CONFIG || {};
   const backendConfigured = Boolean(
     /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(BACKEND_CONFIG.supabaseUrl || "") &&
@@ -37,6 +43,8 @@
     form: document.querySelector("#postForm"),
     message: document.querySelector("#message"),
     characterCount: document.querySelector("#characterCount"),
+    emojiButton: document.querySelector("#emojiButton"),
+    emojiPicker: document.querySelector("#emojiPicker"),
     composerTypes: document.querySelector("#composerTypes"),
     displayName: document.querySelector("#displayName"),
     nameField: document.querySelector("#nameField"),
@@ -53,6 +61,7 @@
     sortControl: document.querySelector("#sortControl"),
     timeFilter: document.querySelector("#timeFilter"),
     board: document.querySelector("#board"),
+    boardLoading: document.querySelector("#boardLoading"),
     emptyState: document.querySelector("#emptyState"),
     clearFilters: document.querySelector("#clearFilters"),
     messageCount: document.querySelector("#messageCount"),
@@ -66,10 +75,11 @@
   const params = new URLSearchParams(window.location.search);
   const initialFilter = params.get("type") || (params.get("music") === "true" ? "music" : "all");
   const state = {
-    posts: loadPosts(),
+    posts: backendConfigured ? [] : loadPosts(),
     loved: new Set(readJson(STORAGE.loved, [])),
     backendConfigured,
     backendReady: false,
+    backendLoading: backendConfigured,
     backendError: "",
     filter: initialFilter === "music" || TYPES[initialFilter] ? initialFilter : "all",
     sort: ["latest", "loved", "random", "oldest"].includes(params.get("sort")) ? params.get("sort") : "latest",
@@ -130,6 +140,8 @@
     const rows = Array.isArray(data) ? data : [];
     state.posts = rows.map(mapDatabasePost);
     state.loved = new Set(rows.filter((row) => row.loved_by_me).map((row) => row.id));
+    state.backendLoading = false;
+    state.backendError = "";
     renderBoard();
   }
 
@@ -158,7 +170,9 @@
       await refreshDatabasePosts();
     } catch (error) {
       state.backendReady = false;
+      state.backendLoading = false;
       state.backendError = error?.message || "Dream Board connection failed";
+      renderBoard();
       showToast("The shared Dream Board is temporarily unavailable.");
     }
   }
@@ -323,8 +337,10 @@
   function makePlaylist(post) {
     const wrapper = document.createElement("div");
     wrapper.className = "playlist-card";
-    const row = document.createElement("div");
+    const row = document.createElement("button");
+    row.type = "button";
     row.className = "playlist-preview-row";
+    row.setAttribute("aria-expanded", "false");
     const art = document.createElement("div");
     art.className = "playlist-art";
     if (post.spotify.thumbnailUrl) {
@@ -334,12 +350,12 @@
       image.loading = "lazy";
       art.append(image);
     }
-    const play = document.createElement("button");
-    play.type = "button";
+    const play = document.createElement("span");
+    play.className = "playlist-play-glyph";
     play.textContent = "▶";
-    play.dataset.action = "play";
     const spotifyLabel = SPOTIFY_TYPES[post.spotify.type] || "music";
-    play.setAttribute("aria-label", `Play Spotify ${spotifyLabel}: ${post.spotify.title}`);
+    play.setAttribute("aria-hidden", "true");
+    row.setAttribute("aria-label", `Expand Spotify ${spotifyLabel}: ${post.spotify.title}`);
     art.append(play);
     const meta = document.createElement("span");
     meta.className = "playlist-meta";
@@ -368,14 +384,27 @@
     playerShell.append(actions);
     wrapper.append(row, playerShell);
 
-    play.addEventListener("click", () => {
+    const closePlayer = () => {
+      playerShell.hidden = true;
+      playerShell.querySelector("iframe")?.remove();
+      row.setAttribute("aria-expanded", "false");
+      row.setAttribute("aria-label", `Expand Spotify ${spotifyLabel}: ${post.spotify.title}`);
+      play.textContent = "▶";
+    };
+
+    const openPlayer = () => {
       document.querySelectorAll(".player-shell:not([hidden])").forEach((active) => {
         if (active !== playerShell) {
           active.hidden = true;
           active.querySelector("iframe")?.remove();
           const activeCard = active.closest(".playlist-card");
-          const activePlay = activeCard?.querySelector('[data-action="play"]');
-          if (activePlay) activePlay.hidden = false;
+          const activeRow = activeCard?.querySelector(".playlist-preview-row");
+          const activeGlyph = activeCard?.querySelector(".playlist-play-glyph");
+          if (activeRow) {
+            activeRow.setAttribute("aria-expanded", "false");
+            activeRow.setAttribute("aria-label", activeRow.getAttribute("aria-label")?.replace(/^Collapse/, "Expand") || "Expand Spotify player");
+          }
+          if (activeGlyph) activeGlyph.textContent = "▶";
         }
       });
       if (!playerShell.querySelector("iframe")) {
@@ -389,14 +418,17 @@
         playerShell.prepend(iframe);
       }
       playerShell.hidden = false;
-      play.hidden = true;
+      row.setAttribute("aria-expanded", "true");
+      row.setAttribute("aria-label", `Collapse Spotify ${spotifyLabel}: ${post.spotify.title}`);
+      play.textContent = "▾";
+    };
+
+    row.addEventListener("click", () => {
+      if (playerShell.hidden) openPlayer();
+      else closePlayer();
     });
 
-    collapse.addEventListener("click", () => {
-      playerShell.hidden = true;
-      playerShell.querySelector("iframe")?.remove();
-      play.hidden = false;
-    });
+    collapse.addEventListener("click", closePlayer);
 
     return wrapper;
   }
@@ -469,21 +501,6 @@
   }
 
   function renderBoard() {
-    const posts = getVisiblePosts();
-    el.board.replaceChildren(...posts.map(makePostCard));
-    el.emptyState.hidden = posts.length > 0;
-    if (!posts.length) {
-      const boardIsEmpty = state.posts.length === 0;
-      el.emptyState.querySelector("h2").textContent = boardIsEmpty ? "Be the first to share" : "No messages found";
-      el.emptyState.querySelector("p").textContent = boardIsEmpty
-        ? "Leave the first hope, dream, or message on Vito’s Dream Board."
-        : state.search
-          ? "No posts match your search."
-          : "No messages match these filters.";
-      el.clearFilters.hidden = boardIsEmpty;
-    }
-    el.messageCount.textContent = state.posts.length.toLocaleString();
-    el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();
     renderFilters();
     el.sortControl.querySelectorAll("button").forEach((button) => {
       const active = button.dataset.sort === state.sort;
@@ -492,6 +509,63 @@
     });
     el.timeFilter.value = state.period;
     updateUrl();
+
+    if (state.backendLoading) {
+      el.board.replaceChildren();
+      el.boardLoading.hidden = false;
+      el.emptyState.hidden = true;
+      el.messageCount.textContent = "—";
+      el.playlistCount.textContent = "—";
+      return;
+    }
+
+    el.boardLoading.hidden = true;
+    const posts = getVisiblePosts();
+    el.board.replaceChildren(...posts.map(makePostCard));
+    el.emptyState.hidden = posts.length > 0;
+    if (!posts.length) {
+      const boardIsEmpty = state.posts.length === 0;
+      const boardUnavailable = state.backendConfigured && state.backendError && boardIsEmpty;
+      el.emptyState.querySelector("h2").textContent = boardUnavailable ? "Dream Board unavailable" : boardIsEmpty ? "Be the first to share" : "No messages found";
+      el.emptyState.querySelector("p").textContent = boardUnavailable
+        ? "The shared board could not load. Please refresh and try again."
+        : boardIsEmpty
+        ? "Leave the first hope, dream, or message on Vito’s Dream Board."
+        : state.search
+          ? "No posts match your search."
+          : "No messages match these filters.";
+      el.clearFilters.hidden = boardIsEmpty || boardUnavailable;
+    }
+    el.messageCount.textContent = state.posts.length.toLocaleString();
+    el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();
+  }
+
+  function renderEmojiPicker() {
+    const buttons = EMOJIS.map((emoji) => {
+      const button = makeText("button", "emoji-option", emoji);
+      button.type = "button";
+      button.dataset.emoji = emoji;
+      button.setAttribute("aria-label", `Add ${emoji}`);
+      return button;
+    });
+    el.emojiPicker.replaceChildren(...buttons);
+  }
+
+  function setEmojiPicker(open) {
+    el.emojiPicker.hidden = !open;
+    el.emojiButton.setAttribute("aria-expanded", String(open));
+  }
+
+  function insertEmoji(emoji) {
+    const start = el.message.selectionStart ?? el.message.value.length;
+    const end = el.message.selectionEnd ?? start;
+    if (el.message.value.length - (end - start) + emoji.length > 500) {
+      showToast("Your message is already at the 500-character limit.");
+      return;
+    }
+    el.message.setRangeText(emoji, start, end, "end");
+    el.message.focus();
+    updateComposer();
   }
 
   async function toggleLove(postId) {
@@ -765,6 +839,13 @@
       button.addEventListener("click", () => setTheme(button.dataset.themeValue));
     });
     el.message.addEventListener("input", updateComposer);
+    el.emojiButton.addEventListener("click", () => setEmojiPicker(el.emojiPicker.hidden));
+    el.emojiPicker.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-emoji]");
+      if (!button) return;
+      insertEmoji(button.dataset.emoji);
+      setEmojiPicker(false);
+    });
     el.displayName.addEventListener("input", updateComposer);
     el.form.querySelectorAll('input[name="identity"]').forEach((radio) => radio.addEventListener("change", updateComposer));
     el.spotifyUrl.addEventListener("input", debounce(() => resolveSpotifyInput(el.spotifyUrl.value), 450));
@@ -830,9 +911,16 @@
     });
 
     document.addEventListener("click", (event) => {
+      if (!event.target.closest(".emoji-control")) setEmojiPicker(false);
       if (!event.target.closest(".menu-wrap")) {
         document.querySelectorAll(".card-menu").forEach((menu) => { menu.hidden = true; });
         document.querySelectorAll(".menu-button").forEach((button) => button.setAttribute("aria-expanded", "false"));
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !el.emojiPicker.hidden) {
+        setEmojiPicker(false);
+        el.emojiButton.focus();
       }
     });
   }
@@ -840,6 +928,7 @@
   async function init() {
     initTheme();
     renderComposerTypes();
+    renderEmojiPicker();
     el.searchInput.value = state.search;
     el.timeFilter.value = state.period;
     wireEvents();
