@@ -19,6 +19,12 @@
     general: { label: "General", icon: "•••" }
   };
 
+  const SPOTIFY_TYPES = {
+    playlist: "playlist",
+    album: "album",
+    track: "song"
+  };
+
   const BACKEND_CONFIG = window.DREAM_BOARD_CONFIG || {};
   const backendConfigured = Boolean(
     /^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(BACKEND_CONFIG.supabaseUrl || "") &&
@@ -94,11 +100,14 @@
   }
 
   function mapDatabasePost(row) {
-    const spotify = row.spotify_playlist_id ? {
-      id: row.spotify_playlist_id,
+    const spotifyItemId = row.spotify_item_id || row.spotify_playlist_id;
+    const spotifyType = SPOTIFY_TYPES[row.spotify_content_type] ? row.spotify_content_type : "playlist";
+    const spotify = spotifyItemId ? {
+      id: spotifyItemId,
+      type: spotifyType,
       canonicalUrl: row.spotify_canonical_url,
       embedUrl: row.spotify_embed_url,
-      title: row.spotify_title || "Spotify playlist",
+      title: row.spotify_title || `Spotify ${SPOTIFY_TYPES[spotifyType]}`,
       creator: row.spotify_creator_name || "Spotify",
       thumbnailUrl: row.spotify_thumbnail_url || null
     } : null;
@@ -328,11 +337,12 @@
     play.type = "button";
     play.textContent = "▶";
     play.dataset.action = "play";
-    play.setAttribute("aria-label", `Play Spotify playlist: ${post.spotify.title}`);
+    const spotifyLabel = SPOTIFY_TYPES[post.spotify.type] || "music";
+    play.setAttribute("aria-label", `Play Spotify ${spotifyLabel}: ${post.spotify.title}`);
     art.append(play);
     const meta = document.createElement("span");
     meta.className = "playlist-meta";
-    meta.append(makeText("strong", "", post.spotify.title), makeText("small", "", `by ${post.spotify.creator || "Spotify"}`));
+    meta.append(makeText("strong", "", post.spotify.title), makeText("small", "", `${spotifyLabel} · ${post.spotify.creator || "Spotify"}`));
     const mark = document.createElement("img");
     mark.className = "spotify-mark";
     mark.src = "assets/spotify-logo.png";
@@ -373,7 +383,8 @@
         iframe.loading = "lazy";
         iframe.allowFullscreen = true;
         iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-        iframe.title = `Spotify playlist: ${post.spotify.title}`;
+        iframe.className = post.spotify.type === "track" ? "spotify-track-frame" : "spotify-collection-frame";
+        iframe.title = `Spotify ${spotifyLabel}: ${post.spotify.title}`;
         playerShell.prepend(iframe);
       }
       playerShell.hidden = false;
@@ -532,15 +543,15 @@
 
   function parseSpotify(value) {
     const input = value.trim();
-    const uri = input.match(/^spotify:playlist:([A-Za-z0-9]{10,30})$/i);
-    if (uri) return { id: uri[1], isShort: false };
+    const uri = input.match(/^spotify:(playlist|album|track):([A-Za-z0-9]{10,30})$/i);
+    if (uri) return { type: uri[1].toLowerCase(), id: uri[2], isShort: false };
     let url;
     try { url = new URL(input); } catch { return null; }
     const hostname = url.hostname.toLowerCase();
     if (hostname === "spotify.link" || hostname.endsWith(".spotify.link")) return { shortUrl: url.toString(), isShort: true };
     if (hostname !== "open.spotify.com") return null;
-    const match = url.pathname.match(/^\/playlist\/([A-Za-z0-9]{10,30})\/?$/i);
-    return match ? { id: match[1], isShort: false } : null;
+    const match = url.pathname.match(/^\/(?:intl-[a-z]{2}\/)?(playlist|album|track)\/([A-Za-z0-9]{10,30})\/?$/i);
+    return match ? { type: match[1].toLowerCase(), id: match[2], isShort: false } : null;
   }
 
   async function resolveSpotifyInput(rawValue) {
@@ -554,29 +565,37 @@
     }
     if (!parsed) {
       const looksSpotify = /spotify/i.test(rawValue);
-      setSpotifyStatus(looksSpotify ? "This link is not a Spotify playlist. Please share a playlist link." : "Please enter a valid Spotify playlist link.", "error");
+      setSpotifyStatus(looksSpotify ? "Share a Spotify song, album, or playlist link." : "Please enter a valid Spotify link.", "error");
       return;
     }
-    setSpotifyStatus("Validating playlist…", "");
-    let playlistId = parsed.id;
+    setSpotifyStatus("Validating Spotify link…", "");
+    let itemId = parsed.id;
+    let contentType = parsed.type;
     if (parsed.isShort) {
       try {
         const response = await fetch(parsed.shortUrl, { method: "GET", redirect: "follow" });
         const resolved = parseSpotify(response.url);
-        if (!resolved?.id) throw new Error("Not a playlist");
-        playlistId = resolved.id;
+        if (!resolved?.id || !resolved?.type) throw new Error("Unsupported Spotify link");
+        itemId = resolved.id;
+        contentType = resolved.type;
       } catch {
-        if (request === state.spotifyRequest) setSpotifyStatus("This short link could not be resolved here. Paste the full open.spotify.com playlist link instead.", "error");
+        if (request === state.spotifyRequest) setSpotifyStatus("This short link could not be resolved here. Paste the full open.spotify.com link instead.", "error");
         return;
       }
     }
     if (request !== state.spotifyRequest) return;
-    const canonicalUrl = `https://open.spotify.com/playlist/${playlistId}`;
+    const contentLabel = SPOTIFY_TYPES[contentType];
+    if (!contentLabel) {
+      setSpotifyStatus("Only Spotify songs, albums, and playlists are supported.", "error");
+      return;
+    }
+    const canonicalUrl = `https://open.spotify.com/${contentType}/${itemId}`;
     const spotify = {
-      id: playlistId,
+      id: itemId,
+      type: contentType,
       canonicalUrl,
-      embedUrl: `https://open.spotify.com/embed/playlist/${playlistId}`,
-      title: "Spotify playlist",
+      embedUrl: `https://open.spotify.com/embed/${contentType}/${itemId}`,
+      title: `Spotify ${contentLabel}`,
       creator: "Ready to play"
     };
     try {
@@ -590,7 +609,7 @@
     } catch { /* The controlled embed remains valid even if optional metadata is unavailable. */ }
     if (request !== state.spotifyRequest) return;
     state.spotify = spotify;
-    setSpotifyStatus("Playlist ready to attach.", "success");
+    setSpotifyStatus(`${contentLabel[0].toUpperCase()}${contentLabel.slice(1)} ready to attach.`, "success");
     renderSpotifyPreview();
   }
 
@@ -608,7 +627,8 @@
     el.spotifyPreview.hidden = false;
     const text = el.spotifyPreview.querySelector("span");
     text.querySelector("strong").textContent = state.spotify.title;
-    text.querySelector("small").textContent = state.spotify.creator;
+    const contentLabel = SPOTIFY_TYPES[state.spotify.type] || "music";
+    text.querySelector("small").textContent = `${contentLabel} · ${state.spotify.creator}`;
   }
 
   function clearSpotify() {
@@ -661,7 +681,7 @@
     else if (message.length > 500) error = "Please keep your message to 500 characters.";
     else if (identity === "named" && name.length < 2) error = "Please enter a name or switch to Anonymous.";
     else if (identity === "named" && name.length > 40) error = "Please keep your name to 40 characters.";
-    else if (el.spotifyUrl.value.trim() && !state.spotify) error = "Please attach a valid Spotify playlist or remove the link.";
+    else if (el.spotifyUrl.value.trim() && !state.spotify) error = "Please attach a valid Spotify song, album, or playlist—or remove the link.";
     else error = moderationError(message) || (state.backendConfigured ? "" : rateLimitError());
     if (!error && state.backendConfigured && !state.backendReady) {
       error = "The shared Dream Board is still connecting. Please try again shortly.";
@@ -680,7 +700,8 @@
         p_type: type,
         p_is_anonymous: isAnonymous,
         p_display_name: isAnonymous ? null : name,
-        p_spotify_playlist_id: state.spotify?.id || null,
+        p_spotify_item_id: state.spotify?.id || null,
+        p_spotify_content_type: state.spotify?.type || null,
         p_spotify_title: state.spotify?.title || null,
         p_spotify_creator_name: state.spotify?.creator || null,
         p_spotify_thumbnail_url: state.spotify?.thumbnailUrl || null

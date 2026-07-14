@@ -11,6 +11,7 @@ create table if not exists public.dream_board_posts (
   display_name text check (display_name is null or char_length(btrim(display_name)) between 2 and 40),
   is_anonymous boolean not null default true,
   spotify_playlist_id text check (spotify_playlist_id is null or spotify_playlist_id ~ '^[A-Za-z0-9]{10,30}$'),
+  spotify_content_type text check (spotify_content_type is null or spotify_content_type in ('playlist', 'album', 'track')),
   spotify_canonical_url text,
   spotify_embed_url text,
   spotify_title text,
@@ -24,6 +25,18 @@ create table if not exists public.dream_board_posts (
   updated_at timestamptz not null default now(),
   published_at timestamptz
 );
+
+-- Upgrade existing installations that originally supported playlists only.
+alter table public.dream_board_posts
+  add column if not exists spotify_content_type text;
+update public.dream_board_posts
+set spotify_content_type = 'playlist'
+where spotify_playlist_id is not null and spotify_content_type is null;
+alter table public.dream_board_posts
+  drop constraint if exists dream_board_posts_spotify_content_type_check;
+alter table public.dream_board_posts
+  add constraint dream_board_posts_spotify_content_type_check
+  check (spotify_content_type is null or spotify_content_type in ('playlist', 'album', 'track'));
 
 create table if not exists public.dream_board_reactions (
   id uuid primary key default gen_random_uuid(),
@@ -75,14 +88,17 @@ revoke all on table public.dream_board_reactions from anon, authenticated;
 revoke all on table public.dream_board_reports from anon, authenticated;
 revoke all on table public.dream_board_moderation_logs from anon, authenticated;
 
-create or replace function public.get_dream_board_posts(p_limit integer default 100)
+drop function if exists public.get_dream_board_posts(integer);
+
+create function public.get_dream_board_posts(p_limit integer default 100)
 returns table (
   id uuid,
   message text,
   type text,
   display_name text,
   is_anonymous boolean,
-  spotify_playlist_id text,
+  spotify_item_id text,
+  spotify_content_type text,
   spotify_canonical_url text,
   spotify_embed_url text,
   spotify_title text,
@@ -103,7 +119,8 @@ as $$
     p.type,
     p.display_name,
     p.is_anonymous,
-    p.spotify_playlist_id,
+    p.spotify_playlist_id as spotify_item_id,
+    p.spotify_content_type,
     p.spotify_canonical_url,
     p.spotify_embed_url,
     p.spotify_title,
@@ -125,12 +142,16 @@ as $$
   limit least(greatest(coalesce(p_limit, 100), 1), 100);
 $$;
 
-create or replace function public.create_dream_board_post(
+drop function if exists public.create_dream_board_post(text, text, boolean, text, text, text, text, text);
+drop function if exists public.create_dream_board_post(text, text, boolean, text, text, text, text, text, text);
+
+create function public.create_dream_board_post(
   p_message text,
   p_type text,
   p_is_anonymous boolean default true,
   p_display_name text default null,
-  p_spotify_playlist_id text default null,
+  p_spotify_item_id text default null,
+  p_spotify_content_type text default null,
   p_spotify_title text default null,
   p_spotify_creator_name text default null,
   p_spotify_thumbnail_url text default null
@@ -175,8 +196,18 @@ begin
     end if;
   end if;
 
-  if p_spotify_playlist_id is not null and p_spotify_playlist_id !~ '^[A-Za-z0-9]{10,30}$' then
-    raise exception 'Invalid Spotify playlist identifier.';
+  if p_spotify_item_id is not null and p_spotify_item_id !~ '^[A-Za-z0-9]{10,30}$' then
+    raise exception 'Invalid Spotify item identifier.';
+  end if;
+
+  if p_spotify_item_id is null and p_spotify_content_type is not null then
+    raise exception 'Spotify content type requires an item identifier.';
+  end if;
+
+  if p_spotify_item_id is not null and (
+    p_spotify_content_type is null or p_spotify_content_type not in ('playlist', 'album', 'track')
+  ) then
+    raise exception 'Spotify content must be a song, album, or playlist.';
   end if;
 
   if p_spotify_thumbnail_url is not null and p_spotify_thumbnail_url !~ '^https://' then
@@ -216,6 +247,7 @@ begin
     display_name,
     is_anonymous,
     spotify_playlist_id,
+    spotify_content_type,
     spotify_canonical_url,
     spotify_embed_url,
     spotify_title,
@@ -230,13 +262,14 @@ begin
     p_type,
     v_name,
     p_is_anonymous,
-    p_spotify_playlist_id,
-    case when p_spotify_playlist_id is null then null else 'https://open.spotify.com/playlist/' || p_spotify_playlist_id end,
-    case when p_spotify_playlist_id is null then null else 'https://open.spotify.com/embed/playlist/' || p_spotify_playlist_id end,
+    p_spotify_item_id,
+    p_spotify_content_type,
+    case when p_spotify_item_id is null then null else 'https://open.spotify.com/' || p_spotify_content_type || '/' || p_spotify_item_id end,
+    case when p_spotify_item_id is null then null else 'https://open.spotify.com/embed/' || p_spotify_content_type || '/' || p_spotify_item_id end,
     left(nullif(btrim(p_spotify_title), ''), 120),
     left(nullif(btrim(p_spotify_creator_name), ''), 80),
     p_spotify_thumbnail_url,
-    case when p_spotify_playlist_id is null then 'empty' else 'valid' end,
+    case when p_spotify_item_id is null then 'empty' else 'valid' end,
     'published',
     now()
   )
@@ -350,11 +383,11 @@ end;
 $$;
 
 revoke execute on function public.get_dream_board_posts(integer) from public;
-revoke execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text) from public;
+revoke execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text, text) from public;
 revoke execute on function public.toggle_dream_board_reaction(uuid) from public;
 revoke execute on function public.report_dream_board_post(uuid, text) from public;
 
 grant execute on function public.get_dream_board_posts(integer) to anon, authenticated;
-grant execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text) to authenticated;
+grant execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text, text) to authenticated;
 grant execute on function public.toggle_dream_board_reaction(uuid) to authenticated;
 grant execute on function public.report_dream_board_post(uuid, text) to authenticated;

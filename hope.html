@@ -6,7 +6,7 @@
   <meta name="description" content="A public wall of hopes, dreams, gratitude, feedback, and music from visitors to Vito Christian Samudra's website.">
   <meta name="theme-color" content="#f8f8fc">
   <meta property="og:title" content="Dream Board — Vito Christian Samudra">
-  <meta property="og:description" content="Leave a hope, share some motivation, or add the playlist that keeps you going.">
+  <meta property="og:description" content="Leave a hope, share some motivation, or add the Spotify music that keeps you going.">
   <title>Dream Board — Vito Christian Samudra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
         </article>
         <article class="stat-card">
           <img class="stat-icon spotify" src="assets/spotify-logo.png" alt="" width="28" height="28">
-          <span><strong id="playlistCount">0</strong><small>Playlists shared</small></span>
+          <span><strong id="playlistCount">0</strong><small>Spotify shares</small></span>
         </article>
       </div>
     </section>
@@ -86,26 +86,27 @@
           </fieldset>
 
           <div class="field-group spotify-field">
-            <label for="spotifyUrl">Optional Spotify playlist</label>
+            <label for="spotifyUrl">Optional Spotify music</label>
             <div class="spotify-input-wrap">
               <img src="assets/spotify-logo.png" alt="" width="18" height="18">
-              <input id="spotifyUrl" name="spotifyUrl" type="url" inputmode="url" placeholder="Paste Spotify playlist link" autocomplete="off">
-              <button type="button" id="clearSpotify" aria-label="Remove Spotify playlist" hidden>×</button>
+              <input id="spotifyUrl" name="spotifyUrl" type="url" inputmode="url" placeholder="Paste a song, album, or playlist link" autocomplete="off">
+              <button type="button" id="clearSpotify" aria-label="Remove Spotify music" hidden>×</button>
             </div>
             <p class="field-status" id="spotifyStatus" aria-live="polite"></p>
             <div class="spotify-preview" id="spotifyPreview" hidden>
               <div class="preview-art" aria-hidden="true"><img src="assets/spotify-logo.png" alt="" width="22" height="22"></div>
-              <span><strong>Spotify playlist</strong><small>Ready to embed</small></span>
+              <span><strong>Spotify music</strong><small>Ready to embed</small></span>
               <button type="button" id="removeSpotify">Remove</button>
             </div>
           </div>
+        </div>
 
+        <div class="composer-footer">
+          <p class="public-notice"><span aria-hidden="true">◇</span>Your post will appear publicly on the board. Please avoid sharing sensitive personal information.</p>
           <button class="publish-button" type="submit" id="publishButton">
             <span aria-hidden="true">↗</span><span id="publishLabel">Post Anonymously</span>
           </button>
         </div>
-
-        <p class="public-notice"><span aria-hidden="true">◇</span>Your post will appear publicly on the board. Please avoid sharing sensitive personal information.</p>
         <p class="form-error" id="formError" role="alert"></p>
       </form>
     </section>
@@ -115,8 +116,8 @@
         <div class="filter-scroll" id="categoryFilters"></div>
         <label class="search-box">
           <span aria-hidden="true">⌕</span>
-          <span class="sr-only">Search messages or playlists</span>
-          <input id="searchInput" type="search" placeholder="Search messages or playlists…" autocomplete="off">
+          <span class="sr-only">Search messages or Spotify music</span>
+          <input id="searchInput" type="search" placeholder="Search messages or Spotify…" autocomplete="off">
         </label>
       </div>
       <div class="filter-bottomline">
