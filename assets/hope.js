@@ -337,98 +337,24 @@
   function makePlaylist(post) {
     const wrapper = document.createElement("div");
     wrapper.className = "playlist-card";
-    const row = document.createElement("button");
-    row.type = "button";
-    row.className = "playlist-preview-row";
-    row.setAttribute("aria-expanded", "false");
-    const art = document.createElement("div");
-    art.className = "playlist-art";
-    if (post.spotify.thumbnailUrl) {
-      const image = document.createElement("img");
-      image.src = post.spotify.thumbnailUrl;
-      image.alt = "";
-      image.loading = "lazy";
-      art.append(image);
-    }
-    const play = document.createElement("span");
-    play.className = "playlist-play-glyph";
-    play.textContent = "▶";
     const spotifyLabel = SPOTIFY_TYPES[post.spotify.type] || "music";
-    play.setAttribute("aria-hidden", "true");
-    row.setAttribute("aria-label", `Expand Spotify ${spotifyLabel}: ${post.spotify.title}`);
-    art.append(play);
-    const meta = document.createElement("span");
-    meta.className = "playlist-meta";
-    meta.append(makeText("strong", "", post.spotify.title), makeText("small", "", `${spotifyLabel} · ${post.spotify.creator || "Spotify"}`));
-    const mark = document.createElement("img");
-    mark.className = "spotify-mark";
-    mark.src = "assets/spotify-logo.png";
-    mark.alt = "Spotify";
-    mark.width = 21;
-    mark.height = 21;
-    row.append(art, meta, mark);
+    const iframe = document.createElement("iframe");
+    iframe.src = post.spotify.embedUrl;
+    iframe.loading = "lazy";
+    iframe.allowFullscreen = true;
+    iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    iframe.setAttribute("scrolling", "no");
+    iframe.className = post.spotify.type === "track" ? "spotify-track-frame" : "spotify-collection-frame";
+    iframe.title = `Spotify ${spotifyLabel}: ${post.spotify.title}`;
 
-    const playerShell = document.createElement("div");
-    playerShell.className = "player-shell";
-    playerShell.hidden = true;
     const actions = document.createElement("div");
     actions.className = "player-actions";
-    const collapse = makeText("button", "", "Collapse player");
-    collapse.type = "button";
-    collapse.dataset.action = "collapse";
     const open = makeText("a", "", "Open in Spotify ↗");
     open.href = post.spotify.canonicalUrl;
     open.target = "_blank";
     open.rel = "noopener";
-    actions.append(collapse, open);
-    playerShell.append(actions);
-    wrapper.append(row, playerShell);
-
-    const closePlayer = () => {
-      playerShell.hidden = true;
-      playerShell.querySelector("iframe")?.remove();
-      row.setAttribute("aria-expanded", "false");
-      row.setAttribute("aria-label", `Expand Spotify ${spotifyLabel}: ${post.spotify.title}`);
-      play.textContent = "▶";
-    };
-
-    const openPlayer = () => {
-      document.querySelectorAll(".player-shell:not([hidden])").forEach((active) => {
-        if (active !== playerShell) {
-          active.hidden = true;
-          active.querySelector("iframe")?.remove();
-          const activeCard = active.closest(".playlist-card");
-          const activeRow = activeCard?.querySelector(".playlist-preview-row");
-          const activeGlyph = activeCard?.querySelector(".playlist-play-glyph");
-          if (activeRow) {
-            activeRow.setAttribute("aria-expanded", "false");
-            activeRow.setAttribute("aria-label", activeRow.getAttribute("aria-label")?.replace(/^Collapse/, "Expand") || "Expand Spotify player");
-          }
-          if (activeGlyph) activeGlyph.textContent = "▶";
-        }
-      });
-      if (!playerShell.querySelector("iframe")) {
-        const iframe = document.createElement("iframe");
-        iframe.src = post.spotify.embedUrl;
-        iframe.loading = "lazy";
-        iframe.allowFullscreen = true;
-        iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-        iframe.className = post.spotify.type === "track" ? "spotify-track-frame" : "spotify-collection-frame";
-        iframe.title = `Spotify ${spotifyLabel}: ${post.spotify.title}`;
-        playerShell.prepend(iframe);
-      }
-      playerShell.hidden = false;
-      row.setAttribute("aria-expanded", "true");
-      row.setAttribute("aria-label", `Collapse Spotify ${spotifyLabel}: ${post.spotify.title}`);
-      play.textContent = "▾";
-    };
-
-    row.addEventListener("click", () => {
-      if (playerShell.hidden) openPlayer();
-      else closePlayer();
-    });
-
-    collapse.addEventListener("click", closePlayer);
+    actions.append(open);
+    wrapper.append(iframe, actions);
 
     return wrapper;
   }
@@ -436,6 +362,7 @@
   function makePostCard(post, index) {
     const card = document.createElement("article");
     card.className = "post-card";
+    if (post.spotify) card.classList.add("has-spotify");
     card.dataset.type = post.type;
     card.dataset.postId = post.id;
     card.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
