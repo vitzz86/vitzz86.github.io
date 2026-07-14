@@ -26,120 +26,6 @@
   );
   let database = null;
 
-  const SEEDS = [
-    {
-      id: "seed-hope",
-      message: "I hope one day everyone feels safe, loved, and free to be themselves. 🌈",
-      type: "hope",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 42,
-      age: 2 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-motivation-music",
-      message: "Songs that keep me going when nothing else does. 💚",
-      type: "motivation",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 56,
-      age: 5 * 60 * 60 * 1000,
-      spotify: {
-        id: "37i9dQZF1DXcBWIGoYBM5M",
-        canonicalUrl: "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M",
-        embedUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M",
-        title: "Keep Going 🌱",
-        creator: "A playlist for hard days"
-      }
-    },
-    {
-      id: "seed-feedback",
-      message: "Love the vibe of this site! Super clean and thoughtful design. Keep building! 🚀",
-      type: "feedback",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 29,
-      age: 8 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-dream-music",
-      message: "A playlist for when I imagine my future self. ✨",
-      type: "dream",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 73,
-      age: 10 * 60 * 60 * 1000,
-      spotify: {
-        id: "37i9dQZF1DX4dyzvuaRJ0n",
-        canonicalUrl: "https://open.spotify.com/playlist/37i9dQZF1DX4dyzvuaRJ0n",
-        embedUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DX4dyzvuaRJ0n",
-        title: "future me",
-        creator: "vision board playlist"
-      }
-    },
-    {
-      id: "seed-gratitude",
-      message: "Grateful for the people who stay, grow, and heal with me. 🌱",
-      type: "gratitude",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 34,
-      age: 12 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-general",
-      message: "Small steps every day. Big changes over time. ☀️",
-      type: "general",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 28,
-      age: 13 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-advice",
-      message: "Don’t compare your chapter 1 to someone else’s chapter 20. 🌟",
-      type: "advice",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 47,
-      age: 14 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-dream",
-      message: "I dream of traveling the world and collecting stories. ✈️🌍",
-      type: "dream",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 61,
-      age: 16 * 60 * 60 * 1000
-    },
-    {
-      id: "seed-motivation-two",
-      message: "Focus on progress, not perfection. You’ve got this. 💪",
-      type: "motivation",
-      displayName: "Vito",
-      isAnonymous: false,
-      reactionCount: 38,
-      age: 18 * 60 * 60 * 1000,
-      spotify: {
-        id: "37i9dQZF1DWZq91oLsHZvy",
-        canonicalUrl: "https://open.spotify.com/playlist/37i9dQZF1DWZq91oLsHZvy",
-        embedUrl: "https://open.spotify.com/embed/playlist/37i9dQZF1DWZq91oLsHZvy",
-        title: "Progress Over Perfection",
-        creator: "Elevate Mindset"
-      }
-    },
-    {
-      id: "seed-gratitude-two",
-      message: "Thankful for quiet mornings, good coffee, and a clear mind. ☕✨",
-      type: "gratitude",
-      displayName: "Anonymous",
-      isAnonymous: true,
-      reactionCount: 31,
-      age: 19 * 60 * 60 * 1000
-    }
-  ];
-
   const el = {
     html: document.documentElement,
     form: document.querySelector("#postForm"),
@@ -204,11 +90,7 @@
 
   function loadPosts() {
     const stored = readJson(STORAGE.posts, null);
-    if (Array.isArray(stored) && stored.length) return stored;
-    const now = Date.now();
-    const seeded = SEEDS.map(({ age, ...post }) => ({ ...post, createdAt: new Date(now - age).toISOString() }));
-    writeJson(STORAGE.posts, seeded);
-    return seeded;
+    return Array.isArray(stored) ? stored : [];
   }
 
   function mapDatabasePost(row) {
@@ -579,9 +461,14 @@
     el.board.replaceChildren(...posts.map(makePostCard));
     el.emptyState.hidden = posts.length > 0;
     if (!posts.length) {
-      el.emptyState.querySelector("p").textContent = state.search
-        ? "No posts match your search."
-        : "No messages match these filters.";
+      const boardIsEmpty = state.posts.length === 0;
+      el.emptyState.querySelector("h2").textContent = boardIsEmpty ? "Be the first to share" : "No messages found";
+      el.emptyState.querySelector("p").textContent = boardIsEmpty
+        ? "Leave the first hope, dream, or message on Vito’s Dream Board."
+        : state.search
+          ? "No posts match your search."
+          : "No messages match these filters.";
+      el.clearFilters.hidden = boardIsEmpty;
     }
     el.messageCount.textContent = state.posts.length.toLocaleString();
     el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();

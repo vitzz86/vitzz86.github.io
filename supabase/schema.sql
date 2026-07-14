@@ -358,22 +358,3 @@ grant execute on function public.get_dream_board_posts(integer) to anon, authent
 grant execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text) to authenticated;
 grant execute on function public.toggle_dream_board_reaction(uuid) to authenticated;
 grant execute on function public.report_dream_board_post(uuid, text) to authenticated;
-
--- Seed the first public wall. Fixed IDs make this block safe to run again.
-insert into public.dream_board_posts (
-  id, owner_id, message, type, display_name, is_anonymous,
-  spotify_playlist_id, spotify_canonical_url, spotify_embed_url,
-  spotify_title, spotify_creator_name, spotify_validation_status,
-  moderation_status, reaction_count, created_at, published_at
-) values
-  ('10000000-0000-4000-8000-000000000001', null, 'I hope one day everyone feels safe, loved, and free to be themselves. 🌈', 'hope', null, true, null, null, null, null, null, 'empty', 'published', 42, now() - interval '2 hours', now() - interval '2 hours'),
-  ('10000000-0000-4000-8000-000000000002', null, 'Songs that keep me going when nothing else does. 💚', 'motivation', null, true, '37i9dQZF1DXcBWIGoYBM5M', 'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M', 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M', 'Keep Going 🌱', 'A playlist for hard days', 'valid', 'published', 56, now() - interval '5 hours', now() - interval '5 hours'),
-  ('10000000-0000-4000-8000-000000000003', null, 'Love the vibe of this site! Super clean and thoughtful design. Keep building! 🚀', 'feedback', null, true, null, null, null, null, null, 'empty', 'published', 29, now() - interval '8 hours', now() - interval '8 hours'),
-  ('10000000-0000-4000-8000-000000000004', null, 'A playlist for when I imagine my future self. ✨', 'dream', null, true, '37i9dQZF1DX4dyzvuaRJ0n', 'https://open.spotify.com/playlist/37i9dQZF1DX4dyzvuaRJ0n', 'https://open.spotify.com/embed/playlist/37i9dQZF1DX4dyzvuaRJ0n', 'future me', 'vision board playlist', 'valid', 'published', 73, now() - interval '10 hours', now() - interval '10 hours'),
-  ('10000000-0000-4000-8000-000000000005', null, 'Grateful for the people who stay, grow, and heal with me. 🌱', 'gratitude', null, true, null, null, null, null, null, 'empty', 'published', 34, now() - interval '12 hours', now() - interval '12 hours'),
-  ('10000000-0000-4000-8000-000000000006', null, 'Small steps every day. Big changes over time. ☀️', 'general', null, true, null, null, null, null, null, 'empty', 'published', 28, now() - interval '13 hours', now() - interval '13 hours'),
-  ('10000000-0000-4000-8000-000000000007', null, 'Don’t compare your chapter 1 to someone else’s chapter 20. 🌟', 'advice', null, true, null, null, null, null, null, 'empty', 'published', 47, now() - interval '14 hours', now() - interval '14 hours'),
-  ('10000000-0000-4000-8000-000000000008', null, 'I dream of traveling the world and collecting stories. ✈️🌍', 'dream', null, true, null, null, null, null, null, 'empty', 'published', 61, now() - interval '16 hours', now() - interval '16 hours'),
-  ('10000000-0000-4000-8000-000000000009', null, 'Focus on progress, not perfection. You’ve got this. 💪', 'motivation', 'Vito', false, '37i9dQZF1DWZq91oLsHZvy', 'https://open.spotify.com/playlist/37i9dQZF1DWZq91oLsHZvy', 'https://open.spotify.com/embed/playlist/37i9dQZF1DWZq91oLsHZvy', 'Progress Over Perfection', 'Elevate Mindset', 'valid', 'published', 38, now() - interval '18 hours', now() - interval '18 hours'),
-  ('10000000-0000-4000-8000-000000000010', null, 'Thankful for quiet mornings, good coffee, and a clear mind. ☕✨', 'gratitude', null, true, null, null, null, null, null, 'empty', 'published', 31, now() - interval '19 hours', now() - interval '19 hours')
-on conflict (id) do nothing;

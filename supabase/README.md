@@ -14,3 +14,5 @@ The schema exposes only four narrowly scoped database functions to visitors:
 - `report_dream_board_post`
 
 The underlying tables cannot be accessed directly by anonymous visitors. Posts and reports are rate-limited in the database, and Spotify embed URLs are reconstructed server-side from validated playlist IDs.
+
+The schema intentionally contains no demo or seed posts, so a new installation starts with an empty board.
