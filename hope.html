@@ -11,11 +11,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/hope.css?v=20260715-1">
+  <link rel="stylesheet" href="assets/hope.css?v=20260715-2">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="assets/hope-config.js?v=20260715-1" defer></script>
-  <script src="assets/hope.js?v=20260715-1" defer></script>
+  <script src="assets/hope-config.js?v=20260715-2" defer></script>
+  <script src="assets/hope.js?v=20260715-2" defer></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" defer></script>
+  <script src="https://www.youtube.com/iframe_api" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#board">Skip to the board</a>
@@ -49,6 +50,10 @@
           <img class="stat-icon spotify" src="assets/spotify-logo.png" alt="" width="28" height="28">
           <span><strong id="playlistCount">0</strong><small>Spotify shares</small></span>
         </article>
+        <a class="stat-card" href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube shares — open YouTube">
+          <img class="stat-icon youtube" src="https://www.gstatic.com/youtube/img/branding/favicon/favicon_144x144.png" alt="YouTube" width="28" height="28">
+          <span><strong id="youtubeCount">0</strong><small>YouTube shares</small></span>
+        </a>
       </div>
     </section>
 
@@ -94,18 +99,26 @@
             </div>
           </fieldset>
 
-          <div class="field-group spotify-field">
-            <label for="spotifyUrl">Optional Spotify music</label>
-            <div class="spotify-input-wrap">
-              <img src="assets/spotify-logo.png" alt="" width="18" height="18">
-              <input id="spotifyUrl" name="spotifyUrl" type="url" inputmode="url" placeholder="Paste a song, album, or playlist link" autocomplete="off">
-              <button type="button" id="clearSpotify" aria-label="Remove Spotify music" hidden>×</button>
+          <div class="field-group media-field">
+            <div class="media-field-heading">
+              <label for="mediaUrl">Optional media</label>
+              <div class="media-provider-switch" role="radiogroup" aria-label="Choose a media source">
+                <label class="provider-choice spotify-provider"><input type="radio" name="mediaProvider" value="spotify" checked><span><b aria-hidden="true">♪</b>Spotify</span></label>
+                <label class="provider-choice youtube-provider"><input type="radio" name="mediaProvider" value="youtube"><span><b aria-hidden="true">▶</b>YouTube</span></label>
+              </div>
             </div>
-            <p class="field-status" id="spotifyStatus" aria-live="polite"></p>
-            <div class="spotify-preview" id="spotifyPreview" hidden>
-              <div class="preview-art" aria-hidden="true"><img src="assets/spotify-logo.png" alt="" width="22" height="22"></div>
-              <span><strong>Spotify music</strong><small>Ready to embed</small></span>
-              <button type="button" id="removeSpotify">Remove</button>
+            <div class="media-input-wrap">
+              <a class="media-provider-link" id="mediaProviderLink" href="https://open.spotify.com/" target="_blank" rel="noopener" aria-label="Open Spotify">
+                <img id="mediaProviderIcon" src="assets/spotify-logo.png" alt="" width="18" height="18">
+              </a>
+              <input id="mediaUrl" name="mediaUrl" type="url" inputmode="url" placeholder="Paste a song, album, or playlist link" autocomplete="off">
+              <button type="button" id="clearMedia" aria-label="Remove attached media" hidden>×</button>
+            </div>
+            <p class="field-status" id="mediaStatus" aria-live="polite"></p>
+            <div class="media-preview" id="mediaPreview" hidden>
+              <div class="preview-art" aria-hidden="true"><img id="mediaPreviewIcon" src="assets/spotify-logo.png" alt="" width="22" height="22"></div>
+              <span><strong>Media</strong><small>Ready to embed</small></span>
+              <button type="button" id="removeMedia">Remove</button>
             </div>
           </div>
           </div>

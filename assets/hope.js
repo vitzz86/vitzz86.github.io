@@ -25,6 +25,13 @@
     track: "song"
   };
 
+  const YOUTUBE_TYPES = {
+    video: "video",
+    playlist: "playlist"
+  };
+
+  const YOUTUBE_ICON_URL = "https://www.gstatic.com/youtube/img/branding/favicon/favicon_144x144.png";
+
   const EMOJIS = [
     "✨", "💜", "🌈", "🚀", "🌱", "☀️", "🌟", "💪",
     "🙏", "😊", "🥰", "😂", "😭", "❤️", "🔥", "🎉",
@@ -40,7 +47,10 @@
   const postCardCache = new Map();
   const spotifyControllers = new Map();
   const playingSpotifyPosts = new Set();
+  const youtubePlayers = new Map();
+  const playingYouTubePosts = new Set();
   let spotifyIframeApi = null;
+  let youtubeIframeApiReady = false;
 
   const el = {
     html: document.documentElement,
@@ -57,11 +67,14 @@
     composerTypes: document.querySelector("#composerTypes"),
     displayName: document.querySelector("#displayName"),
     nameField: document.querySelector("#nameField"),
-    spotifyUrl: document.querySelector("#spotifyUrl"),
-    spotifyStatus: document.querySelector("#spotifyStatus"),
-    spotifyPreview: document.querySelector("#spotifyPreview"),
-    clearSpotify: document.querySelector("#clearSpotify"),
-    removeSpotify: document.querySelector("#removeSpotify"),
+    mediaUrl: document.querySelector("#mediaUrl"),
+    mediaStatus: document.querySelector("#mediaStatus"),
+    mediaPreview: document.querySelector("#mediaPreview"),
+    mediaProviderIcon: document.querySelector("#mediaProviderIcon"),
+    mediaProviderLink: document.querySelector("#mediaProviderLink"),
+    mediaPreviewIcon: document.querySelector("#mediaPreviewIcon"),
+    clearMedia: document.querySelector("#clearMedia"),
+    removeMedia: document.querySelector("#removeMedia"),
     publishButton: document.querySelector("#publishButton"),
     publishLabel: document.querySelector("#publishLabel"),
     formError: document.querySelector("#formError"),
@@ -75,6 +88,7 @@
     clearFilters: document.querySelector("#clearFilters"),
     messageCount: document.querySelector("#messageCount"),
     playlistCount: document.querySelector("#playlistCount"),
+    youtubeCount: document.querySelector("#youtubeCount"),
     reportDialog: document.querySelector("#reportDialog"),
     reportForm: document.querySelector("#reportForm"),
     reportReason: document.querySelector("#reportReason"),
@@ -94,10 +108,11 @@
     sort: ["latest", "loved", "random", "oldest"].includes(params.get("sort")) ? params.get("sort") : "latest",
     period: ["all", "today", "week", "month", "year"].includes(params.get("period")) ? params.get("period") : "all",
     search: (params.get("search") || "").trim(),
-    spotify: null,
+    mediaProvider: "spotify",
+    media: null,
     reportPostId: null,
     randomOrder: new Map(),
-    spotifyRequest: 0
+    mediaRequest: 0
   };
 
   function readJson(key, fallback) {
@@ -130,6 +145,17 @@
       creator: row.spotify_creator_name || "Spotify",
       thumbnailUrl: row.spotify_thumbnail_url || null
     } : null;
+    const youtubeItemId = row.youtube_item_id;
+    const youtubeType = YOUTUBE_TYPES[row.youtube_content_type] ? row.youtube_content_type : "video";
+    const youtube = youtubeItemId ? {
+      id: youtubeItemId,
+      type: youtubeType,
+      canonicalUrl: row.youtube_canonical_url,
+      embedUrl: row.youtube_embed_url,
+      title: row.youtube_title || `YouTube ${YOUTUBE_TYPES[youtubeType]}`,
+      creator: row.youtube_creator_name || "YouTube",
+      thumbnailUrl: row.youtube_thumbnail_url || null
+    } : null;
     return {
       id: row.id,
       message: row.message,
@@ -139,8 +165,15 @@
       reactionCount: Number(row.reaction_count || 0),
       createdAt: row.created_at,
       spotify,
+      youtube,
       lovedByMe: Boolean(row.loved_by_me)
     };
+  }
+
+  function getPostMedia(post) {
+    if (post.spotify) return { provider: "spotify", ...post.spotify };
+    if (post.youtube) return { provider: "youtube", ...post.youtube };
+    return null;
   }
 
   async function refreshDatabasePosts() {
@@ -260,7 +293,7 @@
     const filters = [
       ["all", "▦", "All"],
       ...Object.entries(TYPES).map(([key, info]) => [key, info.icon, info.label]),
-      ["music", "🎵", "With Music"]
+      ["music", "🎬", "With Media"]
     ];
     filters.forEach(([key, icon, label]) => {
       const button = document.createElement("button");
@@ -278,7 +311,7 @@
   function updateUrl() {
     // Changing the parent URL can reset third-party media embeds in some browsers.
     // Apply the URL state once playback pauses instead of interrupting the listener.
-    if (playingSpotifyPosts.size) return;
+    if (playingSpotifyPosts.size || playingYouTubePosts.size) return;
     const query = new URLSearchParams();
     if (state.filter === "music") query.set("music", "true");
     else if (state.filter !== "all") query.set("type", state.filter);
@@ -304,11 +337,11 @@
   function getVisiblePosts() {
     const needle = state.search.toLocaleLowerCase();
     const filtered = state.posts.filter((post) => {
-      if (state.filter === "music" && !post.spotify) return false;
+      if (state.filter === "music" && !getPostMedia(post)) return false;
       if (state.filter !== "all" && state.filter !== "music" && post.type !== state.filter) return false;
       if (!isWithinPeriod(post.createdAt, state.period)) return false;
       if (!needle) return true;
-      return [post.message, post.displayName, post.spotify?.title, post.spotify?.creator]
+      return [post.message, post.displayName, post.spotify?.title, post.spotify?.creator, post.youtube?.title, post.youtube?.creator]
         .filter(Boolean)
         .some((value) => value.toLocaleLowerCase().includes(needle));
     });
@@ -354,7 +387,7 @@
 
   function makePlaylist(post) {
     const wrapper = document.createElement("div");
-    wrapper.className = "playlist-card";
+    wrapper.className = "playlist-card media-card";
     wrapper.dataset.postId = String(post.id);
     wrapper.dataset.spotifyType = post.spotify.type;
     wrapper.dataset.spotifyUrl = post.spotify.canonicalUrl || post.spotify.embedUrl;
@@ -373,6 +406,34 @@
     actions.append(open);
     wrapper.append(embed, actions);
 
+    return wrapper;
+  }
+
+  function makeYouTubePlayer(post) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "youtube-card media-card";
+    wrapper.dataset.postId = String(post.id);
+    const youtubeLabel = YOUTUBE_TYPES[post.youtube.type] || "video";
+    const iframe = document.createElement("iframe");
+    const embedUrl = new URL(post.youtube.embedUrl);
+    embedUrl.searchParams.set("enablejsapi", "1");
+    embedUrl.searchParams.set("playsinline", "1");
+    embedUrl.searchParams.set("rel", "0");
+    if (/^https?:$/.test(window.location.protocol)) embedUrl.searchParams.set("origin", window.location.origin);
+    iframe.src = embedUrl.toString();
+    iframe.loading = "lazy";
+    iframe.allowFullscreen = true;
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.title = `YouTube ${youtubeLabel}: ${post.youtube.title}`;
+
+    const actions = document.createElement("div");
+    actions.className = "player-actions youtube-actions";
+    const open = makeText("a", "", "Open on YouTube ↗");
+    open.href = post.youtube.canonicalUrl;
+    open.target = "_blank";
+    open.rel = "noopener";
+    actions.append(open);
+    wrapper.append(iframe, actions);
     return wrapper;
   }
 
@@ -410,14 +471,52 @@
     root.querySelectorAll(".playlist-card").forEach(initializeSpotifyEmbed);
   }
 
-  function preserveSpotifyPlayback() {
+  function setYouTubePlaying(postId, playing) {
+    const key = String(postId);
+    const changed = playing ? !playingYouTubePosts.has(key) : playingYouTubePosts.has(key);
+    if (!changed) return;
+    if (playing) playingYouTubePosts.add(key);
+    else playingYouTubePosts.delete(key);
+    renderBoard();
+  }
+
+  function initializeYouTubeEmbed(wrapper) {
+    if (!youtubeIframeApiReady || wrapper.dataset.youtubeReady === "true" || !window.YT?.Player) return;
+    const iframe = wrapper.querySelector("iframe");
+    if (!iframe) return;
+    const postId = wrapper.dataset.postId;
+    wrapper.dataset.youtubeReady = "true";
+    const player = new window.YT.Player(iframe, {
+      events: {
+        onStateChange: (event) => {
+          if (event.data === window.YT.PlayerState.PLAYING) setYouTubePlaying(postId, true);
+          if ([window.YT.PlayerState.PAUSED, window.YT.PlayerState.ENDED, window.YT.PlayerState.CUED].includes(event.data)) {
+            setYouTubePlaying(postId, false);
+          }
+        },
+        onError: () => setYouTubePlaying(postId, false)
+      }
+    });
+    youtubePlayers.set(postId, player);
+  }
+
+  function initializeYouTubeEmbeds(root = document) {
+    root.querySelectorAll(".youtube-card").forEach(initializeYouTubeEmbed);
+  }
+
+  function preserveMediaPlayback() {
     const activeControllers = [...playingSpotifyPosts]
       .map((postId) => spotifyControllers.get(postId))
       .filter(Boolean);
-    if (!activeControllers.length) return;
     activeControllers.forEach((controller) => controller.resume());
+    const activeYouTubePlayers = [...playingYouTubePosts]
+      .map((postId) => youtubePlayers.get(postId))
+      .filter(Boolean);
+    activeYouTubePlayers.forEach((player) => player.playVideo());
+    if (!activeControllers.length && !activeYouTubePlayers.length) return;
     requestAnimationFrame(() => {
       activeControllers.forEach((controller) => controller.resume());
+      activeYouTubePlayers.forEach((player) => player.playVideo());
     });
   }
 
@@ -426,10 +525,16 @@
     initializeSpotifyEmbeds();
   };
 
+  window.onYouTubeIframeAPIReady = () => {
+    youtubeIframeApiReady = true;
+    initializeYouTubeEmbeds();
+  };
+
   function makePostCard(post, index) {
     const card = document.createElement("article");
     card.className = "post-card";
-    if (post.spotify) card.classList.add("has-spotify");
+    if (post.spotify) card.classList.add("has-media", "has-spotify");
+    if (post.youtube) card.classList.add("has-media", "has-youtube");
     card.dataset.type = post.type;
     card.dataset.postId = post.id;
     card.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
@@ -460,6 +565,7 @@
     card.append(head, makeText("p", "post-message", post.message));
 
     if (post.spotify) card.append(makePlaylist(post));
+    if (post.youtube) card.append(makeYouTubePlayer(post));
 
     const meta = document.createElement("div");
     meta.className = "card-meta";
@@ -529,6 +635,7 @@
       postCardCache.set(key, card);
       el.board.append(card);
       initializeSpotifyEmbeds(card);
+      initializeYouTubeEmbeds(card);
     }
     updatePostCard(card, post, index);
     return card;
@@ -550,6 +657,7 @@
       el.emptyState.hidden = true;
       el.messageCount.textContent = "—";
       el.playlistCount.textContent = "—";
+      el.youtubeCount.textContent = "—";
       return;
     }
 
@@ -561,6 +669,9 @@
         spotifyControllers.get(id)?.destroy();
         spotifyControllers.delete(id);
         playingSpotifyPosts.delete(id);
+        youtubePlayers.get(id)?.destroy();
+        youtubePlayers.delete(id);
+        playingYouTubePosts.delete(id);
         card.remove();
         postCardCache.delete(id);
       }
@@ -570,10 +681,14 @@
       const card = getPersistentPostCard(post, index);
       const order = visibleOrder.get(String(post.id));
       const visible = order !== undefined;
-      const isPlayingOutsideFilter = !visible && post.spotify && playingSpotifyPosts.has(String(post.id));
+      const postId = String(post.id);
+      const isPlayingOutsideFilter = !visible && (
+        (post.spotify && playingSpotifyPosts.has(postId)) ||
+        (post.youtube && playingYouTubePosts.has(postId))
+      );
       card.hidden = !visible && !isPlayingOutsideFilter;
       card.classList.toggle("is-playing-filtered", Boolean(isPlayingOutsideFilter));
-      card.setAttribute("aria-label", isPlayingOutsideFilter ? "Spotify music continues playing" : "Dream Board post");
+      card.setAttribute("aria-label", isPlayingOutsideFilter ? "Attached media continues playing" : "Dream Board post");
       card.style.order = String(order ?? (posts.length + index));
     });
     el.emptyState.hidden = posts.length > 0;
@@ -592,7 +707,8 @@
     }
     el.messageCount.textContent = state.posts.length.toLocaleString();
     el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();
-    preserveSpotifyPlayback();
+    el.youtubeCount.textContent = state.posts.filter((post) => post.youtube).length.toLocaleString();
+    preserveMediaPlayback();
   }
 
   function renderEmojiPicker() {
@@ -694,21 +810,80 @@
     return match ? { type: match[1].toLowerCase(), id: match[2], isShort: false } : null;
   }
 
-  async function resolveSpotifyInput(rawValue) {
-    const request = ++state.spotifyRequest;
-    const parsed = parseSpotify(rawValue);
-    state.spotify = null;
-    renderSpotifyPreview();
+  function parseYouTube(value) {
+    let url;
+    try { url = new URL(value.trim()); } catch { return null; }
+    const hostname = url.hostname.toLowerCase().replace(/^(www\.|m\.|music\.)/, "");
+    let videoId = null;
+    let playlistId = null;
+    if (hostname === "youtu.be") videoId = url.pathname.split("/").filter(Boolean)[0] || null;
+    if (hostname === "youtube.com" || hostname === "youtube-nocookie.com") {
+      if (url.pathname === "/watch") videoId = url.searchParams.get("v");
+      const pathMatch = url.pathname.match(/^\/(?:shorts|embed|live)\/([A-Za-z0-9_-]{11})/i);
+      if (pathMatch) videoId = pathMatch[1];
+      if (url.pathname === "/playlist" || (!videoId && url.searchParams.has("list"))) playlistId = url.searchParams.get("list");
+    }
+    if (videoId && /^[A-Za-z0-9_-]{11}$/.test(videoId)) return { type: "video", id: videoId };
+    if (playlistId && /^[A-Za-z0-9_-]{10,80}$/.test(playlistId)) return { type: "playlist", id: playlistId };
+    return null;
+  }
+
+  async function resolveMediaInput(rawValue) {
+    const request = ++state.mediaRequest;
+    const provider = state.mediaProvider;
+    state.media = null;
+    renderMediaPreview();
     if (!rawValue.trim()) {
-      setSpotifyStatus("", "");
+      setMediaStatus("", "");
       return;
     }
+
+    if (provider === "youtube") {
+      const parsed = parseYouTube(rawValue);
+      if (!parsed) {
+        setMediaStatus(/spotify/i.test(rawValue) ? "Switch to Spotify for that link." : "Share a YouTube video, Short, live video, or playlist link.", "error");
+        return;
+      }
+      setMediaStatus("Validating YouTube link…", "");
+      const contentLabel = YOUTUBE_TYPES[parsed.type];
+      const canonicalUrl = parsed.type === "playlist"
+        ? `https://www.youtube.com/playlist?list=${parsed.id}`
+        : `https://www.youtube.com/watch?v=${parsed.id}`;
+      const embedUrl = parsed.type === "playlist"
+        ? `https://www.youtube.com/embed/videoseries?list=${parsed.id}`
+        : `https://www.youtube.com/embed/${parsed.id}`;
+      const youtube = {
+        provider: "youtube",
+        id: parsed.id,
+        type: parsed.type,
+        canonicalUrl,
+        embedUrl,
+        title: `YouTube ${contentLabel}`,
+        creator: "Ready to play",
+        thumbnailUrl: parsed.type === "video" ? `https://i.ytimg.com/vi/${parsed.id}/hqdefault.jpg` : null
+      };
+      try {
+        const response = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(canonicalUrl)}&format=json`);
+        if (response.ok) {
+          const metadata = await response.json();
+          youtube.title = String(metadata.title || youtube.title).slice(0, 120);
+          youtube.creator = String(metadata.author_name || "YouTube").slice(0, 80);
+          if (/^https:\/\//i.test(metadata.thumbnail_url || "")) youtube.thumbnailUrl = metadata.thumbnail_url;
+        }
+      } catch { /* The embed remains usable when optional metadata is unavailable. */ }
+      if (request !== state.mediaRequest || state.mediaProvider !== provider) return;
+      state.media = youtube;
+      setMediaStatus(`${contentLabel[0].toUpperCase()}${contentLabel.slice(1)} ready to attach.`, "success");
+      renderMediaPreview();
+      return;
+    }
+
+    const parsed = parseSpotify(rawValue);
     if (!parsed) {
-      const looksSpotify = /spotify/i.test(rawValue);
-      setSpotifyStatus(looksSpotify ? "Share a Spotify song, album, or playlist link." : "Please enter a valid Spotify link.", "error");
+      setMediaStatus(/youtu(?:be|\.be)/i.test(rawValue) ? "Switch to YouTube for that link." : "Share a Spotify song, album, or playlist link.", "error");
       return;
     }
-    setSpotifyStatus("Validating Spotify link…", "");
+    setMediaStatus("Validating Spotify link…", "");
     let itemId = parsed.id;
     let contentType = parsed.type;
     if (parsed.isShort) {
@@ -719,18 +894,19 @@
         itemId = resolved.id;
         contentType = resolved.type;
       } catch {
-        if (request === state.spotifyRequest) setSpotifyStatus("This short link could not be resolved here. Paste the full open.spotify.com link instead.", "error");
+        if (request === state.mediaRequest) setMediaStatus("This short link could not be resolved here. Paste the full open.spotify.com link instead.", "error");
         return;
       }
     }
-    if (request !== state.spotifyRequest) return;
+    if (request !== state.mediaRequest || state.mediaProvider !== provider) return;
     const contentLabel = SPOTIFY_TYPES[contentType];
     if (!contentLabel) {
-      setSpotifyStatus("Only Spotify songs, albums, and playlists are supported.", "error");
+      setMediaStatus("Only Spotify songs, albums, and playlists are supported.", "error");
       return;
     }
     const canonicalUrl = `https://open.spotify.com/${contentType}/${itemId}`;
     const spotify = {
+      provider: "spotify",
       id: itemId,
       type: contentType,
       canonicalUrl,
@@ -747,37 +923,52 @@
         if (/^https:\/\//i.test(metadata.thumbnail_url || "")) spotify.thumbnailUrl = metadata.thumbnail_url;
       }
     } catch { /* The controlled embed remains valid even if optional metadata is unavailable. */ }
-    if (request !== state.spotifyRequest) return;
-    state.spotify = spotify;
-    setSpotifyStatus(`${contentLabel[0].toUpperCase()}${contentLabel.slice(1)} ready to attach.`, "success");
-    renderSpotifyPreview();
+    if (request !== state.mediaRequest || state.mediaProvider !== provider) return;
+    state.media = spotify;
+    setMediaStatus(`${contentLabel[0].toUpperCase()}${contentLabel.slice(1)} ready to attach.`, "success");
+    renderMediaPreview();
   }
 
-  function setSpotifyStatus(message, tone) {
-    el.spotifyStatus.textContent = message;
-    el.spotifyStatus.className = `field-status${tone ? ` ${tone}` : ""}`;
-    el.clearSpotify.hidden = !el.spotifyUrl.value;
+  function setMediaStatus(message, tone) {
+    el.mediaStatus.textContent = message;
+    el.mediaStatus.className = `field-status${tone ? ` ${tone}` : ""}`;
+    el.clearMedia.hidden = !el.mediaUrl.value;
   }
 
-  function renderSpotifyPreview() {
-    if (!state.spotify) {
-      el.spotifyPreview.hidden = true;
+  function renderMediaPreview() {
+    if (!state.media) {
+      el.mediaPreview.hidden = true;
       return;
     }
-    el.spotifyPreview.hidden = false;
-    const text = el.spotifyPreview.querySelector("span");
-    text.querySelector("strong").textContent = state.spotify.title;
-    const contentLabel = SPOTIFY_TYPES[state.spotify.type] || "music";
-    text.querySelector("small").textContent = `${contentLabel} · ${state.spotify.creator}`;
+    el.mediaPreview.hidden = false;
+    el.mediaPreview.classList.toggle("youtube-preview", state.media.provider === "youtube");
+    el.mediaPreviewIcon.src = state.media.provider === "youtube" ? YOUTUBE_ICON_URL : "assets/spotify-logo.png";
+    const text = el.mediaPreview.querySelector("span");
+    text.querySelector("strong").textContent = state.media.title;
+    const labels = state.media.provider === "youtube" ? YOUTUBE_TYPES : SPOTIFY_TYPES;
+    const contentLabel = labels[state.media.type] || "media";
+    text.querySelector("small").textContent = `${state.media.provider === "youtube" ? "YouTube" : "Spotify"} ${contentLabel} · ${state.media.creator}`;
   }
 
-  function clearSpotify() {
-    state.spotifyRequest += 1;
-    state.spotify = null;
-    el.spotifyUrl.value = "";
-    el.clearSpotify.hidden = true;
-    setSpotifyStatus("", "");
-    renderSpotifyPreview();
+  function updateMediaProvider(provider) {
+    state.mediaProvider = provider === "youtube" ? "youtube" : "spotify";
+    clearMedia();
+    const isYouTube = state.mediaProvider === "youtube";
+    el.mediaProviderIcon.src = isYouTube ? YOUTUBE_ICON_URL : "assets/spotify-logo.png";
+    el.mediaProviderLink.href = isYouTube ? "https://www.youtube.com/" : "https://open.spotify.com/";
+    el.mediaProviderLink.setAttribute("aria-label", `Open ${isYouTube ? "YouTube" : "Spotify"}`);
+    el.mediaUrl.placeholder = isYouTube
+      ? "Paste a video, Short, live, or playlist link"
+      : "Paste a song, album, or playlist link";
+  }
+
+  function clearMedia() {
+    state.mediaRequest += 1;
+    state.media = null;
+    el.mediaUrl.value = "";
+    el.clearMedia.hidden = true;
+    setMediaStatus("", "");
+    renderMediaPreview();
   }
 
   function updateComposer() {
@@ -821,7 +1012,7 @@
     else if (message.length > 500) error = "Please keep your message to 500 characters.";
     else if (identity === "named" && name.length < 2) error = "Please enter a name or switch to Anonymous.";
     else if (identity === "named" && name.length > 40) error = "Please keep your name to 40 characters.";
-    else if (el.spotifyUrl.value.trim() && !state.spotify) error = "Please attach a valid Spotify song, album, or playlist—or remove the link.";
+    else if (el.mediaUrl.value.trim() && !state.media) error = `Please attach a valid ${state.mediaProvider === "youtube" ? "YouTube" : "Spotify"} link—or remove it.`;
     else error = moderationError(message) || (state.backendConfigured ? "" : rateLimitError());
     if (!error && state.backendConfigured && !state.backendReady) {
       error = "The shared Dream Board is still connecting. Please try again shortly.";
@@ -835,16 +1026,17 @@
     el.publishLabel.textContent = "Posting…";
     const isAnonymous = identity !== "named";
     if (state.backendConfigured) {
-      const { error: databaseError } = await database.rpc("create_dream_board_post", {
+      const { error: databaseError } = await database.rpc("create_dream_board_post_v2", {
         p_message: message,
         p_type: type,
         p_is_anonymous: isAnonymous,
         p_display_name: isAnonymous ? null : name,
-        p_spotify_item_id: state.spotify?.id || null,
-        p_spotify_content_type: state.spotify?.type || null,
-        p_spotify_title: state.spotify?.title || null,
-        p_spotify_creator_name: state.spotify?.creator || null,
-        p_spotify_thumbnail_url: state.spotify?.thumbnailUrl || null
+        p_media_provider: state.media?.provider || null,
+        p_media_item_id: state.media?.id || null,
+        p_media_content_type: state.media?.type || null,
+        p_media_title: state.media?.title || null,
+        p_media_creator_name: state.media?.creator || null,
+        p_media_thumbnail_url: state.media?.thumbnailUrl || null
       });
       if (databaseError) {
         el.publishButton.disabled = false;
@@ -867,7 +1059,8 @@
         isAnonymous,
         reactionCount: 0,
         createdAt: new Date().toISOString(),
-        spotify: state.spotify ? { ...state.spotify } : null
+        spotify: state.media?.provider === "spotify" ? { ...state.media } : null,
+        youtube: state.media?.provider === "youtube" ? { ...state.media } : null
       };
       state.posts.unshift(newPost);
       writeJson(STORAGE.posts, state.posts);
@@ -876,7 +1069,7 @@
     }
 
     el.form.reset();
-    clearSpotify();
+    updateMediaProvider("spotify");
     updateComposer();
     el.publishButton.disabled = false;
     state.filter = "all";
@@ -916,9 +1109,12 @@
     });
     el.displayName.addEventListener("input", updateComposer);
     el.form.querySelectorAll('input[name="identity"]').forEach((radio) => radio.addEventListener("change", updateComposer));
-    el.spotifyUrl.addEventListener("input", debounce(() => resolveSpotifyInput(el.spotifyUrl.value), 450));
-    el.clearSpotify.addEventListener("click", clearSpotify);
-    el.removeSpotify.addEventListener("click", clearSpotify);
+    el.mediaUrl.addEventListener("input", debounce(() => resolveMediaInput(el.mediaUrl.value), 450));
+    el.clearMedia.addEventListener("click", clearMedia);
+    el.removeMedia.addEventListener("click", clearMedia);
+    el.form.querySelectorAll('input[name="mediaProvider"]').forEach((radio) => {
+      radio.addEventListener("change", () => updateMediaProvider(radio.value));
+    });
     el.form.addEventListener("submit", submitPost);
 
     el.categoryFilters.addEventListener("click", (event) => {
@@ -1000,6 +1196,8 @@
     el.searchInput.value = state.search;
     el.timeFilter.value = state.period;
     wireEvents();
+    updateMediaProvider("spotify");
+    if (window.YT?.Player) youtubeIframeApiReady = true;
     updateComposer();
     renderBoard();
     await initBackend();
