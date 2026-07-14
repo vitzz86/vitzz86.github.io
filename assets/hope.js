@@ -41,6 +41,11 @@
   const el = {
     html: document.documentElement,
     form: document.querySelector("#postForm"),
+    composerShell: document.querySelector(".composer-shell"),
+    composerFields: document.querySelector("#composerFields"),
+    composerToggle: document.querySelector("#composerToggle"),
+    composerToggleLabel: document.querySelector("#composerToggleLabel"),
+    composerToggleIcon: document.querySelector("#composerToggleIcon"),
     message: document.querySelector("#message"),
     characterCount: document.querySelector("#characterCount"),
     emojiButton: document.querySelector("#emojiButton"),
@@ -483,6 +488,16 @@
     el.emojiButton.setAttribute("aria-expanded", String(open));
   }
 
+  function setComposerExpanded(expanded) {
+    el.composerFields.hidden = !expanded;
+    el.composerShell.classList.toggle("is-collapsed", !expanded);
+    el.composerToggle.setAttribute("aria-expanded", String(expanded));
+    el.composerToggle.setAttribute("aria-label", expanded ? "Collapse form" : "Open form");
+    el.composerToggleLabel.textContent = expanded ? "Collapse form" : "Open form";
+    el.composerToggleIcon.textContent = expanded ? "⌃" : "⌄";
+    if (!expanded) setEmojiPicker(false);
+  }
+
   function insertEmoji(emoji) {
     const start = el.message.selectionStart ?? el.message.value.length;
     const end = el.message.selectionEnd ?? start;
@@ -766,6 +781,9 @@
       button.addEventListener("click", () => setTheme(button.dataset.themeValue));
     });
     el.message.addEventListener("input", updateComposer);
+    el.composerToggle.addEventListener("click", () => {
+      setComposerExpanded(el.composerFields.hidden);
+    });
     el.emojiButton.addEventListener("click", () => setEmojiPicker(el.emojiPicker.hidden));
     el.emojiPicker.addEventListener("click", (event) => {
       const button = event.target.closest("[data-emoji]");

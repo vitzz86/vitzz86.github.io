@@ -11,10 +11,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/hope.css?v=20260714-6">
+  <link rel="stylesheet" href="assets/hope.css?v=20260714-7">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="assets/hope-config.js?v=20260714-6" defer></script>
-  <script src="assets/hope.js?v=20260714-6" defer></script>
+  <script src="assets/hope-config.js?v=20260714-7" defer></script>
+  <script src="assets/hope.js?v=20260714-7" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#board">Skip to the board</a>
@@ -59,9 +59,13 @@
             <h2 id="composer-title">What's on your mind?</h2>
             <p>Share your hope, dream, or anything that matters to you.</p>
           </div>
+          <button class="composer-toggle" type="button" id="composerToggle" aria-label="Collapse form" aria-expanded="true" aria-controls="composerFields">
+            <span id="composerToggleLabel">Collapse form</span><span class="composer-toggle-icon" id="composerToggleIcon" aria-hidden="true">⌃</span>
+          </button>
         </div>
 
-        <div class="message-wrap">
+        <div class="composer-fields" id="composerFields">
+          <div class="message-wrap">
           <label class="sr-only" for="message">Your message</label>
           <textarea id="message" name="message" maxlength="500" minlength="3" required placeholder="Write your message here… (max 500 characters)"></textarea>
           <div class="emoji-control">
@@ -69,9 +73,9 @@
             <div class="emoji-picker" id="emojiPicker" role="dialog" aria-label="Choose an emoji" hidden></div>
           </div>
           <span class="character-count" id="characterCount">0 / 500</span>
-        </div>
+          </div>
 
-        <div class="composer-grid">
+          <div class="composer-grid">
           <fieldset class="field-group type-group">
             <legend>Type</legend>
             <div class="choice-row" id="composerTypes"></div>
@@ -103,15 +107,16 @@
               <button type="button" id="removeSpotify">Remove</button>
             </div>
           </div>
-        </div>
+          </div>
 
-        <div class="composer-footer">
-          <button class="publish-button" type="submit" id="publishButton">
-            <span aria-hidden="true">↗</span><span id="publishLabel">Post Anonymously</span>
-          </button>
-          <p class="public-notice"><span aria-hidden="true">◇</span>Your post will appear publicly on the board. Please avoid sharing sensitive personal information.</p>
+          <div class="composer-footer">
+            <button class="publish-button" type="submit" id="publishButton">
+              <span aria-hidden="true">↗</span><span id="publishLabel">Post Anonymously</span>
+            </button>
+            <p class="public-notice"><span aria-hidden="true">◇</span>Your post will appear publicly on the board. Please avoid sharing sensitive personal information.</p>
+          </div>
+          <p class="form-error" id="formError" role="alert"></p>
         </div>
-        <p class="form-error" id="formError" role="alert"></p>
       </form>
     </section>
 

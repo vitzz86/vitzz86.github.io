@@ -254,6 +254,29 @@ main {
   gap: 14px;
   margin-bottom: 12px;
 }
+.composer-lead > div { min-width: 0; flex: 1; }
+.composer-fields[hidden] { display: none; }
+.composer-shell.is-collapsed { padding-top: 13px; padding-bottom: 13px; }
+.composer-shell.is-collapsed .composer-lead { margin-bottom: 0; }
+
+.composer-toggle {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-solid) 78%, transparent);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+}
+.composer-toggle:hover { border-color: color-mix(in srgb, var(--purple) 55%, var(--line)); background: var(--purple-soft); color: var(--purple); }
+.composer-toggle-icon { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; background: var(--purple-soft); color: var(--purple); font-size: 14px; line-height: 1; }
 
 .mood-face {
   display: grid;
@@ -607,6 +630,8 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #241d16; --
   .stat-card strong { font-size: 17px; }
   .composer-shell { padding: 16px; }
   .composer-lead { align-items: flex-start; }
+  .composer-toggle { padding-inline: 9px; }
+  .composer-toggle #composerToggleLabel { display: none; }
   .mood-face { width: 42px; height: 42px; flex-basis: 42px; font-size: 24px; }
   .message-wrap { margin-left: 0; }
   .composer-footer { align-items: stretch; }
