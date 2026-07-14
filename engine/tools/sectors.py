@@ -102,7 +102,7 @@ def _merge_cached_charts(prices: dict, rows: list[dict], previous_sectors: list 
             q = dict(cached.get("chart_quality") or {})
             if q:
                 q["24h"] = ((p.get("chart_quality") or {}).get("24h")
-                            or ("real_intraday" if p.get("intraday") else "unavailable"))
+                            or ("real_intraday" if len(p.get("intraday") or []) > 1 else "unavailable"))
                 p["chart_quality"] = q
 
 
@@ -125,7 +125,7 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
 
     def priority(row: dict) -> tuple:
         cached = prior(row)
-        missing = 0 if not cached.get("intraday") else 1
+        missing = 0 if len(cached.get("intraday") or []) <= 1 else 1
         try:
             asof = float(cached.get("chart_asof") or 0)
         except Exception:  # noqa: BLE001
@@ -147,7 +147,11 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
         current = prices.setdefault(sym, {})
         live = fetched.get(sym) if sym in selected_symbols else None
         cached = prior(row)
-        source = live if live and live.get("intraday") else cached if cached.get("intraday") else None
+        source = (
+            live if live and len(live.get("intraday") or []) > 1
+            else cached if len(cached.get("intraday") or []) > 1
+            else None
+        )
         if not source:
             continue
         current["intraday"] = source.get("intraday") or []
