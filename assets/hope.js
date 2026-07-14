@@ -4,6 +4,8 @@
   const STORAGE = {
     posts: "vitzz86-dream-board-posts-v1",
     loved: "vitzz86-dream-board-loved-v1",
+    comments: "vitzz86-dream-board-comments-v1",
+    commentSubmissions: "vitzz86-dream-board-comment-submissions-v1",
     reports: "vitzz86-dream-board-reports-v1",
     theme: "vitzz86-dream-board-theme",
     submissions: "vitzz86-dream-board-submissions-v1"
@@ -45,6 +47,7 @@
   );
   let database = null;
   const postCardCache = new Map();
+  const commentThreads = new Map();
   const spotifyControllers = new Map();
   const playingSpotifyPosts = new Set();
   const youtubePlayers = new Map();
@@ -163,6 +166,7 @@
       displayName: row.is_anonymous ? "Anonymous" : (row.display_name || "Anonymous"),
       isAnonymous: row.is_anonymous,
       reactionCount: Number(row.reaction_count || 0),
+      commentCount: Number(row.comment_count || 0),
       createdAt: row.created_at,
       spotify,
       youtube,
@@ -222,8 +226,11 @@
   function friendlyBackendError(error, fallback) {
     const message = String(error?.message || "").toLowerCase();
     if (message.includes("wait before posting")) return "You’ve shared three messages recently. Please wait a few minutes before posting again.";
+    if (message.includes("wait before commenting")) return "You’ve added several comments recently. Please wait a few minutes before commenting again.";
     if (message.includes("daily posting limit")) return "You’ve reached today’s posting limit. Please come back tomorrow.";
+    if (message.includes("daily comment limit")) return "You’ve reached today’s comment limit. Please come back tomorrow.";
     if (message.includes("already submitted")) return "This message was already submitted.";
+    if (message.includes("already added that comment")) return "You already added that comment recently.";
     if (message.includes("excessive repeated")) return "Please remove excessive repeated characters.";
     if (message.includes("anonymous sign-ins are disabled")) return "Anonymous posting is not enabled yet.";
     if (message.includes("schema cache") || message.includes("could not find the function")) return "The Dream Board was just updated. Please refresh this page and try again.";
@@ -530,6 +537,230 @@
     initializeYouTubeEmbeds();
   };
 
+  function mapDatabaseComment(row) {
+    return {
+      id: row.id,
+      message: row.message,
+      displayName: row.is_anonymous ? "Anonymous" : (row.display_name || "Anonymous"),
+      isAnonymous: row.is_anonymous,
+      createdAt: row.created_at
+    };
+  }
+
+  function getLocalComments(postId) {
+    return readJson(STORAGE.comments, [])
+      .filter((comment) => String(comment.postId) === String(postId))
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  }
+
+  function renderCommentList(panel, comments, message = "") {
+    const list = panel.querySelector(".comment-list");
+    if (message) {
+      list.replaceChildren(makeText("p", "comment-empty", message));
+      return;
+    }
+    if (!comments.length) {
+      list.replaceChildren(makeText("p", "comment-empty", "Start the conversation with something kind ✨"));
+      return;
+    }
+    const items = comments.map((comment) => {
+      const item = document.createElement("article");
+      item.className = "comment-item";
+      const meta = document.createElement("div");
+      meta.className = "comment-meta";
+      const author = document.createElement("span");
+      author.className = "comment-author";
+      author.append(
+        makeText("span", "comment-avatar", comment.isAnonymous ? "👤" : "✦"),
+        makeText("strong", "", comment.displayName || "Anonymous")
+      );
+      const time = makeText("time", "", relativeTime(comment.createdAt));
+      time.dateTime = comment.createdAt;
+      meta.append(author, time);
+      item.append(meta, makeText("p", "comment-message", comment.message));
+      return item;
+    });
+    list.replaceChildren(...items);
+  }
+
+  async function loadComments(postId, panel, force = false) {
+    const key = String(postId);
+    const cached = commentThreads.get(key);
+    if (cached?.loaded && !force) {
+      renderCommentList(panel, cached.items);
+      return;
+    }
+    renderCommentList(panel, [], "Loading comments…");
+    try {
+      let comments;
+      if (state.backendConfigured) {
+        if (!state.backendReady) throw new Error("The shared Dream Board is still connecting.");
+        const { data, error } = await database.rpc("get_dream_board_comments", {
+          p_post_id: postId,
+          p_limit: 50
+        });
+        if (error) throw error;
+        comments = (Array.isArray(data) ? data : []).map(mapDatabaseComment);
+      } else {
+        comments = getLocalComments(postId);
+      }
+      commentThreads.set(key, { loaded: true, items: comments });
+      renderCommentList(panel, comments);
+    } catch (error) {
+      renderCommentList(panel, [], friendlyBackendError(error, "Comments could not be loaded. Please try again."));
+    }
+  }
+
+  function updateCommentCount(postId, value) {
+    const post = state.posts.find((item) => String(item.id) === String(postId));
+    if (post) post.commentCount = Math.max(0, Number(value || 0));
+    const card = postCardCache.get(String(postId));
+    const count = card?.querySelector(".comment-count");
+    if (count) count.textContent = String(post?.commentCount || 0);
+  }
+
+  function localCommentRateLimitError() {
+    const now = Date.now();
+    const history = readJson(STORAGE.commentSubmissions, []).filter((stamp) => now - stamp < 24 * 60 * 60 * 1000);
+    if (history.filter((stamp) => now - stamp < 10 * 60 * 1000).length >= 8) return "You’ve added several comments recently. Please wait a few minutes before commenting again.";
+    if (history.length >= 40) return "You’ve reached today’s comment limit. Please come back tomorrow.";
+    return "";
+  }
+
+  async function submitComment(event, postId, panel) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const messageInput = form.querySelector(".comment-input");
+    const nameToggle = form.querySelector(".comment-name-toggle input");
+    const nameInput = form.querySelector(".comment-name-input");
+    const submitButton = form.querySelector(".comment-submit");
+    const status = form.querySelector(".comment-status");
+    const message = messageInput.value.trim();
+    const named = nameToggle.checked;
+    const name = nameInput.value.trim();
+    let error = "";
+    if (!message) error = "Write a comment first.";
+    else if (message.length > 280) error = "Please keep your comment to 280 characters.";
+    else if (named && name.length < 2) error = "Enter at least 2 characters for your name.";
+    else if (named && name.length > 40) error = "Please keep your name to 40 characters.";
+    else error = moderationError(message) || (state.backendConfigured ? "" : localCommentRateLimitError());
+    if (!error && state.backendConfigured && !state.backendReady) error = "The shared Dream Board is still connecting. Please try again shortly.";
+    if (error) {
+      status.textContent = error;
+      status.className = "comment-status error";
+      return;
+    }
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Posting…";
+    status.textContent = "";
+    try {
+      let nextCount;
+      if (state.backendConfigured) {
+        const { data, error: databaseError } = await database.rpc("create_dream_board_comment", {
+          p_post_id: postId,
+          p_message: message,
+          p_is_anonymous: !named,
+          p_display_name: named ? name : null
+        });
+        if (databaseError) throw databaseError;
+        const result = Array.isArray(data) ? data[0] : data;
+        nextCount = Number(result?.comment_count || 0);
+      } else {
+        const comments = readJson(STORAGE.comments, []);
+        comments.push({
+          id: randomId(),
+          postId,
+          message,
+          displayName: named ? name : "Anonymous",
+          isAnonymous: !named,
+          createdAt: new Date().toISOString()
+        });
+        writeJson(STORAGE.comments, comments);
+        const history = readJson(STORAGE.commentSubmissions, []);
+        writeJson(STORAGE.commentSubmissions, [...history, Date.now()]);
+        nextCount = comments.filter((comment) => String(comment.postId) === String(postId)).length;
+      }
+      updateCommentCount(postId, nextCount);
+      if (!state.backendConfigured) writeJson(STORAGE.posts, state.posts);
+      messageInput.value = "";
+      await loadComments(postId, panel, true);
+      status.textContent = "Comment added ✨";
+      status.className = "comment-status success";
+    } catch (databaseError) {
+      status.textContent = friendlyBackendError(databaseError, "We couldn’t add your comment. Please try again.");
+      status.className = "comment-status error";
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Comment";
+    }
+  }
+
+  function makeCommentsPanel(postId) {
+    const panel = document.createElement("section");
+    panel.className = "comments-panel";
+    panel.id = `comments-${postId}`;
+    panel.hidden = true;
+    panel.setAttribute("aria-label", "Comments");
+
+    const heading = document.createElement("div");
+    heading.className = "comments-heading";
+    heading.append(makeText("strong", "", "Comments"), makeText("span", "", "Kind words make the board brighter"));
+    const list = document.createElement("div");
+    list.className = "comment-list";
+    list.setAttribute("aria-live", "polite");
+
+    const form = document.createElement("form");
+    form.className = "comment-form";
+    const inputLabel = makeText("label", "sr-only", "Add a comment");
+    const input = document.createElement("textarea");
+    input.className = "comment-input";
+    input.rows = 2;
+    input.maxLength = 280;
+    input.required = true;
+    input.placeholder = "Add a kind comment…";
+    inputLabel.htmlFor = `comment-input-${postId}`;
+    input.id = `comment-input-${postId}`;
+
+    const options = document.createElement("div");
+    options.className = "comment-options";
+    const identity = document.createElement("label");
+    identity.className = "comment-name-toggle";
+    const identityInput = document.createElement("input");
+    identityInput.type = "checkbox";
+    identity.append(identityInput, makeText("span", "", "Add my name"));
+    const nameInput = document.createElement("input");
+    nameInput.className = "comment-name-input";
+    nameInput.type = "text";
+    nameInput.minLength = 2;
+    nameInput.maxLength = 40;
+    nameInput.placeholder = "Name or nickname";
+    nameInput.autocomplete = "nickname";
+    nameInput.hidden = true;
+    const submit = makeText("button", "comment-submit", "Comment");
+    submit.type = "submit";
+    options.append(identity, nameInput, submit);
+    const status = makeText("p", "comment-status", "");
+    status.setAttribute("aria-live", "polite");
+    form.append(inputLabel, input, options, status);
+    form.addEventListener("submit", (event) => submitComment(event, postId, panel));
+    identityInput.addEventListener("change", () => {
+      nameInput.hidden = !identityInput.checked;
+      nameInput.required = identityInput.checked;
+      if (identityInput.checked) nameInput.focus();
+    });
+    panel.append(heading, list, form);
+    return panel;
+  }
+
+  function toggleComments(card, postId, button, panel) {
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    card.classList.toggle("comments-open", opening);
+    button.setAttribute("aria-expanded", String(opening));
+    if (opening) loadComments(postId, panel);
+  }
+
   function makePostCard(post, index) {
     const card = document.createElement("article");
     card.className = "post-card";
@@ -585,8 +816,19 @@
     heart.setAttribute("aria-hidden", "true");
     const count = makeText("span", "love-count", String(post.reactionCount || 0));
     love.append(heart, count);
-    footer.append(love);
-    card.append(meta, footer);
+    const commentButton = document.createElement("button");
+    commentButton.type = "button";
+    commentButton.className = "comment-button";
+    commentButton.setAttribute("aria-label", "Open comments");
+    commentButton.setAttribute("aria-expanded", "false");
+    const commentGlyph = makeText("span", "comment-glyph", "💬");
+    commentGlyph.setAttribute("aria-hidden", "true");
+    const commentCount = makeText("span", "comment-count", String(post.commentCount || 0));
+    commentButton.append(commentGlyph, commentCount);
+    const commentsPanel = makeCommentsPanel(post.id);
+    commentButton.setAttribute("aria-controls", commentsPanel.id);
+    footer.append(love, commentButton);
+    card.append(meta, footer, commentsPanel);
 
     menuButton.addEventListener("click", () => {
       const next = menu.hidden;
@@ -604,6 +846,7 @@
     });
 
     love.addEventListener("click", () => toggleLove(post.id));
+    commentButton.addEventListener("click", () => toggleComments(card, post.id, commentButton, commentsPanel));
     return card;
   }
 
@@ -625,6 +868,7 @@
     love.setAttribute("aria-label", loved ? "Remove love reaction" : "Love this post");
     love.querySelector(".heart-glyph").textContent = loved ? "♥" : "♡";
     love.querySelector(".love-count").textContent = String(post.reactionCount || 0);
+    card.querySelector(".comment-count").textContent = String(post.commentCount || 0);
   }
 
   function getPersistentPostCard(post, index) {
@@ -1058,6 +1302,7 @@
         displayName: isAnonymous ? "Anonymous" : name,
         isAnonymous,
         reactionCount: 0,
+        commentCount: 0,
         createdAt: new Date().toISOString(),
         spotify: state.media?.provider === "spotify" ? { ...state.media } : null,
         youtube: state.media?.provider === "youtube" ? { ...state.media } : null

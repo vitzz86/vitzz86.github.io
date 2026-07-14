@@ -660,10 +660,38 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
 .author-avatar { display: grid; width: 22px; height: 22px; place-items: center; border: 1px solid color-mix(in srgb, var(--type-color) 24%, var(--line)); border-radius: 50%; background: color-mix(in srgb, var(--type-color) 7%, var(--surface-solid)); box-shadow: inset 0 1px rgba(255, 255, 255, 0.65); font-size: 11px; }
 .author-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card-footer { display: flex; align-items: center; gap: 13px; padding: 7px 2px 0; border-top: 1px solid color-mix(in srgb, var(--card-border) 70%, transparent); color: var(--muted); font-size: 10px; }
-.love-button { display: inline-flex; min-height: 29px; align-items: center; gap: 6px; padding: 3px 9px 3px 4px; border: 1px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--type-color) 6%, transparent); color: var(--muted); cursor: pointer; transition: background 150ms ease, border-color 150ms ease, transform 150ms ease; }
-.love-button:hover { border-color: color-mix(in srgb, var(--type-color) 28%, transparent); background: color-mix(in srgb, var(--type-color) 11%, transparent); transform: translateY(-1px); }
+.love-button, .comment-button { display: inline-flex; min-height: 29px; align-items: center; gap: 6px; padding: 3px 9px 3px 4px; border: 1px solid transparent; border-radius: 999px; background: color-mix(in srgb, var(--type-color) 6%, transparent); color: var(--muted); cursor: pointer; transition: background 150ms ease, border-color 150ms ease, transform 150ms ease; }
+.love-button:hover, .comment-button:hover, .comment-button[aria-expanded="true"] { border-color: color-mix(in srgb, var(--type-color) 28%, transparent); background: color-mix(in srgb, var(--type-color) 11%, transparent); transform: translateY(-1px); }
 .love-button .heart-glyph { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--type-color) 12%, var(--surface-solid)); color: var(--type-color); font-size: 15px; }
 .love-button.loved .heart-glyph { animation: heart-pop 260ms ease; }
+.comment-button .comment-glyph { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 50%; background: color-mix(in srgb, var(--purple) 10%, var(--surface-solid)); font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-size: 13px; }
+
+.comments-panel { margin: 10px -2px -2px; padding: 13px 2px 0; border-top: 1px dashed color-mix(in srgb, var(--card-border) 78%, transparent); }
+.comments-panel[hidden] { display: none; }
+.comments-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.comments-heading strong { color: var(--text); font-size: 12px; }
+.comments-heading span { color: var(--muted); font-size: 9px; text-align: right; }
+.comment-list { display: grid; gap: 8px; max-height: 270px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.comment-empty { margin: 3px 0 9px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.comment-item { padding: 9px 10px; border: 1px solid color-mix(in srgb, var(--card-border) 62%, transparent); border-radius: 11px; background: color-mix(in srgb, var(--surface-solid) 58%, transparent); }
+.comment-meta { display: flex; align-items: center; justify-content: space-between; gap: 9px; color: var(--muted); font-size: 9px; }
+.comment-author { display: inline-flex; min-width: 0; align-items: center; gap: 5px; }
+.comment-author strong { overflow: hidden; color: var(--text); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.comment-avatar { display: grid; width: 18px; height: 18px; flex: 0 0 18px; place-items: center; border: 1px solid color-mix(in srgb, var(--type-color) 24%, var(--line)); border-radius: 50%; background: color-mix(in srgb, var(--type-color) 7%, var(--surface-solid)); font-size: 9px; }
+.comment-message { margin: 6px 0 0; color: var(--text); font-size: 11px; line-height: 1.45; overflow-wrap: anywhere; white-space: pre-wrap; }
+.comment-form { margin-top: 10px; }
+.comment-input { display: block; width: 100%; min-height: 58px; resize: vertical; padding: 9px 10px; border: 1px solid var(--line-strong); border-radius: 10px; outline: none; background: color-mix(in srgb, var(--surface-solid) 70%, transparent); color: var(--text); font: inherit; font-size: 11px; line-height: 1.45; }
+.comment-input:focus, .comment-name-input:focus { border-color: var(--purple); box-shadow: var(--focus); }
+.comment-options { display: flex; align-items: center; gap: 7px; margin-top: 7px; }
+.comment-name-toggle { display: inline-flex; min-height: 29px; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface-solid) 70%, transparent); color: var(--muted); cursor: pointer; font-size: 9px; white-space: nowrap; }
+.comment-name-toggle input { accent-color: var(--purple); }
+.comment-name-input { min-width: 0; min-height: 31px; flex: 1; padding: 6px 8px; border: 1px solid var(--line-strong); border-radius: 8px; outline: none; background: color-mix(in srgb, var(--surface-solid) 70%, transparent); color: var(--text); font-size: 10px; }
+.comment-name-input[hidden] { display: none; }
+.comment-submit { min-height: 31px; margin-left: auto; padding: 6px 11px; border: 0; border-radius: 8px; background: linear-gradient(135deg, #8b5cf6, #6d35ef); color: #fff; cursor: pointer; font-size: 10px; font-weight: 700; box-shadow: 0 6px 14px rgba(109, 53, 239, 0.18); }
+.comment-submit:disabled { cursor: wait; opacity: 0.65; }
+.comment-status { min-height: 14px; margin: 5px 1px 0; color: var(--muted); font-size: 9px; }
+.comment-status.error { color: var(--danger); }
+.comment-status.success { color: #1b9c4e; }
 
 .empty-state { margin: 34px auto; max-width: 440px; padding: 36px; text-align: center; }
 .empty-state > span { color: var(--purple); font-size: 34px; }
@@ -747,6 +775,9 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
   .publish-button { width: 100%; }
   .public-notice { text-align: left; }
   .media-field-heading { align-items: flex-start; flex-direction: column; }
+  .comment-options { align-items: stretch; flex-wrap: wrap; }
+  .comment-name-input { min-width: 150px; }
+  .comment-submit { margin-left: auto; }
   .filter-topline, .filter-bottomline { align-items: stretch; flex-direction: column; }
   .search-box { order: -1; width: 100%; }
   .time-filter { align-self: flex-end; }
