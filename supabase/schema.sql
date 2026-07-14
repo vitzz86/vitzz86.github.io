@@ -279,6 +279,35 @@ begin
 end;
 $$;
 
+-- Compatibility endpoint for visitors with the earlier playlist-only script still open.
+create function public.create_dream_board_post(
+  p_message text,
+  p_type text,
+  p_is_anonymous boolean default true,
+  p_display_name text default null,
+  p_spotify_playlist_id text default null,
+  p_spotify_title text default null,
+  p_spotify_creator_name text default null,
+  p_spotify_thumbnail_url text default null
+)
+returns uuid
+language sql
+security definer
+set search_path = ''
+as $$
+  select public.create_dream_board_post(
+    p_message,
+    p_type,
+    p_is_anonymous,
+    p_display_name,
+    p_spotify_playlist_id,
+    case when p_spotify_playlist_id is null then null else 'playlist' end,
+    p_spotify_title,
+    p_spotify_creator_name,
+    p_spotify_thumbnail_url
+  );
+$$;
+
 create or replace function public.toggle_dream_board_reaction(p_post_id uuid)
 returns table (reaction_count integer, loved boolean)
 language plpgsql
@@ -384,10 +413,12 @@ $$;
 
 revoke execute on function public.get_dream_board_posts(integer) from public;
 revoke execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text, text) from public;
+revoke execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text) from public;
 revoke execute on function public.toggle_dream_board_reaction(uuid) from public;
 revoke execute on function public.report_dream_board_post(uuid, text) from public;
 
 grant execute on function public.get_dream_board_posts(integer) to anon, authenticated;
 grant execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text, text) to authenticated;
+grant execute on function public.create_dream_board_post(text, text, boolean, text, text, text, text, text) to authenticated;
 grant execute on function public.toggle_dream_board_reaction(uuid) to authenticated;
 grant execute on function public.report_dream_board_post(uuid, text) to authenticated;

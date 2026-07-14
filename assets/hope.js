@@ -170,6 +170,7 @@
     if (message.includes("already submitted")) return "This message was already submitted.";
     if (message.includes("excessive repeated")) return "Please remove excessive repeated characters.";
     if (message.includes("anonymous sign-ins are disabled")) return "Anonymous posting is not enabled yet.";
+    if (message.includes("schema cache") || message.includes("could not find the function")) return "The Dream Board was just updated. Please refresh this page and try again.";
     return fallback;
   }
 
