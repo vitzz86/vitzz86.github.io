@@ -2427,8 +2427,7 @@ function openTicker(s,tk){
   if(waitingChart)ensureCryptoChart(s,tk);
   const waitingEquity=c.country!=='ID'&&c.country!=='CR'&&equityChartSymbol(c,tk)&&!view.length;
   if(waitingEquity)ensureEquityChart(s,tk);
-  const tvFallback=!view.length&&c.country!=='CR'&&!(c.country==='ID'&&tkTF==='24h')&&!!tradingViewSymbol(c,tk);
-  const idxChartQueued=!view.length&&c.country==='ID'&&tkTF==='24h';
+  const tvFallback=!view.length&&c.country!=='CR'&&!!tradingViewSymbol(c,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
   const stateBadge=stateBadgeHTML(c);
   const fallbackBadge=fallbackBadgeHTML(c);
@@ -2440,7 +2439,7 @@ function openTicker(s,tk){
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(idxChartQueued?'24h intraday is queued for the rotating IDX backfill. Longer TradingView checkpoints remain available.':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`))}</div></div>`)}`+
+    `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div></div>`)}`+
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
@@ -2504,7 +2503,6 @@ function tradingViewSymbol(c,tk){
 }
 function tradingViewRange(tf){return ({'24h':'1D','1W':'5D','1M':'1M','3M':'3M','6M':'6M'})[tf]||'1M';}
 function tradingViewInterval(c,tf){
-  if(c&&c.country==='ID')return 'D';
   return tf==='24h'?'30':(tf==='1W'?'60':'D');
 }
 function tradingViewFallbackHTML(c,tk,tf){

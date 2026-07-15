@@ -428,6 +428,20 @@ def validate(payload: dict) -> None:
             f"chart routes incomplete: {chart_health.get('missing_routes') or 'audit missing'}")
     _expect(chart_health.get("route_ready") == chart_health.get("total"),
             "chart route count does not cover the active universe")
+    _expect(not chart_health.get("quality_mismatches"),
+            f"chart quality labels mismatch their series: {chart_health.get('quality_mismatches')}")
+    sector_rows = [row for sector in payload.get("sectors", [])
+                   for row in sector.get("constituents", [])]
+    index_counts = {
+        group: sum(group in (row.get("index_groups") or []) for row in sector_rows)
+        for group in ("sp500", "nasdaq100")
+    }
+    if getattr(settings, "SP500_PRICE_ACTIVE", False):
+        _expect(index_counts["sp500"] >= 490,
+                f"S&P 500 membership incomplete: {index_counts['sp500']} rows")
+    if getattr(settings, "NASDAQ100_PRICE_ACTIVE", False):
+        _expect(index_counts["nasdaq100"] >= 90,
+                f"Nasdaq 100 membership incomplete: {index_counts['nasdaq100']} rows")
     _validate_intelligence(payload)
 
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 import sys
 import json
 import urllib.request
+from functools import lru_cache
 from html import unescape
 from html.parser import HTMLParser
 
@@ -18,6 +19,23 @@ from config import settings
 SP500_URL = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
 NASDAQ100_URL = "https://en.wikipedia.org/wiki/Nasdaq-100"
 NASDAQ_SCREENER = "https://api.nasdaq.com/api/screener/stocks?tableonly=true&limit=9000&offset=0&download=true"
+NASDAQ100_API = "https://api.nasdaq.com/api/quote/list-type/nasdaq100"
+
+# Last-known official membership keeps the dashboard populated during a brief
+# Nasdaq API outage. The official endpoint remains authoritative every run.
+NASDAQ100_FALLBACK = (
+    "AAPL", "AMAT", "AMGN", "CMCSA", "INTC", "KLAC", "PCAR", "CTAS", "PAYX", "LRCX",
+    "ADSK", "ROST", "MNST", "MSFT", "ADBE", "FAST", "EA", "CSCO", "REGN", "IDXX",
+    "VRTX", "ODFL", "QCOM", "GILD", "SNPS", "SBUX", "INTU", "MCHP", "ORLY", "COST",
+    "CPRT", "ASML", "TTWO", "AMZN", "MSTR", "NVDA", "BKNG", "ISRG", "MRVL", "ADI",
+    "AEP", "AMD", "ADP", "CDNS", "CSX", "HON", "MAR", "MU", "XEL", "EXC", "PEP",
+    "ROP", "TER", "TXN", "WDC", "WMT", "AXON", "MDLZ", "NFLX", "STX", "ALNY",
+    "GOOGL", "MPWR", "DXCM", "TMUS", "MELI", "KDP", "NBIS", "AVGO", "FTNT", "TSLA",
+    "NXPI", "FANG", "META", "PANW", "WDAY", "GOOG", "PYPL", "SHOP", "KHC", "LITE",
+    "CCEP", "BKR", "PDD", "CRWD", "DDOG", "RKLB", "PLTR", "ABNB", "DASH", "APP",
+    "CEG", "WBD", "GEHC", "LIN", "ARM", "TRI", "FER", "ALAB", "SNDK", "CRWV",
+    "SPCX", "HONA",
+)
 
 GICS_TO_SECTOR = {
     "basic materials": "energy",
@@ -160,6 +178,7 @@ def _num(raw) -> float | None:
         return None
 
 
+@lru_cache(maxsize=1)
 def us_market_snapshot() -> dict[str, dict]:
     try:
         req = urllib.request.Request(
@@ -191,6 +210,9 @@ def us_market_snapshot() -> dict[str, dict]:
                 "market_cap_value": cap,
                 "volume": volume,
                 "turnover": round((price or 0.0) * volume, 0),
+                "name": str(row.get("name") or sym).strip(),
+                "sector": str(row.get("sector") or "").strip(),
+                "industry": str(row.get("industry") or "").strip(),
                 "spark": [],
                 "spark_ts": [],
                 "intraday": [],
@@ -254,37 +276,69 @@ def sp500_rows(limit: int | None = None) -> list[dict]:
     return rows
 
 
-def nasdaq100_rows(limit: int | None = None) -> list[dict]:
+@lru_cache(maxsize=1)
+def _official_nasdaq100() -> tuple[dict, ...]:
+    try:
+        req = urllib.request.Request(
+            NASDAQ100_API,
+            headers={
+                "User-Agent": "Mozilla/5.0",
+                "Accept": "application/json",
+                "Origin": "https://www.nasdaq.com",
+                "Referer": "https://www.nasdaq.com/market-activity/quotes/nasdaq-ndx-index",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=25) as response:
+            payload = json.load(response)
+        rows = payload.get("data", {}).get("data", {}).get("rows", [])
+        clean = tuple(row for row in rows if _norm_symbol(row.get("symbol")))
+        if len(clean) >= 90:
+            return clean
+        print(f"[index_membership] official Nasdaq 100 response incomplete: {len(clean)} rows")
+    except Exception as e:  # noqa: BLE001
+        print(f"[index_membership] official Nasdaq 100 failed: {e}")
+    return ()
+
+
+def nasdaq100_rows(limit: int | None = None, market_snapshot: dict | None = None) -> list[dict]:
+    market_snapshot = market_snapshot or {}
+    official = _official_nasdaq100()
+    members = official or tuple({"symbol": sym, "companyName": sym} for sym in NASDAQ100_FALLBACK)
     rows = []
-    for table in _tables(NASDAQ100_URL):
-        lower = {str(c).lower(): c for c in table[0].keys()}
-        ticker_col = lower.get("ticker") or lower.get("symbol")
-        company_col = lower.get("company") or lower.get("security")
-        if not ticker_col or not company_col:
-            continue
-        sector_col = next((col for key, col in lower.items()
-                           if "gics sector" in key or key == "sector" or "icb industry" in key),
-                          None)
-        for r in table:
-            rows.append(_row(r.get(ticker_col), r.get(company_col),
-                             r.get(sector_col, "") if sector_col else "Information Technology",
-                             "nasdaq100"))
-        if len(rows) >= 50:
-            break
+    for item in members:
+        sym = _norm_symbol(item.get("symbol"))
+        market = market_snapshot.get(sym, {})
+        name = item.get("companyName") or market.get("name") or sym
+        sector = market.get("sector") or "Information Technology"
+        row = _row(sym, name, sector, "nasdaq100")
+        cap = _num(item.get("marketCap")) or market.get("market_cap_value")
+        if cap:
+            row["market_cap_value"] = cap
+            row["mktcap"] = _fmt_cap(cap)
+            row["tier"] = _tier_from_cap(cap)
+        if market.get("industry"):
+            row["industry"] = market["industry"]
+        row["source_provider"] = "nasdaq"
+        row["source_name"] = "Nasdaq-100"
+        row["source_url"] = "https://www.nasdaq.com/NDX"
+        rows.append(row)
     if limit:
         rows = rows[:limit]
-    print(f"[index_membership] Nasdaq 100 rows: {len(rows)}")
+    source = "official" if official else "fallback"
+    print(f"[index_membership] Nasdaq 100 rows: {len(rows)} ({source})")
     return rows
 
 
 def us_index_rows() -> list[dict]:
     limits = getattr(settings, "US_INDEX_LIMITS", {})
+    market_snapshot = us_market_snapshot()
     rows = []
     if getattr(settings, "SP500_PRICE_ACTIVE", True):
         rows.extend(sp500_rows(limits.get("sp500")))
     if getattr(settings, "NASDAQ100_PRICE_ACTIVE", True):
-        rows.extend(nasdaq100_rows(limits.get("nasdaq100")))
-    caps = us_market_caps() if rows else {}
+        rows.extend(nasdaq100_rows(limits.get("nasdaq100"), market_snapshot))
+    caps = {sym: row["market_cap_value"] for sym, row in market_snapshot.items()
+            if row.get("market_cap_value")} if rows else {}
     for row in rows:
         cap = caps.get(_norm_symbol(row.get("ticker")))
         if cap:
