@@ -85,6 +85,7 @@
     searchInput: document.querySelector("#searchInput"),
     sortControl: document.querySelector("#sortControl"),
     timeFilter: document.querySelector("#timeFilter"),
+    boardSummary: document.querySelector("#boardSummary"),
     board: document.querySelector("#board"),
     boardLoading: document.querySelector("#boardLoading"),
     emptyState: document.querySelector("#emptyState"),
@@ -902,6 +903,7 @@
       el.messageCount.textContent = "—";
       el.playlistCount.textContent = "—";
       el.youtubeCount.textContent = "—";
+      el.boardSummary.textContent = "Loading the board…";
       return;
     }
 
@@ -952,6 +954,10 @@
     el.messageCount.textContent = state.posts.length.toLocaleString();
     el.playlistCount.textContent = state.posts.filter((post) => post.spotify).length.toLocaleString();
     el.youtubeCount.textContent = state.posts.filter((post) => post.youtube).length.toLocaleString();
+    const visibleLabel = `${posts.length.toLocaleString()} ${posts.length === 1 ? "note" : "notes"}`;
+    el.boardSummary.textContent = posts.length === state.posts.length
+      ? `${visibleLabel} · ${state.sort === "latest" ? "Newest first" : state.sort === "oldest" ? "Oldest first" : state.sort === "loved" ? "Most loved first" : "Shuffled"}`
+      : `${visibleLabel} matching your view`;
     preserveMediaPlayback();
   }
 

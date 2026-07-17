@@ -11,10 +11,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/hope.css?v=20260715-4">
+  <link rel="stylesheet" href="assets/hope.css?v=20260717-1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="assets/hope-config.js?v=20260715-4" defer></script>
-  <script src="assets/hope.js?v=20260715-4" defer></script>
+  <script src="assets/hope.js?v=20260717-1" defer></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" defer></script>
   <script src="https://www.youtube.com/iframe_api" defer></script>
 </head>
@@ -139,8 +139,8 @@
         <div class="filter-scroll" id="categoryFilters"></div>
         <label class="search-box">
           <span aria-hidden="true">⌕</span>
-          <span class="sr-only">Search messages or Spotify music</span>
-          <input id="searchInput" type="search" placeholder="Search messages or Spotify…" autocomplete="off">
+          <span class="sr-only">Search messages or attached media</span>
+          <input id="searchInput" type="search" placeholder="Search messages or media…" autocomplete="off">
         </label>
       </div>
       <div class="filter-bottomline">
@@ -163,6 +163,14 @@
         </label>
       </div>
     </section>
+
+    <div class="board-heading">
+      <div>
+        <span class="board-heading-spark" aria-hidden="true">✦</span>
+        <h2>Notes from the board</h2>
+      </div>
+      <p id="boardSummary" aria-live="polite">Loading the board…</p>
+    </div>
 
     <section id="board" class="board" aria-label="Dream Board posts" aria-live="polite"></section>
     <div class="board-loading" id="boardLoading" role="status" aria-live="polite" hidden>
