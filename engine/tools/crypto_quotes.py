@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 import time
 import urllib.request
+from datetime import datetime
 
 API = "https://api.coingecko.com/api/v3"
 IDS = {"BTC-USD": "bitcoin", "ETH-USD": "ethereum", "SOL-USD": "solana",
@@ -32,6 +33,13 @@ def _ids_for(sym: str) -> list[str]:
     return ALIASES.get(sym) or ([IDS[sym]] if sym in IDS else [])
 
 
+def _iso_ts(value: str | None) -> int:
+    try:
+        return int(datetime.fromisoformat(str(value).replace("Z", "+00:00")).timestamp())
+    except (TypeError, ValueError):
+        return int(time.time())
+
+
 def simple(symbols: list[str]) -> dict:
     """{symbol: {value, delta_pct, prev_close, open}} from CoinGecko 24h fields."""
     ordered_ids = []
@@ -43,6 +51,7 @@ def simple(symbols: list[str]) -> dict:
     data = _get(f"{API}/simple/price?ids={ids}&vs_currencies=usd&include_24hr_change=true"
                 "&include_market_cap=true&include_24hr_vol=true")
     out = {}
+    now = int(time.time())
     for sym in symbols:
         for cid in _ids_for(sym):
             row = data.get(cid) or {}
@@ -54,6 +63,8 @@ def simple(symbols: list[str]) -> dict:
                         "delta_pct": round(float(dp), 2),
                         "prev_close": round(float(prev), 4),
                         "open": True, "mkt_start": None, "mkt_end": None,
+                        "quote_asof": now,
+                        "quote_mode": "near_realtime_24_7",
                         "market_cap_value": row.get("usd_market_cap"),
                         "volume_24h": row.get("usd_24h_vol"),
                         "chart_quality": {
@@ -134,6 +145,8 @@ def price_map_from_markets(markets: list[dict]) -> dict:
             "open": True,
             "mkt_start": None,
             "mkt_end": None,
+            "quote_asof": _iso_ts(row.get("last_updated")),
+            "quote_mode": "near_realtime_24_7",
             "market_cap_value": row.get("market_cap"),
             "volume_24h": row.get("total_volume"),
             "volume": row.get("total_volume") or 0.0,

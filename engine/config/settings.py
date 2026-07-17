@@ -902,10 +902,16 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY", "")
 # Daily Brief regenerates at these WIB hours; cached between windows to bound DeepSeek cost.
 DAILY_BRIEF_HOURS = [0, 3, 6, 9, 12, 15, 18, 21]   # every 3h WIB — tracks both ID & US sessions
 
-# Finnhub — baked into data.json so the client can poll live US quotes (free key,
-# US stocks only; IDX is handled by TradingView scanner data). Public exposure is
-# acceptable for the free tier.
+# Finnhub is available to the backend only. API keys must never be baked into the
+# public static payload or sent to browsers.
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY", "")
+
+# Optional secure market-data gateway. These public URLs may be exposed in
+# data.json, but provider credentials must remain on the gateway. The stream is
+# expected to emit normalized quote events; see engine/REALTIME.md.
+REALTIME_PROXY_URL = os.getenv("REALTIME_PROXY_URL", "").rstrip("/")
+REALTIME_STREAM_URL = os.getenv("REALTIME_STREAM_URL", "")
+IDX_FAST_QUOTE_URL = os.getenv("IDX_FAST_QUOTE_URL", "").rstrip("/")
 
 # Spotify now-playing (one-time refresh token → access token each run → current track).
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "")
@@ -987,3 +993,4 @@ VERSES = [
 # ---------------------------------------------------------------- output contract
 DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data.json")
 SCORES_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "scores.json")
+CHARTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "charts.json")

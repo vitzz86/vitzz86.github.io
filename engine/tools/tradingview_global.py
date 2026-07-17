@@ -157,6 +157,8 @@ def _parsed(vals: list) -> dict | None:
         "spark": spark,
         "spark_ts": idx_membership._checkpoint_ts(len(spark)) if spark else [],  # noqa: SLF001
         "chart_asof": int(time.time()),
+        "quote_asof": int(time.time()),
+        "quote_mode": "near_realtime_snapshot",
         "price_history_quality": "tradingview_performance_checkpoints",
         "chart_quality": {
             "24h": "unavailable",

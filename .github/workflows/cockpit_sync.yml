@@ -30,6 +30,9 @@ jobs:
           OPENROUTER_API_KEY:     ${{ secrets.OPENROUTER_API_KEY }}
           TAVILY_API_KEY:         ${{ secrets.TAVILY_API_KEY }}
           FINNHUB_API_KEY:        ${{ secrets.FINNHUB_API_KEY }}
+          REALTIME_PROXY_URL:     ${{ secrets.REALTIME_PROXY_URL }}
+          REALTIME_STREAM_URL:    ${{ secrets.REALTIME_STREAM_URL }}
+          IDX_FAST_QUOTE_URL:     ${{ secrets.IDX_FAST_QUOTE_URL }}
           YOUTUBE_API_KEY:        ${{ secrets.YOUTUBE_API_KEY }}
           SPOTIFY_CLIENT_ID:      ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET:  ${{ secrets.SPOTIFY_CLIENT_SECRET }}
@@ -42,11 +45,11 @@ jobs:
         run: |
           git config user.name  "cockpit-bot"
           git config user.email "actions@github.com"
-          if [ -z "$(git status --porcelain data.json scores.json)" ]; then
+          if [ -z "$(git status --porcelain data.json scores.json charts.json)" ]; then
             echo "data contracts unchanged — nothing to deploy"
             exit 0
           fi
-          git add data.json scores.json
+          git add data.json scores.json charts.json
           git commit -m "cockpit: refresh intelligence payload"
           # Concurrent runs (cron + manual) both touch data.json/scores.json. Rebase with
           # "-X theirs" auto-resolves the conflict to OUR freshly-generated payload

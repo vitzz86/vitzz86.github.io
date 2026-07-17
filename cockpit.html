@@ -130,6 +130,25 @@ a{color:inherit;text-decoration:none;}
 .mini.act{color:#050506;background:var(--amber);border-color:var(--amber);font-weight:700;}
 
 /* index cards */
+.assetsearch{position:relative;margin-bottom:11px;z-index:25;}
+.assetsearchbox{height:38px;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:0 10px;transition:border-color .15s,box-shadow .15s;}
+.assetsearchbox:focus-within{border-color:rgba(52,211,192,.5);box-shadow:0 0 0 2px rgba(52,211,192,.07);}
+.assetsearchbox .mag{color:var(--cyan);font-size:15px;line-height:1;}
+.assetsearchbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font-family:var(--mono);font-size:11px;letter-spacing:0;}
+.assetsearchbox input::placeholder{color:var(--ink3);}
+.assetsearchbox button{width:24px;height:24px;border:0;background:transparent;color:var(--ink3);font-size:16px;cursor:pointer;display:none;align-items:center;justify-content:center;}
+.assetsearchbox button:hover{color:var(--ink);}
+.assetresults{position:absolute;left:0;right:0;top:43px;display:none;max-height:390px;overflow-y:auto;background:#0d0d11;border:1px solid #30303a;border-radius:7px;box-shadow:0 18px 45px rgba(0,0,0,.55);padding:5px;}
+.assetresults.open{display:block;}
+.assetresult{width:100%;display:grid;grid-template-columns:82px minmax(120px,1fr) 110px 70px;gap:9px;align-items:center;border:0;border-bottom:1px solid var(--line2);background:transparent;color:var(--ink);padding:8px 9px;text-align:left;cursor:pointer;font-family:var(--mono);}
+.assetresult:last-child{border-bottom:0;}
+.assetresult:hover,.assetresult.on{background:rgba(52,211,192,.07);}
+.assetresult .artk{font-weight:700;font-size:11px;color:#f3f3f6;}
+.assetresult .arnm{font-family:var(--sans);font-size:10.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.assetresult .armeta{font-size:8px;color:var(--ink3);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.assetresult .armove{text-align:right;font-size:10.5px;font-variant-numeric:tabular-nums;}
+.assetempty{padding:15px 11px;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;}
+@media(max-width:640px){.assetresult{grid-template-columns:72px minmax(110px,1fr) 60px;}.assetresult .armeta{display:none;}.assetresults{max-height:330px;}}
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
 .idxcard{flex:0 0 168px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px;cursor:pointer;transition:border-color .15s,transform .12s;}
 .idxcard:hover{border-color:#3a3a46;transform:translateY(-2px);}
@@ -598,7 +617,7 @@ body{padding-bottom:40px;}
   <span class="spills">
     <span class="spill" id="mktState"><span class="d dgreen"></span>Market <b style="color:var(--green)">OPEN</b></span>
     <span class="spill"><span class="d damber"></span>AI <b style="color:var(--amber)">ACTIVE</b></span>
-    <span class="spill"><span class="d dgreen"></span>RSS <b style="color:var(--green)">LIVE</b></span>
+    <span class="spill"><span class="d dgreen"></span>RSS <b style="color:var(--green)">SYNC</b></span>
   </span>
   <span class="alertbar"><span>⚠</span><span id="topAlert">Scanning telemetry&hellip;</span><span class="nx">next →</span></span>
   <span class="tright">
@@ -609,7 +628,7 @@ body{padding-bottom:40px;}
   </span>
 </div>
 
-<div class="marq"><span class="live">LIVE</span><div class="track" id="marq"></div></div>
+<div class="marq"><span class="live">SNAPSHOT</span><div class="track" id="marq"></div></div>
 
 <div class="grid">
   <!-- LEFT -->
@@ -643,7 +662,11 @@ body{padding-bottom:40px;}
   <!-- CENTER -->
   <div class="col mid">
     <div class="sec">
-      <div class="sechd"><h2>Market Telemetry</h2><span class="tag">yfinance · SSE LIVE</span></div>
+      <div class="sechd"><h2>Market Telemetry</h2><span class="tag">MULTI-SOURCE · 30M SNAPSHOT</span></div>
+      <div class="assetsearch" id="assetSearchWrap">
+        <div class="assetsearchbox"><span class="mag" aria-hidden="true">⌕</span><input id="assetSearch" type="search" autocomplete="off" spellcheck="false" aria-label="Search market assets" placeholder="Search tickers or companies"><button id="assetSearchClear" type="button" title="Clear search" aria-label="Clear search">×</button></div>
+        <div class="assetresults" id="assetSearchResults" role="listbox" aria-label="Ticker search results"></div>
+      </div>
       <div class="lbl" style="margin-bottom:9px;">Global Indices &amp; Assets · click any card to inspect chart</div>
       <div class="idxscroll" id="idxScroll"></div>
       <div class="idxexp" id="idxExp"></div>
@@ -681,7 +704,7 @@ body{padding-bottom:40px;}
       <div class="secgrid" id="secGrid"></div>
     </div>
     <div class="sec">
-      <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">LIVE UNIVERSE</span></h2><button class="mini act" id="moverDetails" type="button">Details →</button></div>
+      <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">SNAPSHOT UNIVERSE</span></h2><button class="mini act" id="moverDetails" type="button">Details →</button></div>
       <div class="trendtabs" id="moveType"><span class="ttab on" data-t="gainers">▲ Gainers</span><span class="ttab" data-t="losers">▼ Losers</span><span class="ttab" data-t="top_score">◎ Top Score</span><span class="ttab" data-t="best_value">◇ Best Risk/Price</span></div>
       <div class="trendtabs" id="moveGeo"><span class="ttab on" data-g="id">🇮🇩 ID</span><span class="ttab" data-g="sp500">S&amp;P 500</span><span class="ttab" data-g="nasdaq100">Nasdaq 100</span><span class="ttab" data-g="us">🇺🇸 US</span><span class="ttab" data-g="others">🌐 Others</span><span class="ttab" data-g="crypto">₿ Crypto</span></div>
       <div id="moveList"></div>
@@ -700,7 +723,7 @@ body{padding-bottom:40px;}
 
   <!-- RIGHT -->
   <div class="col">
-    <div class="sechd"><h2 style="font-size:12px;">⊳ Intelligence Hub</h2><span class="tag" id="wireCount">LIVE</span></div>
+    <div class="sechd"><h2 style="font-size:12px;">⊳ Intelligence Hub</h2><span class="tag" id="wireCount">SYNCING</span></div>
     <div class="hubtabs" id="hubTabs">
       <span class="hubtab on" data-p="brief">Daily Brief</span>
       <span class="hubtab" data-p="news">News</span>
@@ -940,7 +963,7 @@ function render(d){
   const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
   updateDataAge();
-  $('freshPill').innerHTML='<span class="d dgreen"></span>UPDATED '+ago(d.timestamp).toUpperCase();
+  renderFreshness();
 
   /* top alert + active alerts */
   const an=d.anomaly&&d.anomaly.active;
@@ -1028,6 +1051,7 @@ function render(d){
 
   /* trending */
   renderTrending(d.trending||{});
+  initAssetSearch();
 
   /* intelligence hub */
   buildHub(d);
@@ -1117,6 +1141,74 @@ function openMoverTicker(ticker,country){
   openSector(hit.i);
   openTicker(hit.s,hit.c.ticker);
 }
+let assetSearchReady=false,assetSearchCursor=-1,assetSearchMatches=[];
+function searchableAssets(){
+  const seen=new Set(),rows=[];
+  for(const s of DATA.sectors||[])for(const c of s.constituents||[]){
+    const key=`${c.country}|${c.ticker}`;if(seen.has(key))continue;seen.add(key);
+    rows.push({...c,_sectorName:s.name});
+  }
+  return rows;
+}
+function assetSearchRank(c,q,tokens){
+  const ticker=String(c.ticker||'').toUpperCase(),name=String(c.name||'').toUpperCase();
+  const hay=[ticker,name,c.exchange,c.country,c.country_name,c._sectorName,c.industry].join(' ').toUpperCase();
+  if(!tokens.every(t=>hay.includes(t)))return null;
+  if(ticker===q)return 0;
+  if(ticker.startsWith(q))return 1;
+  if(name.startsWith(q))return 2;
+  if(ticker.includes(q))return 3;
+  return 4;
+}
+function searchAssets(value){
+  const q=String(value||'').trim().toUpperCase(),tokens=q.split(/\s+/).filter(Boolean);
+  if(!q)return [];
+  return searchableAssets().map(c=>({c,rank:assetSearchRank(c,q,tokens)}))
+    .filter(x=>x.rank!=null)
+    .sort((a,b)=>(a.rank-b.rank)||((Number(b.c.market_cap_value)||0)-(Number(a.c.market_cap_value)||0)))
+    .slice(0,12).map(x=>x.c);
+}
+function closeAssetSearch(){assetSearchCursor=-1;$('assetSearchResults').classList.remove('open');}
+function openAssetSearchHit(c){
+  if(!c)return;closeAssetSearch();$('assetSearch').blur();openMoverTicker(c.ticker,c.country);
+}
+function drawAssetSearch(value){
+  const box=$('assetSearchResults'),clear=$('assetSearchClear');
+  clear.style.display=value?'inline-flex':'none';assetSearchCursor=-1;assetSearchMatches=searchAssets(value);
+  if(!String(value||'').trim()){box.innerHTML='';closeAssetSearch();return;}
+  box.innerHTML=assetSearchMatches.length?assetSearchMatches.map((c,i)=>{
+    const dp=qDelta(c),sc=invScore(c);
+    return `<button class="assetresult" type="button" role="option" data-i="${i}" aria-selected="false">`+
+      `<span class="artk">${flagOf(c)} ${esc(c.ticker)}</span><span class="arnm">${esc(c.name)}</span>`+
+      `<span class="armeta">${esc(c._sectorName)} · ${esc(c.exchange||c.country)}</span>`+
+      `<span class="armove" style="color:${COLP(dp)}">${sign(dp)}${sc.score!=null?` · SC ${Math.round(sc.score)}`:''}</span></button>`;
+  }).join(''):'<div class="assetempty">No matching ticker or company.</div>';
+  box.classList.add('open');
+  [...box.querySelectorAll('.assetresult')].forEach(el=>el.onclick=()=>openAssetSearchHit(assetSearchMatches[Number(el.dataset.i)]));
+}
+function setAssetSearchCursor(next){
+  if(!assetSearchMatches.length)return;
+  assetSearchCursor=(next+assetSearchMatches.length)%assetSearchMatches.length;
+  [...document.querySelectorAll('#assetSearchResults .assetresult')].forEach((el,i)=>{
+    const on=i===assetSearchCursor;el.classList.toggle('on',on);el.setAttribute('aria-selected',on?'true':'false');if(on)el.scrollIntoView({block:'nearest'});
+  });
+}
+function initAssetSearch(){
+  const input=$('assetSearch');if(!input)return;
+  input.placeholder=`Search ${searchableAssets().length.toLocaleString()} tickers by symbol or company`;
+  if(assetSearchReady){if(input.value)drawAssetSearch(input.value);return;}
+  assetSearchReady=true;
+  input.addEventListener('input',()=>drawAssetSearch(input.value));
+  input.addEventListener('focus',()=>{if(input.value)drawAssetSearch(input.value);});
+  input.addEventListener('keydown',e=>{
+    if(e.key==='ArrowDown'){e.preventDefault();setAssetSearchCursor(assetSearchCursor+1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();setAssetSearchCursor(assetSearchCursor-1);}
+    else if(e.key==='Enter'&&assetSearchMatches.length){e.preventDefault();openAssetSearchHit(assetSearchMatches[Math.max(0,assetSearchCursor)]);}
+    else if(e.key==='Escape'){e.preventDefault();closeAssetSearch();input.blur();}
+  });
+  $('assetSearchClear').onclick=()=>{input.value='';drawAssetSearch('');input.focus();};
+  document.addEventListener('click',e=>{if(!$('assetSearchWrap').contains(e.target))closeAssetSearch();});
+}
 function finiteNum(v){const n=Number(v);return Number.isFinite(n)?n:null;}
 function clampScore(n){return Math.max(0,Math.min(100,Number(n)||0));}
 function riskStat(sc,key,label){
@@ -1174,7 +1266,7 @@ function moverScoreBadges(m){
 function drawMovers(){
   const fallback=localMoverBucket(moveGeo);
   const baked=(TREND&&TREND[moveGeo])||{};
-  const bucket={...fallback,...baked};
+  const bucket=idxFastConnected&&moveGeo==='id'?fallback:{...fallback,...baked};
   if(!bucket.top_score||!bucket.top_score.length)bucket.top_score=fallback.top_score;
   if(!bucket.best_value||!bucket.best_value.length)bucket.best_value=fallback.best_value;
   const list=(bucket[moveType]||[]);
@@ -1236,13 +1328,23 @@ function fallbackBadgeHTML(c){
     :'';
 }
 function quoteStamp(o,hasLive){
-  if(o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto'))return 'live · CoinGecko';
-  if(hasLive)return assetOpen(o)?'live quote':'latest quote · market closed';
-  return wibStamp(DATA.timestamp);
+  const q=o&&liveQuote(o.ticker,o.country),ts=(q&&q.asof)||o&&o.quote_asof;
+  const stamp=ts?wibStamp(new Date(Number(ts)*1000)):wibStamp(DATA.timestamp);
+  if(o&&(o.country==='CR'||o.exchange==='CRYPTO'||o.kind==='crypto'))return `near real-time · CoinGecko · ${stamp}`;
+  if(hasLive&&q&&q.mode==='near_realtime_snapshot')return `near real-time snapshot · TradingView · ${stamp}`;
+  if(hasLive)return `${assetOpen(o)?'stream quote':'last stream quote'} · ${stamp}`;
+  const mode=String(o&&o.quote_mode||'');
+  if(mode==='near_realtime_snapshot')return `near real-time snapshot · ${stamp}`;
+  if(mode==='provider_snapshot')return `provider snapshot · ${stamp}`;
+  return `30m compiled snapshot · ${stamp}`;
 }
-function liveQuote(tk){return CRYPTO[tk]||LIVE[tk]||null;}
-function qDelta(row){const q=liveQuote(row.ticker);return q&&q.dp!=null?q.dp:row.delta_pct;}
-function qValue(row){const q=liveQuote(row.ticker);return q&&q.c!=null?q.c:row.value;}
+function liveQuote(tk,country){
+  const q=CRYPTO[tk]||LIVE[`${country||''}|${tk}`]||LIVE[tk]||null;
+  if(q&&q.mode==='near_realtime_snapshot'&&q.asof&&(Date.now()/1000-q.asof)>180)return null;
+  return q;
+}
+function qDelta(row){const q=liveQuote(row.ticker,row.country);return q&&q.dp!=null?q.dp:row.delta_pct;}
+function qValue(row){const q=liveQuote(row.ticker,row.country);return q&&q.c!=null?q.c:row.value;}
 function cryptoUrl(tk,fallback){return tk==='MATIC'?'https://www.coingecko.com/en/coins/polygon':fallback;}
 function sectorSignal(change){const a=Math.abs(Number(change)||0);return a>=1.5?'ALERT':a>=0.8?'WATCH':'NORMAL';}
 function sectorMetrics(s){
@@ -1324,9 +1426,12 @@ function renderIdxHealth(){
   const fallbacks=[...new Set(activeRows('id')
     .filter(c=>/fallback|absent from TradingView/i.test((invScore(c).source||'')+' '+(invScore(c).note||'')))
     .map(c=>c.ticker).filter(Boolean))].sort();
-  el.innerHTML=`<span class="healthchip good">TradingView IDX ${Number(h.priced||0).toLocaleString()}/${Number(h.rows||0).toLocaleString()} priced</span>`+
+  const fastConfigured=!!String((DATA.config||{}).idx_fast_quote_url||'').trim();
+  el.innerHTML=`<span class="healthchip good">TradingView IDX snapshot ${Number(h.priced||0).toLocaleString()}/${Number(h.rows||0).toLocaleString()} priced</span>`+
     `<span class="healthchip">${Number(h.with_market_cap||0).toLocaleString()} market caps</span>`+
     `<span class="healthchip">${Number(h.with_6m_performance||0).toLocaleString()} 6M checkpoints</span>`+
+    `<span class="healthchip ${idxFastConnected?'good':fastConfigured?'warn':''}">${idxFastConnected?'60s TradingView snapshot connected':fastConfigured?'60s gateway reconnecting':'30m compiled quotes'}</span>`+
+    `<span class="healthchip ${h.licensed_realtime?'good':'warn'}">${h.licensed_realtime?'licensed real-time':'licensed real-time not connected'}</span>`+
     `${fallbacks.length?`<span class="healthchip warn">fallback ${fallbacks.join(', ')}</span>`:''}`;
 }
 function heatColor(v){
@@ -1462,7 +1567,7 @@ function expandIdx(i){
   const hi=view.length?Math.max(...view):r.value,lo=view.length?Math.min(...view):r.value;
   const col=teleSparkColor(r,tfPct);
   const stateTxt=r.kind==='policy'?'<span style="color:var(--cyan)">● OFFICIAL</span>'
-                           :(mktOpen(r)?'<span style="color:var(--green)">● LIVE</span>'
+                           :(mktOpen(r)?'<span style="color:var(--green)">● OPEN</span>'
                            :'<span style="color:var(--ink3)">● CLOSED</span>');
   $('idxExp').classList.add('open');
   $('idxExp').innerHTML=`<div class="xh"><div><span class="badge" style="font-family:var(--mono);font-size:7.5px;color:var(--ink3);">${GBADGE[r.kind]||''} · ${esc(r.symbol)}</span>`+
@@ -1690,7 +1795,7 @@ function syncHubUI(){
   $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
   if(hubPane==='videos')drawVideos();
   else if(hubPane==='news')drawWire();
-  else $('wireCount').textContent='LIVE';
+  else $('wireCount').textContent='BRIEF';
 }
 function buildHub(d){
   WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;
@@ -1915,7 +2020,10 @@ function newsRow(n){const cat=newsCat(n);return `<div class="nrow"><div class="n
 function invScore(c){return c.fundamental_score||{};}
 const LIVE_SCORES_URL='https://vitzz86.github.io/scores.json';
 const RAW_SCORES_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/scores.json';
+const LIVE_CHARTS_URL='https://vitzz86.github.io/charts.json';
+const RAW_CHARTS_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/charts.json';
 let SCORE_BUNDLE=null,SCORE_PROMISE=null;
+let CHART_BUNDLE=null,CHART_PROMISE=null;
 function scoreKey(c){return c&&(c.score_ref||`${c.country||''}|${c.ticker||''}|${c.source_symbol||''}|${c.sector_key||''}`);}
 function fetchScoreSource(url,label){
   const sep=url.includes('?')?'&':'?';
@@ -1940,6 +2048,28 @@ function hydrateScore(c){
     if(full){full._full_loaded=true;c.fundamental_score=full;}
     return c;
   }).catch(()=>c);
+}
+function fetchCharts(){
+  if(CHART_BUNDLE)return Promise.resolve(CHART_BUNDLE);
+  if(CHART_PROMISE)return CHART_PROMISE;
+  const sources=location.protocol==='file:'
+    ?[[LIVE_CHARTS_URL,'live charts'],[RAW_CHARTS_URL,'raw charts'],['charts.json','local charts']]
+    :[['charts.json','site charts'],[LIVE_CHARTS_URL,'live charts'],[RAW_CHARTS_URL,'raw charts']];
+  CHART_PROMISE=sources.reduce((chain,[url,label])=>chain.catch(()=>fetchScoreSource(url,label)),Promise.reject())
+    .then(d=>{CHART_BUNDLE=d;return d;})
+    .catch(e=>{CHART_PROMISE=null;throw e;});
+  return CHART_PROMISE;
+}
+function hydrateChart(c){
+  const ref=c&&(c.chart_ref||scoreKey(c));
+  if(!ref||c._chart_loaded||c._chart_loading)return Promise.resolve(c);
+  c._chart_loading=true;
+  return fetchCharts().then(bundle=>{
+    const detail=bundle&&bundle.charts&&bundle.charts[ref];
+    if(detail)Object.assign(c,detail);
+    c._chart_loaded=true;return c;
+  }).catch(()=>{c._chart_loaded=true;return c;})
+    .finally(()=>{c._chart_loading=false;});
 }
 function scoreClass(sc){const label=String((sc&&sc.label)||'insufficient').toLowerCase();return label.replace(/\s+/g,'')||'insufficient';}
 function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var(--ink3)';return n>=75?'var(--green)':n>=60?'var(--blue)':n>=45?'var(--amber)':'var(--red)';}
@@ -2062,7 +2192,7 @@ function scoreSummary(c){
   }
   return `<div class="scoresummary"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div>`+
-    `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${metrics.length} indicators</div></div>`+
+    `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${Number(sc.metric_count??metrics.length)} indicators</div></div>`+
     `<button class="scorebtn" id="scoreDetailBtn" type="button">Open score detail</button></div>`;
 }
 function displayScoreMetrics(sc,c=null){
@@ -2421,11 +2551,15 @@ function renderConsts(s){
 }
 function openTicker(s,tk){
   const c=s.constituents.find(x=>x.ticker===tk);if(!c)return;
-  const live=liveQuote(tk);const dp=qDelta(c);
+  const live=liveQuote(tk,c.country);const dp=qDelta(c);
   const td=tfData(c,tkTF);let view=td.view;const tfPct=(tkTF==='24h')?dp:td.pct;
-  const waitingChart=c.country==='CR'&&cryptoCoinIds(c,tk).length&&!view.length;
+  const waitingBundle=!!c.chart_ref&&!c._chart_loaded&&!c._chart_loading&&!view.length;
+  if(waitingBundle)hydrateChart(c).then(()=>{
+    if($('smTicker').style.display!=='none'&&($('smTicker').dataset.tk||'')===tk)openTicker(s,tk);
+  });
+  const waitingChart=!waitingBundle&&c.country==='CR'&&cryptoCoinIds(c,tk).length&&!view.length;
   if(waitingChart)ensureCryptoChart(s,tk);
-  const waitingEquity=c.country!=='ID'&&c.country!=='CR'&&equityChartSymbol(c,tk)&&!view.length;
+  const waitingEquity=!waitingBundle&&c.country!=='ID'&&c.country!=='CR'&&equityChartSymbol(c,tk)&&!view.length;
   if(waitingEquity)ensureEquityChart(s,tk);
   const tvFallback=!view.length&&c.country!=='CR'&&!!tradingViewSymbol(c,tk);
   const col=tfPct>=0?'#22c55e':'#ef4444';
@@ -2439,7 +2573,7 @@ function openTicker(s,tk){
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(c.mktcap)} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
-    `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div></div>`)}`+
+    `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(waitingBundle?`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Loading chart history…</div></div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div></div>`))}`+
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
@@ -2487,9 +2621,9 @@ function cryptoCoinIds(c,tk){
   return [...new Set(ids.filter(Boolean))];
 }
 function equityChartSymbol(c,tk){
-  if(!(DATA.config||{}).finnhub_key)return '';
+  if(!(DATA.config||{}).realtime_proxy_url)return '';
   if(!c||c.country==='ID'||c.country==='CR')return '';
-  return (c.source_symbol||tk||'').replace(/-/g,'.');
+  return c.source_symbol||tk||'';
 }
 const TV_EXCHANGE={ID:'IDX',JP:'TSE',KR:'KRX',HK:'HKEX',TW:'TWSE',SG:'SGX',AU:'ASX',
   FR:'EURONEXT',GB:'LSE',DE:'XETR',CH:'SIX',NL:'EURONEXT',ES:'BME',DK:'OMXCOP',IN:'NSE'};
@@ -2528,7 +2662,10 @@ function cryptoSector(){return (DATA&&DATA.sectors||[]).find(s=>s.key==='crypto'
 function refreshOpenSectorUI(){
   drawSectors();
   const s=DATA&&DATA.sectors&&DATA.sectors[smIdx];
-  if(s&&$('smodal').classList.contains('open')&&$('smTicker').style.display==='none')renderConsts(s);
+  if(s&&$('smodal').classList.contains('open')){
+    if($('smTicker').style.display==='none')renderConsts(s);
+    else{const tk=$('smTicker').dataset.tk||'';if(tk)openTicker(s,tk);}
+  }
 }
 async function ensureCryptoChart(s,tk){
   if(CRYPTO_CHART_LOADING[tk])return;
@@ -2566,25 +2703,30 @@ async function ensureCryptoChart(s,tk){
   }
 }
 async function ensureEquityChart(s,tk){
-  const c=s.constituents.find(x=>x.ticker===tk),sym=equityChartSymbol(c,tk),key=(DATA.config||{}).finnhub_key;
-  if(!c||!sym||!key||EQUITY_CHART_LOADING[tk])return;
+  const c=s.constituents.find(x=>x.ticker===tk),sym=equityChartSymbol(c,tk);
+  const base=String((DATA.config||{}).realtime_proxy_url||'').replace(/\/$/,'');
+  if(!c||!sym||!base||EQUITY_CHART_LOADING[tk])return;
   EQUITY_CHART_LOADING[tk]=true;
   try{
-    const now=Math.floor(Date.now()/1000),histFrom=now-190*86400,dayFrom=now-3*86400;
-    const url=(res,from)=>`https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(sym)}&resolution=${res}&from=${from}&to=${now}&token=${key}`;
-    const [hist,day]=await Promise.all([fetch(url('D',histFrom)),fetch(url('30',dayFrom))]);
-    const h=await hist.json(),d=await day.json();
-    if(h&&h.s==='ok'&&Array.isArray(h.c)&&h.c.length){
-      c.spark=h.c.filter(v=>v!=null).map(v=>round2(v)).slice(-130);
-      c.spark_ts=(h.t||[]).slice(-130);
+    const r=await fetch(`${base}/chart?symbol=${encodeURIComponent(sym)}&country=${encodeURIComponent(c.country||'')}&range=6mo`,{cache:'no-store'});
+    if(!r.ok)throw new Error('chart '+r.status);
+    const payload=await r.json(),d=payload.data||payload;
+    if(Array.isArray(d.spark)&&d.spark.length){
+      c.spark=d.spark.filter(v=>v!=null).map(v=>round2(v)).slice(-180);
+      c.spark_ts=(d.spark_ts||[]).slice(-180);
       c.chart_quality={...(c.chart_quality||{}), '1W':'historical_close','1M':'historical_close','3M':'historical_close','6M':'historical_close'};
     }
-    if(d&&d.s==='ok'&&Array.isArray(d.c)&&d.c.length){
-      c.intraday=d.c.filter(v=>v!=null).map(v=>round2(v));
+    if(Array.isArray(d.intraday)&&d.intraday.length){
+      c.intraday=d.intraday.filter(v=>v!=null).map(v=>round2(v));
       c.chart_quality={...(c.chart_quality||{}), '24h':'real_intraday'};
     }
+    if(d.value!=null)c.value=Number(d.value);
+    if(d.delta_pct!=null)c.delta_pct=Number(d.delta_pct);
+    c.quote_asof=Number(d.quote_asof||Math.floor(Date.now()/1000));
+    c.quote_mode='licensed_realtime';
     if($('smTicker').style.display!=='none'&&($('smTicker').dataset.tk||'')===tk)openTicker(s,tk);
   }catch(e){
+    console.warn('Secure chart gateway unavailable for '+tk);
   }finally{
     EQUITY_CHART_LOADING[tk]=false;
   }
@@ -2608,32 +2750,72 @@ function startCrypto(){
       // live-refresh an open crypto ticker view
       if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx],tk=$('smTicker').dataset.tk||'';
         if(s&&s.key==='crypto'&&tk&&CRYPTO[tk])openTicker(s,tk);}
-      $('freshPill').innerHTML='<span class="d dgreen"></span>CRYPTO 24/7 · '+ago(DATA.timestamp).toUpperCase();
+      cryptoLastPoll=Date.now();renderFreshness();
     }catch(e){}
   }
   poll();setInterval(poll,60000);
 }
-const LIVE={};let liveSyms=[];
-function startFinnhub(){
-  const key=(DATA.config||{}).finnhub_key;if(!key)return;
-  // US stock tickers from the universe (megacaps first), capped to respect 60/min
-  const us=[];for(const s of (DATA.sectors||[]))for(const c of s.constituents)
-    if(c.country==='US'&&c.exchange!=='OTC')us.push(c.ticker);
-  liveSyms=[...new Set(us)].slice(0,24);
-  async function poll(){
-    for(const sym of liveSyms){
-      try{const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`);
-        const q=await r.json();if(q&&q.c)LIVE[sym]={c:q.c,dp:q.dp};}catch(e){}
-      await new Promise(r=>setTimeout(r,1100));   // ~55/min, under the 60/min cap
-    }
-    refreshOpenSectorUI();
-    // refresh an open US ticker view with live numbers
-    if($('smTicker').style.display!=='none'){const s=DATA.sectors[smIdx];
-      const open=$('smTicker').querySelector('.tk');if(open){const tk=open.textContent.replace(/[^A-Z0-9.]/g,'');if(LIVE[tk])openTicker(s,tk);}}
-    const usOpen=(DATA.telemetry||[]).some(r=>['^GSPC','^IXIC','^DJI'].includes(r.symbol)&&mktOpen(r));
-    $('freshPill').innerHTML=`<span class="d ${usOpen?'dgreen':'dgray'}"></span>US ${usOpen?'OPEN':'CLOSED'} · IDX ${ago(DATA.timestamp).toUpperCase()}`;
+const LIVE={};
+let realtimeConnected=false,realtimeSource='',cryptoLastPoll=0,realtimeRenderTimer=null;
+let idxFastConnected=false,idxFastLastPoll=0,idxFastStarted=false;
+function renderFreshness(){
+  const el=$('freshPill');if(!el||!DATA)return;
+  if(realtimeConnected){
+    el.innerHTML=`<span class="d dgreen"></span>STREAM CONNECTED${realtimeSource?' · '+esc(realtimeSource):''}`;
+    return;
   }
-  poll();setInterval(poll,90000);
+  if(idxFastConnected){
+    const crypto=cryptoLastPoll?' · CRYPTO 60S':'';
+    el.innerHTML=`<span class="d dgreen"></span>IDX 60S · TRADINGVIEW SNAPSHOT · ${checkedAgo(idxFastLastPoll).toUpperCase()}${crypto}`;
+    return;
+  }
+  const crypto=cryptoLastPoll?' · CRYPTO 60S':'';
+  el.innerHTML=`<span class="d damber"></span>30M SNAPSHOT · ${ago(DATA.timestamp).toUpperCase()}${crypto}`;
+}
+function normalizedTicker(value){
+  return String(value||'').split(':').pop().replace(/\.JK$/i,'').replace(/-USD$/i,'').toUpperCase();
+}
+function applyRealtimeQuote(raw){
+  const q=raw&&raw.data&&typeof raw.data==='object'?raw.data:raw;if(!q)return;
+  const tk=normalizedTicker(q.ticker||q.symbol),price=Number(q.price??q.value??q.c);
+  if(!tk||!Number.isFinite(price))return;
+  const dp=Number(q.change_percent??q.delta_pct??q.dp);
+  const country=String(q.country||'').toUpperCase();
+  const liveRow={c:price,dp:Number.isFinite(dp)?dp:null,asof:Number(q.asof||q.quote_asof||Math.floor(Date.now()/1000)),source:q.source||'licensed stream',mode:q.quote_mode||'licensed_realtime'};
+  LIVE[country?`${country}|${tk}`:tk]=liveRow;
+  const telemetrySymbol=q.telemetry_symbol||q.source_symbol||q.symbol;
+  if(telemetrySymbol)updateIdxCard(telemetrySymbol,price,Number.isFinite(dp)?dp:null);
+}
+function scheduleRealtimeRender(){
+  if(realtimeRenderTimer)return;
+  realtimeRenderTimer=setTimeout(()=>{realtimeRenderTimer=null;drawHeatmap();drawMovers();refreshOpenSectorUI();renderFreshness();},500);
+}
+function startIdxFastQuotes(){
+  const base=String((DATA.config||{}).idx_fast_quote_url||'').replace(/\/$/,'');
+  if(!base||idxFastStarted)return;
+  idxFastStarted=true;
+  async function poll(){
+    try{
+      const r=await fetch(`${base}/quotes?market=idx&t=${Date.now()}`,{cache:'no-store'});
+      if(!r.ok)throw new Error('IDX fast quotes '+r.status);
+      const payload=await r.json(),quotes=Array.isArray(payload)?payload:(payload.quotes||[]);
+      if(!quotes.length)throw new Error('IDX fast quotes empty');
+      quotes.forEach(applyRealtimeQuote);
+      idxFastConnected=true;idxFastLastPoll=Date.now();scheduleRealtimeRender();
+    }catch(e){idxFastConnected=false;renderFreshness();console.warn('IDX fast quote gateway unavailable');}
+  }
+  poll();setInterval(poll,60000);
+}
+function startRealtimeFeed(){
+  const url=(DATA.config||{}).realtime_stream_url;
+  if(!url||typeof EventSource==='undefined'){renderFreshness();return;}
+  const stream=new EventSource(url);
+  stream.onopen=()=>{realtimeConnected=true;realtimeSource='LICENSED FEED';renderFreshness();};
+  stream.onerror=()=>{realtimeConnected=false;realtimeSource='';renderFreshness();};
+  stream.onmessage=e=>{
+    try{const payload=JSON.parse(e.data),quotes=Array.isArray(payload)?payload:(payload.quotes||[payload]);quotes.forEach(applyRealtimeQuote);scheduleRealtimeRender();}
+    catch(err){console.warn('Ignored malformed real-time quote event');}
+  };
 }
 
 /* ---- header alert cycler (the "next →" control) ---- */
@@ -2707,7 +2889,7 @@ function refreshPayload(opts={}){
   return fetchData().then(d=>{
     payloadLastCheck=Date.now();payloadLastOk=true;
     const changed=!DATA||!DATA.timestamp||d.timestamp!==DATA.timestamp;
-    if(changed||opts.force)applyPayload(d,!!opts.initial);
+    if(changed||opts.force){applyPayload(d,!!opts.initial);startIdxFastQuotes();}
     else updateDataAge();
     return changed;
   }).catch(e=>{
@@ -2721,7 +2903,7 @@ function refreshPayload(opts={}){
   }).finally(()=>{payloadRefreshBusy=false;});
 }
 refreshPayload({initial:true,force:true}).then(()=>{
-  if(DATA){startClock();startCrypto();startFinnhub();loadSpotifyApi();restoreVideo();}
+  if(DATA){startClock();startCrypto();startIdxFastQuotes();startRealtimeFeed();loadSpotifyApi();restoreVideo();}
 });
 setInterval(()=>{refreshPayload();},5*60*1000);
 addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPayload();});

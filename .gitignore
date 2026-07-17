@@ -7,6 +7,10 @@ __pycache__/
 *.pyc
 .venv/
 
+# Node / Cloudflare Worker local state
+node_modules/
+.wrangler/
+
 # Local-only: original unoptimized photos (site uses assets/photos/)
 Photo/
 

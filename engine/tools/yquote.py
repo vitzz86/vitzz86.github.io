@@ -69,6 +69,8 @@ def _one(sym: str) -> dict | None:
            "delta_pct": round((price - pc) / pc * 100, 2),
            "open": bool(start and end and start <= now <= end),
            "mkt_start": start, "mkt_end": end,
+           "quote_asof": int(m.get("regularMarketTime") or now),
+           "quote_mode": "provider_snapshot",
            "intraday": intraday, "spark": [], "volume": 0.0,
            "chart_quality": {
                "24h": "real_intraday" if len(intraday) > 1 else "unavailable",
@@ -137,6 +139,8 @@ def _lite_from_day(day: dict | None) -> dict | None:
         "open": bool(start and end and start <= now <= end),
         "mkt_start": start,
         "mkt_end": end,
+        "quote_asof": int(m.get("regularMarketTime") or now),
+        "quote_mode": "provider_snapshot",
         "intraday": intraday,
         "spark": [],
         "spark_ts": [],

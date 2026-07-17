@@ -41,6 +41,8 @@ def _batch_prices(symbols: list) -> dict:
                     "intraday": r.get("intraday", []),
                     "chart_quality": r.get("chart_quality"),
                     "chart_asof": r.get("chart_asof"),
+                    "quote_asof": r.get("quote_asof"),
+                    "quote_mode": r.get("quote_mode"),
                     "mkt_start": r.get("mkt_start"), "mkt_end": r.get("mkt_end")}
     return out
 
@@ -345,6 +347,12 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "price_history_quality": _pick_price_field(p or {}, base, "price_history_quality"),
                 "chart_quality": _pick_price_field(p or {}, base, "chart_quality"),
                 "chart_asof": _pick_price_field(p or {}, base, "chart_asof"),
+                "quote_asof": (_pick_price_field(p or {}, base, "quote_asof")
+                               or _pick_price_field(p or {}, base, "chart_asof")
+                               or int(time.time())),
+                "quote_mode": (_pick_price_field(p or {}, base, "quote_mode")
+                               or ("near_realtime_24_7" if country == "CR"
+                                   else "provider_snapshot")),
             })
             if country == "ID":
                 id_d.append(delta)

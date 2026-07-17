@@ -56,8 +56,13 @@ def collect() -> dict:
             "state": "open" if r["open"] else "closed",
             "mkt_start": r.get("mkt_start"),
             "mkt_end": r.get("mkt_end"),
+            "quote_asof": r.get("quote_asof"),
+            "quote_mode": r.get("quote_mode", "provider_snapshot"),
             "spark": r.get("spark", []),
+            "spark_ts": r.get("spark_ts", []),
             "intraday": r.get("intraday", []),
+            "chart_quality": r.get("chart_quality"),
+            "chart_asof": r.get("chart_asof"),
             "url": ("https://www.coingecko.com/en/coins/bitcoin"
                     if symbol == "BTC-USD" else settings.YF_QUOTE + symbol),
         })

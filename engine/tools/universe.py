@@ -184,6 +184,7 @@ def _price_only_row(item: dict, universe_name: str, default_priority: str = "wat
         "perf_1w", "perf_1m", "perf_3m", "perf_6m", "perf_ytd", "perf_1y",
         "volatility_1w", "volatility_1m", "volatility_1d", "recommend_all",
         "rsi", "price_history_quality", "chart_quality", "chart_asof",
+        "quote_asof", "quote_mode",
     )
     for key in passthrough:
         if item.get(key) is not None:
@@ -282,7 +283,7 @@ def _merge_values(base: dict, extra: dict) -> dict:
         "relative_volume_10d", "perf_1w", "perf_1m", "perf_3m", "perf_6m",
         "perf_ytd", "perf_1y", "volatility_1w", "volatility_1m",
         "volatility_1d", "recommend_all", "rsi", "price_history_quality",
-        "chart_quality", "chart_asof",
+        "chart_quality", "chart_asof", "quote_asof", "quote_mode",
     ):
         if not base.get(key) and extra.get(key):
             base[key] = extra[key]
