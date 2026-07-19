@@ -1954,7 +1954,10 @@ function localIpoSynthesis(rows,market){
   const counts=new Map();
   regionRows.forEach(x=>{const v=String(x.industry||x.sector||'').trim();if(v&&v.toLowerCase()!=='industry unavailable')counts.set(v,(counts.get(v)||0)+1);});
   const industries=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3).map(x=>x[0]);
-  const names=regionRows.slice(0,3).map(x=>x.ticker||x.name).filter(Boolean);
+  const names=regionRows.slice(0,3).map(x=>{
+    const value=String(x.ticker||x.name||'');
+    return ipoView==='changes'?value.split(/\s+-\s+S&P Global|;/i)[0].trim():value;
+  }).filter(Boolean);
   const wording={upcoming:['verified scheduled listing','verified scheduled listings'],pipeline:['filed or reported pipeline candidate','filed or reported pipeline candidates'],recent:['listing in the past year','listings in the past year'],changes:['S&P 500 membership announcement','S&P 500 membership announcements']}[ipoView][regionRows.length===1?0:1];
   return `${regionRows.length} ${wording} are currently tracked${names.length?`, led by ${humanList(names)}`:''}${industries.length?`; the most represented industries are ${humanList(industries)}`:''}.`;
 }
@@ -1989,7 +1992,7 @@ function drawIpo(){
     ?'S&P 500 entries are official index-membership announcements, not IPOs.'
     :ipoView==='pipeline'
       ?`Pipeline separates official filings from reported candidates. Filing and publication dates are not confirmed listing dates. ${spacCount?`${spacCount} SPAC candidates hidden.`:''}${totalRows>rows.length?` Showing the newest ${rows.length} of ${totalRows} candidates.`:''}`
-      :`IDX recent dates use TradingView first-observed bars; confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
+      :`IDX recent dates use official e-IPO dates when available and TradingView first-observed bars as fallback; confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
   const cards=rows.map((x,i)=>{const d=ipoDate(x.event_ts),usExchange=/nyse/i.test(x.exchange||'')?'NYSE':/nasdaq/i.test(x.exchange||'')?'NASDAQ':'US',market=x.market==='ID'?'🇮🇩 IDX':x.market==='US'?`🇺🇸 ${usExchange}`:'S&P 500';
     const key=ipoRowKey(x,i),open=ipoExpanded===key,hit=findIpoAsset(x);
     const price=x.price?`<span class="meta-chip">${x.market==='ID'?'IDR':'USD'} ${esc(x.price)}</span>`:'';
@@ -2027,11 +2030,11 @@ function openIpoRecent(x){const hit=findIpoAsset(x);if(!hit)return;openSector(hi
 function ipoDetailHTML(x,hit,key){
   const related=(x.related_news||[]).filter(n=>n&&n.url).slice(0,3);
   const links=[x.prospectus_url?`<a class="ipoaction primary" href="${encodeURI(x.prospectus_url)}" target="_blank" rel="noopener">Prospectus ↗</a>`:'',
-    x.official_filing_url?`<a class="ipoaction" href="${encodeURI(x.official_filing_url)}" target="_blank" rel="noopener">Official KSEI document ↗</a>`:'',
+    x.official_filing_url?`<a class="ipoaction" href="${encodeURI(x.official_filing_url)}" target="_blank" rel="noopener">${x.market==='US'?'SEC filings':'Official KSEI document'} ↗</a>`:'',
     x.detail_url?`<a class="ipoaction" href="${encodeURI(x.detail_url)}" target="_blank" rel="noopener">Offering details ↗</a>`:'',
     x.source_url?`<a class="ipoaction" href="${encodeURI(x.source_url)}" target="_blank" rel="noopener">Open source ↗</a>`:''].join('');
   const facts=[[ipoDateLabel(x),x.event_ts?new Date(x.event_ts*1000).toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric'}):'TBD'],
-    ['Status',x.status||'scheduled'],['Sector',x.sector],['Shares offered',x.shares],['Offer amount',x.offer_amount],['Confidence',String(x.confidence||'').replace(/_/g,' ')]]
+    ['Status',x.status||'scheduled'],['Industry',x.industry],['Sector',x.sector],['Shares offered',x.shares],['Offer amount',x.offer_amount],['Confidence',String(x.confidence||'').replace(/_/g,' ')]]
     .filter(([,v])=>v!=null&&String(v).trim()).map(([k,v])=>`<div class="ipofact"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('');
   const news=related.length?`<div class="iporelated"><div class="rh">Related coverage</div>${related.map(n=>`<a href="${encodeURI(n.url)}" target="_blank" rel="noopener">${esc(n.title)} · ${esc(n.source||'source')} ↗</a>`).join('')}</div>`:'';
   const chart=ipoView==='recent'&&!hit&&x.ticker?`<div class="ipochart" id="ipoChart-${Math.abs(hashText(key))}"></div><div class="iponote">This listing is not yet in Cockpit’s monitored fundamentals universe, so a deterministic score is not shown. The market chart is provided for inspection without inventing a score.</div>`:'';

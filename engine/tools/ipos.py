@@ -253,22 +253,28 @@ def _fetch_eipo_markdown() -> str:
         return response.read().decode("utf-8", "ignore")
 
 
-def _eipo_upcoming(previous: dict) -> tuple[list, str]:
+def _eipo_calendar(previous: dict) -> tuple[list, list, str]:
     try:
         text = _fetch_eipo_markdown()
     except Exception as exc:  # noqa: BLE001
         print(f"[ipo] e-IPO reader unavailable: {exc}")
-        return list(previous.get("upcoming_id") or []), "stale_cache" if previous.get("upcoming_id") else "unavailable"
+        upcoming = list(previous.get("upcoming_id") or [])
+        recent = list(previous.get("recent_id_official") or [])
+        return upcoming, recent, "stale_cache" if upcoming or recent else "unavailable"
     if "under maintenance" in text.lower() or "site maintenance" in text.lower():
-        return list(previous.get("upcoming_id") or []), "maintenance"
+        return (list(previous.get("upcoming_id") or []),
+                list(previous.get("recent_id_official") or []), "maintenance")
 
-    out = _parse_eipo_markdown(text)
-    if not out and previous.get("upcoming_id"):
-        return list(previous.get("upcoming_id") or []), "stale_cache"
-    return out, "live"
+    all_rows = _parse_eipo_markdown(text, include_closed=True)
+    upcoming = [row for row in all_rows if row.get("status") != "closed"]
+    recent = [row for row in all_rows if row.get("status") == "closed"]
+    if not upcoming and previous.get("upcoming_id") and not recent:
+        return (list(previous.get("upcoming_id") or []),
+                list(previous.get("recent_id_official") or []), "stale_cache")
+    return upcoming, recent, "live"
 
 
-def _parse_eipo_markdown(text: str) -> list:
+def _parse_eipo_markdown(text: str, include_closed: bool = False) -> list:
     """Parse both the current company-first and legacy status-first card layouts."""
     blocks = re.split(r"(?=###\s+[^\n]+\s*\([A-Z0-9]{3,6}\)\s*$)",
                       text, flags=re.I | re.M)
@@ -291,7 +297,7 @@ def _parse_eipo_markdown(text: str) -> list:
             r"^(Waiting For Offering|Offering|Book Building|Menunggu Penawaran|Penawaran|Closed)\s*$",
             block, re.I | re.M)
         status = status_match.group(1).strip().lower() if status_match else "scheduled"
-        if status == "closed":
+        if status == "closed" and not include_closed:
             continue
         date_match = re.search(
             r"(?:Tanggal Pencatatan|Expected Listing Date|Periode Penawaran|Periode Book Building)"
@@ -326,8 +332,39 @@ def _parse_eipo_markdown(text: str) -> list:
             "source": "e-IPO Indonesia", "source_url": EIPO_URL,
             "confidence": "official_calendar",
         })
-    out = [row for row in out if row.get("event_ts") is None or row["event_ts"] >= _now() - 86400]
+    cutoff = _now() - (YEAR_SECONDS if include_closed else 86400)
+    out = [row for row in out if row.get("event_ts") is None or row["event_ts"] >= cutoff]
     return sorted(out, key=lambda x: x.get("event_ts") or 10**12)
+
+
+def _merge_idx_recent(scanner_rows: list, official_rows: list) -> list:
+    """Prefer official e-IPO dates while retaining TradingView chart coverage."""
+    by_ticker = {str(row.get("ticker") or "").upper(): dict(row) for row in scanner_rows}
+    for official in official_rows or []:
+        ticker = str(official.get("ticker") or "").upper()
+        if not ticker:
+            continue
+        row = by_ticker.get(ticker, {
+            "market": "ID", "kind": "ipo", "ticker": ticker,
+            "name": official.get("name") or ticker, "exchange": "IDX",
+            "industry": official.get("sector"), "is_spac": False,
+        })
+        row.update({
+            "status": "listed",
+            "event_ts": official.get("event_ts") or row.get("event_ts"),
+            "date_type": "listing_date",
+            "price": official.get("price") or row.get("price"),
+            "shares": official.get("shares") or row.get("shares"),
+            "sector": official.get("sector") or row.get("sector"),
+            "source": "e-IPO Indonesia + TradingView",
+            "source_url": official.get("source_url") or EIPO_URL,
+            "confidence": "official_calendar",
+        })
+        by_ticker[ticker] = row
+    cutoff = _now() - YEAR_SECONDS
+    return sorted(
+        [row for row in by_ticker.values() if int(row.get("event_ts") or 0) >= cutoff],
+        key=lambda row: int(row.get("event_ts") or 0), reverse=True)
 
 
 def _fetch_text(url: str) -> str:
@@ -461,6 +498,25 @@ def _human_list(items: list[str]) -> str:
     return ", ".join(clean[:-1]) + f", and {clean[-1]}"
 
 
+def _event_label(row: dict) -> str:
+    value = str(row.get("ticker") or row.get("name") or "").strip()
+    if row.get("kind") == "index_change":
+        value = re.split(r"\s+-\s+S&P Global|;", value, maxsplit=1, flags=re.I)[0].strip()
+    return value
+
+
+def _trim_sentence(value: str, limit: int = 420) -> str:
+    value = str(value or "").strip()
+    if len(value) <= limit:
+        return value
+    chunk = value[:limit]
+    sentence_end = max(chunk.rfind("."), chunk.rfind("!"), chunk.rfind("?"))
+    if sentence_end >= limit // 2:
+        return chunk[:sentence_end + 1].strip()
+    word_end = chunk.rfind(" ")
+    return chunk[:word_end if word_end > 0 else limit].rstrip(" ,;:-") + "."
+
+
 def _ipo_view_rows(payload: dict, view: str, market: str) -> list:
     keys = {
         "upcoming": ("upcoming_id", "upcoming_us"),
@@ -486,7 +542,7 @@ def _ipo_fact_line(payload: dict, view: str, market: str) -> str:
             industries[industry] = industries.get(industry, 0) + 1
     top_industries = [name for name, _count in sorted(
         industries.items(), key=lambda item: (-item[1], item[0]))[:3]]
-    names = [str(row.get("ticker") or row.get("name") or "").strip() for row in rows[:3]]
+    names = [_event_label(row) for row in rows[:3]]
     focus = f", led by {_human_list(names)}" if names else ""
     mix = f"; the most represented industries are {_human_list(top_industries)}" if top_industries else ""
     singular, plural = {
@@ -537,7 +593,7 @@ def _parse_synthesis(raw: str) -> dict | None:
         for region in ("indonesia", "us"):
             if not isinstance(block.get(region), str) or not block[region].strip():
                 return None
-            block[region] = block[region].strip()[:420]
+            block[region] = _trim_sentence(block[region])
     return obj
 
 
@@ -587,8 +643,13 @@ def collect(sectors: list, previous: dict | None = None, news_wire: list | None 
     news_wire = news_wire or []
     recent_us, upcoming_us, pipeline_us, us_health = _nasdaq(previous)
     us_classification = _enrich_us_classification(recent_us + upcoming_us + pipeline_us)
-    upcoming_id, id_health = _eipo_upcoming(previous)
-    recent_id = _idx_recent(sectors)
+    # SPACs and acquisition shells are noise for this investor-focused radar.
+    # Filter them before persistence so payload counts, synthesis, and UI agree.
+    recent_us = [row for row in recent_us if not row.get("is_spac")]
+    upcoming_us = [row for row in upcoming_us if not row.get("is_spac")]
+    pipeline_us = [row for row in pipeline_us if not row.get("is_spac")]
+    upcoming_id, recent_id_official, id_health = _eipo_calendar(previous)
+    recent_id = _merge_idx_recent(_idx_recent(sectors), recent_id_official)
     if not recent_id and previous.get("recent_id"):
         print("[ipo] IDX listing timestamps absent in this payload; retaining previous Recent 1Y rows")
         recent_id = list(previous.get("recent_id") or [])
@@ -603,6 +664,7 @@ def collect(sectors: list, previous: dict | None = None, news_wire: list | None 
         "as_of": now,
         "us_asof": now if us_health == "live" else int(previous.get("us_asof") or 0),
         "recent_id": recent_id,
+        "recent_id_official": recent_id_official,
         "recent_us": recent_us,
         "upcoming_id": upcoming_id,
         "upcoming_us": upcoming_us,
@@ -613,7 +675,7 @@ def collect(sectors: list, previous: dict | None = None, news_wire: list | None 
         "id_pipeline_asof": now if report_health == "live" else int(previous.get("id_pipeline_asof") or 0),
         "sp500_changes": sp500 or list(previous.get("sp500_changes") or []),
         "health": {
-            "idx_recent": "tradingview_listing_proxy",
+            "idx_recent": "eipo_official_with_tradingview_fallback",
             "idx_upcoming": id_health,
             "idx_registration": ksei_health,
             "idx_pipeline_reports": report_health,

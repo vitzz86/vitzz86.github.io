@@ -40,8 +40,8 @@ dashboard has a stable payload even when optional live overlays fail:
 - **`ipo`** — `tools/ipos.py` keeps recent one-year IDX/US listings, confirmed schedules,
   filed/reported pipeline candidates, official e-IPO prospectus links and KSEI registration
   documents when available, plus official S&P 500 membership announcements. Filing and
-  publication dates are never presented as listing dates. IDX recent dates use
-  TradingView's first observed bar as a clearly labelled proxy;
+  publication dates are never presented as listing dates. IDX recent listings use
+  official e-IPO dates when available and TradingView's first observed bar only as a labelled fallback;
   US IPO industries are joined from Nasdaq's active-stock screener and official
   SEC filing searches are linked without inventing classifications. S&P additions
   are never described as IPOs. Previous schedules survive source maintenance and

@@ -1,7 +1,7 @@
 import time
 import unittest
 
-from tools import fundamentals, idx_membership, ipos, news_router
+from tools import fundamentals, idx_membership, ipos, news_router, universe
 
 
 class FinancialGuardrailTests(unittest.TestCase):
@@ -50,6 +50,15 @@ class FinancialGuardrailTests(unittest.TestCase):
 
 
 class IpoContractTests(unittest.TestCase):
+    def test_idx_universe_preserves_listing_timestamp(self):
+        listing_ts = int(time.time()) - 86400
+        row = universe._price_only_row({
+            "sector": "technology", "ticker": "NEWX", "name": "New Company",
+            "source_symbol": "NEWX.JK", "exchange": "IDX", "country": "ID",
+            "listing_ts": listing_ts,
+        }, universe.IDX_ALL_UNIVERSE)
+        self.assertEqual(row.get("listing_ts"), listing_ts)
+
     def test_spac_detection(self):
         row = ipos._nasdaq_row({
             "proposedTickerSymbol": "TESTU",
@@ -104,6 +113,13 @@ class IpoContractTests(unittest.TestCase):
         self.assertEqual(result, cached)
         self.assertEqual(actual_signature, signature)
 
+    def test_ipo_synthesis_truncation_keeps_complete_sentence(self):
+        value = "S&P changes include " + ("a very long company description " * 30)
+        trimmed = ipos._trim_sentence(value, 120)
+        self.assertLessEqual(len(trimmed), 121)
+        self.assertTrue(trimmed.endswith("."))
+        self.assertFalse(trimmed.endswith(" ."))
+
     def test_eipo_company_first_layout(self):
         rows = ipos._parse_eipo_markdown("""
 ### PT Example Indonesia Tbk (EXAM)
@@ -129,6 +145,30 @@ Technology
         self.assertEqual(rows[0]["price"], "120 - Rp 160")
         self.assertEqual(rows[0]["sector"], "Technology")
         self.assertIn("get-propectus-file", rows[0]["prospectus_url"])
+
+    def test_eipo_closed_listing_can_enrich_recent_idx(self):
+        official = ipos._parse_eipo_markdown("""
+### PT Example Indonesia Tbk (EXAM)
+Closed
+##### Sektor
+Technology
+##### Tanggal Pencatatan
+10 Jul 2026
+##### Harga Final
+Rp 170
+##### Saham Ditawarkan
+25.250.000 Lot
+""", include_closed=True)
+        scanner = [{
+            "market": "ID", "kind": "ipo", "status": "listed", "ticker": "EXAM",
+            "name": "Example Indonesia", "exchange": "IDX", "event_ts": official[0]["event_ts"] - 86400,
+            "industry": "Packaged Software", "source": "TradingView first observed bar",
+        }]
+        merged = ipos._merge_idx_recent(scanner, official)
+        self.assertEqual(merged[0]["event_ts"], official[0]["event_ts"])
+        self.assertEqual(merged[0]["confidence"], "official_calendar")
+        self.assertEqual(merged[0]["industry"], "Packaged Software")
+        self.assertEqual(merged[0]["price"], "170")
 
     def test_nasdaq_filed_row_is_not_a_scheduled_listing(self):
         row = ipos._nasdaq_row({
