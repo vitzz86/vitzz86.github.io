@@ -81,6 +81,8 @@ def _movers(rows: list) -> dict:
                 "url": r["url"],
                 "score": fs.get("score"),
                 "score_label": fs.get("label"),
+                "score_mode": fs.get("mode"),
+                "score_coverage": fs.get("input_coverage", fs.get("coverage")),
             })
         return out
 

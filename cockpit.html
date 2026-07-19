@@ -1283,13 +1283,15 @@ function bestRiskPrice(c){
 }
 function isPriceOnly(c){return c&&c.data_tier==='price_only';}
 function hasScore(c){return invScore(c).score!=null;}
+function scoreModeLabel(sc){return String(sc&&sc.mode||'equity').toLowerCase()==='idx_screen'?'MARKET SCREEN':String(sc&&sc.mode||'equity').toLowerCase()==='crypto'?'CRYPTO SCREEN':'FUNDAMENTAL';}
+function scoreCoverage(sc){const v=finiteNum(sc&&sc.input_coverage);return v==null?(finiteNum(sc&&sc.coverage)||0):v;}
 function localMoverBucket(geo){
-  const trim=arr=>arr.slice(0,8).map(c=>{const rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,region:regionOf(c),delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
+  const trim=arr=>arr.slice(0,8).map(c=>{const sc=invScore(c),rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,region:regionOf(c),delta_pct:qDelta(c),score:sc.score,score_label:sc.label,score_mode:sc.mode,score_coverage:scoreCoverage(sc),best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
   return {gainers:trim(moverRankedRows(geo,'gainers')),losers:trim(moverRankedRows(geo,'losers')),
     top_score:trim(moverRankedRows(geo,'top_score')),best_value:trim(moverRankedRows(geo,'best_value'))};
 }
 function moverScoreBadges(m){
-  if(moveType==='top_score')return `<span class="msc">SC ${m.score==null?'--':Math.round(m.score)}</span>`;
+  if(moveType==='top_score')return `<span class="msc" title="${esc(scoreModeLabel({mode:m.score_mode}))} · ${Math.round((m.score_coverage||0)*100)}% provider-field coverage">SC ${m.score==null?'--':Math.round(m.score)} · ${esc(scoreModeLabel({mode:m.score_mode}))}</span>`;
   if(moveType==='best_value'){
     const val=m.upside_pct==null?'':`<span class="msc ${m.upside_pct>=0?'valpos':'valneg'}">${sign(m.upside_pct)}</span>`;
     return `<span class="msc">${moveGeo==='crypto'?'RISK':'R/P'} ${m.best_score==null?'--':Math.round(m.best_score)}</span>${val}`;
@@ -2254,7 +2256,7 @@ function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var
 function scorePill(c){
   const sc=invScore(c),n=sc.score;
   if(isPriceOnly(c)&&n==null)return `<span class="scorepill priceonly" title="Price-only global leader coverage; scoring is not enabled yet">PX</span>`;
-  return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} investment score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
+  return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} ${esc(scoreModeLabel(sc).toLowerCase())} score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
 }
 function fmtMetric(m){
   const v=m&&m.value,fmt=m&&m.fmt;
@@ -2359,7 +2361,7 @@ function radarSvg(sc,big=false){
 function scorePanel(c){
   const sc=invScore(c),metrics=displayScoreMetrics(sc,c).slice(0,9),n=sc.score;
   const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
-  return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
+  return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">${esc(scoreModeLabel(sc))} · ${esc(sc.confidence||'Low')} confidence · provider-field coverage ${Math.round(scoreCoverage(sc)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Missing metrics are not estimated.</div></div>`;
 }
 function scoreSummary(c){
   const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
@@ -2370,7 +2372,7 @@ function scoreSummary(c){
   }
   return `<div class="scoresummary"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div>`+
-    `<div class="scoremeta">${esc((sc.mode||'equity').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · ${Number(sc.metric_count??metrics.length)} indicators</div></div>`+
+    `<div class="scoremeta">${esc(scoreModeLabel(sc))} · ${esc(sc.confidence||'Low')} confidence · provider-field coverage ${Math.round(scoreCoverage(sc)*100)}% · ${Number(sc.metric_count??metrics.length)} indicators</div></div>`+
     `<button class="scorebtn" id="scoreDetailBtn" type="button">Open score detail</button></div>`;
 }
 function displayScoreMetrics(sc,c=null){
@@ -2702,7 +2704,7 @@ function renderScoreModal(c,s){
   scoreAnalysisPage=0;
   $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div>`+
     `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div>`+
-    `<div class="meta">${esc(s.name)} · ${esc(countryLabel(c))} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · coverage ${Math.round((sc.coverage||0)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
+    `<div class="meta">${esc(s.name)} · ${esc(countryLabel(c))} · ${esc(c.exchange||'')} · ${esc((sc.label||'Insufficient').toUpperCase())} · ${esc(scoreModeLabel(sc))} · provider-field coverage ${Math.round(scoreCoverage(sc)*100)}% · source ${esc(sc.source||'Price history only')}</div></div></div>`+
     `<div class="scoremodalgrid"><div><div class="radar big">${radarSvg(sc,true)}</div></div><div id="metricPanelWrap">${metricPanelHTML(sc,c,scoreMetricPage)}</div></div>`+
     `<div id="scoreAnalysisWrap">${scoreAnalysisHTML(c,scoreAnalysisPage)}</div>`+
     scoreWarnings(sc)+

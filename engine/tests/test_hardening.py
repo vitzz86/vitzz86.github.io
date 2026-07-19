@@ -5,6 +5,62 @@ from tools import fundamentals, idx_membership, ipos, news_router, universe
 
 
 class FinancialGuardrailTests(unittest.TestCase):
+    def test_previous_score_schema_is_invalidated(self):
+        row = {"source_symbol": "TEST.JK", "ticker": "TEST"}
+        previous = {"TEST.JK": {"fundamental_score": {
+            "schema_version": fundamentals.SCORE_SCHEMA_VERSION - 1,
+            "as_of": fundamentals._now_iso(),
+            "metrics": [{"label": "P/E", "value": 10}],
+        }}}
+        self.assertIsNone(fundamentals._previous_metrics(previous, row, 24))
+
+    def test_extreme_provider_ratios_are_quarantined(self):
+        row = {"ticker": "TEST", "name": "Test Tbk", "sector_key": "technology"}
+        metrics = fundamentals._quarantine_metric_anomalies(row, {
+            "current_price": 100, "market_cap": 1_000_000,
+            "pe": 1_430.0, "forward_pe": 121_621.0, "pb": 105.0,
+            "ev_ebitda": 300.0, "dividend_yield_pct": 247.0,
+            "fcf_yield_pct": 54.0, "free_cash_flow": 540_000,
+        })
+        for key in ("pe", "forward_pe", "pb", "ev_ebitda", "dividend_yield_pct", "fcf_yield_pct"):
+            self.assertIsNone(metrics[key])
+        self.assertIsNone(metrics.get("eps"))
+        self.assertGreaterEqual(len(metrics["_data_warnings"]), 6)
+
+    def test_extreme_but_consistent_pe_keeps_eps_and_hides_multiple(self):
+        metrics = fundamentals._quarantine_metric_anomalies(
+            {"ticker": "TEST", "name": "Test Tbk", "sector_key": "technology"},
+            {"current_price": 1_000, "eps": 2, "pe": 500, "market_cap": 1_000_000},
+        )
+        self.assertEqual(metrics["eps"], 2)
+        self.assertIsNone(metrics["pe"])
+
+    def test_tradingview_overrides_idx_market_sized_fields(self):
+        row = {
+            "country": "ID", "exchange": "IDX", "source_provider": "tradingview",
+            "value": 1_500, "market_cap_value": 25_000_000_000_000,
+            "volume": 2_000_000, "avg_volume_10d": 3_000_000,
+        }
+        metrics = fundamentals._normalize_currencies(row, {
+            "currency": "IDR", "current_price": 1_480,
+            "market_cap": 30_000_000_000_000, "volume": 1_000_000,
+            "average_volume_10d": 1_500_000,
+        })
+        self.assertEqual(metrics["current_price"], 1_500)
+        self.assertEqual(metrics["market_cap"], 25_000_000_000_000)
+        self.assertEqual(metrics["volume"], 2_000_000)
+        self.assertEqual(metrics["average_volume_10d"], 3_000_000)
+        self.assertEqual(metrics["avg_daily_value_traded"], 4_500_000_000)
+
+    def test_score_coverage_tracks_provider_fields_not_axes(self):
+        score = fundamentals._pack_score("equity", [
+            {"key": "value", "label": "Value", "score": 80},
+            {"key": "momentum", "label": "Momentum", "score": 60},
+        ], {"current_price": 100, "market_cap": 1_000_000}, None, None, None)
+        self.assertEqual(score["axis_coverage"], 1.0)
+        self.assertLess(score["input_coverage"], 0.5)
+        self.assertEqual(score["coverage"], score["input_coverage"])
+
     def test_checkpoint_history_does_not_produce_risk_ratios(self):
         row = {
             "spark": [100 + i for i in range(30)],

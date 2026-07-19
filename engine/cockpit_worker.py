@@ -115,6 +115,7 @@ def _score_summary(score: dict) -> dict:
         key: score.get(key)
         for key in (
             "mode", "schema_version", "score", "label", "coverage", "axes",
+            "input_coverage", "axis_coverage", "confidence",
             "currency", "source", "as_of", "note", "screen_grade",
             "quote_source", "screen_source", "data_warnings",
         )

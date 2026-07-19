@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 11
+SCORE_SCHEMA_VERSION = 12
 
 BANK_KEYWORDS = (
     "bank", "bancorp", "chase", "wells fargo", "syariah", "btpn", "bpd",
@@ -339,9 +339,34 @@ def _quarantine_metric_anomalies(row: dict, metrics: dict) -> dict:
             metrics["eps"] = None
             metrics["pe"] = None
             _add_warning(metrics, f"EPS quarantined: implied P/E {implied_pe:.2f}x is not credible")
-    elif pe is not None and pe < 0.5:
+        elif implied_pe > 300:
+            metrics["pe"] = None
+            _add_warning(metrics, f"P/E quarantined: implied {implied_pe:.2f}x is outside the screening range")
+    elif pe is not None and (pe < 0.5 or pe > 300):
         metrics["pe"] = None
         _add_warning(metrics, f"P/E quarantined: {pe:.2f}x is not credible")
+
+    ratio_limits = (
+        ("forward_pe", "Forward P/E", 0.0, 200.0),
+        ("pb", "P/B", 0.0, 100.0),
+        ("ev_ebitda", "EV/EBITDA", 0.0, 200.0),
+    )
+    for key, label, lower, upper in ratio_limits:
+        value = _num(metrics.get(key))
+        if value is not None and (value <= lower or value > upper):
+            metrics[key] = None
+            _add_warning(metrics, f"{label} quarantined: {value:.2f}x is outside the screening range")
+
+    bounded_percentages = (
+        ("dividend_yield_pct", "Dividend yield", 0.0, 20.0),
+        ("roe_pct", "ROE", -200.0, 200.0),
+        ("debt_to_equity", "Debt/equity", -1_000.0, 1_000.0),
+    )
+    for key, label, lower, upper in bounded_percentages:
+        value = _num(metrics.get(key))
+        if value is not None and (value < lower or value > upper):
+            metrics[key] = None
+            _add_warning(metrics, f"{label} quarantined: {value:.2f}% is outside the screening range")
 
     if market_cap and market_cap > 0 and not (_is_bank_like(metrics) or row_bank_like):
         field_limits = (
@@ -358,7 +383,7 @@ def _quarantine_metric_anomalies(row: dict, metrics: dict) -> dict:
                 _add_warning(metrics, f"{label} quarantined: provider value exceeds {limit:g}x market cap")
 
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
-    if fcf_yield is not None and abs(fcf_yield) > 100:
+    if fcf_yield is not None and abs(fcf_yield) > 50:
         metrics["fcf_yield_pct"] = None
         metrics["free_cash_flow"] = None
         _add_warning(metrics, f"FCF yield quarantined: {fcf_yield:.2f}% is not credible")
@@ -560,6 +585,29 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     if _num(row.get("value")):
         metrics["current_price"] = _num(row.get("value"))
 
+    # TradingView is the IDX market-data authority. Yahoo remains the curated
+    # fundamentals provider, but quote-sized fields must use one consistent
+    # snapshot so price, market cap, and liquidity cannot drift across panels.
+    if (row.get("country") == "ID" and row.get("exchange") == "IDX"
+            and row.get("source_provider") == "tradingview"):
+        tv_market_cap = _num(row.get("market_cap_value"))
+        tv_volume = _num(row.get("volume"))
+        tv_avg_10d = _num(row.get("avg_volume_10d"))
+        tv_avg_30d = _num(row.get("avg_volume_30d"))
+        current = _num(metrics.get("current_price"))
+        if tv_market_cap is not None:
+            metrics["market_cap"] = tv_market_cap
+        if tv_volume is not None:
+            metrics["volume"] = tv_volume
+        if tv_avg_10d is not None:
+            metrics["average_volume_10d"] = tv_avg_10d
+        if tv_avg_30d is not None:
+            metrics["average_volume"] = tv_avg_30d
+        avg_volume = tv_avg_10d or tv_avg_30d
+        if current is not None and avg_volume is not None:
+            metrics["avg_daily_value_traded"] = current * avg_volume
+        metrics["quote_source"] = "TradingView"
+
     factor = _fx_factor(financial_currency, quote_currency, (risk_context or {}).get("fx_rates"))
     needs_conversion = (financial_currency and quote_currency
                         and financial_currency != quote_currency and factor)
@@ -638,7 +686,7 @@ def _normalize_currencies(row: dict, metrics: dict, risk_context: dict | None = 
     fcf = _num(metrics.get("free_cash_flow"))
     metrics["pe"] = round(current / eps, 2) if current and eps and eps > 0 else _sanitize_ratio(metrics.get("pe"))
     metrics["pb"] = round(current / book, 2) if current and book and book > 0 else _sanitize_ratio(metrics.get("pb"))
-    metrics["ev_ebitda"] = _sanitize_ratio(metrics.get("ev_ebitda"), 300.0)
+    metrics["ev_ebitda"] = _num(metrics.get("ev_ebitda"))
     metrics["fcf_yield_pct"] = round(fcf / market_cap * 100, 2) if fcf and market_cap else metrics.get("fcf_yield_pct")
     metrics = _quarantine_metric_anomalies(row, metrics)
     return metrics
@@ -755,6 +803,7 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
 
 def _score_crypto(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
     metrics = dict(metrics)
+    metrics["current_price"] = _num(row.get("value")) or _num(metrics.get("current_price"))
     metrics["_risk_context"] = risk_context or {}
     metrics["_risk_stats"] = _risk_stats(row, "crypto", risk_context)
     one_month = _spark_return(row.get("spark"), 30)
@@ -1589,12 +1638,31 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     valuation = metrics.get("_valuation_cached") if mode == "equity" else None
     if mode == "equity" and "_valuation_cached" not in metrics:
         valuation = _valuation(metrics)
+    evidence_fields = {
+        "equity": (
+            "current_price", "market_cap", "pe", "forward_pe", "pb", "roe_pct",
+            "debt_to_equity", "revenue_growth_pct", "eps_growth_pct", "fcf_yield_pct",
+            "average_volume_10d", "liquidity_pct",
+        ),
+        "idx_screen": (
+            "current_price", "market_cap", "volume", "average_volume_10d",
+            "avg_daily_value_traded", "liquidity_pct", "relative_volume_10d",
+            "recommend_all", "rsi", "perf_1w", "perf_3m", "volatility_1m",
+        ),
+        "crypto": ("current_price", "market_cap", "volume_24h", "liquidity_pct"),
+    }.get(mode, ())
+    input_valid = sum(1 for key in evidence_fields if _num(metrics.get(key)) is not None)
+    input_coverage = round(input_valid / len(evidence_fields), 2) if evidence_fields else 0
+    axis_coverage = round(len(valid) / len(axes), 2) if axes else 0
     return {
         "mode": mode,
         "schema_version": SCORE_SCHEMA_VERSION,
         "score": overall,
         "label": label,
-        "coverage": round(len(valid) / len(axes), 2),
+        "coverage": input_coverage,
+        "input_coverage": input_coverage,
+        "axis_coverage": axis_coverage,
+        "confidence": "High" if input_coverage >= 0.75 else "Medium" if input_coverage >= 0.5 else "Low",
         "axes": axes,
         "metrics": [m for m in metric_rows if m["value"] is not None],
         "valuation": valuation,
@@ -1602,6 +1670,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "risk_context": ctx or None,
         "currency": currency,
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
+        "quote_source": metrics.get("quote_source"),
         "as_of": metrics.get("as_of") or _now_iso(),
         "data_warnings": metrics.get("_data_warnings") or [],
     }
