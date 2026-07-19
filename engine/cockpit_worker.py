@@ -22,7 +22,7 @@ import tempfile
 sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
-from tools import (daily_brief, enterprise_osint, env_context,  # noqa: E402
+from tools import (daily_brief, enterprise_osint, env_context, ipos,  # noqa: E402
                    macro_alerts, market_telemetry, news_router, podcasts,
                    sectors, spotify, trending, universe, videos)
 
@@ -377,6 +377,7 @@ REQUIRED_SHAPE = {
     "videos": list,
     "daily_brief": dict,
     "intelligence_health": dict,
+    "ipo": dict,
     "note_of_the_day": str,
 }
 
@@ -427,6 +428,19 @@ def _validate_intelligence(payload: dict) -> None:
         _expect(isinstance(health["daily_brief"].get("noisy_reason_count"), int),
                 "intelligence_health.daily_brief.noisy_reason_count missing")
     _validate_brief(payload["daily_brief"])
+    ipo = payload.get("ipo") or {}
+    for key in ("recent_id", "recent_us", "upcoming_id", "upcoming_us",
+                "pipeline_id", "pipeline_us", "sp500_changes"):
+        _expect(isinstance(ipo.get(key), list), f"ipo.{key} missing")
+    _expect(isinstance(ipo.get("health"), dict), "ipo.health missing")
+    synthesis = ipo.get("synthesis")
+    _expect(isinstance(synthesis, dict), "ipo.synthesis missing")
+    for view in ("upcoming", "pipeline", "recent", "changes"):
+        block = synthesis.get(view)
+        _expect(isinstance(block, dict), f"ipo.synthesis.{view} missing")
+        for region in ("indonesia", "us"):
+            _expect(isinstance(block.get(region), str) and block.get(region).strip(),
+                    f"ipo.synthesis.{view}.{region} missing")
 
 
 def validate(payload: dict) -> None:
@@ -474,7 +488,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
     wx = env_context.weather()
     rainy = wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
-    previous_videos, previous_brief, previous_sectors = [], None, []
+    previous_videos, previous_brief, previous_sectors, previous_ipo = [], None, [], {}
     previous_score_map = _load_previous_scores()
     previous_chart_map = _load_previous_charts()
     try:
@@ -484,6 +498,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
             previous_pods = _prev.get("podcasts", [])
             previous_videos = _prev.get("videos", [])
             previous_brief = _prev.get("daily_brief")
+            previous_ipo = _prev.get("ipo") or {}
             previous_sectors = _prev.get("sectors", [])
             previous_sectors = _hydrate_previous_sector_scores(previous_sectors, previous_score_map)
             previous_sectors = _hydrate_previous_sector_charts(previous_sectors, previous_chart_map)
@@ -504,6 +519,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
     ma = macro_alerts.compile_macro_alerts(
         state["telemetry"], sec, news["wire"], vids,
         state.get("signals", ""), summarize=summarize)
+    ipo = ipos.collect(sec, previous=previous_ipo, news_wire=news["wire"], summarize=summarize)
 
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -536,6 +552,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         "daily_brief": brief,
         "macro_analysis": ma["macro_analysis"],
         "alerts": ma["alerts"],
+        "ipo": ipo,
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "coverage_universe": _coverage_universe_summary(sec),
@@ -568,7 +585,14 @@ def _deepseek_sector_intel(sectors_list: list, has_llm: bool,
     for s in sectors_list:
         cached = prev.get(s["key"])
         active = s["signal"] in ("WATCH", "ALERT")
-        if not active and cached and cached.get("themes_ai") and cached.get("themes"):
+        moved = False
+        if cached:
+            for field in ("change", "idChange", "usChange"):
+                current, old = s.get(field), cached.get(field)
+                if current is not None and old is not None and abs(float(current) - float(old)) >= 0.20:
+                    moved = True
+                    break
+        if not active and not moved and cached and cached.get("themes_ai") and cached.get("themes"):
             s["themes"] = cached["themes"]            # reuse cached DeepSeek themes (NORMAL)
             s["themes_ai"] = True
             if cached.get("ai"):

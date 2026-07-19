@@ -71,6 +71,8 @@ a{color:inherit;text-decoration:none;}
 .meta-chip{font-family:var(--mono);font-size:7.8px;letter-spacing:.045em;text-transform:uppercase;color:var(--ink2);background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:4px;padding:2px 5px;line-height:1.2;}
 .meta-chip.source{color:var(--cyan);border-color:rgba(52,211,192,.22);background:rgba(52,211,192,.06);}
 .meta-chip.date{color:var(--ink2);}
+.meta-chip.industry{color:var(--purple);border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.08);}
+.meta-chip.industry.missing{color:var(--ink3);border-color:var(--line);background:rgba(255,255,255,.025);}
 .meta-chip.priority{color:#050506;background:var(--amber);border-color:var(--amber);font-weight:700;}
 .meta-chip.watch{color:var(--amber);background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.28);font-weight:600;}
 .meta-chip.read{color:var(--green);background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.24);font-weight:600;}
@@ -568,6 +570,33 @@ footer .g{color:var(--green);}
 .vcat{font-family:var(--mono);font-size:7.5px;letter-spacing:.05em;border-radius:3px;padding:2px 5px;}
 .vcat.market_id{color:var(--green);background:rgba(34,197,94,.12);}
 .vcat.market_us{color:var(--blue);background:rgba(59,130,246,.13);}
+.ipohead{border-left:2px solid var(--amber);padding:3px 0 3px 10px;margin:2px 0 12px;}
+.ipohead .ih{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--amber);}
+.ipohead .is{font-size:10px;color:var(--ink3);margin-top:4px;line-height:1.45;}
+.ipocard{display:block;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:8px;text-decoration:none;transition:border-color .15s,background .15s;cursor:pointer;}
+.ipocard:hover{border-color:#3a3a46;background:#121218;}
+.ipotop{display:flex;align-items:flex-start;gap:9px;}
+.ipodate{flex:0 0 43px;text-align:center;border:1px solid var(--line);border-radius:6px;padding:5px 3px;font-family:var(--mono);}
+.ipodate b{display:block;font-size:15px;color:var(--ink);}.ipodate span{font-size:7.5px;color:var(--ink3);text-transform:uppercase;}
+.ipomain{min-width:0;flex:1;}.ipotitle{font-size:11.5px;font-weight:600;line-height:1.35;}.iposub{font-family:var(--mono);font-size:8.5px;color:var(--ink3);margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.iponote{font-size:9.5px;color:var(--ink3);line-height:1.5;margin:10px 0;}
+.ipostatus{font-family:var(--mono);font-size:7.5px;padding:2px 5px;border-radius:3px;color:var(--cyan);background:rgba(52,211,192,.11);text-transform:uppercase;}
+.ipostatus.expected,.ipostatus.offering{color:var(--amber);background:rgba(245,158,11,.12);}
+.ipostatus.filed,.ipostatus.reported.pipeline,.ipostatus.registered{color:var(--amber);background:rgba(245,158,11,.12);}
+.ipoexp{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;cursor:default;}
+.ipocard.open .ipoexp{display:block;}
+.ipofacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:8px;}
+.ipofact{border:1px solid var(--line);border-radius:6px;padding:7px;background:#0b0b0f;min-width:0;}
+.ipofact .k{font-family:var(--mono);font-size:7px;text-transform:uppercase;color:var(--ink3);letter-spacing:.06em;}
+.ipofact .v{font-size:10px;color:var(--ink2);line-height:1.4;margin-top:3px;overflow-wrap:anywhere;}
+.ipoactions{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;}
+.ipoaction{font-family:var(--mono);font-size:8.5px;color:var(--cyan);border:1px solid rgba(52,211,192,.35);border-radius:5px;padding:6px 8px;text-decoration:none;background:rgba(52,211,192,.06);}
+.ipoaction.primary{color:#111;background:var(--amber);border-color:var(--amber);font-weight:700;}
+.iporelated{margin-top:8px;}.iporelated .rh{font-family:var(--mono);font-size:7.5px;color:var(--ink3);text-transform:uppercase;margin-bottom:5px;}
+.iporelated a{display:block;color:var(--ink2);font-size:9.5px;line-height:1.45;padding:5px 0;border-top:1px solid rgba(255,255,255,.05);text-decoration:none;}
+.ipochart{height:240px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#08080b;margin:8px 0;}
+.ipoempty{border:1px dashed var(--line);border-radius:8px;padding:13px;color:var(--ink3);font-size:10px;line-height:1.55;}
+@media(max-width:560px){.ipofacts{grid-template-columns:1fr}.ipochart{height:210px}}
 .vcat.crypto{color:#f7931a;background:rgba(247,147,26,.14);}
 .vexp{display:none;margin-top:9px;}
 .vid.open .vexp{display:block;}
@@ -728,6 +757,7 @@ body{padding-bottom:40px;}
       <span class="hubtab on" data-p="brief">Daily Brief</span>
       <span class="hubtab" data-p="news">News</span>
       <span class="hubtab" data-p="videos">Videos</span>
+      <span class="hubtab" data-p="ipo">IPOs</span>
     </div>
     <div class="datefilter" id="dateFilter">
       <span class="dchip" data-d="today">Today</span>
@@ -750,6 +780,13 @@ body{padding-bottom:40px;}
       <input id="vsearch" placeholder="search videos…" autocomplete="off">
       <div class="wtabs" id="vidTabs"></div>
       <div id="vidList"></div>
+    </div>
+    <!-- IPOs + INDEX CHANGES -->
+    <div class="hubpane" id="paneIpo">
+      <div class="ipohead"><div class="ih">IPO &amp; LISTING RADAR</div><div class="is">Confirmed schedules · filed pipeline · recent 1 year · S&amp;P 500 additions</div></div>
+      <div class="wtabs" id="ipoViews"></div>
+      <div class="wtabs" id="ipoMarkets"></div>
+      <div id="ipoList"></div>
     </div>
   </div>
 </div>
@@ -1226,6 +1263,7 @@ function bestRiskPrice(c){
   const momentum=finiteNum(axisVal(sc,'momentum'))??50;
   const v=sc.valuation||{};
   const upside=finiteNum(v.upside_pct);
+  if(mode!=='crypto'&&upside==null)return null;
   const current=finiteNum(v.current_price)??finiteNum(qValue(c));
   const buyBelow=finiteNum(v.buy_below);
   const sharpe=riskStat(sc,'sharpe','Sharpe Ratio');
@@ -1246,29 +1284,20 @@ function bestRiskPrice(c){
 function isPriceOnly(c){return c&&c.data_tier==='price_only';}
 function hasScore(c){return invScore(c).score!=null;}
 function localMoverBucket(geo){
-  const rows=[];
-  (DATA.sectors||[]).forEach(s=>(s.constituents||[]).forEach(c=>{if(geoMatches(c,geo))rows.push(c);}));
-  const uniq=Array.from(rows.reduce((m,c)=>{const k=c.country+'|'+c.ticker,cur=m.get(k);if(!cur||(Number(invScore(c).score)||-1)>(Number(invScore(cur).score)||-1))m.set(k,c);return m;},new Map()).values());
   const trim=arr=>arr.slice(0,8).map(c=>{const rp=bestRiskPrice(c)||{};return {ticker:c.ticker,name:c.name,country:c.country,region:regionOf(c),delta_pct:qDelta(c),score:invScore(c).score,score_label:invScore(c).label,best_score:rp.score,upside_pct:rp.upside_pct,best_signal:rp.signal,url:c.url};});
-  const byMove=uniq.slice().sort((a,b)=>qDelta(b)-qDelta(a));
-  const byScore=uniq.slice().filter(c=>invScore(c).score!=null).sort((a,b)=>Number(invScore(b).score)-Number(invScore(a).score));
-  const byRiskPrice=uniq.slice().filter(c=>bestRiskPrice(c)).sort((a,b)=>bestRiskPrice(b).score-bestRiskPrice(a).score);
-  return {gainers:trim(byMove),losers:trim(byMove.slice().reverse()),top_score:trim(byScore),best_value:trim(byRiskPrice)};
+  return {gainers:trim(moverRankedRows(geo,'gainers')),losers:trim(moverRankedRows(geo,'losers')),
+    top_score:trim(moverRankedRows(geo,'top_score')),best_value:trim(moverRankedRows(geo,'best_value'))};
 }
 function moverScoreBadges(m){
   if(moveType==='top_score')return `<span class="msc">SC ${m.score==null?'--':Math.round(m.score)}</span>`;
   if(moveType==='best_value'){
     const val=m.upside_pct==null?'':`<span class="msc ${m.upside_pct>=0?'valpos':'valneg'}">${sign(m.upside_pct)}</span>`;
-    return `<span class="msc">R/P ${m.best_score==null?'--':Math.round(m.best_score)}</span>${val}`;
+    return `<span class="msc">${moveGeo==='crypto'?'RISK':'R/P'} ${m.best_score==null?'--':Math.round(m.best_score)}</span>${val}`;
   }
   return '';
 }
 function drawMovers(){
-  const fallback=localMoverBucket(moveGeo);
-  const baked=(TREND&&TREND[moveGeo])||{};
-  const bucket=idxFastConnected&&moveGeo==='id'?fallback:{...fallback,...baked};
-  if(!bucket.top_score||!bucket.top_score.length)bucket.top_score=fallback.top_score;
-  if(!bucket.best_value||!bucket.best_value.length)bucket.best_value=fallback.best_value;
+  const bucket=localMoverBucket(moveGeo);
   const list=(bucket[moveType]||[]);
   $('moveList').innerHTML=list.map(m=>`<button class="mv" data-tk="${esc(m.ticker)}" data-country="${esc(m.country||moveGeo)}" type="button">`+
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
@@ -1281,21 +1310,30 @@ function moverGeoLabel(){
   return moveGeo==='id'?'Indonesia':moveGeo==='sp500'?'S&P 500':moveGeo==='nasdaq100'?'Nasdaq 100':moveGeo==='us'?'US':moveGeo==='crypto'?'Crypto':'Others';
 }
 function moverTypeLabel(){
-  return {gainers:'Top gainers',losers:'Top losers',top_score:'Top score',best_value:'Best risk/price'}[moveType]||moveType;
+  return {gainers:'Top gainers',losers:'Top losers',top_score:'Top score',best_value:moveGeo==='crypto'?'Best risk-adjusted':'Best risk/price'}[moveType]||moveType;
 }
 function moverDetailRows(){
-  const rows=activeRows(moveGeo);
-  const byScore=c=>Number(invScore(c).score);
-  const byBest=c=>(bestRiskPrice(c)||{}).score;
-  if(moveType==='losers')rows.sort((a,b)=>qDelta(a)-qDelta(b));
-  else if(moveType==='top_score')rows.sort((a,b)=>(Number.isFinite(byScore(b))?byScore(b):-1)-(Number.isFinite(byScore(a))?byScore(a):-1)||qDelta(b)-qDelta(a));
-  else if(moveType==='best_value')rows.sort((a,b)=>(Number.isFinite(byBest(b))?byBest(b):-1)-(Number.isFinite(byBest(a))?byBest(a):-1)||qDelta(b)-qDelta(a));
-  else rows.sort((a,b)=>qDelta(b)-qDelta(a));
+  return moverRankedRows(moveGeo,moveType);
+}
+function moverRankedRows(geo,type){
+  let rows=activeRows(geo).filter(c=>Number.isFinite(Number(qValue(c))));
+  const capTie=(a,b)=>capNumber(b)-capNumber(a);
+  if(type==='top_score'){
+    rows=rows.filter(c=>finiteNum(invScore(c).score)!=null);
+    rows.sort((a,b)=>Number(invScore(b).score)-Number(invScore(a).score)||qDelta(b)-qDelta(a)||capTie(a,b));
+  }else if(type==='best_value'){
+    rows=rows.filter(c=>bestRiskPrice(c)!=null);
+    rows.sort((a,b)=>bestRiskPrice(b).score-bestRiskPrice(a).score||Number(invScore(b).score)-Number(invScore(a).score)||capTie(a,b));
+  }else{
+    rows=rows.filter(c=>Number.isFinite(Number(qDelta(c))));
+    rows.sort((a,b)=>(type==='losers'?qDelta(a)-qDelta(b):qDelta(b)-qDelta(a))||capTie(a,b));
+  }
   return rows;
 }
 function openMoverDetails(){
   const rows=moverDetailRows();
-  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} active assets · click any row for chart, score, source, and news · PX only means score unavailable</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
+  const eligibility=moveType==='top_score'?'scored assets only':moveType==='best_value'?(moveGeo==='crypto'?'crypto assets with valid risk statistics':'equities with validated valuation and risk data'):'priced assets';
+  const header=`<div class="screenerbar"><div><div class="title">${esc(moverTypeLabel())} · ${esc(moverGeoLabel())}</div><div class="sub">${rows.length} ${eligibility} · same ranking as the eight-row summary · click any row for chart, score, source, and news</div></div><button class="mini" id="moverRefreshSort" type="button">Refresh sort</button></div>`;
   const body=rows.length?`<div class="screener"><div class="srow head"><div>Ticker</div><div>Name</div><div class="hide-sm">Sector</div><div>Return</div><div>Score</div><div class="hide-sm">Risk/Price</div><div class="hide-sm">Mkt cap</div></div>`+
     rows.map(c=>{
       const sc=invScore(c),rp=bestRiskPrice(c),dp=qDelta(c);
@@ -1586,9 +1624,10 @@ function expandIdx(i){
   $('idxExp').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-/* ---- intelligence hub: Daily Brief · News · Videos ---- */
+/* ---- intelligence hub: Daily Brief · News · Videos · IPOs ---- */
 let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
-let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null;
+let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null,IPO={};
+let ipoView='upcoming',ipoMarket='ALL',ipoExpanded='',IPO_ROWS=[];
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
@@ -1791,14 +1830,16 @@ function syncHubUI(){
   $('paneBrief').classList.toggle('on',hubPane==='brief');
   $('paneNews').classList.toggle('on',hubPane==='news');
   $('paneVideos').classList.toggle('on',hubPane==='videos');
+  $('paneIpo').classList.toggle('on',hubPane==='ipo');
   [...document.querySelectorAll('#dateFilter .dchip')].forEach(x=>x.classList.toggle('on',x.dataset.d===dateRange));
-  $('dateFilter').style.display=hubPane==='brief'?'none':'flex';
+  $('dateFilter').style.display=(hubPane==='brief'||hubPane==='ipo')?'none':'flex';
   if(hubPane==='videos')drawVideos();
   else if(hubPane==='news')drawWire();
+  else if(hubPane==='ipo')drawIpo();
   else $('wireCount').textContent='BRIEF';
 }
 function buildHub(d){
-  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;
+  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;IPO=d.ipo||{};
   BRIEF_VIDEOS=((BRIEF||{}).must_watch||[]).map(m=>m.video||m||{}).filter(goodVideo);
   rebuildPrioritySets();
   if(!hubInit){
@@ -1810,7 +1851,7 @@ function buildHub(d){
       dateRange=c.dataset.d;syncHubUI();drawWire();drawVideos();saveState();
     });
   }
-  buildBrief();buildWire();
+  buildBrief();buildWire();buildIpo();
   // don't tear down a video the user is watching during the 30-min auto-refresh
   if(!$('vidList').querySelector('.vid.open iframe'))buildVideos();
   syncHubUI();      // reflect the active/restored pane + date filter in the UI
@@ -1829,10 +1870,14 @@ function buildBrief(){
     const why=cardWhy(m,n,'news');
     return `<a class="bcard" href="${encodeURI(n.url||'#')}" target="_blank" rel="noopener"><div class="bct">${esc(n.title||'')}</div><div class="bcm chiprow"><span class="meta-chip priority">MUST READ</span><span class="ncat ${cat}">${CATLABEL[cat]||cat||''}</span><span class="meta-chip source">${GEOFLAG[n.geo]||''} ${esc(n.source||'')}</span></div><div class="bcw">${esc(why)}</div></a>`;}).join('');
   const themes=(b.key_themes||[]).map(t=>`<div class="themecard ${t.tag||'WATCH'}"><div class="tht">${esc(t.title||'')}<span class="thtag ${t.tag||'WATCH'}">${esc(t.tag||'WATCH')}</span></div><div class="tht2">${esc(t.text||'')}</div></div>`).join('');
+  const ipoRadar=[...(IPO.upcoming_id||[]),...(IPO.upcoming_us||[])].filter(x=>!x.is_spac).sort((a,b)=>(a.event_ts||1e15)-(b.event_ts||1e15)).slice(0,3).map(x=>{
+    const d=ipoDate(x.event_ts);return `<a class="bcard" href="${encodeURI(x.source_url||'#')}" target="_blank" rel="noopener"><div class="bct">${x.market==='ID'?'🇮🇩':'🇺🇸'} ${x.ticker?esc(x.ticker)+' · ':''}${esc(x.name||'')}</div><div class="bcm"><span class="meta-chip priority">IPO RADAR</span><span class="meta-chip source">${esc(x.exchange||'')}</span><span class="meta-chip date">${d.day} ${d.month}</span></div></a>`;
+  }).join('');
   el.innerHTML=
     `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+
     `<div class="bsec"><div class="bh">MARKET SENTIMENT SCORE</div><div class="sentbox"><div class="sentscore"><div class="sn" style="color:${col(s.score||50)}">${s.score!=null?s.score:'—'}</div><div class="sd">/ 100</div></div><div class="sentbars"><div class="sentlabel" style="color:${col(s.score||50)}">${esc((s.label||'').toUpperCase())}</div>${bar('Indonesia',s.indonesia||0)}${bar('US Markets',s.us||0)}${bar('Global',s.global||0)}${bar('Crypto',s.crypto||0)}</div></div></div>`+
     (b.synthesis?`<div class="bsec"><div class="bh">DAILY SYNTHESIS</div><div class="synth">${esc(b.synthesis)}</div></div>`:'')+
+    (ipoRadar?`<div class="bsec"><div class="bh">◇ NEAR-TERM IPO RADAR</div>${ipoRadar}</div>`:'')+
     (watch?`<div class="bsec"><div class="bh">▶ MUST-WATCH TODAY</div>${watch}</div>`:'')+
     (read?`<div class="bsec"><div class="bh">⊳ MUST-READ TODAY</div>${read}</div>`:'')+
     (themes?`<div class="bsec"><div class="bh">◆ KEY THEMES TODAY</div>${themes}</div>`:'');
@@ -1878,6 +1923,136 @@ function drawVideos(){
   [...document.querySelectorAll('#vidList .vid')].forEach(el=>{
     el.querySelector('.vidtop').onclick=()=>{el.classList.toggle('open');playMedia('news',el.dataset.id);};
   });
+}
+
+function ipoDate(ts){
+  if(!ts)return {day:'TBD',month:''};
+  const d=new Date(Number(ts)*1000);
+  return {day:String(d.getUTCDate()).padStart(2,'0'),month:d.toLocaleDateString('en-GB',{month:'short',year:'2-digit',timeZone:'UTC'})};
+}
+function buildIpo(){
+  if(ipoView==='pipeline'&&ipoMarket==='ALL')ipoMarket='ID';
+  const views=[['upcoming','Scheduled'],['pipeline','Pipeline / Filed'],['recent','Recent 1Y'],['changes','S&P Changes']];
+  $('ipoViews').innerHTML=views.map(([k,l])=>`<span class="wtab ${ipoView===k?'on':''}" data-v="${k}">${l}</span>`).join('');
+  [...document.querySelectorAll('#ipoViews .wtab')].forEach(t=>t.onclick=()=>{
+    ipoView=t.dataset.v;ipoExpanded='';
+    if(ipoView==='pipeline'&&ipoMarket==='ALL')ipoMarket='ID';
+    buildIpo();saveStateSoon();
+  });
+  const markets=[['ALL','All'],['ID','🇮🇩 Indonesia'],['US','🇺🇸 US']];
+  $('ipoMarkets').innerHTML=markets.map(([k,l])=>`<span class="wtab ${ipoMarket===k?'on':''}" data-m="${k}">${l}</span>`).join('');
+  [...document.querySelectorAll('#ipoMarkets .wtab')].forEach(t=>t.onclick=()=>{ipoMarket=t.dataset.m;ipoExpanded='';setActive('#ipoMarkets',t);drawIpo();saveStateSoon();});
+  drawIpo();
+}
+function localIpoSynthesis(rows,market){
+  const label=market==='ID'?'Indonesia':'US/global';
+  const regionRows=rows.filter(x=>market==='ID'?x.market==='ID':x.market!=='ID');
+  if(!regionRows.length){
+    if(ipoView==='changes'&&market==='ID')return 'S&P 500 membership changes apply to the US benchmark and have no Indonesian listing event in this view.';
+    return `No verified ${ipoView} IPO event currently passes the source and quality checks.`;
+  }
+  const counts=new Map();
+  regionRows.forEach(x=>{const v=String(x.industry||x.sector||'').trim();if(v&&v.toLowerCase()!=='industry unavailable')counts.set(v,(counts.get(v)||0)+1);});
+  const industries=[...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).slice(0,3).map(x=>x[0]);
+  const names=regionRows.slice(0,3).map(x=>x.ticker||x.name).filter(Boolean);
+  const wording={upcoming:['verified scheduled listing','verified scheduled listings'],pipeline:['filed or reported pipeline candidate','filed or reported pipeline candidates'],recent:['listing in the past year','listings in the past year'],changes:['S&P 500 membership announcement','S&P 500 membership announcements']}[ipoView][regionRows.length===1?0:1];
+  return `${regionRows.length} ${wording} are currently tracked${names.length?`, led by ${humanList(names)}`:''}${industries.length?`; the most represented industries are ${humanList(industries)}`:''}.`;
+}
+function ipoSynthesisHTML(rows){
+  const baked=((IPO.synthesis||{})[ipoView])||{};
+  const one=(market,key)=>{
+    if(ipoMarket!=='ALL'&&ipoMarket!==market)return '';
+    const label=market==='ID'?'Indonesia':'US / Global';
+    let value=String(baked[key]||'').replace(/^(Indonesia|US\/?global|US|Global):\s*/i,'').trim();
+    if(!value)value=localIpoSynthesis(rows,market);
+    return `<div class="di"><b>${label}</b> ${esc(value)}</div>`;
+  };
+  const body=one('ID','indonesia')+one('US','us');
+  return body?`<div class="digestbox"><div class="dh">IPO SYNTHESIS</div>${body}</div>`:'';
+}
+function drawIpo(){
+  if(!$('ipoList'))return;
+  let rows=[];
+  if(ipoView==='recent')rows=[...(IPO.recent_id||[]),...(IPO.recent_us||[])];
+  else if(ipoView==='pipeline')rows=[...(IPO.pipeline_id||[]),...(IPO.pipeline_us||[])];
+  else if(ipoView==='changes')rows=(IPO.sp500_changes||[]).slice();
+  else rows=[...(IPO.upcoming_id||[]),...(IPO.upcoming_us||[])];
+  if(ipoView!=='changes'&&ipoMarket!=='ALL')rows=rows.filter(x=>x.market===ipoMarket);
+  const spacCount=rows.filter(x=>x.is_spac).length;
+  rows=rows.filter(x=>!x.is_spac);
+  rows.sort((a,b)=>(ipoView==='recent'||ipoView==='pipeline')?(b.event_ts||0)-(a.event_ts||0):(a.event_ts||1e15)-(b.event_ts||1e15));
+  const totalRows=rows.length;
+  if(ipoView==='pipeline'&&rows.length>60)rows=rows.slice(0,60);
+  IPO_ROWS=rows;
+  const health=IPO.health||{};
+  const sourceNote=ipoView==='changes'
+    ?'S&P 500 entries are official index-membership announcements, not IPOs.'
+    :ipoView==='pipeline'
+      ?`Pipeline separates official filings from reported candidates. Filing and publication dates are not confirmed listing dates. ${spacCount?`${spacCount} SPAC candidates hidden.`:''}${totalRows>rows.length?` Showing the newest ${rows.length} of ${totalRows} candidates.`:''}`
+      :`IDX recent dates use TradingView first-observed bars; confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
+  const cards=rows.map((x,i)=>{const d=ipoDate(x.event_ts),usExchange=/nyse/i.test(x.exchange||'')?'NYSE':/nasdaq/i.test(x.exchange||'')?'NASDAQ':'US',market=x.market==='ID'?'🇮🇩 IDX':x.market==='US'?`🇺🇸 ${usExchange}`:'S&P 500';
+    const key=ipoRowKey(x,i),open=ipoExpanded===key,hit=findIpoAsset(x);
+    const price=x.price?`<span class="meta-chip">${x.market==='ID'?'IDR':'USD'} ${esc(x.price)}</span>`:'';
+    const dateLabel=ipoDateLabel(x);
+    const coverage=ipoView==='recent'&&x.ticker?`<span class="meta-chip ${hit?'source':''}">${hit?'CHART + SCORE':'CHART ONLY'}</span>`:'';
+    const filing=x.prospectus_url?`<a class="meta-chip source" href="${encodeURI(x.prospectus_url)}" target="_blank" rel="noopener">PROSPECTUS ↗</a>`:x.official_filing_url?`<a class="meta-chip source" href="${encodeURI(x.official_filing_url)}" target="_blank" rel="noopener">${x.market==='US'?'SEC FILINGS':'KSEI FILE'} ↗</a>`:'';
+    const verifiedIndustry=String(x.industry||(hit&&hit.c&&hit.c.industry)||x.sector||'').trim();
+    const industry=verifiedIndustry||(x.market==='US'?'Industry unavailable':'');
+    const recentMeta=`<span class="meta-chip source">${market}</span>${industry?`<span class="meta-chip industry ${verifiedIndustry?'':'missing'}">${esc(industry)}</span>`:''}${coverage}${filing}`;
+    const eventMeta=`<span class="ipostatus ${esc(x.status||'')}">${esc(x.status||'scheduled')}</span><span class="meta-chip source">${market}</span>${x.exchange?`<span class="meta-chip">${esc(x.exchange)}</span>`:''}${price}<span class="meta-chip date">${esc(dateLabel)}</span>${filing}`;
+    return `<div class="ipocard ${open?'open':''}" data-ipo="${i}" data-key="${esc(key)}" role="button" tabindex="0"><div class="ipotop"><div class="ipodate"><b>${d.day}</b><span>${d.month}</span></div><div class="ipomain"><div class="ipotitle">${x.ticker?`<b>${esc(x.ticker)}</b> · `:''}${esc(x.name||'')}</div><div class="iposub">${ipoView==='recent'?recentMeta:eventMeta}</div></div></div>${open?ipoDetailHTML(x,hit,key):''}</div>`;
+  }).join('');
+  $('ipoList').innerHTML=ipoSynthesisHTML(rows)+`<div class="iponote">${esc(sourceNote)} Source health: e-IPO ${esc(health.idx_upcoming||'unknown')} · KSEI ${esc(health.idx_registration||'unknown')} · ID reports ${esc(health.idx_pipeline_reports||'unknown')} · Nasdaq ${esc(health.us_calendar||'unknown')}.</div>`+
+    (cards||ipoEmptyHTML());
+  [...document.querySelectorAll('#ipoList .ipocard')].forEach(el=>{
+    const activate=e=>{if(e.target.closest('a'))return;const i=Number(el.dataset.ipo),row=IPO_ROWS[i];
+      if(ipoView==='recent'&&row&&row.ticker&&findIpoAsset(row)){openIpoRecent(row);return;}
+      ipoExpanded=ipoExpanded===el.dataset.key?'':el.dataset.key;drawIpo();};
+    el.onclick=activate;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();activate(e);}};
+  });
+  mountOpenIpoChart();
+  if(hubPane==='ipo')$('wireCount').textContent=totalRows+(ipoView==='changes'?' changes':ipoView==='pipeline'?' pipeline items':' IPOs');
+}
+function ipoRowKey(x,i){return [ipoView,x.market,x.ticker||'',x.event_ts||0,i].join('|');}
+function ipoDateLabel(x){if(ipoView==='recent')return 'listing date';return ({listing_date:'listing date',listing_or_offering_date:'schedule date',filed_date:'filed date',registration_date:'KSEI registration',publication_date:'report published'})[x.date_type]||'event date';}
+function findIpoAsset(x){
+  const tk=String(x&&x.ticker||'').toUpperCase();if(!tk)return null;
+  for(let i=0;i<(DATA.sectors||[]).length;i++){
+    const s=DATA.sectors[i],c=(s.constituents||[]).find(c=>String(c.ticker||'').toUpperCase()===tk&&(x.market==='ID'?c.country==='ID':x.market==='US'?c.country==='US':true));
+    if(c)return {i,s,c};
+  }
+  return null;
+}
+function openIpoRecent(x){const hit=findIpoAsset(x);if(!hit)return;openSector(hit.i);openTicker(hit.s,hit.c.ticker);}
+function ipoDetailHTML(x,hit,key){
+  const related=(x.related_news||[]).filter(n=>n&&n.url).slice(0,3);
+  const links=[x.prospectus_url?`<a class="ipoaction primary" href="${encodeURI(x.prospectus_url)}" target="_blank" rel="noopener">Prospectus ↗</a>`:'',
+    x.official_filing_url?`<a class="ipoaction" href="${encodeURI(x.official_filing_url)}" target="_blank" rel="noopener">Official KSEI document ↗</a>`:'',
+    x.detail_url?`<a class="ipoaction" href="${encodeURI(x.detail_url)}" target="_blank" rel="noopener">Offering details ↗</a>`:'',
+    x.source_url?`<a class="ipoaction" href="${encodeURI(x.source_url)}" target="_blank" rel="noopener">Open source ↗</a>`:''].join('');
+  const facts=[[ipoDateLabel(x),x.event_ts?new Date(x.event_ts*1000).toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric'}):'TBD'],
+    ['Status',x.status||'scheduled'],['Sector',x.sector],['Shares offered',x.shares],['Offer amount',x.offer_amount],['Confidence',String(x.confidence||'').replace(/_/g,' ')]]
+    .filter(([,v])=>v!=null&&String(v).trim()).map(([k,v])=>`<div class="ipofact"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('');
+  const news=related.length?`<div class="iporelated"><div class="rh">Related coverage</div>${related.map(n=>`<a href="${encodeURI(n.url)}" target="_blank" rel="noopener">${esc(n.title)} · ${esc(n.source||'source')} ↗</a>`).join('')}</div>`:'';
+  const chart=ipoView==='recent'&&!hit&&x.ticker?`<div class="ipochart" id="ipoChart-${Math.abs(hashText(key))}"></div><div class="iponote">This listing is not yet in Cockpit’s monitored fundamentals universe, so a deterministic score is not shown. The market chart is provided for inspection without inventing a score.</div>`:'';
+  return `<div class="ipoexp"><div class="ipofacts">${facts}</div>${chart}<div class="ipoactions">${links}</div>${news}</div>`;
+}
+function ipoEmptyHTML(){
+  if(ipoView==='upcoming')return '<div class="ipoempty"><b>No confirmed listing date is available right now.</b><br>Use Pipeline / Filed for candidates whose dates are not yet confirmed. e-IPO schedules are retained across temporary source outages.</div>';
+  if(ipoView==='pipeline')return '<div class="ipoempty"><b>No active filed or reported candidate passed the quality checks.</b><br>This view intentionally stays empty instead of turning an old filing or rumor into an upcoming IPO.</div>';
+  return '<div class="ipoempty">No matching events in this view.</div>';
+}
+function hashText(value){let h=0;for(let i=0;i<value.length;i++)h=((h<<5)-h)+value.charCodeAt(i)|0;return h;}
+function ipoTvSymbol(x){if(!x.ticker)return '';if(x.market==='ID')return `IDX:${x.ticker}`;const ex=/nyse/i.test(x.exchange||'')?'NYSE':'NASDAQ';return `${ex}:${String(x.ticker).replace(/-/g,'.')}`;}
+function mountOpenIpoChart(){
+  const el=document.querySelector('#ipoList .ipocard.open');if(!el)return;
+  const row=IPO_ROWS[Number(el.dataset.ipo)];if(!row||ipoView!=='recent'||findIpoAsset(row))return;
+  const host=el.querySelector('.ipochart'),symbol=ipoTvSymbol(row);if(!host||!symbol)return;
+  const wrap=document.createElement('div');wrap.className='tradingview-widget-container';wrap.style.cssText='height:100%;width:100%';
+  const widget=document.createElement('div');widget.className='tradingview-widget-container__widget';widget.style.cssText='height:100%;width:100%';
+  const script=document.createElement('script');script.async=true;script.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
+  script.text=JSON.stringify({autosize:true,symbol,interval:'D',range:'6M',timezone:'Asia/Jakarta',theme:'dark',style:'2',locale:'en',backgroundColor:'#0b0b0e',gridColor:'rgba(42,43,50,.45)',hide_side_toolbar:true,allow_symbol_change:false});
+  wrap.append(widget,script);host.replaceChildren(wrap);
 }
 /* ---- footer media player: ONE YouTube player, News / Podcast queues ---- */
 let ytPlayer=null,ytApiReady=false,ytSource='news',ytIdx=-1,ytPaused=true,ytSpeed=1,ytTime=0;
@@ -1968,7 +2143,7 @@ function gatherState(){
   return {mood:moodPick,spPos:spState.pos,spPaused:spState.paused,
     ytSource,vid:cur,vidTime:vt,vidPaused:ytPaused,speed:ytSpeed,
     panel:$('mbPanel').classList.contains('open'),
-    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo};
+    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo,ipoView,ipoMarket};
 }
 function saveState(){try{localStorage.setItem(PKEY,JSON.stringify(gatherState()));}catch(_){}}
 function saveStateSoon(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveState,1200);}
@@ -2319,6 +2494,7 @@ function tsDay(ts,estimated=false){
   return d.toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric'})+(estimated?' est.':'');
 }
 function fallbackRisk(c){
+  if(((c.chart_quality||{})['6M'])!=='historical_close')return null;
   const vals=(c.spark||[]).map(Number).filter(Number.isFinite);
   if(vals.length<2)return null;
   let ts=(c.spark_ts||[]).slice(-vals.length),estimated=false;
@@ -2854,6 +3030,8 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.vidCat)vidCat=SS.vidCat;
   if(SS.wireFilter)wireFilter=SS.wireFilter;
   if(SS.wireGeo)wireGeo=SS.wireGeo;
+  if(SS.ipoView)ipoView=SS.ipoView;
+  if(SS.ipoMarket)ipoMarket=SS.ipoMarket;
   _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=false;
 })();
 

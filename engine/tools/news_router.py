@@ -16,6 +16,7 @@ import collections
 import datetime as dt
 import email.utils
 import json
+import math
 import os
 import re
 import sys
@@ -81,16 +82,22 @@ def _has_crypto(text: str, source: str = "") -> bool:
     return any(_term_hit(hay, t) for t in CRYPTO_STRONG_TERMS)
 
 
-def _category(text: str, source: str = "") -> str:
+def _category_score(text: str, source: str = "") -> tuple[str, int]:
     if _has_crypto(text, source):
-        return "CRYPTO"
+        return "CRYPTO", 100
     t = _norm(text)
-    best, score = DEFAULT_CATEGORY, 0
+    scores = {}
     for cat, kws in CATEGORY_KEYWORDS.items():
-        s = sum(1 for k in kws if _term_hit(t, k))
-        if s > score:
-            best, score = cat, s
-    return best
+        scores[cat] = sum(1 for k in kws if _term_hit(t, k))
+    # Macro-policy language is more specific than a generic word such as "bank".
+    # The order also provides deterministic tie-breaking for policy-led headlines.
+    priority = ("ECONOMY", "TECH", "MARKETS_FINANCE")
+    best = max(priority, key=lambda cat: (scores.get(cat, 0), -priority.index(cat)))
+    return best, scores.get(best, 0)
+
+
+def _category(text: str, source: str = "") -> str:
+    return _category_score(text, source)[0]
 
 
 def _get(url: str, timeout: int = 12) -> str:
@@ -134,12 +141,13 @@ def _trusted_meta(source: str, site: str = "") -> tuple[str, int]:
 
 
 def google_news(query: str, geo: str = "US", n: int = None, category: str = None,
-                site: str = "", query_type: str = "discovery") -> list:
+                site: str = "", query_type: str = "discovery", days: int = 7) -> list:
     """Keyless Google News RSS search for any query, region-targeted.
     category: force a taxonomy label (else auto-classified from the headline)."""
     n = n or settings.NEWS_PER_QUERY
     geoq = settings.GOOGLE_NEWS_GEO.get(geo, settings.GOOGLE_NEWS_GEO["US"])
-    q = query + (f" site:{site}" if site else "") + " when:7d"
+    days = max(1, min(int(days or 7), 365))
+    q = query + (f" site:{site}" if site else "") + f" when:{days}d"
     url = f"{settings.GOOGLE_NEWS}?q={urllib.parse.quote(q)}&{geoq}"
     out = []
     try:
@@ -256,6 +264,8 @@ NOISE_TITLE_REGEX = (
     r"^about\s+.+\s+reuters$",
     r"^[a-z0-9.()\-]+\s+reuters$",
     r"^\([a-z0-9.()\-]+\)\s+stock price.+reuters$",
+    r"^harga saham .+ (?:hari ini|real time)",
+    r"^.+ stock quote(?:,| and|$)",
 )
 
 SECTOR_RELEVANCE_TERMS = {
@@ -360,13 +370,11 @@ def _normalize_item(it: dict) -> dict:
     for k in ("title", "source", "summary"):
         if isinstance(it.get(k), str):
             it[k] = _clean_html(it[k])
-    auto_cat = _category(" ".join([it.get("title", ""), it.get("summary", ""), it.get("query", "")]),
-                         it.get("source", ""))
+    auto_cat, category_score = _category_score(
+        " ".join([it.get("title", ""), it.get("summary", "")]), it.get("source", ""))
     # Category priority is deterministic: crypto-native content should never be
     # buried under the broad markets bucket just because it was found by a market query.
-    if auto_cat == "CRYPTO":
-        it["category"] = "CRYPTO"
-    elif it.get("category") not in CATEGORY_KEYWORDS:
+    if category_score > 0 or it.get("category") not in CATEGORY_KEYWORDS:
         it["category"] = auto_cat
     return it
 
@@ -409,7 +417,7 @@ def _dedupe(items: list, cap: int) -> list:
     seen_url, seen_title, out = set(), set(), []
     for it in items:
         url, title, source = _dedupe_key(it)
-        title_key = (title, source)
+        title_key = title
         if it.get("url") and url not in seen_url and title_key not in seen_title:
             seen_url.add(url)
             seen_title.add(title_key)
@@ -605,7 +613,8 @@ def _sector_gate_failures(sector_news: dict, sectors: list, cap: int = 8) -> lis
 
 
 def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
-                    constituents: list, selected: list, sectors: list = None) -> dict:
+                    constituents: list, selected: list, sectors: list = None,
+                    attempted_at: dict | None = None) -> dict:
     now = _now()
     fresh_tickers = {
         tk for tk, items in ticker_news.items()
@@ -642,6 +651,7 @@ def _coverage_audit(wire: list, sector_news: dict, ticker_news: dict,
         "stale_ticker_count": len(stale),
         "ticker_queries": len(selected),
         "ticker_query_budget": settings.NEWS_TICKER_QUERY_BUDGET,
+        "ticker_attempted_at": attempted_at or {},
         "window_days": 7,
     }
     print("[news:audit] "
@@ -755,19 +765,36 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         sector_news[s["key"]] = items[:8]
         wire += items[:5]
 
-    # --- per-ticker news (gap/stale/priority budget; previous 7d memory is preserved) ---
-    cons = []
+    # --- per-ticker news (market-cap leaders + rotating gap/stale budget) ---
+    # The target set is broad but the per-run request count remains bounded. Over
+    # successive 30-minute bakes, the attempt ledger rotates through top 120 ID,
+    # top 120 US, top 100 crypto, and monitored leaders in every other country.
+    candidates = []
     for s in sectors:
         for c in s["constituents"]:
-            if c.get("news_priority") != "priority":
-                continue
-            cons.append({"sector": s["key"], "ticker": c["ticker"],
-                         "name": c["name"].split(" (")[0], "country": c["country"],
-                         "tier": c.get("tier") or c.get("mktcap"),
-                         "delta_pct": float(c.get("delta_pct") or 0.0)})
+            candidates.append({"sector": s["key"], "ticker": c["ticker"],
+                               "name": c["name"].split(" (")[0], "country": c["country"],
+                               "tier": c.get("tier") or c.get("mktcap"),
+                               "market_cap_value": float(c.get("market_cap_value") or 0.0),
+                               "delta_pct": float(c.get("delta_pct") or 0.0)})
+
+    unique = {}
+    for c in candidates:
+        key = (c["country"], c["ticker"])
+        if key not in unique or c["market_cap_value"] > unique[key]["market_cap_value"]:
+            unique[key] = c
+    by_country = collections.defaultdict(list)
+    for c in unique.values():
+        by_country[c["country"]].append(c)
+    cons = []
+    for country, rows in by_country.items():
+        limit = 100 if country == "CR" else 120
+        cons += sorted(rows, key=lambda x: (x["market_cap_value"], abs(x["delta_pct"])), reverse=True)[:limit]
 
     now = _now()
     stale_s = getattr(settings, "NEWS_TICKER_STALE_HOURS", 72) * 3600
+    prev_attempts = ((((previous.get("intelligence_health") or {}).get("news") or {})
+                      .get("ticker_attempted_at")) or {})
 
     def priority(c):
         existing = _recent(prev_ticker.get(c["ticker"], []))
@@ -776,7 +803,11 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         stale = 1 if latest and (now - latest) > stale_s else 0
         tier = {"mega": 35, "large": 25, "mid": 12, "small": 4}.get(c.get("tier"), 8)
         move = min(25, abs(c.get("delta_pct", 0.0)) * 8)
-        return gap * 100 + stale * 55 + tier + move
+        attempted = int(prev_attempts.get(c["ticker"]) or 0)
+        age = now - attempted if attempted else 10**9
+        rotation = 180 if not attempted else 120 if age >= 86400 else 60 if age >= 6 * 3600 else -100
+        cap_rank = min(30, max(0, int(math.log10(max(c.get("market_cap_value", 1), 1))) - 6))
+        return gap * 100 + stale * 55 + rotation + tier + move + cap_rank
 
     def fetch(t):
         tk, name, country = t["ticker"], t["name"], t["country"]
@@ -792,7 +823,34 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
         terms = [tk, name.split()[0], name, t["sector"]]
         return tk, _rank(google_news(q, geo, 3, query_type="ticker"), 4, terms)
 
-    selected = sorted(cons, key=priority, reverse=True)[:settings.NEWS_TICKER_QUERY_BUDGET]
+    ranked = sorted(cons, key=priority, reverse=True)
+    selected, selected_keys = [], set()
+
+    def take(group: str, quota: int) -> None:
+        for c in ranked:
+            bucket = c["country"] if c["country"] in {"ID", "US", "CR"} else "OTHER"
+            key = (c["country"], c["ticker"])
+            if bucket == group and key not in selected_keys and sum(
+                    1 for x in selected if (x["country"] if x["country"] in {"ID", "US", "CR"} else "OTHER") == group) < quota:
+                selected.append(c)
+                selected_keys.add(key)
+
+    budget = settings.NEWS_TICKER_QUERY_BUDGET
+    take("ID", min(20, budget))
+    take("US", min(20, max(0, budget - len(selected))))
+    take("CR", min(10, max(0, budget - len(selected))))
+    take("OTHER", min(10, max(0, budget - len(selected))))
+    for c in ranked:
+        key = (c["country"], c["ticker"])
+        if len(selected) >= budget:
+            break
+        if key not in selected_keys:
+            selected.append(c)
+            selected_keys.add(key)
+
+    attempted_at = {k: int(v) for k, v in prev_attempts.items() if now - int(v or 0) <= 14 * 86400}
+    for c in selected:
+        attempted_at[c["ticker"]] = now
     ticker_news = {tk: _recent(items, settings.NEWS_TICKER_KEEP_PER_TICKER)
                    for tk, items in prev_ticker.items()}
     try:
@@ -814,6 +872,6 @@ def enrich(headlines: dict, sectors: list, telemetry: list) -> dict:
     print(f"[news] wire={len(wire)} (≤7d · {len(id_w)} ID / {len(us_w)} US) · "
           f"sectors={len(sector_news)} · tickers_with_news={len(ticker_news)} · "
           f"ticker_queries={len(selected)}/{len(cons)}")
-    audit = _coverage_audit(wire, sector_news, ticker_news, cons, selected, sectors)
+    audit = _coverage_audit(wire, sector_news, ticker_news, cons, selected, sectors, attempted_at)
     return {"wire": wire, "sector_news": sector_news, "ticker_news": ticker_news,
             "audit": audit}

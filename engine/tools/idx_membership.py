@@ -47,6 +47,7 @@ TV_COLUMNS = [
     "Value.Traded",
     "Recommend.All",
     "RSI",
+    "first_bar_time",
 ]
 
 TV_SECTOR_TO_COCKPIT = {
@@ -69,6 +70,67 @@ TV_SECTOR_TO_COCKPIT = {
     "technology services": "technology",
     "transportation": "logistics",
     "utilities": "renewables",
+}
+
+INDUSTRY_GROUPS = {
+    "financials": {
+        "Finance/Rental/Leasing", "Financial Conglomerates", "Investment Banks/Brokers",
+        "Investment Managers", "Life/Health Insurance", "Major Banks", "Multi-Line Insurance",
+        "Property/Casualty Insurance", "Regional Banks",
+    },
+    "property": {
+        "Homebuilding", "Real Estate Development", "Real Estate Investment Trusts",
+    },
+    "entertainment": {
+        "Advertising/Marketing Services", "Broadcasting", "Cable/Satellite TV",
+        "Hotels/Resorts/Cruise lines", "Movies/Entertainment", "Publishing: Newspapers",
+        "Restaurants",
+    },
+    "logistics": {
+        "Air Freight/Couriers", "Airlines", "Marine Shipping", "Other Transportation", "Trucking",
+    },
+    "technology": {
+        "Aerospace & Defense", "Computer Peripherals", "Computer Processing Hardware",
+        "Data Processing Services", "Electronic Components", "Electronic Production Equipment",
+        "Electronics Distributors", "Information Technology Services", "Internet Software/Services", "Packaged Software",
+        "Telecommunications Equipment", "Major Telecommunications", "Specialty Telecommunications",
+        "Wireless Telecommunications",
+    },
+    "healthcare": {
+        "Hospital/Nursing Management", "Medical Distributors", "Medical Specialties",
+        "Medical/Nursing Services", "Pharmaceuticals: Major", "Pharmaceuticals: Other",
+    },
+    "renewables": {
+        "Alternative Power Generation", "Electric Utilities",
+    },
+    "energy": {
+        "Aluminum", "Chemicals: Agricultural", "Chemicals: Major Diversified",
+        "Chemicals: Specialty", "Coal", "Gas Distributors", "Integrated Oil",
+        "Oil & Gas Production", "Oil Refining/Marketing", "Other Metals/Minerals",
+        "Precious Metals", "Steel",
+    },
+    "infrastructure": {
+        "Building Products", "Commercial Printing/Forms", "Construction Materials",
+        "Containers/Packaging", "Contract Drilling", "Electrical Products",
+        "Engineering & Construction", "Environmental Services", "Forest Products",
+        "Industrial Conglomerates", "Industrial Machinery", "Industrial Specialties",
+        "Metal Fabrication", "Miscellaneous Manufacturing", "Office Equipment/Supplies",
+        "Oilfield Services/Equipment", "Pulp & Paper", "Trucks/Construction/Farm Machinery",
+    },
+    "consumer": {
+        "Agricultural Commodities/Milling", "Apparel/Footwear", "Apparel/Footwear Retail",
+        "Auto Parts: OEM", "Automotive Aftermarket", "Beverages: Alcoholic", "Beverages: Non-Alcoholic",
+        "Department Stores", "Drugstore Chains", "Electronics/Appliance Stores",
+        "Electronics/Appliances", "Food Distributors", "Food Retail", "Food: Major Diversified",
+        "Food: Meat/Fish/Dairy", "Food: Specialty/Candy", "Home Furnishings",
+        "Home Improvement Chains", "Household/Personal Care", "Internet Retail", "Motor Vehicles",
+        "Miscellaneous", "Miscellaneous Commercial Services", "Other Consumer Services",
+        "Other Consumer Specialties", "Personnel Services",
+        "Specialty Stores", "Textiles", "Tobacco", "Wholesale Distributors",
+    },
+}
+INDUSTRY_TO_COCKPIT = {
+    industry: sector for sector, industries in INDUSTRY_GROUPS.items() for industry in industries
 }
 
 INDUSTRY_HINTS = [
@@ -115,6 +177,35 @@ IDX_SECTOR_OVERRIDES = {
     "ADRO": "energy",
     "ITMG": "energy",
     "PTBA": "energy",
+    # Provider classifications for diversified or newly listed companies can
+    # be too broad. Keep exceptions explicit and reviewable.
+    "RANS": "entertainment",
+    "PNIN": "financials",
+    "PNLF": "financials",
+    "JIHD": "property",
+    "KIJA": "property",
+    "KPIG": "property",
+    "PANI": "property",
+    "BEST": "property",
+    "GMFI": "infrastructure",
+    "ERAA": "consumer",
+    "ARCI": "energy",
+    "BRPT": "energy",
+    "GGRP": "energy",
+    "TPIA": "energy",
+    "CSAP": "consumer",
+    "CMPP": "logistics",
+    "EDGE": "technology",
+    "INAF": "healthcare",
+}
+
+IDX_INDUSTRY_OVERRIDES = {
+    "RANS": "Entertainment & Movie Production",
+    "EDGE": "Data Center & Internet Services",
+    "WIKA": "Engineering & Construction",
+    "WSKT": "Engineering & Construction",
+    "INAF": "Pharmaceuticals: Other",
+    "CMPP": "Airlines",
 }
 
 
@@ -165,6 +256,9 @@ def _clean_ticker(raw: str) -> str:
 
 
 def _sector_key(tv_sector: str | None, industry: str | None) -> str:
+    exact = INDUSTRY_TO_COCKPIT.get(str(industry or "").strip())
+    if exact:
+        return exact
     blob = f"{tv_sector or ''} {industry or ''}".lower()
     for sector, hints in INDUSTRY_HINTS:
         if any(h in blob for h in hints):
@@ -174,6 +268,18 @@ def _sector_key(tv_sector: str | None, industry: str | None) -> str:
 
 def _sector_for(ticker: str, tv_sector: str | None, industry: str | None) -> str:
     return IDX_SECTOR_OVERRIDES.get(ticker, _sector_key(tv_sector, industry))
+
+
+def _industry_for(ticker: str, industry: str | None) -> str:
+    return IDX_INDUSTRY_OVERRIDES.get(ticker, str(industry or "").strip())
+
+
+def _classification_basis(ticker: str, industry: str | None) -> str:
+    if ticker in IDX_SECTOR_OVERRIDES:
+        return "ticker_override"
+    if str(industry or "").strip() in INDUSTRY_TO_COCKPIT:
+        return "industry_exact"
+    return "provider_sector_fallback"
 
 
 def _start_price(close: float | None, perf_pct: float | None) -> float | None:
@@ -309,7 +415,8 @@ def _parsed(row: dict) -> dict | None:
     volume = _num(data.get("volume")) or 0.0
     price = _num(data.get("close"))
     dp = _num(data.get("change"))
-    sector = _sector_for(ticker, data.get("sector"), data.get("industry"))
+    industry = _industry_for(ticker, data.get("industry"))
+    sector = _sector_for(ticker, data.get("sector"), industry)
     spark = _checkpoint_spark(price, data)
     meta = settings.COUNTRY_META["ID"]
     return {
@@ -329,7 +436,8 @@ def _parsed(row: dict) -> dict | None:
         "region": meta["region"],
         "market_cap_value": cap,
         "index_groups": ["idx_all"],
-        "industry": data.get("industry") or "",
+        "industry": industry,
+        "sector_classification": _classification_basis(ticker, industry),
         "source_provider": "tradingview",
         "source_name": "TradingView",
         "source_url": TV_SYMBOL.format(ticker=ticker),
@@ -353,6 +461,9 @@ def _parsed(row: dict) -> dict | None:
         "volatility_1d": _num(data.get("Volatility.D")),
         "recommend_all": _num(data.get("Recommend.All")),
         "rsi": _num(data.get("RSI")),
+        # TradingView's first observed daily bar is a practical listing-date
+        # proxy for recent-IPO discovery. The IPO panel labels this provenance.
+        "listing_ts": int(data["first_bar_time"]) if _num(data.get("first_bar_time")) else None,
         "spark": spark,
         "spark_ts": _checkpoint_ts(len(spark)) if spark else [],
         "price_history_quality": "tradingview_performance_checkpoints",
@@ -440,6 +551,14 @@ def source_health(rows: list[dict] | None = None) -> dict:
         "with_market_cap": sum(1 for r in parsed if r.get("market_cap_value")),
         "with_volume": sum(1 for r in parsed if r.get("volume")),
         "with_6m_performance": sum(1 for r in parsed if r.get("perf_6m") is not None),
+        "industry_classified": sum(1 for r in parsed if r.get("industry")),
+        "industry_missing": sum(1 for r in parsed if not r.get("industry")),
+        "sector_by_exact_industry": sum(
+            1 for r in parsed if r.get("sector_classification") == "industry_exact"),
+        "sector_by_ticker_override": sum(
+            1 for r in parsed if r.get("sector_classification") == "ticker_override"),
+        "sector_by_provider_fallback": sum(
+            1 for r in parsed if r.get("sector_classification") == "provider_sector_fallback"),
         "history_quality": "performance_checkpoints",
         "quote_mode": "near_realtime_snapshot",
         "licensed_realtime": False,

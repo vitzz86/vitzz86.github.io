@@ -1,0 +1,227 @@
+import time
+import unittest
+
+from tools import fundamentals, idx_membership, ipos, news_router
+
+
+class FinancialGuardrailTests(unittest.TestCase):
+    def test_checkpoint_history_does_not_produce_risk_ratios(self):
+        row = {
+            "spark": [100 + i for i in range(30)],
+            "chart_quality": {"6M": "performance_checkpoint"},
+        }
+        self.assertEqual(fundamentals._risk_stats(row, "equity"), {})
+        self.assertIsNone(fundamentals._row_volatility(row))
+
+    def test_real_closes_can_produce_risk_ratios(self):
+        row = {
+            "spark": [100 + (i % 5) for i in range(30)],
+            "chart_quality": {"6M": "historical_close"},
+        }
+        self.assertIn("sharpe", fundamentals._risk_stats(row, "equity"))
+
+    def test_peer_pe_is_not_a_primary_target_anchor(self):
+        metrics = {
+            "current_price": 100,
+            "eps": 5,
+            "_sector_peer_pe": 15,
+            "_ticker": "TEST",
+            "_sector_key": "technology",
+            "_country": "ID",
+        }
+        self.assertIsNone(fundamentals._valuation(metrics))
+
+    def test_high_observed_pe_stays_anchored_to_the_stock(self):
+        metrics = {
+            "current_price": 100,
+            "eps": 0.55,
+            "pe": 181.8,
+            "forward_pe": 150,
+            "pb": 2,
+            "roe_pct": 15,
+            "_ticker": "TEST",
+            "_sector_key": "renewables",
+            "_country": "ID",
+        }
+        valuation = fundamentals._valuation(metrics)
+        self.assertIsNotNone(valuation)
+        self.assertGreater(valuation["fair_value"], 30)
+        self.assertEqual(valuation["valuation_confidence"], "Medium")
+
+
+class IpoContractTests(unittest.TestCase):
+    def test_spac_detection(self):
+        row = ipos._nasdaq_row({
+            "proposedTickerSymbol": "TESTU",
+            "companyName": "Test Acquisition Corp",
+            "proposedExchange": "NASDAQ Global",
+            "pricedDate": "7/16/2026",
+        }, "priced")
+        self.assertTrue(row["is_spac"])
+        self.assertTrue(ipos._is_spac("Jones Ventures INTL Acquisition1 Corp", "JONEU"))
+        self.assertTrue(ipos._is_spac("Columbus Circle Capital Corp III", "CCCTU"))
+        self.assertFalse(ipos._is_spac("SK hynix Inc.", "SKHY"))
+
+    def test_recent_idx_listing_proxy(self):
+        sectors = [{"name": "Technology", "constituents": [{
+            "country": "ID", "ticker": "NEWX", "name": "New Company",
+            "listing_ts": int(time.time()) - 86400,
+            "source_url": "https://www.tradingview.com/symbols/IDX-NEWX/",
+        }]}]
+        self.assertEqual(ipos._idx_recent(sectors)[0]["ticker"], "NEWX")
+
+    def test_recent_idx_keeps_industry_for_compact_card(self):
+        sectors = [{"name": "Entertainment, Media & Consumer Services", "constituents": [{
+            "country": "ID", "ticker": "RANS", "name": "Rans Entertainment",
+            "industry": "Entertainment & Movie Production",
+            "listing_ts": int(time.time()) - 86400,
+        }]}]
+        self.assertEqual(ipos._idx_recent(sectors)[0]["industry"],
+                         "Entertainment & Movie Production")
+
+    def test_ipo_synthesis_is_view_specific_and_source_grounded(self):
+        payload = {
+            "upcoming_id": [{"ticker": "NEXT", "name": "Next Tbk", "industry": "Banks"}],
+            "upcoming_us": [], "pipeline_id": [], "pipeline_us": [],
+            "recent_id": [{"ticker": "RANS", "name": "Rans Tbk",
+                           "industry": "Entertainment & Movie Production"}],
+            "recent_us": [], "sp500_changes": [],
+        }
+        synthesis = ipos._deterministic_synthesis(payload)
+        self.assertIn("NEXT", synthesis["upcoming"]["indonesia"])
+        self.assertIn("RANS", synthesis["recent"]["indonesia"])
+        self.assertIn("no verified", synthesis["upcoming"]["us"].lower())
+
+    def test_ipo_synthesis_reuses_unchanged_cached_copy(self):
+        payload = {key: [] for key in (
+            "upcoming_id", "upcoming_us", "pipeline_id", "pipeline_us",
+            "recent_id", "recent_us", "sp500_changes")}
+        signature = ipos._synthesis_signature(payload)
+        cached = ipos._deterministic_synthesis(payload)
+        result, actual_signature = ipos._compile_synthesis(
+            payload, {"synthesis_signature": signature, "synthesis": cached},
+            summarize=lambda *_args: self.fail("unchanged IPO synthesis should not call the LLM"))
+        self.assertEqual(result, cached)
+        self.assertEqual(actual_signature, signature)
+
+    def test_eipo_company_first_layout(self):
+        rows = ipos._parse_eipo_markdown("""
+### PT Example Indonesia Tbk (EXAM)
+
+Waiting For Offering
+
+##### Periode Book Building
+
+20 Juli 2026 - 02 Agustus 2026
+
+##### Rentang Harga Book Building
+
+Rp 120 - Rp 160
+
+##### Sektor
+
+Technology
+
+[Prospektus](https://www.e-ipo.co.id/id/pipeline/get-propectus-file?id=999)
+""")
+        self.assertEqual(rows[0]["ticker"], "EXAM")
+        self.assertEqual(rows[0]["status"], "waiting for offering")
+        self.assertEqual(rows[0]["price"], "120 - Rp 160")
+        self.assertEqual(rows[0]["sector"], "Technology")
+        self.assertIn("get-propectus-file", rows[0]["prospectus_url"])
+
+    def test_nasdaq_filed_row_is_not_a_scheduled_listing(self):
+        row = ipos._nasdaq_row({
+            "proposedTickerSymbol": "FUTR", "companyName": "Future Company Inc.",
+            "filedDate": "7/15/2026", "dollarValueOfSharesOffered": "$100,000,000",
+        }, "filed")
+        self.assertEqual(row["status"], "filed")
+        self.assertEqual(row["date_type"], "filed_date")
+        self.assertIn("sec.gov/edgar/browse", row["official_filing_url"])
+
+    def test_us_recent_ipo_gets_verified_nasdaq_industry(self):
+        rows = [{"ticker": "NEWX", "name": "New Company", "is_spac": False}]
+        health = ipos._enrich_us_classification(rows, {"NEWX": {
+            "sector": "Technology", "industry": "EDP Services",
+        }})
+        self.assertEqual(rows[0]["sector"], "Technology")
+        self.assertEqual(rows[0]["industry"], "EDP Services")
+        self.assertEqual(health["industry_classified"], 1)
+
+    def test_nasdaq_blank_check_industry_is_filtered_as_spac(self):
+        rows = [{"ticker": "TESTU", "name": "Test Holdings", "is_spac": False}]
+        ipos._enrich_us_classification(rows, {"TESTU": {
+            "sector": "Finance", "industry": "Blank Checks",
+        }})
+        self.assertTrue(rows[0]["is_spac"])
+
+    def test_ksei_registration_parser_keeps_official_pdf(self):
+        rows = ipos._parse_ksei_html('''<article class="box"><small><b>01 Juli 2026</b></small>
+          <p>Penawaran Umum Perdana atas Saham PT Example Indonesia Tbk</p>
+          <a href="/Announcement/Files/example.pdf">unduh</a></article>''')
+        self.assertEqual(rows[0]["status"], "registered")
+        self.assertTrue(rows[0]["official_filing_url"].endswith("example.pdf"))
+
+
+class NewsQualityTests(unittest.TestCase):
+    def test_crypto_story_overrides_broad_market_category(self):
+        item = news_router._normalize_item({
+            "title": "Bitcoin ETF inflows lift crypto market liquidity",
+            "summary": "Bitcoin and Ethereum trading volumes increased.",
+            "source": "CoinDesk",
+            "category": "MARKETS_FINANCE",
+        })
+        self.assertEqual(item["category"], "CRYPTO")
+
+    def test_central_bank_rate_story_stays_economy(self):
+        item = news_router._normalize_item({
+            "title": "Bank Indonesia holds interest rate as rupiah steadies",
+            "summary": "The central bank kept policy unchanged after its meeting.",
+            "source": "Reuters",
+            "category": "MARKETS_FINANCE",
+            "query": "Indonesia stocks and banks",
+        })
+        self.assertEqual(item["category"], "ECONOMY")
+
+    def test_syndicated_duplicate_titles_collapse(self):
+        items = [{"title": "Bank Indonesia holds rates as rupiah steadies", "url": "https://a.example/1"},
+                 {"title": "Bank Indonesia holds rates as rupiah steadies", "url": "https://b.example/2"}]
+        self.assertEqual(len(news_router._dedupe(items, 10)), 1)
+
+    def test_off_sector_story_is_rejected(self):
+        sector = {"key": "renewables", "name": "Renewables", "constituents": []}
+        item = {"title": "YouTube creator reaches ten million subscribers",
+                "summary": "The entertainment channel expanded its audience.", "source": "Media News"}
+        self.assertFalse(news_router._sector_relevant(item, sector))
+
+
+class IdxClassificationTests(unittest.TestCase):
+    def test_industry_groups_are_unambiguous(self):
+        total = sum(len(values) for values in idx_membership.INDUSTRY_GROUPS.values())
+        self.assertEqual(total, len(idx_membership.INDUSTRY_TO_COCKPIT))
+
+    def test_industry_rules_override_broad_provider_sector(self):
+        cases = {
+            "Agricultural Commodities/Milling": "consumer",
+            "Textiles": "consumer",
+            "Containers/Packaging": "infrastructure",
+            "Construction Materials": "infrastructure",
+            "Life/Health Insurance": "financials",
+            "Medical Distributors": "healthcare",
+            "Movies/Entertainment": "entertainment",
+            "Real Estate Development": "property",
+            "Marine Shipping": "logistics",
+        }
+        for industry, expected in cases.items():
+            with self.subTest(industry=industry):
+                self.assertEqual(idx_membership._sector_key("Process Industries", industry), expected)
+
+    def test_rans_uses_official_entertainment_classification(self):
+        self.assertEqual(idx_membership._industry_for("RANS", "Miscellaneous Commercial Services"),
+                         "Entertainment & Movie Production")
+        self.assertEqual(idx_membership._sector_for(
+            "RANS", "Commercial Services", "Entertainment & Movie Production"), "entertainment")
+
+
+if __name__ == "__main__":
+    unittest.main()

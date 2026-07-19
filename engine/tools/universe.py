@@ -180,6 +180,7 @@ def _price_only_row(item: dict, universe_name: str, default_priority: str = "wat
     passthrough = (
         "market_cap_value", "industry", "source_provider", "source_name",
         "source_url", "provider_sector_key", "provider_sector_raw",
+        "sector_classification",
         "avg_volume_10d", "avg_volume_30d", "relative_volume_10d",
         "perf_1w", "perf_1m", "perf_3m", "perf_6m", "perf_ytd", "perf_1y",
         "volatility_1w", "volatility_1m", "volatility_1d", "recommend_all",
@@ -279,7 +280,7 @@ def _merge_values(base: dict, extra: dict) -> dict:
     base["index_groups"] = list(dict.fromkeys((base.get("index_groups") or []) + (extra.get("index_groups") or [])))
     for key in (
         "mktcap", "tier", "market_cap_value", "industry", "provider_sector_key",
-        "provider_sector_raw", "avg_volume_10d", "avg_volume_30d",
+        "provider_sector_raw", "sector_classification", "avg_volume_10d", "avg_volume_30d",
         "relative_volume_10d", "perf_1w", "perf_1m", "perf_3m", "perf_6m",
         "perf_ytd", "perf_1y", "volatility_1w", "volatility_1m",
         "volatility_1d", "recommend_all", "rsi", "price_history_quality",

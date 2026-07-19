@@ -1,10 +1,11 @@
 # Project Cockpit — engine
 
 Autonomous data-generation architecture behind [`/cockpit.html`](../cockpit.html).
-Four agents run sequentially as a LangGraph state machine and compile the strict
-`data.json` contract the dashboard reads client-side, plus `scores.json` for
-lazy-loaded ticker score detail. The static page also adds lightweight live
-overlays for crypto, selected US quotes, and media playback.
+Agents run sequentially as a LangGraph state machine and compile three strict
+static contracts: `data.json` for the primary dashboard, `scores.json` for
+lazy-loaded score detail, and `charts.json` for lazy-loaded chart history. A
+Cloudflare Worker supplies the 60-second TradingView IDX snapshot; the static
+payload remains the fallback when that gateway or an upstream provider fails.
 
 ```
 [Quant] → Δ>1.2% check → [OSINT Hunter (Tavily override on anomaly)]
@@ -26,9 +27,32 @@ dashboard has a stable payload even when optional live overlays fail:
   price-only global leaders. It owns country/region tags, source URLs, data
   tiers, refresh-frequency labels, and coverage summaries so heatmap, movers,
   scoring, and future universe expansion do not fork separate schemas.
-- **`news`** — `tools/news_router.py` turns RSS headlines into a deduped list
-  where **every item has a verified source URL** (items without a link are
-  suppressed, per PRD D3), tagged with a category and routed to sectors.
+- **IDX classification** — TradingView's specific industry is mapped before its
+  broad sector, preventing agriculture, textiles, packaging, insurers, and
+  property developers from leaking into unrelated Cockpit sectors. Mixed
+  businesses use an explicit ticker override with a named industry; source
+  health reports exact-industry, override, and fallback counts each run.
+- **`news`** — `tools/news_router.py` accumulates seven days of deduplicated
+  Google News/trusted-source discovery. A persisted attempt ledger rotates a
+  bounded query budget through top-120 Indonesia, top-120 US, top-100 crypto,
+  and monitored leaders in every other country. Sector items must pass a
+  ticker-or-sector relevance gate and every displayed item has a source URL.
+- **`ipo`** — `tools/ipos.py` keeps recent one-year IDX/US listings, confirmed schedules,
+  filed/reported pipeline candidates, official e-IPO prospectus links and KSEI registration
+  documents when available, plus official S&P 500 membership announcements. Filing and
+  publication dates are never presented as listing dates. IDX recent dates use
+  TradingView's first observed bar as a clearly labelled proxy;
+  US IPO industries are joined from Nasdaq's active-stock screener and official
+  SEC filing searches are linked without inventing classifications. S&P additions
+  are never described as IPOs. Previous schedules survive source maintenance and
+  temporary network failures. Each IPO view includes one Indonesia and one US/global
+  synthesis sentence grounded in the displayed counts, names, and industries. The
+  DeepSeek result is cached by an IPO-data signature and falls back to the same
+  source-grounded deterministic facts when the model is unavailable.
+- **Scoring guardrails** — deterministic ticker scoring never uses DeepSeek.
+  Fair value is hidden when an equity lacks an observed current/forward P/E
+  (banks use the separate P/B model), and Sharpe/Sortino/drawdown are calculated
+  only from genuine historical closes, never TradingView checkpoints.
 
 The cockpit renders the sector grid + per-sector modal (constituents, sparklines,
 themes, synthesis, routed news) entirely client-side from this baked payload.
@@ -55,12 +79,13 @@ fallbacks (telemetry + raw headlines), so the dashboard never breaks.
 
 ```bash
 pip install -r engine/requirements.txt
-python engine/cockpit_worker.py        # writes ../data.json + ../scores.json atomically
+python engine/cockpit_worker.py        # writes data.json + scores.json + charts.json atomically
+PYTHONPATH=engine python -m unittest discover -s engine/tests -v
 ```
 
 ## Deploy
 
 `.github/workflows/cockpit_sync.yml` is triggered by cron-job.org via
-`workflow_dispatch` and commits `data.json` plus `scores.json` back to the repo.
+`workflow_dispatch` and commits `data.json`, `scores.json`, and `charts.json` back to the repo.
 Add the env vars above as repository **Secrets**. Failures leave the previous
 published payload untouched.

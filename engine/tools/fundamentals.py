@@ -107,6 +107,17 @@ def _spark_volatility(spark: list):
     return round(statistics.pstdev(rets), 2)
 
 
+def _has_real_daily_history(row: dict) -> bool:
+    """Risk statistics require observed closes, never interpolated checkpoints."""
+    quality = (row.get("chart_quality") or {}).get("6M")
+    history_quality = str(row.get("price_history_quality") or "")
+    return quality == "historical_close" or "historical_close" in history_quality
+
+
+def _row_volatility(row: dict):
+    return _spark_volatility(row.get("spark")) if _has_real_daily_history(row) else None
+
+
 def _spark_pairs(row: dict) -> list[tuple[int | None, float]]:
     vals = [_num(x) for x in (row.get("spark") or [])]
     vals = [x for x in vals if x is not None]
@@ -172,6 +183,8 @@ def _risk_signal(sharpe, sortino, max_dd) -> str:
 
 
 def _risk_stats(row: dict, mode: str, risk_context: dict | None = None) -> dict:
+    if not _has_real_daily_history(row):
+        return {}
     pairs = _spark_pairs(row)
     vals = [p[1] for p in pairs]
     if len(vals) < 12:
@@ -465,6 +478,9 @@ def _valuation_confidence(metrics: dict, components: list[dict], method: str) ->
     else:
         required += ["eps", "pe"]
     present = sum(1 for k in required if _num(metrics.get(k)) is not None)
+    pe = _num(metrics.get("pe"))
+    if method != "bank" and pe is not None and pe > 100:
+        return "Medium" if components else "Low"
     if present == len(required) and len(components) >= 2:
         return "High"
     if present >= max(2, len(required) - 1) and components:
@@ -490,6 +506,15 @@ def _fetch_equity(sym: str) -> dict:
     avg_liquidity_volume = avg_volume_10d or avg_volume
     avg_daily_value_traded = (current_price * avg_liquidity_volume
                               if current_price and avg_liquidity_volume else None)
+    dividend_rate = _num(info.get("dividendRate"))
+    # yfinance has returned dividendYield in both decimal and percent form across
+    # releases. Prefer the unit-safe dividend-rate/price calculation.
+    dividend_yield = (round(dividend_rate / current_price * 100, 2)
+                      if dividend_rate is not None and current_price else None)
+    if dividend_yield is None:
+        raw_yield = _num(info.get("dividendYield"))
+        dividend_yield = (round(raw_yield * 100, 2) if raw_yield is not None and raw_yield <= 0.20
+                          else round(raw_yield, 2) if raw_yield is not None else None)
     return {
         "currency": quote_currency or financial_currency,
         "quote_currency": quote_currency or financial_currency,
@@ -506,7 +531,7 @@ def _fetch_equity(sym: str) -> dict:
         "debt_to_equity": _num(info.get("debtToEquity")),
         "revenue_growth_pct": _pct(info.get("revenueGrowth")),
         "eps_growth_pct": _pct(info.get("earningsGrowth")),
-        "dividend_yield_pct": _pct(info.get("dividendYield")),
+        "dividend_yield_pct": dividend_yield,
         "gross_profit": _num(info.get("grossProfits")),
         "total_cash": _num(info.get("totalCash")),
         "free_cash_flow": fcf,
@@ -663,7 +688,7 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
     metrics["_risk_stats"] = _risk_stats(row, "equity", risk_context)
     one_month = _spark_return(row.get("spark"), 22)
     six_month = _spark_return(row.get("spark"))
-    vol = _spark_volatility(row.get("spark"))
+    vol = _row_volatility(row)
     valuation = _valuation(metrics)
     metrics["_valuation_cached"] = valuation
     valuation_score = _valuation_value_score(valuation)
@@ -734,7 +759,7 @@ def _score_crypto(row: dict, metrics: dict, risk_context: dict | None = None) ->
     metrics["_risk_stats"] = _risk_stats(row, "crypto", risk_context)
     one_month = _spark_return(row.get("spark"), 30)
     six_month = _spark_return(row.get("spark"))
-    vol = _spark_volatility(row.get("spark"))
+    vol = _row_volatility(row)
     market_cap = metrics.get("market_cap")
     volume = metrics.get("volume_24h") or row.get("turnover")
     liquidity = (volume / market_cap * 100) if volume and market_cap else None
@@ -878,10 +903,10 @@ def _score_idx_fallback(row: dict, risk_context: dict | None = None) -> dict:
         ])},
         {"key": "technical", "label": "Technical", "score": None},
         {"key": "activity", "label": "Activity", "score": 0 if volume == 0 else _score_high(volume, 100_000, 10_000_000)},
-        {"key": "risk", "label": "Risk", "score": _score_low(_spark_volatility(row.get("spark")), 1.2, 5.0)},
+        {"key": "risk", "label": "Risk", "score": _score_low(_row_volatility(row), 1.2, 5.0)},
     ]
     score = _pack_score("idx_screen", axes, metrics, _spark_return(row.get("spark"), 22),
-                        _spark_return(row.get("spark")), _spark_volatility(row.get("spark")))
+                        _spark_return(row.get("spark")), _row_volatility(row))
     score["screen_grade"] = True
     score["source"] = "Yahoo fallback: absent from TradingView IDX scanner"
     score["note"] = (
@@ -927,8 +952,8 @@ def _fair_pe_model(metrics: dict) -> dict:
     keeps high-quality compounders from being dragged to a weak peer median and
     keeps optically cheap names from receiving a free rerating.
     """
-    current_pe = _sanitize_ratio(metrics.get("pe"), 150.0)
-    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 150.0)
+    current_pe = _sanitize_ratio(metrics.get("pe"), 500.0)
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 500.0)
     sector_pe = _sanitize_ratio(metrics.get("_sector_peer_pe"), 150.0)
     sector_scope = metrics.get("_sector_peer_pe_scope") or "sector peer median"
     roe = _num(metrics.get("roe_pct"))
@@ -1079,7 +1104,7 @@ def _fair_pe_model(metrics: dict) -> dict:
         else:
             premium_cap = 1.35
         lower = max(4.0, current_pe * 0.65)
-        upper = min(55.0, current_pe * premium_cap)
+        upper = min(500.0, current_pe * premium_cap)
         fair_pe = _clamp(fair_pe, lower, max(lower, upper))
         if round(fair_pe, 2) != round(pre_cap_fair_pe, 2):
             cap_note = f"bounded to {lower:.1f}x-{upper:.1f}x around current P/E {current_pe:.1f}x"
@@ -1410,6 +1435,13 @@ def _valuation(metrics: dict) -> dict | None:
         if bank:
             return bank
 
+    # A peer or hurdle multiple is useful context, but it is not defensible as
+    # the primary target-price anchor. Without an observed current/forward P/E,
+    # keep the screen score and hide valuation.
+    if (_sanitize_ratio(metrics.get("pe"), 500.0) is None
+            and _sanitize_ratio(metrics.get("forward_pe"), 500.0) is None):
+        return None
+
     pe_model = _fair_pe_model(metrics)
     base_pe = pe_model["fair_pe"]
     base_pb = _fair_pb(metrics)
@@ -1418,7 +1450,7 @@ def _valuation(metrics: dict) -> dict | None:
     scenarios = [
         ("Bear", round(max(5.0, base_pe * 0.8), 2), round(max(0.7, base_pb * 0.75), 2), round(min(15.0, base_fcf_req * 1.25), 2)),
         ("Base", base_pe, base_pb, base_fcf_req),
-        ("Bull", round(min(45.0, base_pe * 1.25), 2), round(min(5.0, base_pb * 1.25), 2), round(max(4.0, base_fcf_req * 0.8), 2)),
+        ("Bull", round(min(500.0, base_pe * 1.25), 2), round(min(5.0, base_pb * 1.25), 2), round(max(4.0, base_fcf_req * 0.8), 2)),
     ]
     sensitivity = []
     base_components = []
@@ -1750,12 +1782,12 @@ def enrich(rows: list[dict], previous_by_symbol: dict | None = None,
                         _score_high(_spark_return(row.get("spark"), 22), -8, 12),
                         _score_high(_spark_return(row.get("spark")), -20, 35),
                     ])},
-                    {"key": "risk", "label": "Risk", "score": _score_low(_spark_volatility(row.get("spark")), 1.2, 5.0)},
+                    {"key": "risk", "label": "Risk", "score": _score_low(_row_volatility(row), 1.2, 5.0)},
                 ], {"source": "Price history only", "as_of": _now_iso(),
                     "_risk_context": risk_context,
                     "_risk_stats": _risk_stats(row, "equity", risk_context)},
                 _spark_return(row.get("spark"), 22), _spark_return(row.get("spark")),
-                _spark_volatility(row.get("spark")))
+                _row_volatility(row))
 
 
 def enrich_idx_screen(rows: list[dict], risk_benchmarks: dict | None = None) -> None:
