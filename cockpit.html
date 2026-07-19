@@ -1983,7 +1983,7 @@ function drawIpo(){
   if(ipoView!=='changes'&&ipoMarket!=='ALL')rows=rows.filter(x=>x.market===ipoMarket);
   const spacCount=rows.filter(x=>x.is_spac).length;
   rows=rows.filter(x=>!x.is_spac);
-  rows.sort((a,b)=>(ipoView==='recent'||ipoView==='pipeline')?(b.event_ts||0)-(a.event_ts||0):(a.event_ts||1e15)-(b.event_ts||1e15));
+  rows.sort((a,b)=>(ipoView==='recent'||ipoView==='pipeline'||ipoView==='changes')?(b.event_ts||0)-(a.event_ts||0):(a.event_ts||1e15)-(b.event_ts||1e15));
   const totalRows=rows.length;
   if(ipoView==='pipeline'&&rows.length>60)rows=rows.slice(0,60);
   IPO_ROWS=rows;

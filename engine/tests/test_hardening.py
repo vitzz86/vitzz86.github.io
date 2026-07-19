@@ -207,6 +207,15 @@ Rp 170
         self.assertEqual([row["name"] for row in rows],
                          ["PT Example Indonesia Tbk siap IPO"])
 
+    def test_sp500_announcements_are_deduplicated_by_title(self):
+        title = "Example Co Set to Join S&P 500 - S&P Global"
+        rows = ipos._sp500_changes([{
+            "title": title, "ts": 10, "url": "https://example.com/a", "source": "S&P Global",
+        }, {
+            "title": title, "ts": 10, "url": "https://example.com/b", "source": "S&P Global",
+        }])
+        self.assertEqual(len(rows), 1)
+
     def test_us_recent_ipo_gets_verified_nasdaq_industry(self):
         rows = [{"ticker": "NEWX", "name": "New Company", "is_spac": False}]
         health = ipos._enrich_us_classification(rows, {"NEWX": {

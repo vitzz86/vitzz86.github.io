@@ -658,15 +658,19 @@ def _compile_synthesis(payload: dict, previous: dict, summarize=None) -> tuple[d
     return _parse_synthesis(raw) or fallback, signature
 
 
-def _sp500_changes() -> list:
-    items = news_router.google_news(
-        '"S&P 500" constituent changes addition', "US", 20,
-        category="MARKETS_FINANCE", site="spglobal.com", query_type="official", days=365)
-    relevant = []
+def _sp500_changes(items: list | None = None) -> list:
+    if items is None:
+        items = news_router.google_news(
+            '"S&P 500" constituent changes addition', "US", 20,
+            category="MARKETS_FINANCE", site="spglobal.com", query_type="official", days=365)
+    relevant, seen = [], set()
     for item in items:
         title = str(item.get("title") or "").lower()
         if "s&p 500" in title and any(term in title for term in ("change", "add", "join", "replace", "constituent")):
-            relevant.append(item)
+            key = re.sub(r"[^a-z0-9]+", " ", re.sub(r"\s+-\s+s&p global$", "", title)).strip()
+            if key and key not in seen:
+                seen.add(key)
+                relevant.append(item)
     return [{
         "market": "SP500", "kind": "index_change", "status": "announced",
         "ticker": "", "name": item.get("title"), "exchange": "S&P 500",
