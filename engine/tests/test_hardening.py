@@ -179,6 +179,34 @@ Rp 170
         self.assertEqual(row["date_type"], "filed_date")
         self.assertIn("sec.gov/edgar/browse", row["official_filing_url"])
 
+    def test_reported_idx_pipeline_requires_a_named_issuer(self):
+        self.assertFalse(ipos._specific_id_pipeline_report(
+            "BEI: Empat Perusahaan Siap IPO"))
+        self.assertFalse(ipos._specific_id_pipeline_report(
+            "5 Calon Emiten Siap IPO Bulan Depan, Ini Daftarnya"))
+        self.assertFalse(ipos._specific_id_pipeline_report(
+            "Pipeline IPO BEI Jadi Empat Perusahaan"))
+        self.assertTrue(ipos._specific_id_pipeline_report(
+            "PT Example Indonesia Tbk berencana IPO di BEI"))
+        self.assertTrue(ipos._specific_id_pipeline_report(
+            "Fore Coffee bersiap IPO tahun ini"))
+
+    def test_generic_cached_pipeline_reports_are_removed(self):
+        now = int(time.time())
+        rows, health = ipos._reported_id_pipeline({
+            "id_pipeline_asof": now,
+            "pipeline_id_reported": [{
+                "name": "Empat Perusahaan Siap IPO",
+                "status": "reported pipeline",
+            }, {
+                "name": "PT Example Indonesia Tbk siap IPO",
+                "status": "reported pipeline",
+            }],
+        }, [], [])
+        self.assertEqual(health, "cached")
+        self.assertEqual([row["name"] for row in rows],
+                         ["PT Example Indonesia Tbk siap IPO"])
+
     def test_us_recent_ipo_gets_verified_nasdaq_industry(self):
         rows = [{"ticker": "NEWX", "name": "New Company", "is_spac": False}]
         health = ipos._enrich_us_classification(rows, {"NEWX": {

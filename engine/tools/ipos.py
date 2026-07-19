@@ -425,10 +425,47 @@ def _ksei_pipeline(recent_id: list, previous: dict) -> tuple[list, str]:
     return unmatched[:30], "live"
 
 
+def _specific_id_pipeline_report(title: str) -> bool:
+    """Return true only when an IPO report identifies a prospective issuer."""
+    text = re.sub(r"\s+", " ", str(title or "")).strip()
+    low = text.lower()
+    if not text or "ipo" not in low:
+        return False
+    generic_patterns = (
+        r"\b(?:\d+|satu|dua|tiga|empat|lima|enam|tujuh|delapan|sembilan|sepuluh|"
+        r"sejumlah|belasan|puluhan)\s+(?:calon\s+)?(?:emiten|perusahaan)\b",
+        r"\bpipeline\s+ipo\s+(?:bei|idx|indonesia)\b",
+        r"\b(?:daftar|deretan)\s+(?:calon\s+)?(?:emiten|perusahaan)\b",
+        r"\bini\s+daftarnya\b",
+    )
+    if any(re.search(pattern, low) for pattern in generic_patterns):
+        return False
+    if re.search(r"\bpt\.?\s+[a-z0-9][a-z0-9&.'-]*(?:\s+[a-z0-9][a-z0-9&.'-]*)+", low):
+        return True
+    if re.search(r"\([A-Z]{4}\)", text) or re.search(r"\bticker\s+[A-Z]{4}\b", text):
+        return True
+    match = re.match(
+        r"^(.{2,80}?)\s+(?:siap|bersiap|akan|berencana|rencana|menargetkan|target|"
+        r"membidik|bidik|menuju)\s+ipo\b",
+        text,
+        flags=re.I,
+    )
+    if not match:
+        return False
+    subject = re.sub(r"[^a-z0-9]+", " ", match.group(1).lower()).strip()
+    return subject not in {
+        "bei", "idx", "indonesia", "bursa efek indonesia", "perusahaan", "emiten",
+        "calon emiten", "calon perusahaan",
+    }
+
+
 def _reported_id_pipeline(previous: dict, wire: list, recent_id: list) -> tuple[list, str]:
     previous_asof = int(previous.get("id_pipeline_asof") or 0)
+    cached_reports = [row for row in list(previous.get("pipeline_id_reported") or [])
+                      if _specific_id_pipeline_report(row.get("name"))]
     if previous_asof and _now() - previous_asof < REFRESH_SECONDS:
-        return list(previous.get("pipeline_id_reported") or []), "cached"
+        if cached_reports:
+            return cached_reports, "cached"
     items = list(wire or [])
     for query in ("rencana IPO Indonesia BEI perusahaan 2026",
                   "akan IPO bursa Indonesia emiten 2026",
@@ -449,6 +486,8 @@ def _reported_id_pipeline(previous: dict, wire: list, recent_id: list) -> tuple[
         if "ipo" not in low or not any(term in low for term in
                 ("rencana", "akan", "siap", "pipeline", "antre", "calon emiten")):
             continue
+        if not _specific_id_pipeline_report(title):
+            continue
         if int(item.get("ts") or 0) < report_cutoff:
             continue
         if any(re.search(rf"\b{re.escape(ticker)}\b", low) for ticker in recent_tickers):
@@ -467,8 +506,7 @@ def _reported_id_pipeline(previous: dict, wire: list, recent_id: list) -> tuple[
             "confidence": "reported_not_scheduled", "related_news": [item],
         })
     if not out:
-        cached = list(previous.get("pipeline_id_reported") or [])
-        return cached, "stale_cache" if cached else "unavailable"
+        return cached_reports, "stale_cache" if cached_reports else "unavailable"
     return out[:10], "live"
 
 
