@@ -279,6 +279,18 @@ Rp 170
         self.assertEqual(row["currency"], "USD")
         self.assertEqual(row["price_status"], "undisclosed")
 
+    def test_cached_ipo_prices_get_currency_and_status_metadata(self):
+        rows = [
+            {"market": "US", "status": "priced", "price": "$18.00"},
+            {"market": "US", "status": "expected", "price": "$14 - $16"},
+            {"market": "ID", "status": "listed", "price": "170"},
+            {"market": "ID", "status": "registered", "price": None},
+        ]
+        ipos._normalize_price_metadata(rows)
+        self.assertEqual([(row["currency"], row["price_status"]) for row in rows], [
+            ("USD", "final"), ("USD", "range"), ("IDR", "final"), ("IDR", "undisclosed"),
+        ])
+
     def test_reported_idx_pipeline_requires_a_named_issuer(self):
         self.assertFalse(ipos._specific_id_pipeline_report(
             "BEI: Empat Perusahaan Siap IPO"))

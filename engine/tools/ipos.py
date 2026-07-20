@@ -698,6 +698,28 @@ def _sp500_changes(items: list | None = None) -> list:
     } for item in relevant if item.get("url")][:20]
 
 
+def _normalize_price_metadata(rows: list) -> None:
+    """Migrate cached IPO rows to an explicit currency and price-status contract."""
+    for row in rows or []:
+        market = str(row.get("market") or "").upper()
+        row["currency"] = row.get("currency") or ("IDR" if market == "ID" else "USD" if market == "US" else None)
+        price = str(row.get("price") or "").strip()
+        if not price:
+            row["price_status"] = row.get("price_status") or "undisclosed"
+            continue
+        if row.get("price_status"):
+            continue
+        status = str(row.get("status") or "").lower()
+        if re.search(r"\s(?:-|–|—|to)\s", price, re.I):
+            row["price_status"] = "range"
+        elif status in {"priced", "closed", "listed"}:
+            row["price_status"] = "final"
+        elif status in {"expected", "waiting for offering", "book building"}:
+            row["price_status"] = "expected"
+        else:
+            row["price_status"] = "offer"
+
+
 def collect(sectors: list, previous: dict | None = None, news_wire: list | None = None,
             summarize=None) -> dict:
     previous = previous or {}
@@ -718,6 +740,7 @@ def collect(sectors: list, previous: dict | None = None, news_wire: list | None 
     pipeline_id_reported, report_health = _reported_id_pipeline(previous, news_wire, recent_id)
     pipeline_id = pipeline_id_official + pipeline_id_reported
     for rows in (recent_id, recent_us, upcoming_id, upcoming_us, pipeline_id, pipeline_us):
+        _normalize_price_metadata(rows)
         _attach_related(rows, news_wire)
     sp500 = _sp500_changes()
     now = _now()
