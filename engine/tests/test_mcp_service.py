@@ -1,0 +1,129 @@
+import os
+import unittest
+from pathlib import Path
+from unittest import mock
+
+from cockpit_mcp.service import CockpitService, CockpitStore
+
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+class CockpitMCPServiceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.service = CockpitService(ROOT)
+
+    def test_status_reads_all_contracts(self):
+        result = self.service.status()
+        self.assertGreater(result["asset_count"], 1000)
+        self.assertGreater(result["news_count"], 0)
+        self.assertGreater(result["video_count"], 0)
+        self.assertEqual(result["mode"], "read_only")
+        self.assertEqual(result["contract_health"]["source_mode"], "local_files")
+
+    def test_remote_contract_mode_uses_published_json(self):
+        raw = (ROOT / "data.json").read_bytes()
+
+        class Response:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                return False
+
+            def read(self, _):
+                return raw
+
+        with mock.patch.dict(os.environ, {
+            "COCKPIT_DATA_BASE_URL": "https://example.test/cockpit",
+            "COCKPIT_REMOTE_CACHE_SECONDS": "30",
+        }), mock.patch("cockpit_mcp.service.urllib.request.urlopen", return_value=Response()) as opener:
+            store = CockpitStore(ROOT)
+            payload = store.load("data.json")
+            self.assertEqual(payload.get("timestamp"), self.service.status().get("payload_timestamp"))
+            self.assertEqual(store.health()["source_mode"], "remote_live")
+            self.assertEqual(store.health()["last_fetch_errors"], {})
+            self.assertEqual(opener.call_count, 1)
+            store.load("data.json")
+            self.assertEqual(opener.call_count, 1)
+
+    def test_telemetry_heatmap_and_trending_are_explicit(self):
+        telemetry = self.service.market_telemetry("^JKSE")
+        self.assertEqual(len(telemetry["results"]), 1)
+        self.assertTrue(telemetry["results"][0]["source_url"])
+
+        heatmap = self.service.heatmap("ID", limit=25)
+        self.assertGreater(heatmap["total_matches"], 100)
+        self.assertLessEqual(len(heatmap["results"]), 25)
+        self.assertTrue(heatmap["by_sector"])
+
+        trending = self.service.trending("id", "gainers")
+        self.assertIsInstance(trending["results"], list)
+
+    def test_exact_idx_asset_includes_provenance_and_score(self):
+        result = self.service.get_asset("BBCA", "ID")
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["country"], "ID")
+        self.assertTrue(result["source"]["url"])
+        self.assertIsNotNone(result["score"])
+
+    def test_asset_search_supports_industry(self):
+        result = self.service.search_assets("bank", "ID", limit=8)
+        self.assertGreater(result["total_matches"], 0)
+        self.assertLessEqual(len(result["results"]), 8)
+
+    def test_chart_returns_quality_and_bounded_points(self):
+        result = self.service.get_chart("BBCA", "1M", "ID")
+        self.assertEqual(result["status"], "ok")
+        self.assertTrue(result["chart_quality"])
+        self.assertGreater(result["point_count"], 1)
+        self.assertLessEqual(result["point_count"], 40)
+
+    def test_score_detail_exposes_real_metrics_and_warnings(self):
+        result = self.service.get_score("BBCA", "ID")
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("metrics", result)
+        self.assertIn("data_warnings", result)
+
+    def test_news_is_source_linked_and_summary_basis_is_explicit(self):
+        result = self.service.search_news(market="ID", window_days=7, limit=10)
+        self.assertGreater(len(result["results"]), 0)
+        for item in result["results"]:
+            self.assertTrue(item["url"])
+            self.assertIn(item["summary_basis"], ("publisher excerpt", "headline and metadata only"))
+
+        detail = self.service.get_news(result["results"][0]["url"])
+        self.assertEqual(detail["status"], "ok")
+        self.assertEqual(detail["news"]["url"], result["results"][0]["url"])
+
+    def test_video_and_knowledge_search_exposes_summary_basis(self):
+        result = self.service.search_videos(include_knowledge=True, limit=10)
+        self.assertGreater(len(result["results"]), 0)
+        for item in result["results"]:
+            self.assertTrue(item["video_id"])
+            self.assertTrue(item["url"])
+            self.assertTrue(item["summary_basis"])
+
+    def test_daily_brief_contains_news_and_video_synthesis(self):
+        result = self.service.market_sentiment()
+        self.assertIn("sentiment", result)
+        self.assertIn("news_digest", result)
+        self.assertIn("video_digest", result)
+
+    def test_intelligence_brief_combines_cross_media_evidence(self):
+        result = self.service.intelligence_brief(ticker="BBCA", market="ID", window_days=7)
+        self.assertEqual(result["asset"]["status"], "ok")
+        self.assertIn("news", result)
+        self.assertIn("videos", result)
+        self.assertIn("grounding_rules", result)
+
+    def test_ipo_radar_preserves_health_and_synthesis(self):
+        result = self.service.ipo_radar("recent", "ID", 20)
+        self.assertEqual(result["status"], "ok")
+        self.assertIn("health", result)
+        self.assertIn("synthesis", result)
+
+
+if __name__ == "__main__":
+    unittest.main()
