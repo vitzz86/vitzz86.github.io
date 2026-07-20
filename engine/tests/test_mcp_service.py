@@ -105,6 +105,40 @@ class CockpitMCPServiceTests(unittest.TestCase):
             self.assertTrue(item["url"])
             self.assertTrue(item["summary_basis"])
 
+    def test_research_search_and_detail_preserve_publisher_provenance(self):
+        report = {
+            "id": "live-bbca", "title": "BBCA Company Update", "publisher": "Test Broker",
+            "published": "2026-07-20", "published_ts": 1784505600, "priority": "Live",
+            "category": "Public Markets", "subcategory": "Company / Equity",
+            "geography": "Indonesia", "ticker_tags": ["BBCA"], "access": "Open",
+            "source_url": "https://example.com/bbca", "landing_url": "https://example.com/bbca",
+            "source_type": "official_discovery", "summary_basis": "publisher excerpt",
+        }
+        payload = {"timestamp": "2026-07-20T00:00:00Z", "research": {
+            "reports": [report], "health": {"status": "ready"},
+            "provenance_note": "Source-linked metadata.",
+        }}
+        with mock.patch.object(self.service, "_snapshot", return_value=(payload, {}, {})):
+            result = self.service.search_research(ticker="BBCA")
+            self.assertEqual(result["total_matches"], 1)
+            self.assertEqual(result["results"][0]["publisher"], "Test Broker")
+            detail = self.service.get_research("live-bbca")
+            self.assertEqual(detail["status"], "ok")
+            self.assertEqual(detail["research"]["source_url"], "https://example.com/bbca")
+
+    def test_company_evidence_keeps_evidence_layers_separate(self):
+        with mock.patch.object(self.service, "get_asset", return_value={"status": "ok", "sector": "financials"}), \
+                mock.patch.object(self.service, "get_score", return_value={"status": "ok", "score": 80}), \
+                mock.patch.object(self.service, "get_chart", return_value={"status": "ok", "points": []}), \
+                mock.patch.object(self.service, "search_news", return_value={"results": [{"title": "News"}]}), \
+                mock.patch.object(self.service, "search_videos", return_value={"results": [{"title": "Video"}]}), \
+                mock.patch.object(self.service, "search_research", side_effect=[
+                    {"results": [{"title": "Broker report"}]},
+                ]):
+            result = self.service.company_evidence("BBCA", "ID")
+        self.assertEqual(result["research"][0]["title"], "Broker report")
+        self.assertIn("provider facts", result["provenance_rules"][0].lower())
+
     def test_daily_brief_contains_news_and_video_synthesis(self):
         result = self.service.market_sentiment()
         self.assertIn("sentiment", result)
@@ -116,6 +150,7 @@ class CockpitMCPServiceTests(unittest.TestCase):
         self.assertEqual(result["asset"]["status"], "ok")
         self.assertIn("news", result)
         self.assertIn("videos", result)
+        self.assertIn("research", result)
         self.assertIn("grounding_rules", result)
 
     def test_ipo_radar_preserves_health_and_synthesis(self):

@@ -1,7 +1,7 @@
 # Project Cockpit Remote MCP
 
 Cloudflare Worker deployment of Project Cockpit's read-only MCP service. It
-uses Streamable HTTP at `/mcp`, exposes the same 23 tools as the local Python
+uses Streamable HTTP at `/mcp`, exposes the same 26 tools as the local Python
 server, reads the live GitHub Pages contracts, and overlays the existing IDX
 fast-quote gateway on current-price queries.
 
@@ -16,6 +16,9 @@ fast-quote gateway on current-price queries.
   result includes the TradingView, Yahoo Finance, or CoinGecko interactive URL.
 - Video results include YouTube watch and embed links plus the stored Cockpit
   synthesis when present.
+- Research results expose source-linked broker, institutional, macro, credit,
+  public-market, and private-market evidence. Publisher conclusions and target
+  prices remain attributed opinions, not Cockpit facts.
 - The Worker is read-only. It cannot place trades or modify the repository.
 
 ## Local verification
@@ -66,7 +69,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 
 - ChatGPT custom connector: use
   `https://project-cockpit-mcp.samudravito4.workers.dev/mcp` with no
-  authentication, then refresh the connector to discover all 23 tools.
+  authentication, then refresh the connector to discover all 26 tools.
 - Claude custom connector: use the same production `/mcp` URL with no
   authentication.
 - Claude Desktop fallback:
@@ -80,6 +83,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 COCKPIT_MCP_TEST_URL=https://project-cockpit-mcp.samudravito4.workers.dev/mcp npm run smoke
 ```
 
-The smoke test discovers all 23 tools and exercises current quotes, charts,
+The smoke test discovers all 26 tools and exercises current quotes, charts,
 scores, sectors, movers, news, videos, Knowledge Hub, Daily Brief, macro,
-alerts, IPO radar, and the combined intelligence brief.
+alerts, IPO radar, source-linked research, company evidence, and the combined
+intelligence brief.

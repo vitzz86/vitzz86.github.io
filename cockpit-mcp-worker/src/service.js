@@ -170,6 +170,20 @@ function publicVideo(item, mustWatch = false) {
   };
 }
 
+function publicResearch(item) {
+  return {
+    id: item.id, title: clean(item.title), publisher: clean(item.publisher),
+    published: item.published || null, priority: item.priority, category: item.category,
+    subcategory: item.subcategory, geography: item.geography, coverage: clean(item.coverage),
+    access: item.access, format: item.format, ticker_tags: item.ticker_tags || [],
+    sector_tags: item.sector_tags || [], why_useful: clean(item.why_useful) || null,
+    direct_url: item.direct_url || null, landing_url: item.landing_url || null,
+    source_url: item.source_url || item.direct_url || item.landing_url,
+    source_type: item.source_type, verification: item.verification,
+    verified_on: item.verified_on, summary_basis: item.summary_basis || "source metadata only",
+  };
+}
+
 function mustReadKeys(data) {
   const urls = new Set(); const titles = new Set();
   for (const wrapper of data.daily_brief?.must_read || []) {
@@ -270,7 +284,7 @@ export function createCockpitService(env) {
         payload_timestamp: data.timestamp, payload_age_seconds: ageSeconds,
         freshness: ageSeconds === null ? "unknown" : ageSeconds <= 3600 ? "fresh" : "stale",
         asset_count: rows.length, news_count: (data.news || []).length, video_count: (data.videos || []).length,
-        knowledge_count: (data.podcasts || []).length, data_source: base,
+        knowledge_count: (data.podcasts || []).length, research_count: (data.research?.reports || []).length, data_source: base,
         dashboard_url: env.COCKPIT_DASHBOARD_URL || `${base}/cockpit.html`,
         idx_fast_quotes: fast.health, contracts: CONTRACTS,
         ...boundedHealth(data),
@@ -466,6 +480,47 @@ export function createCockpitService(env) {
       return { as_of: data.timestamp, category, total_matches: rows.length, results: rows.slice(0, limitOf(limit, 20)).map(item => publicVideo({ ...item, _collection: "knowledge_hub", channel: item.show, summary: item.thesis })) };
     },
 
+    async research(args = {}) {
+      const { data } = await loadContracts(); const q = tokens(args.query); const ticker = String(args.ticker || "").toUpperCase();
+      const category = norm(args.category); const geography = norm(args.geography); const publisher = norm(args.publisher);
+      const priorityRank = { essential: 0, high: 1, live: 2, supplementary: 3 };
+      const rows = (data.research?.reports || []).filter(item => {
+        if (category && !norm(item.category).includes(category)) return false;
+        if (geography && !norm(item.geography).includes(geography)) return false;
+        if (publisher && !norm(item.publisher).includes(publisher)) return false;
+        if (ticker && !(item.ticker_tags || []).map(value => String(value).toUpperCase()).includes(ticker)) return false;
+        if (args.open_only && !(/open|download|public/i.test(String(item.access || "")) || item.direct_url)) return false;
+        const haystack = norm([item.title, item.publisher, item.category, item.subcategory, item.geography, item.why_useful, ...(item.ticker_tags || [])].join(" "));
+        return !q.length || q.every(token => haystack.includes(token));
+      }).sort((a, b) => (priorityRank[norm(a.priority)] ?? 4) - (priorityRank[norm(b.priority)] ?? 4) || (Date.parse(b.published || "") || 0) - (Date.parse(a.published || "") || 0));
+      return { status: "ok", as_of: data.timestamp, query: args, total_matches: rows.length, results: rows.slice(0, limitOf(args.limit, 20)).map(publicResearch), synthesis: data.research?.synthesis || {}, health: data.research?.health || {}, grounding_note: data.research?.provenance_note };
+    },
+
+    async researchDetail(idOrUrlOrTitle) {
+      const { data } = await loadContracts(); const wanted = String(idOrUrlOrTitle || ""); const key = titleKey(wanted);
+      const item = (data.research?.reports || []).find(row => row.id === wanted || row.source_url === wanted || row.direct_url === wanted || row.landing_url === wanted || titleKey(row.title) === key);
+      return item ? { status: "ok", as_of: data.timestamp, research: publicResearch(item), grounding_note: data.research?.provenance_note } : { status: "not_found", query: wanted };
+    },
+
+    async companyEvidence(ticker, market = "id", windowDays = 7) {
+      const [asset, score, chart, news, videos, research] = await Promise.all([
+        this.asset(ticker, market), this.score(ticker, market), this.chart(ticker, "6M", market),
+        this.news({ ticker, market, window_days: windowDays, limit: 10 }),
+        this.videos({ query: ticker, market, window_days: windowDays, include_knowledge: true, limit: 8 }),
+        this.research({ query: ticker, ticker, limit: 12 }),
+      ]);
+      let contextResearch = [];
+      if (!(research.results || []).length) {
+        const code = marketCode(market);
+        const geography = code === "ID" ? "Indonesia" : code === "US" ? "United States" : "";
+        const sector = asset?.status === "ok" ? asset.sector : "";
+        let context = await this.research({ query: sector, geography, limit: 6 });
+        if (!(context.results || []).length && geography) context = await this.research({ geography, limit: 6 });
+        contextResearch = context.results || [];
+      }
+      return { ticker: String(ticker).toUpperCase(), market: marketCode(market), asset, score, chart, news: news.results || [], videos: videos.results || [], research: research.results || [], context_research: contextResearch, provenance_rules: ["Provider data, Cockpit calculations, publisher research, and AI inference must be labelled separately.", "Broker opinions and target prices are evidence, not facts or personalized recommendations.", "Open the linked report before relying on a recommendation or valuation."] };
+    },
+
     async dailyBrief() { const { data } = await loadContracts(); return { ...data.daily_brief, payload_timestamp: data.timestamp, provenance: "Cockpit scheduled synthesis; linked cards remain the evidence of record." }; },
     async sentiment() { const { data } = await loadContracts(); const brief = data.daily_brief || {}; return { as_of: data.timestamp, sentiment: brief.sentiment || {}, daily_synthesis: brief.synthesis, key_themes: brief.key_themes || [], news_digest: brief.news_digest || {}, video_digest: brief.video_digest || {} }; },
     async macro() { const { data } = await loadContracts(); return { as_of: data.timestamp, analysis: data.macro_analysis || [], arbiter_brief: data.arbiter_brief, source_policy: "Each point carries its source links." }; },
@@ -485,13 +540,14 @@ export function createCockpitService(env) {
 
     async intelligence(args = {}) {
       const query = args.topic || args.ticker || args.sector || "";
-      const [status, asset, news, videos, sentiment, macro, alerts] = await Promise.all([
+      const [status, asset, news, videos, research, sentiment, macro, alerts] = await Promise.all([
         this.status(), args.ticker ? this.asset(args.ticker, args.market) : null,
         this.news({ query, market: args.market, sector: args.sector, ticker: args.ticker, window_days: args.window_days, limit: 8 }),
         this.videos({ query, market: args.market, window_days: args.window_days, include_knowledge: true, limit: 8 }),
+        this.research({ query, ticker: args.ticker, limit: 8 }),
         this.sentiment(), this.macro(), this.alerts(),
       ]);
-      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "State missing or stale data; never estimate absent fundamentals."] };
+      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], research: research.results || [], macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "Broker research is attributed opinion, not fact.", "State missing or stale data; never estimate absent fundamentals."] };
     },
   };
 }

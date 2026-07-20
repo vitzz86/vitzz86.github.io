@@ -12,7 +12,7 @@ function createServer(env) {
     name: "Project Cockpit",
     version: "1.0.0",
   }, {
-    instructions: "Read-only Indonesia-first market intelligence. Always state timestamp, market state, provider, score mode, confidence, and warnings when material. Cite source URLs. Never invent missing fundamentals, targets, transcripts, or causal claims.",
+    instructions: "Read-only Indonesia-first market intelligence. Always state timestamp, market state, provider, score mode, confidence, and warnings when material. Cite source URLs. Distinguish provider facts, deterministic Cockpit calculations, attributed publisher opinions, and AI inference. Never invent missing fundamentals, targets, transcripts, or causal claims.",
   });
   const service = createCockpitService(env);
   const tool = (name, description, schema, handler) => server.registerTool(name, {
@@ -38,12 +38,15 @@ function createServer(env) {
   tool("search_videos", "Search Intelligence Hub videos and optional Knowledge Hub episodes with stored summaries.", { query: optionalString, market: optionalString, category: optionalString, channel: optionalString, window_days: z.number().int().min(1).max(7).optional(), must_watch_only: z.boolean().optional(), include_knowledge: z.boolean().optional(), limit: optionalLimit }, input => service.videos(input));
   tool("get_video_detail", "Get one video's source, YouTube playback/embed URLs, date, duration, priority, and Cockpit summary.", { video_id: z.string().min(1) }, ({ video_id }) => service.videoDetail(video_id));
   tool("search_knowledge_hub", "Search Knowledge Hub episodes by category, show, title, host, or thesis.", { category: optionalString, query: optionalString, limit: optionalLimit }, ({ category, query, limit }) => service.knowledge(category, query, limit));
+  tool("search_research", "Search source-linked broker, institutional, macro, credit, public-market, and private-market research.", { query: optionalString, category: optionalString, geography: optionalString, ticker: optionalString, publisher: optionalString, open_only: z.boolean().optional(), limit: optionalLimit }, input => service.research(input));
+  tool("get_research_detail", "Get one exact research record with publisher, date, evidence basis, access status, and original report links.", { id_or_url_or_title: z.string().min(1) }, ({ id_or_url_or_title }) => service.researchDetail(id_or_url_or_title));
+  tool("get_company_evidence", "Assemble one ticker's quote, deterministic score, 6M chart, news, videos, and broker/institutional research for AI analysis.", { ticker: z.string().min(1), market: optionalString, window_days: z.number().int().min(1).max(7).optional() }, ({ ticker, market, window_days }) => service.companyEvidence(ticker, market, window_days));
   tool("get_daily_brief", "Get sentiment, synthesis, key themes, Must Read, Must Watch, and quality audit.", {}, () => service.dailyBrief());
   tool("get_market_sentiment", "Get Indonesia, US, global, and crypto sentiment plus news and video digests.", {}, () => service.sentiment());
   tool("get_macro_analysis", "Get source-linked macro analysis and cross-market context.", {}, () => service.macro());
   tool("get_active_alerts", "Get active alerts with descriptions and source links.", {}, () => service.alerts());
   tool("get_ipo_radar", "Get scheduled, pipeline/filed, recent-one-year, or S&P 500 change records.", { view: z.enum(["scheduled", "pipeline", "pipeline_filed", "filed", "recent", "recent_1y", "sp500_changes"]).optional(), market: optionalString, limit: optionalLimit }, ({ view, market, limit }) => service.ipo(view, market, limit));
-  tool("get_intelligence_brief", "Assemble grounded market data, sentiment, news, videos, macro analysis, and alerts for one question.", { topic: optionalString, ticker: optionalString, sector: optionalString, market: optionalString, window_days: z.number().int().min(1).max(7).optional() }, input => service.intelligence(input));
+  tool("get_intelligence_brief", "Assemble grounded market data, sentiment, news, videos, research, macro analysis, and alerts for one question.", { topic: optionalString, ticker: optionalString, sector: optionalString, market: optionalString, window_days: z.number().int().min(1).max(7).optional() }, input => service.intelligence(input));
   return server;
 }
 

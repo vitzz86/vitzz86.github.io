@@ -9,7 +9,7 @@ payload remains the fallback when that gateway or an upstream provider fails.
 
 ```
 [Quant] → Δ>1.2% check → [OSINT Hunter (Tavily override on anomaly)]
-       → [Cross-Market Arbiter] → [Chief of Staff → data.json + scores.json]
+       → [Cross-Market Arbiter] → [Chief of Staff → data.json + scores.json + charts.json]
 ```
 
 ## v2 — Sector Flow Matrix & universal link layer
@@ -37,6 +37,13 @@ dashboard has a stable payload even when optional live overlays fail:
   bounded query budget through top-120 Indonesia, top-120 US, top-100 crypto,
   and monitored leaders in every other country. Sector items must pass a
   ticker-or-sector relevance gate and every displayed item has a source URL.
+- **`research`** — `tools/research.py` merges a maintained 98-report investment
+  index with bounded discovery from official broker, development-bank, and
+  institutional domains. Research remains a separate evidence class from news:
+  full reports are linked, not copied, and recommendations or target prices are
+  always attributed to their publisher. Exact ticker tags support MCP company
+  evidence queries while Indonesia/sector research provides context when no
+  company report is available.
 - **`ipo`** — `tools/ipos.py` keeps recent one-year IDX/US listings, confirmed schedules,
   filed/reported pipeline candidates, official e-IPO prospectus links and KSEI registration
   documents when available, plus official S&P 500 membership announcements. Filing and
@@ -45,7 +52,9 @@ dashboard has a stable payload even when optional live overlays fail:
   US IPO industries are joined from Nasdaq's active-stock screener and official
   SEC filing searches are linked without inventing classifications. S&P additions
   are never described as IPOs. Previous schedules survive source maintenance and
-  temporary network failures. Each IPO view includes one Indonesia and one US/global
+  temporary network failures. Available final, range, or expected offer prices
+  are shown with explicit IDR/USD currency and price status; undisclosed prices
+  remain blank. Each IPO view includes one Indonesia and one US/global
   synthesis sentence grounded in the displayed counts, names, and industries. The
   DeepSeek result is cached by an IPO-data signature and falls back to the same
   source-grounded deterministic facts when the model is unavailable.

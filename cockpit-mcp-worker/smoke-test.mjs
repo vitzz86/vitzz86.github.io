@@ -11,7 +11,7 @@ const client = new Client({ name: "project-cockpit-smoke-test", version: "1.0.0"
 try {
   await client.connect(transport);
   const tools = await client.listTools();
-  if (tools.tools.length !== 23) throw new Error(`Expected 23 tools, received ${tools.tools.length}`);
+  if (tools.tools.length !== 26) throw new Error(`Expected 26 tools, received ${tools.tools.length}`);
   const status = await client.callTool({ name: "cockpit_status", arguments: {} });
   const asset = await client.callTool({ name: "get_asset", arguments: { ticker: "BBCA", country: "ID" } });
   const chart = await client.callTool({ name: "get_asset_chart", arguments: { ticker: "BBCA", country: "ID", timeframe: "1M" } });
@@ -34,6 +34,8 @@ try {
     ["get_market_movers", { market: "ID", mode: "gainers", limit: 3 }],
     ["search_news", { market: "ID", limit: 2 }],
     ["search_knowledge_hub", { category: "all", limit: 2 }],
+    ["search_research", { geography: "Indonesia", limit: 2 }],
+    ["get_company_evidence", { ticker: "BBCA", market: "ID", window_days: 7 }],
     ["get_daily_brief", {}],
     ["get_market_sentiment", {}],
     ["get_macro_analysis", {}],
@@ -56,6 +58,11 @@ try {
   const firstVideo = parsedVideos.results?.[0];
   if (firstVideo?.video_id) {
     parse(await client.callTool({ name: "get_video_detail", arguments: { video_id: firstVideo.video_id } }));
+    checked += 1;
+  }
+  const firstResearch = parse(await client.callTool({ name: "search_research", arguments: { limit: 1 } })).results?.[0];
+  if (firstResearch?.id) {
+    parse(await client.callTool({ name: "get_research_detail", arguments: { id_or_url_or_title: firstResearch.id } }));
     checked += 1;
   }
   console.log(JSON.stringify({ url, tools: tools.tools.length, tool_calls_checked: checked, timestamp: parsedStatus.payload_timestamp, idx_fast_quotes: parsedStatus.idx_fast_quotes, bbca_live_overlay: parsedAsset.live_overlay, chart_points: parsedChart.point_count, video_results: parsedVideos.results.length }, null, 2));

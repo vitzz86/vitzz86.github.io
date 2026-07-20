@@ -119,6 +119,32 @@ def _public_video(item: Dict[str, Any], must_watch: bool = False) -> Dict[str, A
     }
 
 
+def _public_research(item: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "id": item.get("id"),
+        "title": _clean_text(item.get("title")),
+        "publisher": _clean_text(item.get("publisher")),
+        "published": item.get("published"),
+        "priority": item.get("priority"),
+        "category": item.get("category"),
+        "subcategory": item.get("subcategory"),
+        "geography": item.get("geography"),
+        "coverage": _clean_text(item.get("coverage")),
+        "access": item.get("access"),
+        "format": item.get("format"),
+        "ticker_tags": item.get("ticker_tags") or [],
+        "sector_tags": item.get("sector_tags") or [],
+        "why_useful": _clean_text(item.get("why_useful")) or None,
+        "direct_url": item.get("direct_url") or None,
+        "landing_url": item.get("landing_url") or None,
+        "source_url": item.get("source_url") or item.get("direct_url") or item.get("landing_url"),
+        "source_type": item.get("source_type"),
+        "verification": item.get("verification"),
+        "verified_on": item.get("verified_on"),
+        "summary_basis": item.get("summary_basis") or "source metadata only",
+    }
+
+
 class CockpitStore:
     """Thread-safe loader for local contracts or their published live copies."""
 
@@ -345,6 +371,7 @@ class CockpitService:
             "news_count": len(data.get("news") or []),
             "video_count": len(data.get("videos") or []),
             "knowledge_count": len(data.get("podcasts") or []),
+            "research_count": len((data.get("research") or {}).get("reports") or []),
             "source_health": source_health,
             "intelligence_health": health,
             "contracts": ["data.json", "scores.json", "charts.json"],
@@ -822,6 +849,96 @@ class CockpitService:
                 "results": [_public_video(dict(item, _collection="knowledge_hub", channel=item.get("show"), summary=item.get("thesis")))
                             for item in rows[:_clamp_limit(limit, 20, 50)]]}
 
+    def search_research(
+        self, query: str = "", category: str = "", geography: str = "", ticker: str = "",
+        publisher: str = "", open_only: bool = False, limit: int = 20,
+    ) -> Dict[str, Any]:
+        data, _, _ = self._snapshot()
+        query_tokens = _tokens(query)
+        wanted_category = _norm(category)
+        wanted_geography = _norm(geography)
+        wanted_publisher = _norm(publisher)
+        wanted_ticker = str(ticker or "").strip().upper()
+        priority_rank = {"essential": 0, "high": 1, "live": 2, "supplementary": 3}
+        rows = []
+        for item in (data.get("research") or {}).get("reports") or []:
+            if wanted_category and wanted_category not in _norm(item.get("category")):
+                continue
+            if wanted_geography and wanted_geography not in _norm(item.get("geography")):
+                continue
+            if wanted_publisher and wanted_publisher not in _norm(item.get("publisher")):
+                continue
+            ticker_tags = {str(value).upper() for value in item.get("ticker_tags") or []}
+            if wanted_ticker and wanted_ticker not in ticker_tags:
+                continue
+            if open_only and not ("open" in _norm(item.get("access")) or item.get("direct_url")):
+                continue
+            haystack = _norm(" ".join(str(value or "") for value in (
+                item.get("title"), item.get("publisher"), item.get("category"), item.get("subcategory"),
+                item.get("geography"), item.get("coverage"), item.get("why_useful"),
+                " ".join(item.get("ticker_tags") or []), " ".join(item.get("sector_tags") or []),
+            )))
+            if query_tokens and not all(token in haystack for token in query_tokens):
+                continue
+            rows.append(item)
+        rows.sort(key=lambda item: (
+            priority_rank.get(_norm(item.get("priority")), 4),
+            -(int(item.get("published_ts") or 0)),
+            str(item.get("publisher") or ""), str(item.get("title") or ""),
+        ))
+        research = data.get("research") or {}
+        return {
+            "status": "ok", "as_of": data.get("timestamp"),
+            "query": {"query": query, "category": category, "geography": geography,
+                      "ticker": ticker, "publisher": publisher, "open_only": open_only},
+            "total_matches": len(rows),
+            "results": [_public_research(item) for item in rows[:_clamp_limit(limit, 20, 50)]],
+            "synthesis": research.get("synthesis") or {}, "health": research.get("health") or {},
+            "grounding_note": research.get("provenance_note"),
+        }
+
+    def get_research(self, id_or_url_or_title: str) -> Dict[str, Any]:
+        data, _, _ = self._snapshot()
+        wanted = str(id_or_url_or_title or "").strip()
+        wanted_title = _title_key(wanted)
+        for item in (data.get("research") or {}).get("reports") or []:
+            if wanted in {item.get("id"), item.get("source_url"), item.get("direct_url"), item.get("landing_url")} \
+                    or _title_key(item.get("title")) == wanted_title:
+                return {"status": "ok", "as_of": data.get("timestamp"),
+                        "research": _public_research(item),
+                        "grounding_note": (data.get("research") or {}).get("provenance_note")}
+        return {"status": "not_found", "query": wanted}
+
+    def company_evidence(self, ticker: str, market: str = "id", window_days: int = 7) -> Dict[str, Any]:
+        code = _market_code(market)
+        asset = self.get_asset(ticker, market)
+        score = self.get_score(ticker, market)
+        chart = self.get_chart(ticker, "6M", market)
+        news = self.search_news(ticker=ticker, market=market, window_days=window_days, limit=10)
+        videos = self.search_videos(query=ticker, market=market, window_days=window_days,
+                                    include_knowledge=True, limit=8)
+        exact_research = self.search_research(ticker=ticker, limit=12)
+        context = []
+        if not exact_research.get("results"):
+            geography = "Indonesia" if code == "ID" else "United States" if code == "US" else ""
+            context = self.search_research(
+                query=str(asset.get("sector") or "") if asset.get("status") == "ok" else "",
+                geography=geography, limit=6,
+            ).get("results") or []
+            if not context and geography:
+                context = self.search_research(geography=geography, limit=6).get("results") or []
+        return {
+            "ticker": str(ticker).upper(), "market": code,
+            "asset": asset, "score": score, "chart": chart,
+            "news": news.get("results") or [], "videos": videos.get("results") or [],
+            "research": exact_research.get("results") or [], "context_research": context,
+            "provenance_rules": [
+                "Label provider facts, Cockpit calculations, publisher opinions, and AI inference separately.",
+                "Broker opinions and target prices are evidence, not facts or personalized recommendations.",
+                "Open the original report before relying on a recommendation, forecast, or valuation.",
+            ],
+        }
+
     def daily_brief(self) -> Dict[str, Any]:
         data, _, _ = self._snapshot()
         brief = dict(data.get("daily_brief") or {})
@@ -880,6 +997,7 @@ class CockpitService:
                                 window_days=window_days, limit=8)
         videos = self.search_videos(query=query, market=market, window_days=window_days,
                                     include_knowledge=True, limit=8)
+        research = self.search_research(query=query, ticker=ticker, limit=8)
         brief = data.get("daily_brief") or {}
         return {
             "as_of": data.get("timestamp"), "request": {"topic": topic, "ticker": ticker, "sector": sector,
@@ -887,11 +1005,13 @@ class CockpitService:
             "asset": asset, "sentiment": brief.get("sentiment") or {},
             "daily_synthesis": brief.get("synthesis"), "key_themes": brief.get("key_themes") or [],
             "news": news.get("results") or [], "videos": videos.get("results") or [],
+            "research": research.get("results") or [],
             "macro_analysis": data.get("macro_analysis") or [], "alerts": data.get("alerts") or [],
             "grounding_rules": [
                 "Prefer exact ticker and source-linked evidence.",
                 "Treat news without summaries as headline-only evidence.",
                 "Treat video summaries as Cockpit synthesis, not a transcript, unless explicitly labelled otherwise.",
+                "Treat broker and institutional research as attributed opinion and verify it at the source.",
                 "State missing or stale data; never estimate absent fundamentals.",
             ],
         }
@@ -899,7 +1019,7 @@ class CockpitService:
     def schema(self) -> Dict[str, Any]:
         return {
             "contracts": {
-                "data.json": "market, sector, Intelligence Hub, Knowledge Hub, macro, alerts, and IPO summaries",
+                "data.json": "market, sector, Intelligence Hub, Knowledge Hub, research, macro, alerts, and IPO summaries",
                 "scores.json": "lazy-loaded deterministic scoring, valuation, metrics, and risk detail",
                 "charts.json": "lazy-loaded historical and intraday chart points",
             },

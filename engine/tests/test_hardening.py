@@ -1,7 +1,7 @@
 import time
 import unittest
 
-from tools import fundamentals, idx_membership, ipos, news_router, sectors, universe
+from tools import fundamentals, idx_membership, ipos, news_router, research, sectors, universe
 
 
 class FinancialGuardrailTests(unittest.TestCase):
@@ -238,6 +238,8 @@ Technology
         self.assertEqual(rows[0]["ticker"], "EXAM")
         self.assertEqual(rows[0]["status"], "waiting for offering")
         self.assertEqual(rows[0]["price"], "120 - Rp 160")
+        self.assertEqual(rows[0]["currency"], "IDR")
+        self.assertEqual(rows[0]["price_status"], "range")
         self.assertEqual(rows[0]["sector"], "Technology")
         self.assertIn("get-propectus-file", rows[0]["prospectus_url"])
 
@@ -264,6 +266,7 @@ Rp 170
         self.assertEqual(merged[0]["confidence"], "official_calendar")
         self.assertEqual(merged[0]["industry"], "Packaged Software")
         self.assertEqual(merged[0]["price"], "170")
+        self.assertEqual(merged[0]["price_status"], "final")
 
     def test_nasdaq_filed_row_is_not_a_scheduled_listing(self):
         row = ipos._nasdaq_row({
@@ -273,6 +276,8 @@ Rp 170
         self.assertEqual(row["status"], "filed")
         self.assertEqual(row["date_type"], "filed_date")
         self.assertIn("sec.gov/edgar/browse", row["official_filing_url"])
+        self.assertEqual(row["currency"], "USD")
+        self.assertEqual(row["price_status"], "undisclosed")
 
     def test_reported_idx_pipeline_requires_a_named_issuer(self):
         self.assertFalse(ipos._specific_id_pipeline_report(
@@ -365,6 +370,40 @@ class NewsQualityTests(unittest.TestCase):
         item = {"title": "YouTube creator reaches ten million subscribers",
                 "summary": "The entertainment channel expanded its audience.", "source": "Media News"}
         self.assertFalse(news_router._sector_relevant(item, sector))
+
+
+class ResearchContractTests(unittest.TestCase):
+    def test_curated_workbook_library_is_complete_and_source_linked(self):
+        reports = research._curated()
+        self.assertEqual(len(reports), 98)
+        self.assertTrue(all(item.get("source_url") for item in reports))
+        self.assertTrue(any(item.get("geography") == "Indonesia" for item in reports))
+
+    def test_exact_idx_ticker_and_company_name_are_tagged(self):
+        tickers = {"BBCA", "TLKM"}
+        names = [("BBCA", "bank central asia"), ("TLKM", "telkom indonesia")]
+        self.assertEqual(research._ticker_tags("BBCA Company Update", tickers, names), ["BBCA"])
+        self.assertEqual(research._ticker_tags("Telkom Indonesia Equity Research", tickers, names), ["TLKM"])
+
+    def test_cached_collect_merges_without_duplicate_reports(self):
+        previous = {
+            "discovery_as_of": research._now(),
+            "reports": [{
+                "id": "live-test", "title": "BBCA Company Update", "publisher": "Test Broker",
+                "source_url": "https://example.com/bbca", "landing_url": "https://example.com/bbca",
+                "source_type": "official_discovery", "published_ts": research._now(),
+                "ticker_tags": ["BBCA"], "category": "Public Markets", "geography": "Indonesia",
+            }, {
+                "id": "live-test-duplicate", "title": "BBCA Company Update", "publisher": "Test Broker",
+                "source_url": "https://example.com/bbca", "source_type": "official_discovery",
+                "published_ts": research._now(), "ticker_tags": ["BBCA"],
+            }],
+            "health": {"source_counts": {"Test Broker": 1}},
+        }
+        payload = research.collect([], previous)
+        self.assertEqual(sum(item.get("source_url") == "https://example.com/bbca"
+                             for item in payload["reports"]), 1)
+        self.assertEqual(payload["health"]["discovery"], "cached")
 
 
 class IdxClassificationTests(unittest.TestCase):

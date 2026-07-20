@@ -92,11 +92,6 @@ a{color:inherit;text-decoration:none;}
 .nowplay .bar{height:3px;background:var(--line);border-radius:2px;margin-top:9px;overflow:hidden;}
 .nowplay .bar i{display:block;height:100%;width:38%;background:var(--amber);}
 .nowplay .tm{font-family:var(--mono);font-size:8.5px;color:var(--ink3);display:flex;justify-content:space-between;margin-top:5px;}
-.npnow{display:block;font-size:10.5px;color:var(--ink2);margin:8px 0 2px;}.npnow b{color:var(--green);font-weight:600;}.npnow:hover{color:var(--ink);}
-.moodchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
-.moodchip{font-family:var(--mono);font-size:9px;background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:4px 7px;cursor:pointer;color:var(--ink2);}
-.moodchip.on{background:var(--amber);color:#000;border-color:var(--amber);font-weight:600;}
-.moodchip:hover{border-color:var(--amber);}
 .verse{font-style:italic;font-size:13px;line-height:1.6;color:#d6d6dc;}
 .verse .ref{display:block;font-style:normal;font-family:var(--mono);font-size:9.5px;color:var(--amber);margin-top:9px;letter-spacing:.04em;}
 .anchorbox{border-left:2px solid var(--amber);background:linear-gradient(90deg,rgba(245,158,11,.08),rgba(245,158,11,.015));border-top:1px solid rgba(245,158,11,.16);border-right:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0 9px 9px 0;padding:13px 14px;}
@@ -475,9 +470,6 @@ footer .g{color:var(--green);}
 .dtline .tzlbl{color:var(--amber);}
 .dtline.us .tzlbl{color:var(--blue);}
 
-/* mood dropdown */
-.moodsel{width:100%;margin-top:9px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 9px;cursor:pointer;}
-.moodsel:focus{outline:none;border-color:var(--amber);}
 
 /* podcast categories + expand */
 #podTabs{flex-wrap:wrap;}
@@ -597,6 +589,19 @@ footer .g{color:var(--green);}
 .ipochart{height:240px;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:#08080b;margin:8px 0;}
 .ipoempty{border:1px dashed var(--line);border-radius:8px;padding:13px;color:var(--ink3);font-size:10px;line-height:1.55;}
 @media(max-width:560px){.ipofacts{grid-template-columns:1fr}.ipochart{height:210px}}
+.researchhead{border-left:2px solid var(--cyan);padding:3px 0 3px 10px;margin:2px 0 12px;}
+.researchhead .rh{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--cyan);}
+.researchhead .rs{font-size:10px;color:var(--ink3);margin-top:4px;line-height:1.45;}
+.researchfilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;}
+.researchfilters select{min-width:0;flex:1 1 110px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;color:var(--ink2);font:9px var(--mono);padding:6px 7px;}
+.researchcard{display:block;color:inherit;text-decoration:none;border-bottom:1px solid var(--line);padding:11px 2px;transition:background .15s;}
+.researchcard:hover{background:rgba(52,211,192,.035);}
+.researchmeta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px;}
+.researchtitle{font-size:12px;font-weight:600;line-height:1.42;color:var(--ink);}
+.researchwhy{font-size:10.5px;line-height:1.55;color:var(--ink2);margin-top:6px;}
+.researchwhy:before{content:"▸ ";color:var(--cyan);}
+.researchopen{font:8px var(--mono);color:var(--cyan);margin-top:6px;}
+.researchempty{border:1px dashed var(--line);border-radius:8px;padding:13px;color:var(--ink3);font-size:10px;line-height:1.55;}
 .vcat.crypto{color:#f7931a;background:rgba(247,147,26,.14);}
 .vexp{display:none;margin-top:9px;}
 .vid.open .vexp{display:block;}
@@ -609,9 +614,6 @@ footer .g{color:var(--green);}
 body{padding-bottom:40px;}
 .mediabar{position:fixed;left:0;right:0;bottom:0;z-index:90;background:#0c0c0f;border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--ink2);}
 .mbbar{display:flex;align-items:center;gap:12px;height:38px;padding:0 14px;}
-.mediabar .mbmusic{display:flex;align-items:center;gap:6px;color:var(--green);flex:0 0 auto;}
-.mediabar .mbmusic .mblink{cursor:pointer;margin-left:3px;}
-.mediabar .mbmusic .mblink:hover{color:#5fe7a0;}
 .mbbtn{background:none;border:1px solid var(--line);color:var(--ink);border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:9px;line-height:1;padding:3px 7px;min-width:22px;}
 .mbbtn:hover{border-color:var(--amber);color:var(--amber);}
 .mediabar .mbvideo{display:flex;align-items:center;gap:8px;margin-left:auto;min-width:0;}
@@ -670,12 +672,6 @@ body{padding-bottom:40px;}
         <div class="envcell"><div class="loc">JAKARTA WIB</div><div class="tmp"><span id="jktIco" class="wico"></span><span id="jktTmp">--&deg;</span></div><div class="cond" id="jktCond">&hellip;</div></div>
         <div class="envcell"><div class="loc">BSD CITY HQ</div><div class="tmp"><span id="bsdIco" class="wico"></span><span id="bsdTmp">--&deg;</span></div><div class="cond" id="bsdCond">&hellip;</div></div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="sechd" style="margin-bottom:8px;"><h2 style="font-size:11px;">♫ Mood Player</h2><span class="tag">SPOTIFY</span></div>
-      <div id="npLine"></div>
-      <div class="moodchips" id="moodChips"></div>
-      <div id="moodPlayer"></div>
     </div>
     <div class="sec">
       <div class="lbl" style="margin-bottom:8px;">▦ Spiritual Anchor</div>
@@ -758,6 +754,7 @@ body{padding-bottom:40px;}
       <span class="hubtab" data-p="news">News</span>
       <span class="hubtab" data-p="videos">Videos</span>
       <span class="hubtab" data-p="ipo">IPOs</span>
+      <span class="hubtab" data-p="research">Research</span>
     </div>
     <div class="datefilter" id="dateFilter">
       <span class="dchip" data-d="today">Today</span>
@@ -788,6 +785,14 @@ body{padding-bottom:40px;}
       <div class="wtabs" id="ipoMarkets"></div>
       <div id="ipoList"></div>
     </div>
+    <!-- SOURCE-LINKED RESEARCH -->
+    <div class="hubpane" id="paneResearch">
+      <div class="researchhead"><div class="rh">RESEARCH LIBRARY</div><div class="rs">Broker · institutional · macro · public and private markets</div></div>
+      <div id="researchDigest"></div>
+      <input id="researchSearch" placeholder="search reports, publishers, tickers…" autocomplete="off">
+      <div class="researchfilters"><select id="researchCategory" aria-label="Research category"></select><select id="researchGeo" aria-label="Research geography"></select><select id="researchAccess" aria-label="Research access"></select></div>
+      <div id="researchList"></div>
+    </div>
   </div>
 </div>
 
@@ -804,12 +809,6 @@ body{padding-bottom:40px;}
     <div class="mbqueue" id="mbQueue"></div>
   </div>
   <div class="mbbar">
-    <div class="mbmusic" id="mbMusic">
-      <button class="mbbtn" id="mbMusicPrev" title="Previous mood">⏮</button>
-      <button class="mbbtn" id="mbMusicPlay" title="Play / pause music">▶</button>
-      <button class="mbbtn" id="mbMusicNext" title="Next mood">⏭</button>
-      <span class="mblink" id="mbMoodLink" title="Jump to the player">🎵 <span id="mbMoodName">—</span></span>
-    </div>
     <div class="mbvideo" id="mbVideo">
       <span class="mbsrc"><button id="mbSrcNews" class="on">📰 News</button><button id="mbSrcPod">🎙 Knowledge</button></span>
       <button class="mbbtn" id="mbVidPrev" title="Previous">⏮</button>
@@ -992,11 +991,6 @@ function render(d){
   const condTxt=(s)=>(s||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
   $('jktTmp').innerHTML=pt(wx.jakarta)+'&deg;';$('jktCond').textContent=condTxt(wx.jakarta);$('jktIco').textContent=wxIcon(wx.jakarta);
   $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=condTxt(wx.bsd);$('bsdIco').textContent=wxIcon(wx.bsd);
-  const np=o.now_playing;
-  $('npLine').innerHTML=(np&&np.track)
-    ?`<a class="npnow" href="${encodeURI(np.url||'#')}" target="_blank" rel="noopener">${np.is_playing?'▶':'❚❚'} <b>${esc(np.track)}</b> · ${esc(np.artist||'')}</a>`
-    :'';
-  renderMoods();
   const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
   updateDataAge();
@@ -1094,60 +1088,7 @@ function render(d){
   buildHub(d);
 }
 
-/* ---- Spotify mood player (curated editorial playlists; embed = play in place) ---- */
-const MOODS=[
-  ['Deep Focus','37i9dQZF1DWZeKCadgRdKQ'],
-  ['Instrumental Study','37i9dQZF1DX8Uebhn9wzrS'],
-  ['Jazz Vibes','37i9dQZF1DX0SM0LYsmbMT'],
-  ['Praise Lord','37i9dQZF1DXcb6CQIjdqKy'],
-  ['Thanks God','17cbyJEkWpfpKy0uK7bNfx'],
-  ['Motivation','78Suoigk80gI9mI9z5tYl8'],
-  ['Energy Boost','37i9dQZF1DX76Wlfdnj7AP'],
-  ['Chill / Wind Down','37i9dQZF1DX4WYpdgoIcn6'],
-];
-let moodPick=0,podCat='brain';
-function renderMoods(){
-  $('moodChips').innerHTML=`<select class="moodsel" id="moodSel">`+
-    MOODS.map((m,i)=>`<option value="${i}"${i===moodPick?' selected':''}>${esc(m[0])}</option>`).join('')+`</select>`;
-  $('moodSel').onchange=e=>{moodPick=+e.target.value;switchMood();saveState();};
-  const mn=$('mbMoodName');if(mn)mn.textContent=MOODS[moodPick][0];
-}
-
-/* ---- Spotify IFrame API: play/pause + position tracking + mood switching ---- */
-let spotifyApi=null,spotifyController=null,spotifyReady=false;
-let spState={paused:true,pos:0};let _restoreSpotifyPos=0,_spotifyShouldPlay=false;
-function loadSpotifyApi(){
-  if(document.getElementById('spotify-api'))return;
-  const s=document.createElement('script');s.id='spotify-api';
-  s.src='https://open.spotify.com/embed/iframe-api/v1';s.async=true;
-  document.head.appendChild(s);
-  setTimeout(()=>{if(!spotifyController)spotifyFallback();},5000);   // API blocked → plain embed
-}
-function spotifyFallback(){
-  const id=MOODS[moodPick][1];
-  $('moodPlayer').innerHTML=`<iframe style="border-radius:9px;margin-top:9px" src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-}
-window.onSpotifyIframeApiReady=function(api){spotifyApi=api;createSpotify();};
-function createSpotify(){
-  if(!spotifyApi)return;
-  $('moodPlayer').innerHTML='<div id="spotify-embed" style="margin-top:9px"></div>';
-  spotifyApi.createController(document.getElementById('spotify-embed'),
-    {uri:'spotify:playlist:'+MOODS[moodPick][1],width:'100%',height:152},
-    (controller)=>{
-      spotifyController=controller;spotifyReady=true;
-      controller.addListener('playback_update',e=>{
-        if(e&&e.data){spState.pos=(e.data.position||0)/1000;spState.paused=!!e.data.isPaused;updateMbBtns();saveStateSoon();}
-      });
-      if(_restoreSpotifyPos>0){try{controller.seek(_restoreSpotifyPos);}catch(_){}}
-      if(_spotifyShouldPlay){try{controller.play();}catch(_){}}
-    });
-}
-function switchMood(){
-  if(spotifyController){try{spotifyController.loadUri('spotify:playlist:'+MOODS[moodPick][1]);spotifyController.play();}catch(_){}}
-  else{spotifyFallback();}
-  const mn=$('mbMoodName');if(mn)mn.textContent=MOODS[moodPick][0];
-}
-function spotifyToggle(){if(spotifyController){try{spotifyController.togglePlay();}catch(_){}}}
+let podCat='brain';
 let TREND=null,moveType='gainers',moveGeo='id';
 function renderTrending(t){
   TREND=t;
@@ -1628,8 +1569,9 @@ function expandIdx(i){
 
 /* ---- intelligence hub: Daily Brief · News · Videos · IPOs ---- */
 let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
-let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null,IPO={};
+let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null,IPO={},RESEARCH={};
 let ipoView='upcoming',ipoMarket='ALL',ipoExpanded='',IPO_ROWS=[];
+let researchQ='',researchCategory='ALL',researchGeo='ALL',researchAccess='ALL';
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
@@ -1833,15 +1775,17 @@ function syncHubUI(){
   $('paneNews').classList.toggle('on',hubPane==='news');
   $('paneVideos').classList.toggle('on',hubPane==='videos');
   $('paneIpo').classList.toggle('on',hubPane==='ipo');
+  $('paneResearch').classList.toggle('on',hubPane==='research');
   [...document.querySelectorAll('#dateFilter .dchip')].forEach(x=>x.classList.toggle('on',x.dataset.d===dateRange));
-  $('dateFilter').style.display=(hubPane==='brief'||hubPane==='ipo')?'none':'flex';
+  $('dateFilter').style.display=(hubPane==='brief'||hubPane==='ipo'||hubPane==='research')?'none':'flex';
   if(hubPane==='videos')drawVideos();
   else if(hubPane==='news')drawWire();
   else if(hubPane==='ipo')drawIpo();
+  else if(hubPane==='research')drawResearch();
   else $('wireCount').textContent='BRIEF';
 }
 function buildHub(d){
-  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;IPO=d.ipo||{};
+  WIRE=d.news||[];VIDEOS=d.videos||[];BRIEF=d.daily_brief||null;IPO=d.ipo||{};RESEARCH=d.research||{};
   BRIEF_VIDEOS=((BRIEF||{}).must_watch||[]).map(m=>m.video||m||{}).filter(goodVideo);
   rebuildPrioritySets();
   if(!hubInit){
@@ -1853,7 +1797,7 @@ function buildHub(d){
       dateRange=c.dataset.d;syncHubUI();drawWire();drawVideos();saveState();
     });
   }
-  buildBrief();buildWire();buildIpo();
+  buildBrief();buildWire();buildIpo();buildResearch();
   // don't tear down a video the user is watching during the 30-min auto-refresh
   if(!$('vidList').querySelector('.vid.open iframe'))buildVideos();
   syncHubUI();      // reflect the active/restored pane + date filter in the UI
@@ -1997,13 +1941,13 @@ function drawIpo(){
       :`IDX recent dates use official e-IPO dates when available and TradingView first-observed bars as fallback; confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
   const cards=rows.map((x,i)=>{const d=ipoDate(x.event_ts),usExchange=/nyse/i.test(x.exchange||'')?'NYSE':/nasdaq/i.test(x.exchange||'')?'NASDAQ':'US',market=x.market==='ID'?'🇮🇩 IDX':x.market==='US'?`🇺🇸 ${usExchange}`:'S&P 500';
     const key=ipoRowKey(x,i),open=ipoExpanded===key,hit=findIpoAsset(x);
-    const price=x.price?`<span class="meta-chip">${x.market==='ID'?'IDR':'USD'} ${esc(x.price)}</span>`:'';
+    const price=x.price?`<span class="meta-chip priority">${esc(ipoPriceStatus(x))} ${esc(ipoPriceLabel(x))}</span>`:'';
     const dateLabel=ipoDateLabel(x);
     const coverage=ipoView==='recent'&&x.ticker?`<span class="meta-chip ${hit?'source':''}">${hit?'CHART + SCORE':'CHART ONLY'}</span>`:'';
     const filing=x.prospectus_url?`<a class="meta-chip source" href="${encodeURI(x.prospectus_url)}" target="_blank" rel="noopener">PROSPECTUS ↗</a>`:x.official_filing_url?`<a class="meta-chip source" href="${encodeURI(x.official_filing_url)}" target="_blank" rel="noopener">${x.market==='US'?'SEC FILINGS':'KSEI FILE'} ↗</a>`:'';
     const verifiedIndustry=String(x.industry||(hit&&hit.c&&hit.c.industry)||x.sector||'').trim();
     const industry=verifiedIndustry||(x.market==='US'?'Industry unavailable':'');
-    const recentMeta=`<span class="meta-chip source">${market}</span>${industry?`<span class="meta-chip industry ${verifiedIndustry?'':'missing'}">${esc(industry)}</span>`:''}${coverage}${filing}`;
+    const recentMeta=`<span class="meta-chip source">${market}</span>${industry?`<span class="meta-chip industry ${verifiedIndustry?'':'missing'}">${esc(industry)}</span>`:''}${price}${coverage}${filing}`;
     const eventMeta=`<span class="ipostatus ${esc(x.status||'')}">${esc(x.status||'scheduled')}</span><span class="meta-chip source">${market}</span>${x.exchange?`<span class="meta-chip">${esc(x.exchange)}</span>`:''}${price}<span class="meta-chip date">${esc(dateLabel)}</span>${filing}`;
     return `<div class="ipocard ${open?'open':''}" data-ipo="${i}" data-key="${esc(key)}" role="button" tabindex="0"><div class="ipotop"><div class="ipodate"><b>${d.day}</b><span>${d.month}</span></div><div class="ipomain"><div class="ipotitle">${x.ticker?`<b>${esc(x.ticker)}</b> · `:''}${esc(x.name||'')}</div><div class="iposub">${ipoView==='recent'?recentMeta:eventMeta}</div></div></div>${open?ipoDetailHTML(x,hit,key):''}</div>`;
   }).join('');
@@ -2019,6 +1963,12 @@ function drawIpo(){
   if(hubPane==='ipo')$('wireCount').textContent=totalRows+(ipoView==='changes'?' changes':ipoView==='pipeline'?' pipeline items':' IPOs');
 }
 function ipoRowKey(x,i){return [ipoView,x.market,x.ticker||'',x.event_ts||0,i].join('|');}
+function ipoPriceLabel(x){
+  const raw=String(x&&x.price||'').replace(/^\s*(?:IDR|USD|Rp|\$)\s*/i,'').trim();
+  if(!raw)return '';
+  return `${x.currency||(x.market==='ID'?'IDR':'USD')} ${raw}`;
+}
+function ipoPriceStatus(x){return ({final:'FINAL',range:'RANGE',expected:'EXPECTED',offer:'OFFER'})[String(x&&x.price_status||'').toLowerCase()]||'OFFER';}
 function ipoDateLabel(x){if(ipoView==='recent')return 'listing date';return ({listing_date:'listing date',listing_or_offering_date:'schedule date',filed_date:'filed date',registration_date:'KSEI registration',publication_date:'report published'})[x.date_type]||'event date';}
 function findIpoAsset(x){
   const tk=String(x&&x.ticker||'').toUpperCase();if(!tk)return null;
@@ -2036,7 +1986,7 @@ function ipoDetailHTML(x,hit,key){
     x.detail_url?`<a class="ipoaction" href="${encodeURI(x.detail_url)}" target="_blank" rel="noopener">Offering details ↗</a>`:'',
     x.source_url?`<a class="ipoaction" href="${encodeURI(x.source_url)}" target="_blank" rel="noopener">Open source ↗</a>`:''].join('');
   const facts=[[ipoDateLabel(x),x.event_ts?new Date(x.event_ts*1000).toLocaleDateString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric'}):'TBD'],
-    ['Status',x.status||'scheduled'],['Industry',x.industry],['Sector',x.sector],['Shares offered',x.shares],['Offer amount',x.offer_amount],['Confidence',String(x.confidence||'').replace(/_/g,' ')]]
+    ['Status',x.status||'scheduled'],[`${ipoPriceStatus(x).toLowerCase()} IPO price`,ipoPriceLabel(x)],['Industry',x.industry],['Sector',x.sector],['Shares offered',x.shares],['Offer amount',x.offer_amount],['Confidence',String(x.confidence||'').replace(/_/g,' ')]]
     .filter(([,v])=>v!=null&&String(v).trim()).map(([k,v])=>`<div class="ipofact"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('');
   const news=related.length?`<div class="iporelated"><div class="rh">Related coverage</div>${related.map(n=>`<a href="${encodeURI(n.url)}" target="_blank" rel="noopener">${esc(n.title)} · ${esc(n.source||'source')} ↗</a>`).join('')}</div>`:'';
   const chart=ipoView==='recent'&&!hit&&x.ticker?`<div class="ipochart" id="ipoChart-${Math.abs(hashText(key))}"></div><div class="iponote">This listing is not yet in Cockpit’s monitored fundamentals universe, so a deterministic score is not shown. The market chart is provided for inspection without inventing a score.</div>`:'';
@@ -2058,6 +2008,57 @@ function mountOpenIpoChart(){
   const script=document.createElement('script');script.async=true;script.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
   script.text=JSON.stringify({autosize:true,symbol,interval:'D',range:'6M',timezone:'Asia/Jakarta',theme:'dark',style:'2',locale:'en',backgroundColor:'#0b0b0e',gridColor:'rgba(42,43,50,.45)',hide_side_toolbar:true,allow_symbol_change:false});
   wrap.append(widget,script);host.replaceChildren(wrap);
+}
+/* ---- source-linked research library ---- */
+function researchDate(value){
+  if(!value)return '';
+  const d=new Date(value);if(isNaN(d))return String(value);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+function researchOpen(item){
+  return /open|download|public/i.test(String(item.access||''))||!!item.direct_url;
+}
+function researchDigestHTML(){
+  const d=RESEARCH.synthesis||{},health=RESEARCH.health||{};
+  const rows=[d.indonesia?`<div class="di"><b>Indonesia / APAC</b> ${esc(d.indonesia)}</div>`:'',d.global?`<div class="di"><b>Global</b> ${esc(d.global)}</div>`:''].join('');
+  const audit=`<div class="iponote">${Number(health.report_count||0)} indexed · ${Number(health.live_count||0)} live discoveries · ${Number(health.ticker_tagged_count||0)} ticker-tagged. Source metadata only; open the original report for its full evidence and disclosures.</div>`;
+  return rows?`<div class="digestbox"><div class="dh">RESEARCH COVERAGE</div>${rows}</div>${audit}`:audit;
+}
+function buildResearch(){
+  const reports=RESEARCH.reports||[];
+  const categories=['ALL',...new Set(reports.map(x=>x.category).filter(Boolean))];
+  const geographies=['ALL',...new Set(reports.map(x=>x.geography).filter(Boolean))];
+  const options=(rows,current,label)=>rows.map(v=>`<option value="${esc(v)}"${v===current?' selected':''}>${v==='ALL'?label:esc(v)}</option>`).join('');
+  $('researchCategory').innerHTML=options(categories,researchCategory,'All categories');
+  $('researchGeo').innerHTML=options(geographies,researchGeo,'All geographies');
+  $('researchAccess').innerHTML=options(['ALL','OPEN','GATED'],researchAccess,'All access');
+  $('researchDigest').innerHTML=researchDigestHTML();
+  if(!$('researchSearch').dataset.bound){
+    $('researchSearch').dataset.bound='1';
+    $('researchSearch').oninput=e=>{researchQ=e.target.value.toLowerCase().trim();drawResearch();};
+    $('researchCategory').onchange=e=>{researchCategory=e.target.value;drawResearch();saveStateSoon();};
+    $('researchGeo').onchange=e=>{researchGeo=e.target.value;drawResearch();saveStateSoon();};
+    $('researchAccess').onchange=e=>{researchAccess=e.target.value;drawResearch();saveStateSoon();};
+  }
+  drawResearch();
+}
+function drawResearch(){
+  const reports=(RESEARCH.reports||[]).filter(item=>{
+    if(researchCategory!=='ALL'&&item.category!==researchCategory)return false;
+    if(researchGeo!=='ALL'&&item.geography!==researchGeo)return false;
+    if(researchAccess==='OPEN'&&!researchOpen(item))return false;
+    if(researchAccess==='GATED'&&researchOpen(item))return false;
+    const hay=normTitle([item.title,item.publisher,item.category,item.subcategory,item.geography,item.why_useful,...(item.ticker_tags||[])].join(' '));
+    return !researchQ||hay.includes(normTitle(researchQ));
+  });
+  const priority={Essential:0,High:1,Live:2,Supplementary:3};
+  reports.sort((a,b)=>(priority[a.priority]??4)-(priority[b.priority]??4)||(Date.parse(b.published)||0)-(Date.parse(a.published)||0));
+  $('researchList').innerHTML=reports.slice(0,80).map(item=>{
+    const url=item.source_url||item.direct_url||item.landing_url||'#';
+    const ticks=(item.ticker_tags||[]).slice(0,6).map(t=>`<span class="meta-chip source">${esc(t)}</span>`).join('');
+    return `<a class="researchcard" href="${encodeURI(url)}" target="_blank" rel="noopener"><div class="researchmeta"><span class="meta-chip ${item.priority==='Essential'?'priority':''}">${esc(item.priority||'Research')}</span><span class="meta-chip industry">${esc(item.category||'Research')}</span><span class="meta-chip source">${esc(item.publisher||'Source')}</span><span class="meta-chip date">${esc(researchDate(item.published))}</span>${ticks}</div><div class="researchtitle">${esc(item.title||'Untitled report')}</div>${item.why_useful?`<div class="researchwhy">${esc(item.why_useful)}</div>`:''}<div class="researchopen">OPEN ${item.direct_url?'REPORT':'SOURCE'} ↗ · ${esc(item.summary_basis||'source metadata')}</div></a>`;
+  }).join('')||'<div class="researchempty">No source-linked research matches these filters.</div>';
+  if(hubPane==='research')$('wireCount').textContent=reports.length+' reports';
 }
 /* ---- footer media player: ONE YouTube player, News / Podcast queues ---- */
 let ytPlayer=null,ytApiReady=false,ytSource='news',ytIdx=-1,ytPaused=true,ytSpeed=1,ytTime=0;
@@ -2136,7 +2137,6 @@ function renderQueue(){
 }
 function setSpeed(r){ytSpeed=+r;if(ytPlayer){try{ytPlayer.setPlaybackRate(ytSpeed);}catch(_){}}saveState();}
 function updateMbBtns(){
-  const mp=$('mbMusicPlay');if(mp)mp.textContent=spState.paused?'▶':'❚❚';
   const vp=$('mbVidPlay');if(vp)vp.textContent=ytPaused?'▶':'❚❚';
 }
 
@@ -2145,10 +2145,10 @@ const PKEY='cockpit.player.v1';let _saveTimer=null;
 function gatherState(){
   let vt=ytTime;try{if(ytPlayer&&ytPlayer.getCurrentTime)vt=ytPlayer.getCurrentTime()||vt;}catch(_){}
   const q=ytQueueArr();const cur=(ytIdx>=0&&ytIdx<q.length)?q[ytIdx].video_id:'';
-  return {mood:moodPick,spPos:spState.pos,spPaused:spState.paused,
-    ytSource,vid:cur,vidTime:vt,vidPaused:ytPaused,speed:ytSpeed,
+  return {ytSource,vid:cur,vidTime:vt,vidPaused:ytPaused,speed:ytSpeed,
     panel:$('mbPanel').classList.contains('open'),
-    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo,ipoView,ipoMarket};
+    podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo,ipoView,ipoMarket,
+    researchCategory,researchGeo,researchAccess};
 }
 function saveState(){try{localStorage.setItem(PKEY,JSON.stringify(gatherState()));}catch(_){}}
 function saveStateSoon(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveState,1200);}
@@ -3031,11 +3031,6 @@ const _nx=document.querySelector('.alertbar .nx');
 if(_nx)_nx.onclick=()=>{topAlertIdx++;showTopAlert();};
 
 /* ---- media bar controls ---- */
-function moodStep(d){moodPick=(moodPick+d+MOODS.length)%MOODS.length;renderMoods();switchMood();saveState();}
-$('mbMusicPrev').onclick=()=>moodStep(-1);
-$('mbMusicNext').onclick=()=>moodStep(1);
-$('mbMusicPlay').onclick=()=>spotifyToggle();
-$('mbMoodLink').onclick=()=>{document.getElementById('moodPlayer').scrollIntoView({behavior:'smooth',block:'center'});};
 $('mbSrcNews').onclick=()=>setSource('news');
 $('mbSrcPod').onclick=()=>setSource('podcast');
 $('mbVidPrev').onclick=()=>ytPrev();
@@ -3048,7 +3043,6 @@ $('mbStop').onclick=()=>stopVideo();
 /* ---- restore last session state into the globals before first render ---- */
 (function(){
   const SS=loadState();
-  if(typeof SS.mood==='number'&&SS.mood>=0&&SS.mood<MOODS.length)moodPick=SS.mood;
   if(SS.ytSource)ytSource=SS.ytSource;
   if(SS.podCat)podCat=SS.podCat;
   if(SS.hubPane)hubPane=SS.hubPane;
@@ -3058,7 +3052,9 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.wireGeo)wireGeo=SS.wireGeo;
   if(SS.ipoView)ipoView=SS.ipoView;
   if(SS.ipoMarket)ipoMarket=SS.ipoMarket;
-  _restoreSpotifyPos=SS.spPos||0;_spotifyShouldPlay=false;
+  if(SS.researchCategory)researchCategory=SS.researchCategory;
+  if(SS.researchGeo)researchGeo=SS.researchGeo;
+  if(SS.researchAccess)researchAccess=SS.researchAccess;
 })();
 
 /* ---- boot + auto-refresh ----
@@ -3107,7 +3103,7 @@ function refreshPayload(opts={}){
   }).finally(()=>{payloadRefreshBusy=false;});
 }
 refreshPayload({initial:true,force:true}).then(()=>{
-  if(DATA){startClock();startCrypto();startIdxFastQuotes();startRealtimeFeed();loadSpotifyApi();restoreVideo();}
+  if(DATA){startClock();startCrypto();startIdxFastQuotes();startRealtimeFeed();restoreVideo();}
 });
 setInterval(()=>{refreshPayload();},5*60*1000);
 addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPayload();});

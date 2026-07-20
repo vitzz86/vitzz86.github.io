@@ -124,19 +124,6 @@ def verse_of_the_day() -> str:
     return settings.VERSES[bucket % len(settings.VERSES)]
 
 
-def ambient_soundtrack(rainy: bool, anomaly: bool) -> dict:
-    """Maps unified baseline parameters (weather + volatility + clock) to a playlist."""
-    if anomaly:
-        key = "volatile_markets"
-    elif rainy:
-        key = "storm_focus"
-    elif now_wib().hour >= 17:
-        key = "evening_wind_down"
-    else:
-        key = "calm_focus"
-    return dict(settings.SPOTIFY_PLAYLISTS[key])
-
-
 # ------------------------------------------------------------------ note webhook
 def note_of_the_day(previous: str | None = None) -> str:
     if settings.NOTE_URL:

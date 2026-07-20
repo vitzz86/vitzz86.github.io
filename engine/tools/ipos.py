@@ -112,6 +112,7 @@ def _nasdaq_row(row: dict, status: str) -> dict | None:
     name = str(row.get("companyName") or "").strip()
     if not name or not ts:
         return None
+    raw_price = str(row.get("proposedSharePrice") or "").strip()
     return {
         "market": "US",
         "kind": "ipo",
@@ -121,7 +122,13 @@ def _nasdaq_row(row: dict, status: str) -> dict | None:
         "exchange": row.get("proposedExchange") or "US exchange",
         "event_ts": ts,
         "date_type": "filed_date" if status == "filed" else "listing_date",
-        "price": row.get("proposedSharePrice"),
+        "price": raw_price or None,
+        "currency": "USD",
+        "price_status": (
+            "final" if status == "priced" else
+            "range" if "-" in raw_price or "to" in raw_price.lower() else
+            "expected" if raw_price else "undisclosed"
+        ),
         "shares": row.get("sharesOffered"),
         "offer_amount": row.get("dollarValueOfSharesOffered"),
         "is_spac": _is_spac(name, ticker),
@@ -239,6 +246,8 @@ def _idx_recent(sectors: list) -> list:
                 "event_ts": ts,
                 "date_type": "listing_date",
                 "price": None,
+                "currency": "IDR",
+                "price_status": "unavailable",
                 "is_spac": False,
                 "source": "TradingView first observed bar",
                 "source_url": asset.get("source_url"),
@@ -307,7 +316,7 @@ def _parse_eipo_markdown(text: str, include_closed: bool = False) -> list:
                            date_match.group(1) if date_match else block)
         ts = _date_ts(dates[-1]) if dates else None
         price_match = re.search(
-            r"(?:Harga Final|Harga Penawaran|Rentang Harga Book Building)[\s\S]{0,100}?"
+            r"(Harga Final|Harga Penawaran|Rentang Harga Book Building)[\s\S]{0,100}?"
             r"(?:Rp|IDR)\s*([\d.,]+(?:\s*-\s*(?:Rp|IDR)?\s*[\d.,]+)?)", block, re.I)
         sector_match = re.search(r"(?:#####\s*)?Sektor\s*\n+([^\n#]+)", block, re.I)
         shares_match = re.search(r"(?:#####\s*)?Saham Ditawarkan\s*\n+([^\n#]+)", block, re.I)
@@ -323,7 +332,13 @@ def _parse_eipo_markdown(text: str, include_closed: bool = False) -> list:
             "market": "ID", "kind": "ipo", "status": status,
             "ticker": ticker, "name": company or ticker, "exchange": "IDX",
             "event_ts": ts, "date_type": "listing_or_offering_date",
-            "price": price_match.group(1).strip() if price_match else None,
+            "price": price_match.group(2).strip() if price_match else None,
+            "currency": "IDR",
+            "price_status": (
+                "final" if price_match and "final" in price_match.group(1).lower() else
+                "range" if price_match and "rentang" in price_match.group(1).lower() else
+                "offer" if price_match else "undisclosed"
+            ),
             "sector": sector_match.group(1).strip() if sector_match else None,
             "shares": shares_match.group(1).strip() if shares_match else None,
             "prospectus_url": prospectus_match.group(1).strip() if prospectus_match else None,
@@ -354,6 +369,8 @@ def _merge_idx_recent(scanner_rows: list, official_rows: list) -> list:
             "event_ts": official.get("event_ts") or row.get("event_ts"),
             "date_type": "listing_date",
             "price": official.get("price") or row.get("price"),
+            "currency": official.get("currency") or row.get("currency") or "IDR",
+            "price_status": official.get("price_status") or row.get("price_status") or "unavailable",
             "shares": official.get("shares") or row.get("shares"),
             "sector": official.get("sector") or row.get("sector"),
             "source": "e-IPO Indonesia + TradingView",
@@ -393,6 +410,7 @@ def _parse_ksei_html(text: str) -> list:
             "market": "ID", "kind": "ipo_registration", "status": "registered",
             "ticker": "", "name": company, "exchange": "IDX", "event_ts": ts,
             "date_type": "registration_date", "is_spac": False,
+            "price": None, "currency": "IDR", "price_status": "undisclosed",
             "source": "KSEI official registration", "source_url": href,
             "official_filing_url": href, "confidence": "official_registration",
         })
@@ -502,6 +520,7 @@ def _reported_id_pipeline(previous: dict, wire: list, recent_id: list) -> tuple[
             "market": "ID", "kind": "pipeline_report", "status": "reported pipeline",
             "ticker": "", "name": title, "exchange": "IDX candidate",
             "event_ts": int(item.get("ts") or 0), "date_type": "publication_date",
+            "price": None, "currency": "IDR", "price_status": "undisclosed",
             "is_spac": False, "source": source, "source_url": item["url"],
             "confidence": "reported_not_scheduled", "related_news": [item],
         })

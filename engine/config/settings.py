@@ -70,6 +70,27 @@ PRICE_ONLY_CHART_CACHE_HOURS = 36    # keep cached broad 6M charts; refresh stal
 PRICE_ONLY_FINNHUB_CHART_LIMIT = 80  # fallback 6M candles when Yahoo throttles broad rows
 US_INDEX_LIMITS = {"sp500": 520, "nasdaq100": 120}
 
+# Official/open research discovery is deliberately separate from news. The
+# resulting records are evidence metadata: title, publisher, date and links;
+# full copyrighted reports are never copied into the dashboard payload.
+RESEARCH_EVIDENCE_TERMS = (
+    "research", "equity", "economic", "economy", "macro", "strategy", "outlook",
+    "company update", "sector update", "initiation", "results", "fixed income",
+    "bond", "credit", "target price", "buy", "hold", "sell", "market report",
+)
+RESEARCH_DISCOVERY_SOURCES = [
+    {"name": "BRI Danareksa Sekuritas", "domain": "brights.id", "query": "equity research Indonesia", "geography": "Indonesia", "limit": 6},
+    {"name": "Samuel Sekuritas Indonesia", "domain": "samuel.co.id", "query": "research report Indonesia", "geography": "Indonesia", "limit": 6},
+    {"name": "Kiwoom Sekuritas Indonesia", "domain": "kiwoom.co.id", "query": "equity research Indonesia", "geography": "Indonesia", "limit": 6},
+    {"name": "Mandiri Sekuritas", "domain": "mandirisekuritas.co.id", "query": "research Indonesia market", "geography": "Indonesia", "limit": 4},
+    {"name": "Mirae Asset Sekuritas Indonesia", "domain": "miraeasset.co.id", "query": "research Indonesia equity", "geography": "Indonesia", "limit": 4},
+    {"name": "Maybank Investment Bank", "domain": "maybank-ib.com", "query": "Indonesia research equity", "geography": "Indonesia / ASEAN", "limit": 4},
+    {"name": "DBS Asian Insights", "domain": "dbs.com", "query": "Indonesia market research", "geography": "Indonesia / ASEAN", "limit": 4},
+    {"name": "World Bank", "domain": "worldbank.org", "query": "Indonesia economic report", "geography": "Indonesia", "limit": 4},
+    {"name": "Asian Development Bank", "domain": "adb.org", "query": "Indonesia economic outlook report", "geography": "Indonesia / APAC", "limit": 4},
+    {"name": "AMRO", "domain": "amro-asia.org", "query": "Indonesia ASEAN report", "geography": "ASEAN", "limit": 4},
+]
+
 # Country / region metadata used by the dashboard and by the next universe
 # expansion. "OTHERS" is intentionally separate from US and Indonesia so sector
 # cards can eventually show ID / US / Others without double-counting.
@@ -915,11 +936,6 @@ REALTIME_PROXY_URL = os.getenv("REALTIME_PROXY_URL", "").rstrip("/")
 REALTIME_STREAM_URL = os.getenv("REALTIME_STREAM_URL", "")
 IDX_FAST_QUOTE_URL = os.getenv("IDX_FAST_QUOTE_URL", "").rstrip("/")
 
-# Spotify now-playing (one-time refresh token → access token each run → current track).
-SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID", "")
-SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET", "")
-SPOTIFY_REFRESH_TOKEN = os.getenv("SPOTIFY_REFRESH_TOKEN", "")
-
 # Trending — StockTwits (finance social) + Google Trends daily RSS (no keys).
 STOCKTWITS_TRENDING = "https://api.stocktwits.com/api/2/trending/symbols.json"
 GOOGLE_TRENDS_RSS = "https://trends.google.com/trending/rss?geo="
@@ -952,27 +968,6 @@ GCAL_ICS_URL = os.getenv("GCAL_ICS_URL", "")
 NOTE_URL = os.getenv("COCKPIT_NOTE_URL", "")
 FALLBACK_NOTE = ("Execution over optimization today. Finalize the fund telemetry "
                  "baseline scripts before the pre-market sync loops execute.")
-
-# ---------------------------------------------------------------- soundtrack
-# The orchestrator maps (weather + market state) -> a Spotify focus playlist.
-SPOTIFY_PLAYLISTS = {
-    "storm_focus": {
-        "track_name": "Rain & Deep Focus",
-        "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX8ymr6UES7vc?utm_source=generator",
-    },
-    "calm_focus": {
-        "track_name": "Focus Ambient & Lo-Fi Selection",
-        "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0S6bV?utm_source=generator",
-    },
-    "volatile_markets": {
-        "track_name": "Instrumental Concentration (High-Volatility Desk)",
-        "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX3PFzdbtx1Us?utm_source=generator",
-    },
-    "evening_wind_down": {
-        "track_name": "Evening Jazz & Wind-Down",
-        "embed_url": "https://open.spotify.com/embed/playlist/37i9dQZF1DX4wta20PHgwo?utm_source=generator",
-    },
-}
 
 # ---------------------------------------------------------------- verse rotation
 VERSES = [

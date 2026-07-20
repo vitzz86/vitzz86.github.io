@@ -22,7 +22,9 @@ market state, provider/source, score mode, confidence, and data warnings when
 material. Never estimate missing fundamentals. News without a stored summary is
 headline-only evidence. A stored video summary is Cockpit synthesis, not a full
 transcript, unless the result explicitly says otherwise. Prefer source links and
-exact-ticker evidence over broad thematic matches.
+exact-ticker evidence over broad thematic matches. Distinguish provider facts,
+deterministic Cockpit calculations, attributed publisher opinions, and AI
+inference. Broker research is evidence, not a personalized recommendation.
 """.strip()
 
 service = CockpitService()
@@ -183,6 +185,27 @@ def search_knowledge_hub(category: str = "all", query: str = "", limit: int = 20
 
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
+def search_research(
+    query: str = "", category: str = "", geography: str = "", ticker: str = "",
+    publisher: str = "", open_only: bool = False, limit: int = 20,
+) -> dict:
+    """Search source-linked broker, institutional, macro, credit, public-market, and private-market research."""
+    return service.search_research(query, category, geography, ticker, publisher, open_only, limit)
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def get_research_detail(id_or_url_or_title: str) -> dict:
+    """Get one research record with publisher, evidence basis, access status, and original source links."""
+    return service.get_research(id_or_url_or_title)
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def get_company_evidence(ticker: str, market: str = "id", window_days: int = 7) -> dict:
+    """Assemble a ticker's quote, score, chart, news, videos, and source-linked research for AI analysis."""
+    return service.company_evidence(ticker, market, window_days)
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def get_daily_brief() -> dict:
     """Get sentiment, synthesis, key themes, Must Read, Must Watch, and quality audit."""
     return service.daily_brief()
@@ -216,7 +239,7 @@ def get_ipo_radar(view: str = "scheduled", market: str = "all", limit: int = 25)
 def get_intelligence_brief(
     topic: str = "", ticker: str = "", sector: str = "", market: str = "all", window_days: int = 3,
 ) -> dict:
-    """Assemble grounded market data, sentiment, news, videos, macro analysis, and alerts for one question."""
+    """Assemble grounded market data, sentiment, news, videos, research, macro analysis, and alerts for one question."""
     return service.intelligence_brief(topic, ticker, sector, market, window_days)
 
 
@@ -247,7 +270,8 @@ def market_intelligence_question(question: str, market: str = "Indonesia") -> st
     return (
         "Answer this market question using Project Cockpit tools: %s\n"
         "Primary market: %s. Start with cockpit_status, then use exact asset/sector tools and "
-        "get_intelligence_brief. Cite news and video URLs. Distinguish facts, Cockpit synthesis, "
+        "get_intelligence_brief. For a ticker, call get_company_evidence. Cite news, video, and "
+        "research URLs. Distinguish provider facts, Cockpit calculations, publisher opinions, "
         "and your inference. State timestamp, market status, data quality, and missing fields. "
         "Do not invent fundamentals, targets, transcripts, or causal claims." % (question, market)
     )

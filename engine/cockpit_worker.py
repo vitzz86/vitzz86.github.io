@@ -24,7 +24,7 @@ from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (daily_brief, enterprise_osint, env_context, ipos,  # noqa: E402
                    macro_alerts, market_telemetry, news_router, podcasts,
-                   sectors, spotify, trending, universe, videos)
+                   research, sectors, trending, universe, videos)
 
 
 # ---------------------------------------------------------------- LLM access
@@ -379,6 +379,7 @@ REQUIRED_SHAPE = {
     "daily_brief": dict,
     "intelligence_health": dict,
     "ipo": dict,
+    "research": dict,
     "note_of_the_day": str,
 }
 
@@ -442,6 +443,9 @@ def _validate_intelligence(payload: dict) -> None:
         for region in ("indonesia", "us"):
             _expect(isinstance(block.get(region), str) and block.get(region).strip(),
                     f"ipo.synthesis.{view}.{region} missing")
+    research_payload = payload.get("research") or {}
+    _expect(isinstance(research_payload.get("reports"), list), "research.reports missing")
+    _expect(isinstance(research_payload.get("health"), dict), "research.health missing")
 
 
 def validate(payload: dict) -> None:
@@ -449,15 +453,12 @@ def validate(payload: dict) -> None:
         if not isinstance(payload.get(key), typ):
             raise ValueError(f"contract violation: '{key}' missing or wrong type")
     op = payload["opening"]
-    for key in ("greeting", "focus_state", "weather", "verse_of_the_day", "ambient_soundtrack"):
+    for key in ("greeting", "focus_state", "weather", "verse_of_the_day"):
         if key not in op:
             raise ValueError(f"contract violation: opening.{key} missing")
     for key in ("bsd", "jakarta", "insight"):
         if not isinstance(op["weather"].get(key), str):
             raise ValueError(f"contract violation: opening.weather.{key}")
-    for key in ("track_name", "embed_url"):
-        if not isinstance(op["ambient_soundtrack"].get(key), str):
-            raise ValueError(f"contract violation: ambient_soundtrack.{key}")
     iq = payload["intelligence_quadrants"]
     for key in ("market", "economic", "tech_ai", "political"):
         arr = iq.get(key)
@@ -487,9 +488,9 @@ def validate(payload: dict) -> None:
 
 def compile_payload(state: dict) -> tuple[dict, dict, dict]:
     wx = env_context.weather()
-    rainy = wx.pop("_rainy", False)
+    wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
-    previous_videos, previous_brief, previous_sectors, previous_ipo = [], None, [], {}
+    previous_videos, previous_brief, previous_sectors, previous_ipo, previous_research = [], None, [], {}, {}
     previous_score_map = _load_previous_scores()
     previous_chart_map = _load_previous_charts()
     try:
@@ -500,6 +501,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
             previous_videos = _prev.get("videos", [])
             previous_brief = _prev.get("daily_brief")
             previous_ipo = _prev.get("ipo") or {}
+            previous_research = _prev.get("research") or {}
             previous_sectors = _prev.get("sectors", [])
             previous_sectors = _hydrate_previous_sector_scores(previous_sectors, previous_score_map)
             previous_sectors = _hydrate_previous_sector_charts(previous_sectors, previous_chart_map)
@@ -521,6 +523,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         state["telemetry"], sec, news["wire"], vids,
         state.get("signals", ""), summarize=summarize)
     ipo = ipos.collect(sec, previous=previous_ipo, news_wire=news["wire"], summarize=summarize)
+    research_library = research.collect(sec, previous=previous_research)
 
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -529,8 +532,6 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
             "focus_state": env_context.focus_state(),
             "weather": wx,
             "verse_of_the_day": env_context.verse_of_the_day(),
-            "ambient_soundtrack": env_context.ambient_soundtrack(rainy, state["anomaly"]),
-            "now_playing": spotify.now_playing(),
         },
         "telemetry": state["telemetry"],
         "anomaly": {"active": state["anomaly"], "desc": state["anomaly_desc"]},
@@ -554,6 +555,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         "macro_analysis": ma["macro_analysis"],
         "alerts": ma["alerts"],
         "ipo": ipo,
+        "research": research_library,
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "coverage_universe": _coverage_universe_summary(sec),
@@ -565,7 +567,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         },
         "note_of_the_day": env_context.note_of_the_day(previous_note),
         "generated_by": ("LangGraph pipeline · DeepSeek · TradingView IDX / yfinance / "
-                         "Google News / Spotify / StockTwits · GitHub Actions cron"),
+                         "Google News / broker research / StockTwits · GitHub Actions cron"),
     }
     validate(payload)
     scores_payload = _extract_score_payload(payload)
