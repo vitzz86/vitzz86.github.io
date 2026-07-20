@@ -1,0 +1,18 @@
+name = "project-cockpit-mcp"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+COCKPIT_DATA_BASE_URL = "https://vitzz86.github.io"
+COCKPIT_DASHBOARD_URL = "https://vitzz86.github.io/cockpit.html"
+
+[[services]]
+binding = "IDX_QUOTES"
+service = "project-cockpit-idx-quotes"
+
+[observability]
+enabled = true
+
+[placement]
+mode = "smart"

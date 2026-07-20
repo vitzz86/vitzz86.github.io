@@ -1,0 +1,22 @@
+{
+  "name": "project-cockpit-remote-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --port 8791",
+    "start": "wrangler dev --port 8791",
+    "smoke": "node smoke-test.mjs",
+    "type-check": "node --check src/index.js && node --check src/service.js && node --check smoke-test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "agents": "^0.17.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "wrangler": "^4.105.0"
+  }
+}

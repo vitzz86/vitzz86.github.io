@@ -4,7 +4,26 @@ Project Cockpit supports both local `stdio` and remote Streamable HTTP. The
 remote endpoint is `/mcp`; `/health` reports the payload timestamp and contract
 source without exposing the payload.
 
-## Deploy the container
+## Recommended: deploy the Cloudflare Worker
+
+The production remote endpoint now lives in `cockpit-mcp-worker/`. It is the
+recommended deployment because it runs natively on Cloudflare Workers, reads
+the live GitHub Pages contracts, and overlays the existing IDX fast-quote
+gateway without requiring a container host.
+
+```bash
+cd cockpit-mcp-worker
+npm install
+npm run dev
+npm run smoke
+npm run deploy
+```
+
+The deployed endpoint is
+`https://project-cockpit-mcp.samudravito4.workers.dev/mcp`. See
+`cockpit-mcp-worker/README.md` for client configuration and security behavior.
+
+## Alternative: deploy the Python container
 
 Build from the repository root:
 
@@ -41,14 +60,14 @@ For Claude web or Claude Desktop remote connectors, add this URL in **Settings
 > Connectors**:
 
 ```text
-https://YOUR-MCP-HOST/mcp
+https://project-cockpit-mcp.samudravito4.workers.dev/mcp
 ```
 
 Choose no authentication for an authless deployment. For Claude Code with a
 bearer-protected endpoint:
 
 ```bash
-claude mcp add --transport http project-cockpit https://YOUR-MCP-HOST/mcp \
+claude mcp add --transport http project-cockpit https://project-cockpit-mcp.samudravito4.workers.dev/mcp \
   --header "Authorization: Bearer YOUR_TOKEN"
 ```
 
@@ -61,7 +80,7 @@ ChatGPT uses a remote HTTPS MCP endpoint rather than the local `stdio` process.
 Enable developer mode, create a custom app/connector, and enter:
 
 ```text
-https://YOUR-MCP-HOST/mcp
+https://project-cockpit-mcp.samudravito4.workers.dev/mcp
 ```
 
 Choose no authentication for a public, read-only deployment. If the endpoint is
@@ -90,5 +109,6 @@ MCP settings and start a new task after changing the server definition.
 - Set the exact public hostname in `COCKPIT_MCP_ALLOWED_HOSTS`.
 - Use platform rate limiting and request logs.
 - Use OAuth for private multi-user deployments.
-- Monitor `/health` and the `contract_health.last_fetch_errors` field.
-- Run `smoke_test.py` for `stdio` and `http_smoke_test.py` for the hosted URL.
+- Monitor `/health`, including payload freshness and `idx_fast_quotes`.
+- Run `smoke_test.py` for `stdio`, `http_smoke_test.py` for the Python HTTP
+  server, and `cockpit-mcp-worker/smoke-test.mjs` for the Worker endpoint.
