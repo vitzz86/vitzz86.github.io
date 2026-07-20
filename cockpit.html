@@ -2539,8 +2539,9 @@ function priceRangeBox(c){
   const tx=n=>{const p=safePos(n);return p<16?'0%':p>84?'-100%':'-50%';};
   const pin=n=>{const p=safePos(n);return p<16?'12px':p>84?'calc(100% - 12px)':'50%';};
   const est=!!risk.estimated_dates;
-  const targetLabel=target?'Screening fair value':'Target pending';
-  return `<div class="pricebox"><div class="ph">Price Targets</div><div class="psub">6M range · current vs screening fair value</div>`+
+  const analyst=v.valuation_model==='tradingview_analyst_consensus';
+  const targetLabel=target?(analyst?'Analyst median target':'Screening fair value'):'No validated target';
+  return `<div class="pricebox"><div class="ph">Price Range & Target</div><div class="psub">Observed 6M range · current price${target?` · ${esc(targetLabel.toLowerCase())}`:' · no target inferred'}</div>`+
     `<div class="targetchart"><div class="targetrail"></div>`+
     `<div class="axislabel low"><b>${esc(valuationPrice(lo,cur))}</b><span>Low</span></div>`+
     `<div class="axislabel high"><b>${esc(valuationPrice(hi,cur))}</b><span>High</span></div>`+
@@ -2548,7 +2549,7 @@ function priceRangeBox(c){
     `<div class="tcall current" style="--x:${safePos(current).toFixed(1)}%;--tx:${tx(current)};--pin:${pin(current)}"><b>${esc(valuationPrice(current,cur))}</b><span>Current</span></div></div>`+
     `<div class="pricegrid"><div class="pg"><div class="k">6M Bottom</div><div class="v">${esc(valuationPrice(risk.bottom_price,cur))}</div><div class="d">${esc(tsDay(risk.bottom_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Current</div><div class="v">${esc(valuationPrice(current,cur))}</div><div class="d">latest quote</div></div>`+
-    `<div class="pg"><div class="k">Screening Fair Value</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${stale?'refreshing currency-safe target':(target?'base valuation':'n/a')}</div></div>`+
+    `<div class="pg"><div class="k">${esc(analyst?'Analyst Median Target':'Screening Fair Value')}</div><div class="v">${esc(valuationPrice(target,cur))}</div><div class="d">${stale?'refreshing currency-safe target':(target?(analyst?'TradingView consensus reference':'base valuation'):'not available')}</div></div>`+
     `<div class="pg"><div class="k">6M Peak</div><div class="v">${esc(valuationPrice(risk.peak_price,cur))}</div><div class="d">${esc(tsDay(risk.peak_ts,est))}</div></div>`+
     `<div class="pg"><div class="k">Max Drawdown</div><div class="v">${sign(risk.max_drawdown_pct||0)}</div><div class="d">${esc(tsDay(risk.max_drawdown_peak_ts,est))} → ${esc(tsDay(risk.max_drawdown_trough_ts,est))}</div></div></div></div>`;
 }
@@ -2578,6 +2579,16 @@ function riskBenchmarkBox(sc){
 function valuationBox(sc,c=null){
   if(staleCurrencyMismatch(c,sc))return `<div class="valuationbox"><div class="vh">VALUATION ESTIMATE</div><div class="vn">Temporarily hidden for this cached IDX payload because Yahoo mixed IDR quote prices with USD financial fields. The next bake recomputes this in IDR using USD/IDR conversion where needed.</div></div>`;
   if(sc.mode==='idx_screen'){
+    const v=sc.valuation||{};
+    if(v.valuation_model==='tradingview_analyst_consensus'){
+      const cur=v.currency||sc.currency||'IDR';
+      return `<div class="valuationbox"><div class="vh">ANALYST CONSENSUS · TRADINGVIEW</div>`+
+        `<div class="vp"><span class="price">${esc(valuationPrice(v.target_price,cur))}</span><span class="status" style="color:${COLP(v.upside_pct||0)}">Median target · ${sign(v.upside_pct||0)} vs current</span></div>`+
+        `<div class="valuerange"><div class="vr"><div class="k">Low</div><div class="v">${esc(valuationPrice(v.target_low,cur))}</div></div>`+
+        `<div class="vr"><div class="k">Median</div><div class="v">${esc(valuationPrice(v.target_price,cur))}</div></div>`+
+        `<div class="vr"><div class="k">High</div><div class="v">${esc(valuationPrice(v.target_high,cur))}</div></div></div>`+
+        `<div class="vn">This is external analyst consensus, not the dashboard's intrinsic-value model or investment advice.</div></div>`;
+    }
     const fallback=/absent from TradingView/i.test(sc.source||'');
     return `<div class="valuationbox"><div class="vh">SCREENING FAIR VALUE</div><div class="vn">${fallback?'Not shown because this ticker is absent from the TradingView IDX scanner and only has a low-confidence fallback quote.':'Not shown for broad IDX screen rows. This score uses TradingView market data for coverage, liquidity, momentum, technicals, volatility, and risk.'} Full P/E, ROE, FCF, and fair-value valuation are reserved for curated tickers where provider fundamentals are available.</div></div>`;
   }
@@ -2653,7 +2664,7 @@ function lensDetail(c,type){
   return `<div class="lenscopy"><p>Pick an investor style tab above. Valuation target, buy-below, fair range, and sensitivity are shown separately below the spider chart.</p></div>`;
 }
 const SCORE_ANALYSIS_TABS=[
-  {key:'price',name:'Price Targets',subtitle:'6M range, current price, and screening fair value'},
+  {key:'price',name:'Price Range & Target',subtitle:'observed 6M range, current price, and screening fair value when supported'},
   {key:'risk',name:'Risk',subtitle:'risk-free benchmark, volatility, drawdown, Sharpe, and Sortino'},
   {key:'fair',name:'Fair Value',subtitle:'valuation method, fair range, scenarios, and scorecard'},
   {key:'lens',name:'Investor Standards',subtitle:'Buffett/Munger, Ackman, and Dalio-style checks'},
@@ -2661,11 +2672,18 @@ const SCORE_ANALYSIS_TABS=[
 let scoreAnalysisPage=0;
 function scoreAnalysisContent(c,key){
   const sc=invScore(c);
-  if(key==='risk')return riskBenchmarkBox(sc)||`<div class="riskbox"><div class="rh">RISK BENCHMARK</div><div class="scoremeta">Risk-adjusted data unavailable this cycle.</div></div>`;
+  if(key==='risk'){
+    const observed=((c.chart_quality||{})['6M'])==='historical_close';
+    const sessions=(c.spark||[]).length;
+    const why=observed&&sessions<12
+      ?`Risk ratios require at least 12 observed daily closes; this newly listed ticker currently has ${sessions}.`
+      :'Observed daily price history is unavailable this cycle, so risk ratios are not estimated.';
+    return riskBenchmarkBox(sc)||`<div class="riskbox"><div class="rh">RISK BENCHMARK</div><div class="scoremeta">${esc(why)}</div></div>`;
+  }
   if(key==='fair')return valuationBox(sc,c);
   if(key==='lens'&&sc.mode==='idx_screen')return `<div class="lensbox"><div class="h">IDX SCREEN METHOD · TRADINGVIEW DATA</div><div id="lensContent">${lensDetail(c,'idx_screen')}</div></div>`;
   if(key==='lens')return `<div class="lensbox"><div class="h">INVESTOR STANDARDS · ACTUAL METRICS</div><div class="wtabs" id="lensTabs"><span class="wtab on" data-lens="buffett">Buffett/Munger</span><span class="wtab" data-lens="ackman">Ackman</span><span class="wtab" data-lens="dalio">Dalio</span></div><div id="lensContent">${lensDetail(c,'buffett')}</div></div>`;
-  return priceRangeBox(c)||`<div class="pricebox"><div class="ph">Price Targets</div><div class="scoremeta">Price-range data unavailable this cycle.</div></div>`;
+  return priceRangeBox(c)||`<div class="pricebox"><div class="ph">Price Range & Target</div><div class="scoremeta">Observed daily price history is unavailable this cycle. No historical range or target is inferred.</div></div>`;
 }
 function scoreAnalysisHTML(c,page=0){
   const idx=Math.max(0,Math.min(page,SCORE_ANALYSIS_TABS.length-1));
@@ -2688,12 +2706,15 @@ function scoreWarnings(sc){
 }
 function openScoreModal(c,s){
   const sc=invScore(c);
-  if(c&&c.score_ref&&!sc._full_loaded){
+  const needsScore=!!(c&&c.score_ref&&!sc._full_loaded);
+  const needsChart=!!(c&&c.chart_ref&&!c._chart_loaded&&!c._chart_loading);
+  if(needsScore||needsChart){
     $('scoreDetail').innerHTML=`<div class="scoremodalhead"><div class="scorebig" style="color:${scoreColor(sc)}">${sc.score==null?'--':Math.round(sc.score)}</div>`+
-      `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div><div class="meta">Loading full score detail…</div></div></div>`+
-      `<div class="scoremeta" style="padding:26px 0;">Fetching valuation, risk, and investor-standard detail from scores.json.</div>`;
+      `<div><div class="name">${flagOf(c)} ${esc(c.ticker)} · ${esc(c.name)}</div><div class="meta">Loading analysis detail…</div></div></div>`+
+      `<div class="scoremeta" style="padding:26px 0;">Fetching score detail and observed price history.</div>`;
     $('scoreModal').classList.add('open');
-    hydrateScore(c).then(()=>renderScoreModal(c,s));
+    Promise.all([needsScore?hydrateScore(c):Promise.resolve(c),needsChart?hydrateChart(c):Promise.resolve(c)])
+      .then(()=>renderScoreModal(c,s));
     return;
   }
   renderScoreModal(c,s);

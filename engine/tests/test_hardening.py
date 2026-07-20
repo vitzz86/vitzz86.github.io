@@ -1,7 +1,7 @@
 import time
 import unittest
 
-from tools import fundamentals, idx_membership, ipos, news_router, universe
+from tools import fundamentals, idx_membership, ipos, news_router, sectors, universe
 
 
 class FinancialGuardrailTests(unittest.TestCase):
@@ -75,6 +75,45 @@ class FinancialGuardrailTests(unittest.TestCase):
             "chart_quality": {"6M": "historical_close"},
         }
         self.assertIn("sharpe", fundamentals._risk_stats(row, "equity"))
+
+    def test_idx_history_overlay_preserves_tradingview_quote(self):
+        now = int(time.time())
+        prices = {"TEST.JK": {
+            "value": 1234,
+            "delta_pct": 2.5,
+            "chart_quality": {"24h": "real_intraday", "6M": "performance_checkpoint"},
+        }}
+        rows = [{
+            "ticker": "TEST", "source_symbol": "TEST.JK", "country": "ID",
+            "source_provider": "tradingview", "market_cap_value": 1_000_000,
+        }]
+        previous = [{"constituents": [{
+            "ticker": "TEST", "source_symbol": "TEST.JK",
+            "spark": [100 + i for i in range(30)],
+            "spark_ts": [now - (29 - i) * 86400 for i in range(30)],
+            "history_asof": now,
+            "price_history_quality": "yahoo_historical_close",
+            "chart_quality": {"6M": "historical_close"},
+        }]}]
+        sectors._idx_daily_history_overlay(prices, rows, previous)
+        self.assertEqual(prices["TEST.JK"]["value"], 1234)
+        self.assertEqual(prices["TEST.JK"]["delta_pct"], 2.5)
+        self.assertEqual(prices["TEST.JK"]["chart_quality"]["24h"], "real_intraday")
+        self.assertEqual(prices["TEST.JK"]["chart_quality"]["6M"], "historical_close")
+        self.assertEqual(len(prices["TEST.JK"]["spark"]), 30)
+
+    def test_idx_screen_uses_valid_analyst_consensus_target(self):
+        score = fundamentals._score_idx_screen({
+            "ticker": "TEST", "country": "ID", "value": 1_000,
+            "market_cap_value": 10_000_000_000_000, "volume": 1_000_000,
+            "avg_volume_10d": 1_200_000, "relative_volume_10d": 1.1,
+            "analyst_target_low": 1_100, "analyst_target_median": 1_300,
+            "analyst_target_high": 1_500,
+        })
+        valuation = score.get("valuation") or {}
+        self.assertEqual(valuation.get("valuation_model"), "tradingview_analyst_consensus")
+        self.assertEqual(valuation.get("target_price"), 1_300)
+        self.assertEqual(valuation.get("upside_pct"), 30.0)
 
     def test_peer_pe_is_not_a_primary_target_anchor(self):
         metrics = {

@@ -14,12 +14,16 @@ import time
 import urllib.parse
 import urllib.request
 
-CHART = "https://query1.finance.yahoo.com/v8/finance/chart/"
+CHART_HOSTS = (
+    "https://query2.finance.yahoo.com/v8/finance/chart/",
+    "https://query1.finance.yahoo.com/v8/finance/chart/",
+)
 
 
 def _chart(sym: str, rng: str, interval: str, attempts: int = 3, timeout: int = 20) -> dict | None:
-    url = f"{CHART}{urllib.parse.quote(sym)}?range={rng}&interval={interval}"
     for attempt in range(attempts):
+        host = CHART_HOSTS[attempt % len(CHART_HOSTS)]
+        url = f"{host}{urllib.parse.quote(sym)}?range={rng}&interval={interval}"
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -167,6 +171,28 @@ def _one_intraday_fast(sym: str) -> dict | None:
     return _lite_from_day(_chart(sym, "1d", "30m", attempts=1, timeout=8))
 
 
+def _one_history_fast(sym: str) -> dict | None:
+    """Six-month observed daily closes without changing the live quote source."""
+    six = _chart(sym, "6mo", "1d", attempts=2, timeout=12)
+    if not six:
+        return None
+    series = _series(six)
+    if len(series["spark"]) < 2:
+        return None
+    return {
+        "spark": series["spark"][-130:],
+        "spark_ts": series["spark_ts"][-130:],
+        "history_asof": int(time.time()),
+        "price_history_quality": "yahoo_historical_close",
+        "chart_quality": {
+            "1W": "historical_close",
+            "1M": "historical_close",
+            "3M": "historical_close",
+            "6M": "historical_close",
+        },
+    }
+
+
 def fetch_lite(symbols: list, workers: int = 10) -> dict:
     """Fast price-only pass for broad heatmap rows.
 
@@ -198,4 +224,18 @@ def fetch_intraday(symbols: list, workers: int = 16) -> dict:
     except Exception as e:  # noqa: BLE001
         print(f"[yquote] intraday rotation pool failed: {e}")
     print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo intraday rotation")
+    return out
+
+
+def fetch_history(symbols: list, workers: int = 20) -> dict:
+    """Fetch observed closes only, leaving TradingView-owned quote fields intact."""
+    out, uniq = {}, [s for s in dict.fromkeys(symbols) if s]
+    try:
+        with cf.ThreadPoolExecutor(max_workers=workers) as ex:
+            for sym, row in zip(uniq, ex.map(_one_history_fast, uniq)):
+                if row:
+                    out[sym] = row
+    except Exception as e:  # noqa: BLE001
+        print(f"[yquote] history pool failed: {e}")
+    print(f"[yquote] {len(out)}/{len(uniq)} symbols resolved via Yahoo daily history")
     return out

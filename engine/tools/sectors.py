@@ -174,6 +174,93 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
     print(f"[sectors] IDX intraday routes: {resolved}/{len(rows)} cached; {len(fetched)}/{len(selected)} refreshed")
 
 
+def _idx_daily_history_overlay(prices: dict, rows: list[dict], previous_sectors: list | None) -> None:
+    """Attach observed daily closes while preserving TradingView IDX live fields.
+
+    TradingView's scanner supplies the current market snapshot and performance
+    checkpoints, but not a daily candle series. Risk statistics use Yahoo's
+    observed closes as a separately labelled history source. Cached closes stay
+    in place when a refresh fails so a temporary upstream issue cannot erase
+    valid risk coverage.
+    """
+    limit = max(0, int(getattr(settings, "IDX_DAILY_HISTORY_LIMIT", 0)))
+    if not limit or not rows:
+        return
+    previous = _previous_rows(previous_sectors)
+    max_age = float(getattr(settings, "IDX_DAILY_HISTORY_CACHE_HOURS", 20))
+
+    def prior(row: dict) -> dict:
+        return previous.get(row.get("source_symbol")) or previous.get(row.get("ticker")) or {}
+
+    def is_history(row: dict) -> bool:
+        quality = (row.get("chart_quality") or {}).get("6M")
+        return quality == "historical_close" and len(row.get("spark") or []) >= 2
+
+    def history_fresh(row: dict) -> bool:
+        if not is_history(row):
+            return False
+        try:
+            asof = float(row.get("history_asof") or row.get("chart_asof") or 0)
+            return bool(asof) and (time.time() - asof) <= max_age * 3600
+        except Exception:  # noqa: BLE001
+            return False
+
+    def apply_history(target: dict, source: dict) -> None:
+        target["spark"] = list(source.get("spark") or [])[-130:]
+        target["spark_ts"] = list(source.get("spark_ts") or [])[-130:]
+        target["history_asof"] = source.get("history_asof") or source.get("chart_asof")
+        target["price_history_quality"] = (
+            source.get("price_history_quality") or "yahoo_historical_close"
+        )
+        quality = dict(target.get("chart_quality") or {})
+        quality.update({
+            "1W": "historical_close",
+            "1M": "historical_close",
+            "3M": "historical_close",
+            "6M": "historical_close",
+        })
+        target["chart_quality"] = quality
+
+    candidates = []
+    cached_count = 0
+    for row in rows:
+        cached = prior(row)
+        if is_history(cached):
+            apply_history(prices.setdefault(row.get("source_symbol"), {}), cached)
+            cached_count += 1
+        if not history_fresh(cached):
+            candidates.append(row)
+
+    candidates.sort(key=lambda row: (
+        0 if not is_history(prior(row)) else 1,
+        -_row_cap(row),
+        row.get("ticker") or "",
+    ))
+    selected = candidates[:limit]
+    fetched = {}
+    if selected:
+        try:
+            from tools import yquote
+            fetched = yquote.fetch_history(
+                [row.get("source_symbol") for row in selected], workers=20
+            )
+        except Exception as e:  # noqa: BLE001
+            print(f"[sectors] IDX daily-history refresh failed: {e}")
+    for row in selected:
+        history = fetched.get(row.get("source_symbol"))
+        if history:
+            apply_history(prices.setdefault(row.get("source_symbol"), {}), history)
+    covered = sum(
+        1 for row in rows
+        if ((prices.get(row.get("source_symbol")) or {}).get("chart_quality") or {}).get("6M")
+        == "historical_close"
+    )
+    print(
+        f"[sectors] IDX daily history: {covered}/{len(rows)} covered; "
+        f"{len(fetched)}/{len(selected)} refreshed; {cached_count} cache candidates"
+    )
+
+
 def _broad_chart_priority(row: dict) -> tuple:
     # Other-region rows are deliberate macro benchmarks and have a much smaller
     # universe than US names; protect them from being starved by S&P/Nasdaq gaps.
@@ -284,6 +371,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
     if idx_prices:
         prices.update(idx_prices)
         idx_rows = [r for r in all_rows if _uses_tradingview_idx(r)]
+        _idx_daily_history_overlay(prices, idx_rows, previous_sectors)
         _idx_intraday_overlay(prices, idx_rows, previous_sectors)
     crypto_symbols = [row["source_symbol"] for rows in sector_rows.values() for row in rows
                       if row["country"] == "CR" and row["source_symbol"] in universe.CRYPTO_IDS]
@@ -325,6 +413,9 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "turnover": (p or {}).get("turnover", 0.0),
                 "volume": (p or {}).get("volume", 0.0),
                 "market_cap_value": (p or {}).get("market_cap_value") or base.get("market_cap_value"),
+                "analyst_target_low": _pick_price_field(p or {}, base, "analyst_target_low"),
+                "analyst_target_median": _pick_price_field(p or {}, base, "analyst_target_median"),
+                "analyst_target_high": _pick_price_field(p or {}, base, "analyst_target_high"),
                 "volume_24h": (p or {}).get("volume_24h"),
                 "state": "open" if (p or {}).get("open") else "closed",
                 "mkt_start": (p or {}).get("mkt_start"),
@@ -347,6 +438,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "price_history_quality": _pick_price_field(p or {}, base, "price_history_quality"),
                 "chart_quality": _pick_price_field(p or {}, base, "chart_quality"),
                 "chart_asof": _pick_price_field(p or {}, base, "chart_asof"),
+                "history_asof": _pick_price_field(p or {}, base, "history_asof"),
                 "quote_asof": (_pick_price_field(p or {}, base, "quote_asof")
                                or _pick_price_field(p or {}, base, "chart_asof")
                                or int(time.time())),

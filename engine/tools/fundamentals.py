@@ -880,6 +880,9 @@ def _score_idx_screen(row: dict, risk_context: dict | None = None) -> dict:
         "relative_volume_10d": rel_vol,
         "recommend_all": rec,
         "rsi": rsi,
+        "analyst_target_low": _num(row.get("analyst_target_low")),
+        "analyst_target_median": _num(row.get("analyst_target_median")),
+        "analyst_target_high": _num(row.get("analyst_target_high")),
         "perf_1w": perf_1w,
         "perf_3m": perf_3m,
         "volatility_1m": vol_1m,
@@ -915,6 +918,32 @@ def _score_idx_screen(row: dict, risk_context: dict | None = None) -> dict:
         ])},
     ]
     score = _pack_score("idx_screen", axes, metrics, perf_1m, perf_6m, vol_1m or vol_1w)
+    target_low = _num(metrics.get("analyst_target_low"))
+    target = _num(metrics.get("analyst_target_median"))
+    target_high = _num(metrics.get("analyst_target_high"))
+    valid_target = (
+        current is not None and current > 0 and target is not None and target > 0
+        and (target_low is None or target_low > 0)
+        and (target_high is None or target_high > 0)
+        and (target_low is None or target_low <= target)
+        and (target_high is None or target <= target_high)
+        and 0.1 <= target / current <= 10
+    )
+    if valid_target:
+        upside = round((target / current - 1) * 100, 2)
+        score["valuation"] = {
+            "valuation_model": "tradingview_analyst_consensus",
+            "valuation_confidence": "Reference",
+            "currency": "IDR",
+            "current_price": current,
+            "target_price": round(target, 2),
+            "target_low": round(target_low, 2) if target_low is not None else None,
+            "target_high": round(target_high, 2) if target_high is not None else None,
+            "upside_pct": upside,
+            "status": "Analyst consensus",
+            "signal": "Consensus upside" if upside > 10 else "Consensus downside" if upside < -10 else "Near consensus",
+            "source": "TradingView analyst consensus",
+        }
     score["screen_grade"] = True
     score["source"] = "TradingView IDX screen"
     score["note"] = (
@@ -1602,6 +1631,9 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         _metric("TradingView Rating", _fmt_metric_value(metrics.get("recommend_all"), "ratio"), "ratio",
                 period="-1 sell to +1 buy"),
         _metric("RSI", _fmt_metric_value(metrics.get("rsi"), "number"), "number", period="14-period technical"),
+        _metric("Analyst Target Low", _fmt_metric_value(metrics.get("analyst_target_low"), "number"), "number", currency, "TradingView analyst consensus"),
+        _metric("Analyst Target Median", _fmt_metric_value(metrics.get("analyst_target_median"), "number"), "number", currency, "TradingView analyst consensus"),
+        _metric("Analyst Target High", _fmt_metric_value(metrics.get("analyst_target_high"), "number"), "number", currency, "TradingView analyst consensus"),
         _metric("24h Volume", _fmt_metric_value(metrics.get("volume_24h"), "money"), "money", currency, "24H"),
         _metric("Liquidity", _fmt_metric_value(metrics.get("liquidity_pct"), "percent"), "percent", period="24H volume / market cap"),
         _metric("1W Return", _fmt_metric_value(metrics.get("perf_1w"), "percent"), "percent", period="TradingView 1W performance"),
