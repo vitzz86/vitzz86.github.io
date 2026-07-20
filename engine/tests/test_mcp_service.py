@@ -109,8 +109,10 @@ class CockpitMCPServiceTests(unittest.TestCase):
         report = {
             "id": "live-bbca", "title": "BBCA Company Update", "publisher": "Test Broker",
             "published": "2026-07-20", "published_ts": 1784505600, "priority": "Live",
-            "category": "Public Markets", "subcategory": "Company / Equity",
-            "geography": "Indonesia", "ticker_tags": ["BBCA"], "access": "Open",
+            "category": "Equity Research", "report_type": "Equity Research",
+            "category_detail": "Public Markets", "subcategory": "Company / Equity",
+            "geography": "Indonesia", "geography_detail": "Indonesia / ASEAN",
+            "ticker_tags": ["BBCA"], "access": "Open",
             "source_url": "https://example.com/bbca", "landing_url": "https://example.com/bbca",
             "source_type": "official_discovery", "summary_basis": "publisher excerpt",
         }
@@ -122,6 +124,8 @@ class CockpitMCPServiceTests(unittest.TestCase):
             result = self.service.search_research(ticker="BBCA")
             self.assertEqual(result["total_matches"], 1)
             self.assertEqual(result["results"][0]["publisher"], "Test Broker")
+            self.assertEqual(result["results"][0]["report_type"], "Equity Research")
+            self.assertEqual(result["results"][0]["geography_detail"], "Indonesia / ASEAN")
             detail = self.service.get_research("live-bbca")
             self.assertEqual(detail["status"], "ok")
             self.assertEqual(detail["research"]["source_url"], "https://example.com/bbca")

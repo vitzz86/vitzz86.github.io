@@ -174,7 +174,9 @@ function publicResearch(item) {
   return {
     id: item.id, title: clean(item.title), publisher: clean(item.publisher),
     published: item.published || null, priority: item.priority, category: item.category,
-    subcategory: item.subcategory, geography: item.geography, coverage: clean(item.coverage),
+    report_type: item.report_type || item.category, category_detail: item.category_detail,
+    subcategory: item.subcategory, geography: item.geography, geography_detail: item.geography_detail,
+    coverage: clean(item.coverage),
     access: item.access, format: item.format, ticker_tags: item.ticker_tags || [],
     sector_tags: item.sector_tags || [], why_useful: clean(item.why_useful) || null,
     direct_url: item.direct_url || null, landing_url: item.landing_url || null,
@@ -512,7 +514,7 @@ export function createCockpitService(env) {
       let contextResearch = [];
       if (!(research.results || []).length) {
         const code = marketCode(market);
-        const geography = code === "ID" ? "Indonesia" : code === "US" ? "United States" : "";
+        const geography = code === "ID" ? "Indonesia" : code === "US" ? "Global" : "";
         const sector = asset?.status === "ok" ? asset.sector : "";
         let context = await this.research({ query: sector, geography, limit: 6 });
         if (!(context.results || []).length && geography) context = await this.research({ geography, limit: 6 });

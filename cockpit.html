@@ -592,6 +592,11 @@ footer .g{color:var(--green);}
 .researchhead{border-left:2px solid var(--cyan);padding:3px 0 3px 10px;margin:2px 0 12px;}
 .researchhead .rh{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--cyan);}
 .researchhead .rs{font-size:10px;color:var(--ink3);margin-top:4px;line-height:1.45;}
+.researchsearch{display:grid;grid-template-columns:minmax(0,1fr) 30px;gap:6px;margin-bottom:7px;}
+.researchsearch input{margin:0;min-width:0;}
+.researchclear{display:grid;place-items:center;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink3);font:16px var(--mono);cursor:pointer;}
+.researchclear:hover,.researchclear:focus-visible{color:var(--cyan);border-color:rgba(52,211,192,.45);outline:0;}
+.researchstatus{font:8px var(--mono);color:var(--ink3);margin:-1px 0 8px;line-height:1.45;}
 .researchfilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;}
 .researchfilters select{min-width:0;flex:1 1 110px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;color:var(--ink2);font:9px var(--mono);padding:6px 7px;}
 .researchcard{display:block;color:inherit;text-decoration:none;border-bottom:1px solid var(--line);padding:11px 2px;transition:background .15s;}
@@ -789,8 +794,9 @@ body{padding-bottom:40px;}
     <div class="hubpane" id="paneResearch">
       <div class="researchhead"><div class="rh">RESEARCH LIBRARY</div><div class="rs">Broker · institutional · macro · public and private markets</div></div>
       <div id="researchDigest"></div>
-      <input id="researchSearch" placeholder="search reports, publishers, tickers…" autocomplete="off">
+      <div class="researchsearch"><input id="researchSearch" type="search" placeholder="search title, publisher, topic, ticker…" autocomplete="off"><button class="researchclear" id="researchClear" type="button" title="Clear research search" aria-label="Clear research search">×</button></div>
       <div class="researchfilters"><select id="researchCategory" aria-label="Research category"></select><select id="researchGeo" aria-label="Research geography"></select><select id="researchAccess" aria-label="Research access"></select></div>
+      <div class="researchstatus" id="researchStatus"></div>
       <div id="researchList"></div>
     </div>
   </div>
@@ -1572,6 +1578,8 @@ let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
 let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null,IPO={},RESEARCH={};
 let ipoView='upcoming',ipoMarket='ALL',ipoExpanded='',IPO_ROWS=[];
 let researchQ='',researchCategory='ALL',researchGeo='ALL',researchAccess='ALL';
+const RESEARCH_TYPES=['Economics & Macro','Equity Research','Market Strategy','Fixed Income & Credit','Private Markets & Venture','Industry & Thematic'];
+const RESEARCH_REGIONS=['Global','SEA','APAC','Indonesia'];
 let MUST_WATCH={ids:new Set(),urls:new Set(),titles:new Set()},MUST_READ={urls:new Set(),titles:new Set()};
 const GEOFLAG={ID:'🇮🇩',US:'🇺🇸',GL:'🌐',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
 const CATLABEL={ALL:'All',ECONOMY:'Economy',TECH:'Tech',MARKETS_FINANCE:'Markets & Finance',CRYPTO:'Crypto'};
@@ -2020,22 +2028,28 @@ function researchOpen(item){
 }
 function researchDigestHTML(){
   const d=RESEARCH.synthesis||{},health=RESEARCH.health||{};
-  const rows=[d.indonesia?`<div class="di"><b>Indonesia / APAC</b> ${esc(d.indonesia)}</div>`:'',d.global?`<div class="di"><b>Global</b> ${esc(d.global)}</div>`:''].join('');
-  const audit=`<div class="iponote">${Number(health.report_count||0)} indexed · ${Number(health.live_count||0)} live discoveries · ${Number(health.ticker_tagged_count||0)} ticker-tagged. Source metadata only; open the original report for its full evidence and disclosures.</div>`;
+  const rows=[d.indonesia?`<div class="di"><b>Indonesia / SEA / APAC</b> ${esc(d.indonesia)}</div>`:'',d.global?`<div class="di"><b>Global</b> ${esc(d.global)}</div>`:''].join('');
+  const refreshed=RESEARCH.discovery_as_of?ago(new Date(Number(RESEARCH.discovery_as_of)*1000).toISOString()):'pending';
+  const audit=`<div class="iponote">${Number(health.report_count||0)} indexed · ${Number(health.live_count||0)} live discoveries · ${Number(health.ticker_tagged_count||0)} ticker-tagged · discovery ${esc(refreshed)} and checked by the scheduled bake every 6 hours. Source metadata only; open the original report for its full evidence and disclosures.</div>`;
   return rows?`<div class="digestbox"><div class="dh">RESEARCH COVERAGE</div>${rows}</div>${audit}`:audit;
 }
 function buildResearch(){
   const reports=RESEARCH.reports||[];
-  const categories=['ALL',...new Set(reports.map(x=>x.category).filter(Boolean))];
-  const geographies=['ALL',...new Set(reports.map(x=>x.geography).filter(Boolean))];
+  const categories=['ALL',...RESEARCH_TYPES.filter(value=>reports.some(x=>x.category===value))];
+  const geographies=['ALL',...RESEARCH_REGIONS];
+  if(!categories.includes(researchCategory))researchCategory='ALL';
+  if(!geographies.includes(researchGeo))researchGeo='ALL';
+  if(!['ALL','OPEN','GATED'].includes(researchAccess))researchAccess='ALL';
   const options=(rows,current,label)=>rows.map(v=>`<option value="${esc(v)}"${v===current?' selected':''}>${v==='ALL'?label:esc(v)}</option>`).join('');
-  $('researchCategory').innerHTML=options(categories,researchCategory,'All categories');
-  $('researchGeo').innerHTML=options(geographies,researchGeo,'All geographies');
+  $('researchCategory').innerHTML=options(categories,researchCategory,'All report types');
+  $('researchGeo').innerHTML=options(geographies,researchGeo,'All regions');
   $('researchAccess').innerHTML=options(['ALL','OPEN','GATED'],researchAccess,'All access');
   $('researchDigest').innerHTML=researchDigestHTML();
   if(!$('researchSearch').dataset.bound){
     $('researchSearch').dataset.bound='1';
-    $('researchSearch').oninput=e=>{researchQ=e.target.value.toLowerCase().trim();drawResearch();};
+    $('researchSearch').oninput=e=>{researchQ=e.target.value.trim();drawResearch();};
+    $('researchSearch').onkeydown=e=>{if(e.key==='Escape'){$('researchSearch').value='';researchQ='';drawResearch();}};
+    $('researchClear').onclick=()=>{$('researchSearch').value='';researchQ='';drawResearch();$('researchSearch').focus();};
     $('researchCategory').onchange=e=>{researchCategory=e.target.value;drawResearch();saveStateSoon();};
     $('researchGeo').onchange=e=>{researchGeo=e.target.value;drawResearch();saveStateSoon();};
     $('researchAccess').onchange=e=>{researchAccess=e.target.value;drawResearch();saveStateSoon();};
@@ -2043,21 +2057,24 @@ function buildResearch(){
   drawResearch();
 }
 function drawResearch(){
-  const reports=(RESEARCH.reports||[]).filter(item=>{
+  const allReports=RESEARCH.reports||[];
+  const queryTokens=normTitle(researchQ).split(' ').filter(Boolean);
+  const reports=allReports.filter(item=>{
     if(researchCategory!=='ALL'&&item.category!==researchCategory)return false;
     if(researchGeo!=='ALL'&&item.geography!==researchGeo)return false;
     if(researchAccess==='OPEN'&&!researchOpen(item))return false;
     if(researchAccess==='GATED'&&researchOpen(item))return false;
-    const hay=normTitle([item.title,item.publisher,item.category,item.subcategory,item.geography,item.why_useful,...(item.ticker_tags||[])].join(' '));
-    return !researchQ||hay.includes(normTitle(researchQ));
+    const hay=normTitle([item.title,item.publisher,item.category,item.subcategory,item.category_detail,item.geography,item.geography_detail,item.coverage,item.why_useful,...(item.ticker_tags||[]),...(item.sector_tags||[])].join(' '));
+    return !queryTokens.length||queryTokens.every(token=>hay.includes(token));
   });
   const priority={Essential:0,High:1,Live:2,Supplementary:3};
   reports.sort((a,b)=>(priority[a.priority]??4)-(priority[b.priority]??4)||(Date.parse(b.published)||0)-(Date.parse(a.published)||0));
   $('researchList').innerHTML=reports.slice(0,80).map(item=>{
     const url=item.source_url||item.direct_url||item.landing_url||'#';
     const ticks=(item.ticker_tags||[]).slice(0,6).map(t=>`<span class="meta-chip source">${esc(t)}</span>`).join('');
-    return `<a class="researchcard" href="${encodeURI(url)}" target="_blank" rel="noopener"><div class="researchmeta"><span class="meta-chip ${item.priority==='Essential'?'priority':''}">${esc(item.priority||'Research')}</span><span class="meta-chip industry">${esc(item.category||'Research')}</span><span class="meta-chip source">${esc(item.publisher||'Source')}</span><span class="meta-chip date">${esc(researchDate(item.published))}</span>${ticks}</div><div class="researchtitle">${esc(item.title||'Untitled report')}</div>${item.why_useful?`<div class="researchwhy">${esc(item.why_useful)}</div>`:''}<div class="researchopen">OPEN ${item.direct_url?'REPORT':'SOURCE'} ↗ · ${esc(item.summary_basis||'source metadata')}</div></a>`;
+    return `<a class="researchcard" href="${encodeURI(url)}" target="_blank" rel="noopener"><div class="researchmeta"><span class="meta-chip ${item.priority==='Essential'?'priority':''}">${esc(item.priority||'Research')}</span><span class="meta-chip industry">${esc(item.category||'Research')}</span><span class="meta-chip source">${esc(item.geography||'Global')}</span><span class="meta-chip source">${esc(item.publisher||'Source')}</span><span class="meta-chip date">${esc(researchDate(item.published))}</span>${ticks}</div><div class="researchtitle">${esc(item.title||'Untitled report')}</div>${item.why_useful?`<div class="researchwhy">${esc(item.why_useful)}</div>`:''}<div class="researchopen">OPEN ${item.direct_url?'REPORT':'SOURCE'} ↗ · ${esc(item.summary_basis||'source metadata')}</div></a>`;
   }).join('')||'<div class="researchempty">No source-linked research matches these filters.</div>';
+  $('researchStatus').textContent=`${reports.length} of ${allReports.length} reports · search filters this library instantly; new research is added by the scheduled bake`;
   if(hubPane==='research')$('wireCount').textContent=reports.length+' reports';
 }
 /* ---- footer media player: ONE YouTube player, News / Podcast queues ---- */

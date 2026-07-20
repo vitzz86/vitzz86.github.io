@@ -189,7 +189,7 @@ def search_research(
     query: str = "", category: str = "", geography: str = "", ticker: str = "",
     publisher: str = "", open_only: bool = False, limit: int = 20,
 ) -> dict:
-    """Search source-linked broker, institutional, macro, credit, public-market, and private-market research."""
+    """Search source-linked research across six report types and Global, SEA, APAC, or Indonesia regions."""
     return service.search_research(query, category, geography, ticker, publisher, open_only, limit)
 
 

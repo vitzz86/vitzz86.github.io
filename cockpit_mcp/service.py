@@ -127,8 +127,11 @@ def _public_research(item: Dict[str, Any]) -> Dict[str, Any]:
         "published": item.get("published"),
         "priority": item.get("priority"),
         "category": item.get("category"),
+        "report_type": item.get("report_type") or item.get("category"),
+        "category_detail": item.get("category_detail"),
         "subcategory": item.get("subcategory"),
         "geography": item.get("geography"),
+        "geography_detail": item.get("geography_detail"),
         "coverage": _clean_text(item.get("coverage")),
         "access": item.get("access"),
         "format": item.get("format"),
@@ -920,7 +923,7 @@ class CockpitService:
         exact_research = self.search_research(ticker=ticker, limit=12)
         context = []
         if not exact_research.get("results"):
-            geography = "Indonesia" if code == "ID" else "United States" if code == "US" else ""
+            geography = "Indonesia" if code == "ID" else "Global" if code == "US" else ""
             context = self.search_research(
                 query=str(asset.get("sector") or "") if asset.get("status") == "ok" else "",
                 geography=geography, limit=6,

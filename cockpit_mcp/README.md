@@ -10,12 +10,12 @@ the chatbot.
 The server reads the same three files as the dashboard:
 
 - `data.json`: telemetry, sectors, Intelligence Hub, Knowledge Hub, Daily Brief,
-  market sentiment, Macro Analysis, alerts, IPO radar, source health.
+  market sentiment, Macro Analysis, alerts, IPO radar, research, source health.
 - `scores.json`: deterministic score axes, provider metrics, validation warnings,
   valuation, liquidity, and risk statistics.
 - `charts.json`: 24h, 1W, 1M, 3M, and 6M chart points with quality labels.
 
-The server exposes 23 bounded tools:
+The server exposes 26 bounded tools:
 
 | Area | Tools |
 |---|---|
@@ -25,6 +25,7 @@ The server exposes 23 bounded tools:
 | Markets | `list_sector_flow`, `get_sector_detail`, `get_market_movers` |
 | Intelligence Hub | `search_news`, `get_news_detail`, `search_videos`, `get_video_detail`, `get_daily_brief`, `get_market_sentiment` |
 | Knowledge Hub | `search_knowledge_hub` |
+| Research | `search_research`, `get_research_detail`, `get_company_evidence` |
 | Analysis | `get_macro_analysis`, `get_active_alerts`, `get_intelligence_brief` |
 | Listings | `get_ipo_radar` |
 
@@ -40,6 +41,9 @@ It also publishes:
 - News without a stored excerpt is labelled `headline and metadata only`.
 - A video summary is labelled `stored Cockpit synthesis`; it is not represented
   as a transcript.
+- Research uses six report types and four regions (`Global`, `SEA`, `APAC`, and
+  `Indonesia`), while preserving each publisher's original category and
+  geography as detail metadata.
 - Score mode and warnings remain visible, so an IDX market screen cannot be
   confused with a full fundamental score.
 - Tools are read-only and cap result sets at 50 items.

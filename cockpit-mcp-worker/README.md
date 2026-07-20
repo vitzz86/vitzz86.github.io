@@ -16,9 +16,12 @@ fast-quote gateway on current-price queries.
   result includes the TradingView, Yahoo Finance, or CoinGecko interactive URL.
 - Video results include YouTube watch and embed links plus the stored Cockpit
   synthesis when present.
-- Research results expose source-linked broker, institutional, macro, credit,
-  public-market, and private-market evidence. Publisher conclusions and target
-  prices remain attributed opinions, not Cockpit facts.
+- Research results expose source-linked evidence across Economics & Macro,
+  Equity Research, Market Strategy, Fixed Income & Credit, Private Markets &
+  Venture, and Industry & Thematic. Regions are normalized to Global, SEA,
+  APAC, or Indonesia while original publisher labels remain available.
+  Publisher conclusions and target prices remain attributed opinions, not
+  Cockpit facts.
 - The Worker is read-only. It cannot place trades or modify the repository.
 
 ## Local verification

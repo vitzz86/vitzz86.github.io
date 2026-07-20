@@ -15,6 +15,15 @@ from tools import news_router
 REFRESH_SECONDS = 6 * 3600
 RETENTION_SECONDS = 366 * 86400
 LIBRARY_PATH = Path(__file__).resolve().parents[1] / "config" / "research_library.json"
+REGIONS = ("Global", "SEA", "APAC", "Indonesia")
+REPORT_TYPES = (
+    "Economics & Macro",
+    "Equity Research",
+    "Market Strategy",
+    "Fixed Income & Credit",
+    "Private Markets & Venture",
+    "Industry & Thematic",
+)
 
 
 def _now() -> int:
@@ -29,13 +38,73 @@ def _key(value) -> str:
     return re.sub(r"[^a-z0-9]+", " ", _clean(value).lower()).strip()
 
 
+def _region(value: str) -> str:
+    geography = _key(value)
+    if "indonesia" in geography:
+        return "Indonesia"
+    if any(term in geography for term in (
+        "southeast asia", "asean", "vietnam", "thailand", "singapore", "malaysia",
+        "philippines", "brunei", "cambodia", "laos", "myanmar",
+    )) and "asean 3" not in geography:
+        return "SEA"
+    if any(term in geography for term in (
+        "apac", "asia pacific", "asia", "china", "japan", "korea", "taiwan",
+        "hong kong", "india", "australia", "new zealand", "asean 3",
+    )):
+        return "APAC"
+    return "Global"
+
+
+def _report_type(item: dict) -> str:
+    value = _key(" ".join(_clean(item.get(field)) for field in (
+        "title", "category", "subcategory", "coverage", "why_useful",
+    )))
+    if any(term in value for term in (
+        "fixed income", "bond", "bonds", "credit", "sukuk", "yield curve", "direct lending",
+    )):
+        return "Fixed Income & Credit"
+    if any(term in value for term in (
+        "private market", "private equity", "venture", "startup", "fundraising", "pre seed",
+        "growth equity", "deal activity",
+    )):
+        return "Private Markets & Venture"
+    if any(term in value for term in (
+        "economic", "economy", "macroeconomic", "macro ", "inflation", "gdp", "monetary policy",
+        "fiscal policy", "financial stability", "country outlook", "rupiah",
+    )):
+        return "Economics & Macro"
+    if item.get("ticker_tags") or any(term in value for term in (
+        "company update", "company report", "initiation", "earnings", "results review",
+        "target price", "stock call", "equity research",
+    )):
+        return "Equity Research"
+    if any(term in value for term in (
+        "sector", "industry", "thematic", "climate", "technology", "artificial intelligence",
+        "digital health", "insurtech", "infrastructure", "real estate",
+    )):
+        return "Industry & Thematic"
+    return "Market Strategy"
+
+
+def _normalize_item(item: dict) -> dict:
+    normalized = dict(item)
+    original_geography = _clean(normalized.get("geography_detail") or normalized.get("geography"))
+    original_category = _clean(normalized.get("category_detail") or normalized.get("category"))
+    normalized["geography_detail"] = original_geography
+    normalized["geography"] = _region(original_geography)
+    normalized["category_detail"] = original_category
+    normalized["category"] = _report_type(normalized)
+    normalized["report_type"] = normalized["category"]
+    return normalized
+
+
 def _curated() -> list[dict]:
     try:
         payload = json.loads(LIBRARY_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         print(f"[research] curated library unavailable: {exc}")
         return []
-    return [dict(item) for item in payload.get("reports") or []]
+    return [_normalize_item(item) for item in payload.get("reports") or []]
 
 
 def _asset_terms(sectors: list) -> tuple[set[str], list[tuple[str, str]]]:
@@ -65,14 +134,14 @@ def _ticker_tags(title: str, tickers: set[str], names: list[tuple[str, str]]) ->
 def _classify(title: str) -> tuple[str, str]:
     value = _key(title)
     if any(term in value for term in ("fixed income", "bond", "credit", "sukuk", "rates")):
-        return "Credit", "Fixed Income"
+        return "Fixed Income & Credit", "Fixed Income"
     if any(term in value for term in ("startup", "venture", "private equity", "fundraising", "deals")):
-        return "Private Markets", "Startup / VC"
+        return "Private Markets & Venture", "Startup / VC"
     if any(term in value for term in ("economic", "macro", "inflation", "gdp", "policy", "rupiah")):
-        return "Public Markets", "Macro / Strategy"
+        return "Economics & Macro", "Macro / Strategy"
     if any(term in value for term in ("sector", "industry", "strategy", "outlook")):
-        return "Public Markets", "Sector / Strategy"
-    return "Public Markets", "Company / Equity"
+        return "Industry & Thematic", "Sector / Strategy"
+    return "Equity Research", "Company / Equity"
 
 
 def _discover_source(source: dict, tickers: set[str], names: list[tuple[str, str]]) -> tuple[str, list[dict]]:
@@ -96,7 +165,7 @@ def _discover_source(source: dict, tickers: set[str], names: list[tuple[str, str
         if not url:
             continue
         report_id = "live-" + hashlib.sha1(url.encode("utf-8")).hexdigest()[:12]
-        reports.append({
+        reports.append(_normalize_item({
             "id": report_id, "priority": "Live", "category": category,
             "subcategory": subcategory, "geography": source.get("geography", "Indonesia"),
             "title": title, "publisher": source["name"],
@@ -108,7 +177,7 @@ def _discover_source(source: dict, tickers: set[str], names: list[tuple[str, str
             "verification": "Discovered from official publisher domain", "verified_on": dt.date.today().isoformat(),
             "source_type": "official_discovery", "ticker_tags": tags,
             "sector_tags": [], "summary_basis": "publisher excerpt" if row.get("summary") else "title and metadata only",
-        })
+        }))
     return source["name"], reports
 
 
@@ -128,7 +197,9 @@ def _discover(sectors: list) -> tuple[list[dict], dict]:
 
 def _merge(curated: list[dict], discovered: list[dict], previous: list[dict]) -> list[dict]:
     cutoff = _now() - RETENTION_SECONDS
-    pool = curated + discovered + [dict(item) for item in previous if item.get("source_type") == "official_discovery"]
+    pool = [_normalize_item(item) for item in (
+        curated + discovered + [dict(item) for item in previous if item.get("source_type") == "official_discovery"]
+    )]
     seen, out = set(), []
     for item in pool:
         if item.get("source_type") == "official_discovery" and int(item.get("published_ts") or 0) < cutoff:
@@ -148,11 +219,11 @@ def _merge(curated: list[dict], discovered: list[dict], previous: list[dict]) ->
 
 
 def _synthesis(reports: list[dict]) -> dict:
-    indonesia = [item for item in reports if any(term in _key(item.get("geography")) for term in ("indonesia", "sea", "asean", "apac"))]
+    regional = [item for item in reports if item.get("geography") in {"Indonesia", "SEA", "APAC"}]
     open_count = sum("open" in _key(item.get("access")) or bool(item.get("direct_url")) for item in reports)
     publishers = len({_clean(item.get("publisher")) for item in reports if item.get("publisher")})
     return {
-        "indonesia": f"{len(indonesia)} Indonesia, SEA, or APAC research records are indexed across macro, public markets, credit, and private markets.",
+        "indonesia": f"{len(regional)} Indonesia, SEA, or APAC research records are indexed across economics, equities, strategy, credit, private markets, and thematic research.",
         "global": f"{len(reports)} verified research records from {publishers} publishers are searchable; {open_count} expose an open or direct-download route.",
     }
 
@@ -180,6 +251,9 @@ def collect(sectors: list, previous: dict | None = None) -> dict:
             "live_count": sum(item.get("source_type") == "official_discovery" for item in reports),
             "ticker_tagged_count": sum(bool(item.get("ticker_tags")) for item in reports),
             "source_counts": source_counts,
+            "regions": list(REGIONS), "report_types": list(REPORT_TYPES),
+            "refresh_interval_seconds": REFRESH_SECONDS,
+            "next_discovery_after": discovery_asof + REFRESH_SECONDS,
         },
         "provenance_note": "Research records are source-linked metadata. Cockpit does not reproduce full reports or treat broker opinions as facts.",
     }

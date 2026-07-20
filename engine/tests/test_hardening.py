@@ -390,6 +390,26 @@ class ResearchContractTests(unittest.TestCase):
         self.assertEqual(len(reports), 98)
         self.assertTrue(all(item.get("source_url") for item in reports))
         self.assertTrue(any(item.get("geography") == "Indonesia" for item in reports))
+        self.assertTrue(all(item.get("geography") in research.REGIONS for item in reports))
+        self.assertTrue(all(item.get("category") in research.REPORT_TYPES for item in reports))
+
+    def test_research_region_contract_is_four_clear_buckets(self):
+        cases = {
+            "Indonesia / ASEAN": "Indonesia",
+            "Southeast Asia": "SEA",
+            "ASEAN+3": "APAC",
+            "Asia-Pacific": "APAC",
+            "United States / Global": "Global",
+        }
+        for raw, expected in cases.items():
+            with self.subTest(raw=raw):
+                self.assertEqual(research._region(raw), expected)
+
+    def test_report_type_detects_economics_and_company_research(self):
+        self.assertEqual(research._report_type({"title": "Indonesia Economic Outlook"}),
+                         "Economics & Macro")
+        self.assertEqual(research._report_type({"title": "BBCA Company Update", "ticker_tags": ["BBCA"]}),
+                         "Equity Research")
 
     def test_exact_idx_ticker_and_company_name_are_tagged(self):
         tickers = {"BBCA", "TLKM"}
@@ -416,6 +436,9 @@ class ResearchContractTests(unittest.TestCase):
         self.assertEqual(sum(item.get("source_url") == "https://example.com/bbca"
                              for item in payload["reports"]), 1)
         self.assertEqual(payload["health"]["discovery"], "cached")
+        matched = next(item for item in payload["reports"] if item.get("source_url") == "https://example.com/bbca")
+        self.assertEqual(matched["category"], "Equity Research")
+        self.assertEqual(matched["geography"], "Indonesia")
 
 
 class IdxClassificationTests(unittest.TestCase):
