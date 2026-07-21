@@ -182,6 +182,16 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
             else None
         )
         if not source:
+            current_move = abs(float(current.get("delta_pct") or 0.0))
+            if current_move >= 40.0:
+                current["delta_pct"] = 0.0
+                current["volatility_1d"] = None
+                current["return_quality"] = "corporate_action_quarantined"
+                current["quote_return_source"] = "unavailable pending provider normalization"
+                current["market_data_warning"] = (
+                    "TradingView daily return quarantined after a likely corporate action; "
+                    "24h return is unavailable until a normalized previous close is observed."
+                )
             continue
         current["intraday"] = source.get("intraday") or []
         current["chart_asof"] = source.get("chart_asof") or cached.get("chart_asof")

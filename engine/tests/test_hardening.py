@@ -208,6 +208,20 @@ class FinancialGuardrailTests(unittest.TestCase):
         self.assertEqual(prices["TEST.JK"]["quote_return_source"],
                          "observed intraday baseline")
 
+    def test_idx_corporate_action_is_neutralized_without_fallback_data(self):
+        prices = {"TEST.JK": {
+            "value": 1_280, "delta_pct": -95.0, "volatility_1d": 2_300,
+            "chart_quality": {"24h": "unavailable"},
+        }}
+        rows = [{"ticker": "TEST", "source_symbol": "TEST.JK", "country": "ID"}]
+        with mock.patch("tools.yquote.fetch_intraday", return_value={}):
+            with mock.patch.object(sectors.settings, "IDX_INTRADAY_BATCH_LIMIT", 1):
+                sectors._idx_intraday_overlay(prices, rows, [])
+        self.assertEqual(prices["TEST.JK"]["delta_pct"], 0.0)
+        self.assertIsNone(prices["TEST.JK"]["volatility_1d"])
+        self.assertEqual(prices["TEST.JK"]["return_quality"],
+                         "corporate_action_quarantined")
+
     def test_checkpoint_history_does_not_produce_risk_ratios(self):
         row = {
             "spark": [100 + i for i in range(30)],
