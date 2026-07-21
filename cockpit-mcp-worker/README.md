@@ -17,6 +17,11 @@ fast-quote gateway on current-price queries.
   guardrails, and the TradingView, Yahoo Finance, or CoinGecko interactive URL.
 - Video results include YouTube watch and embed links plus the stored Cockpit
   synthesis when present.
+- Equity scores expose a separate opportunity result and data-confidence score.
+  They include factor gates, valuation confidence, evidence limitations, and
+  source warnings; they are deterministic screens, not recommendations.
+- MCP clients must reconcile contrary source-linked research and should never
+  force Cockpit, broker research, or another AI response to agree.
 - Research results expose source-linked evidence across Economics & Macro,
   Equity Research, Market Strategy, Fixed Income & Credit, Private Markets &
   Venture, and Industry & Thematic. Regions are normalized to Global, SEA,

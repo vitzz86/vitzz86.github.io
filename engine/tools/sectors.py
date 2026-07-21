@@ -65,6 +65,23 @@ def _row_cap(row: dict) -> float:
         return 0.0
 
 
+def _format_market_cap(value, country: str) -> str:
+    try:
+        n = float(value or 0)
+    except Exception:  # noqa: BLE001
+        return ""
+    if n <= 0:
+        return ""
+    currency = "IDR" if country == "ID" else "USD"
+    units = ((1e15, "Q"), (1e12, "T"), (1e9, "B"), (1e6, "M"))
+    for scale, suffix in units:
+        if n >= scale:
+            scaled = n / scale
+            digits = 0 if scaled >= 100 else 1 if scaled >= 10 else 2
+            return f"{currency} {scaled:.{digits}f}{suffix}"
+    return f"{currency} {n:,.0f}"
+
+
 def _uses_tradingview_idx(row: dict) -> bool:
     return row.get("country") == "ID" and row.get("source_provider") == "tradingview"
 
@@ -406,7 +423,7 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
             p = prices.get(ysym)
             delta = p["delta_pct"] if p else 0.0
             spark = p["spark"] if p else []
-            rows.append(base | {
+            row = base | {
                 "delta_pct": delta, "spark": spark,
                 "spark_ts": (p or {}).get("spark_ts", []),
                 "value": (p or {}).get("value", 0.0),
@@ -445,7 +462,11 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "quote_mode": (_pick_price_field(p or {}, base, "quote_mode")
                                or ("near_realtime_24_7" if country == "CR"
                                    else "provider_snapshot")),
-            })
+            }
+            fresh_cap = row.get("market_cap_value")
+            if fresh_cap:
+                row["mktcap"] = _format_market_cap(fresh_cap, country)
+            rows.append(row)
             if country == "ID":
                 id_d.append(delta)
             elif country == "US":

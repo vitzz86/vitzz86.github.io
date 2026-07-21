@@ -431,11 +431,15 @@ class CockpitService:
             "label": score.get("label"),
             "mode": score.get("mode"),
             "confidence": score.get("confidence"),
+            "data_confidence_pct": score.get("data_confidence_pct"),
+            "data_confidence_components": score.get("data_confidence_components"),
+            "methodology": score.get("score_methodology"),
             "coverage": score.get("input_coverage", score.get("coverage")),
             "axes": score.get("axes") or [],
             "as_of": score.get("as_of"),
             "source": score.get("source"),
             "warnings": score.get("data_warnings") or [],
+            "limitations": score.get("limitations") or [],
         }
 
     def _asset_view(self, row: Dict[str, Any]) -> Dict[str, Any]:

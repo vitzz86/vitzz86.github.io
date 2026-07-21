@@ -21,7 +21,11 @@ news, video, IPO, macro, and research questions. Do not inspect or scrape the
 dashboard UI for data exposed by a Cockpit tool. For ticker analysis call
 get_company_evidence, then get_asset_chart and get_asset_score. For cross-firm
 or period research call build_research_synthesis before any generic workflow or
-web search. External browsing is gap-fill only: open indexed source_url records
+web search. Treat the score as a deterministic screening opinion, not an
+investment recommendation: report opportunity score, data-confidence percent,
+factor weaknesses, valuation confidence, and limitations. Reconcile contrary
+source-linked research; never force evidence to match Cockpit or another AI.
+External browsing is gap-fill only: open indexed source_url records
 or find publishers explicitly reported missing. Always state payload time,
 market state, provider, score mode, confidence, chart quality, and warnings.
 Research metadata is discovery evidence, not report content. Exact technical

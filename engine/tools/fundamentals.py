@@ -13,7 +13,7 @@ import math
 import statistics
 
 
-SCORE_SCHEMA_VERSION = 12
+SCORE_SCHEMA_VERSION = 13
 
 BANK_KEYWORDS = (
     "bank", "bancorp", "chase", "wells fargo", "syariah", "btpn", "bpd",
@@ -81,6 +81,28 @@ def _score_high(v, bad: float, good: float):
 def _avg(vals):
     vals = [v for v in vals if v is not None]
     return round(sum(vals) / len(vals)) if vals else None
+
+
+def _weighted_avg(items):
+    valid = [(value, weight) for value, weight in items if value is not None and weight > 0]
+    if not valid:
+        return None
+    return round(sum(value * weight for value, weight in valid) / sum(weight for _, weight in valid))
+
+
+def _score_label(overall, axes: list[dict]) -> str:
+    if overall is None:
+        return "Insufficient"
+    if overall >= 80:
+        return "High-conviction screen"
+    if overall >= 70:
+        price_setup = next((a.get("score") for a in axes if a.get("key") == "price_setup"), None)
+        return "Attractive / wait for confirmation" if price_setup is not None and price_setup < 65 else "Attractive"
+    if overall >= 60:
+        return "Watchlist"
+    if overall >= 45:
+        return "Neutral"
+    return "Weak"
 
 
 def _spark_return(spark: list, days: int = None):
@@ -506,7 +528,10 @@ def _valuation_confidence(metrics: dict, components: list[dict], method: str) ->
     pe = _num(metrics.get("pe"))
     if method != "bank" and pe is not None and pe > 100:
         return "Medium" if components else "Low"
-    if present == len(required) and len(components) >= 2:
+    # Provider FCF and EPS are useful screening inputs, but they are not a
+    # statement-normalized model. Reserve High for explicitly normalized data.
+    normalized = bool(metrics.get("_normalized_fundamentals"))
+    if present == len(required) and len(components) >= 2 and normalized:
         return "High"
     if present >= max(2, len(required) - 1) and components:
         return "Medium"
@@ -732,6 +757,10 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
     metrics["_sector_name"] = row.get("sector_name")
     metrics["_country"] = row.get("country")
     metrics["_exchange"] = row.get("exchange")
+    metrics["analyst_target_low"] = _num(row.get("analyst_target_low"))
+    metrics["analyst_target_median"] = _num(row.get("analyst_target_median"))
+    metrics["analyst_target_high"] = _num(row.get("analyst_target_high"))
+    metrics["recommend_all"] = _num(row.get("recommend_all"))
     metrics["_risk_context"] = risk_context or {}
     metrics["_risk_stats"] = _risk_stats(row, "equity", risk_context)
     one_month = _spark_return(row.get("spark"), 22)
@@ -764,7 +793,6 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
     else:
         value = _avg([
             valuation_score,
-            valuation_score,
             _score_low(metrics.get("forward_pe") or metrics.get("pe"), 12, 45),
             _score_low(metrics.get("pb"), 1.5, 8),
             _score_low(metrics.get("ev_ebitda"), 8, 25),
@@ -781,7 +809,7 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
             _score_low(metrics.get("debt_to_equity"), 40, 250),
             _score_high(six_month, -35, 15),
         ])
-    growth = _avg([
+    headline_growth = _avg([
         _score_high(metrics.get("revenue_growth_pct"), -5, 25),
         _score_high(metrics.get("eps_growth_pct"), -10, 30),
     ])
@@ -790,15 +818,73 @@ def _score_equity(row: dict, metrics: dict, risk_context: dict | None = None) ->
         _score_high(one_month, -8, 12),
         _score_high(six_month, -20, 35),
     ])
+    current_pe = _sanitize_ratio(metrics.get("pe"), 500.0)
+    forward_pe = _sanitize_ratio(metrics.get("forward_pe"), 500.0)
+    implied_forward_growth = None
+    if current_pe and forward_pe:
+        implied_forward_growth = (current_pe / forward_pe - 1) * 100
+    earnings_direction = _avg([
+        headline_growth,
+        _score_high(implied_forward_growth, -15, 15),
+        _score_high(metrics.get("fcf_yield_pct"), 0, 10),
+    ])
+    # Without margin history or normalized multi-year cash flow, headline
+    # revenue/EPS growth cannot earn a perfect durability score.
+    if earnings_direction is not None and not metrics.get("_normalized_fundamentals"):
+        earnings_direction = min(earnings_direction, 82)
+
+    risk_stats = metrics.get("_risk_stats") or {}
+    annual_vol = _num(risk_stats.get("annual_volatility_pct"))
+    downside_vol = _num(risk_stats.get("downside_volatility_pct"))
+    max_drawdown = abs(_num(risk_stats.get("max_drawdown_pct")) or 0) or None
+    beta = _valid_beta(metrics.get("beta"))
+    risk_resilience = _avg([
+        _score_low(annual_vol, 25, 60),
+        _score_low(downside_vol, 15, 45),
+        _score_low(max_drawdown, 10, 40),
+        _score_low(metrics.get("debt_to_equity"), 40, 250) if profile["family"] != "bank" else None,
+        _score_low(beta, 0.8, 1.8),
+    ])
+    if risk_resilience is None:
+        risk_resilience = risk
+
+    business_quality = quality
+    if business_quality is not None and not metrics.get("_normalized_fundamentals"):
+        business_quality = min(business_quality, 85)
+
+    analyst_target = _num(metrics.get("analyst_target_median"))
+    current = _num(metrics.get("current_price"))
+    analyst_upside = ((analyst_target / current - 1) * 100
+                      if analyst_target and current else None)
+    catalyst_strength = _avg([
+        _score_high(implied_forward_growth, -15, 15),
+        _score_high(analyst_upside, -20, 30),
+        _score_high(metrics.get("recommend_all"), -0.6, 0.6),
+    ])
+    # One weak model-derived hint is not enough to claim a catalyst.
+    catalyst_inputs = sum(v is not None for v in (
+        implied_forward_growth, analyst_upside, _num(metrics.get("recommend_all"))))
+    if catalyst_inputs < 2:
+        catalyst_strength = None
+
     axes = [
-        {"key": "value", "label": "Value", "score": value},
-        {"key": "quality", "label": "Quality", "score": quality},
-        {"key": "growth", "label": "Growth", "score": growth},
-        {"key": "momentum", "label": "Momentum", "score": momentum},
-        {"key": "liquidity", "label": "Liquidity", "score": metrics.get("liquidity_score")},
-        {"key": "risk", "label": "Risk", "score": risk},
+        {"key": "business_quality", "label": "Business", "score": business_quality},
+        {"key": "valuation", "label": "Valuation", "score": value},
+        {"key": "earnings_direction", "label": "Earnings", "score": earnings_direction},
+        {"key": "price_setup", "label": "Price Setup", "score": momentum},
+        {"key": "risk_resilience", "label": "Risk", "score": risk_resilience},
+        {"key": "catalyst_strength", "label": "Catalysts", "score": catalyst_strength},
     ]
-    return _pack_score("equity", axes, metrics, one_month, six_month, vol)
+    result = _pack_score("equity", axes, metrics, one_month, six_month, vol)
+    result["screening_score_legacy"] = _avg([value, quality, headline_growth, momentum,
+                                             metrics.get("liquidity_score"), risk])
+    result["score_methodology"] = "opportunity_v2"
+    result["limitations"] = [
+        "Growth quality is not margin-normalized unless statement-level history is available.",
+        "Provider FCF is not a normalized multi-year owner-cash-flow measure.",
+        "Governance, controller events, FX sensitivity, and analyst revisions require source-linked research.",
+    ]
+    return result
 
 
 def _score_crypto(row: dict, metrics: dict, risk_context: dict | None = None) -> dict:
@@ -1106,7 +1192,7 @@ def _fair_pe_model(metrics: dict) -> dict:
     if fcf_yield is not None:
         req = _required_fcf_yield(metrics)
         if fcf_yield >= req:
-            adj = base * 0.10
+            adj = base * (0.10 if metrics.get("_normalized_fundamentals") else 0.03)
         elif fcf_yield >= req * 0.5:
             adj = base * 0.03
         elif fcf_yield <= 0:
@@ -1114,7 +1200,7 @@ def _fair_pe_model(metrics: dict) -> dict:
         else:
             adj = -base * 0.08
         add_adjustment("Cash-Flow Adjustment", f"FCF yield {fcf_yield:.1f}% vs required {req:.1f}%", adj,
-                       "cash yield checks whether earnings convert into owner cash")
+                       "provider cash yield is a cross-check; full weight requires normalized cash flow")
         drivers.append(f"FCF yield {fcf_yield:.1f}% {'supports' if adj >= 0 else 'pressures'} valuation")
 
     if debt is not None and profile["family"] != "bank":
@@ -1130,14 +1216,14 @@ def _fair_pe_model(metrics: dict) -> dict:
 
     if beta is not None:
         if beta <= 0.8:
-            adj = base * 0.05
+            adj = 0.0
         elif beta <= 1.2:
             adj = 0.0
         else:
             adj = -_clamp(base * ((beta - 1.2) / 8), base * 0.03, base * 0.15)
         add_adjustment("Market-Risk Adjustment", f"Beta {beta:.2f}x", adj,
-                       "higher market beta deserves a modest discount")
-        drivers.append(f"beta {beta:.2f}x {'supports' if adj >= 0 else 'cuts'} fair P/E")
+                       "high beta deserves a discount; low beta is not an automatic valuation premium")
+        drivers.append(f"beta {beta:.2f}x {'does not add a premium' if adj == 0 else 'cuts fair P/E'}")
     elif metrics.get("beta") is not None:
         scorecard.append({
             "label": "Market-Risk Adjustment",
@@ -1175,12 +1261,13 @@ def _fair_pe_model(metrics: dict) -> dict:
     fair_pe = pre_cap_fair_pe
     cap_note = None
     if current_pe is not None:
-        if (growth or 0) >= 20 and (roe or 0) >= 12:
-            premium_cap = 1.65
-        elif (growth or 0) >= 8 or (roe or 0) >= 18:
-            premium_cap = 1.50
+        forward_support = bool(forward_pe and forward_pe < current_pe * 0.95)
+        if metrics.get("_normalized_fundamentals") and forward_support and (growth or 0) >= 20:
+            premium_cap = 1.40
+        elif forward_support and ((growth or 0) >= 8 or (roe or 0) >= 18):
+            premium_cap = 1.30
         else:
-            premium_cap = 1.35
+            premium_cap = 1.20
         lower = max(4.0, current_pe * 0.65)
         upper = min(500.0, current_pe * premium_cap)
         fair_pe = _clamp(fair_pe, lower, max(lower, upper))
@@ -1275,7 +1362,8 @@ def _valuation_components(metrics: dict, eps_multiple: float, pb_multiple: float
             })
 
     fcf_yield = _num(metrics.get("fcf_yield_pct"))
-    if current and current > 0 and fcf_yield and 0 < fcf_yield <= 50 and required_fcf_yield > 0:
+    if (metrics.get("_normalized_fundamentals") and current and current > 0
+            and fcf_yield and 0 < fcf_yield <= 50 and required_fcf_yield > 0):
         candidates.append({
             "method": f"Current price × FCF yield / {required_fcf_yield:g}%",
             "price": current * (fcf_yield / required_fcf_yield),
@@ -1580,17 +1668,28 @@ def _valuation(metrics: dict) -> dict | None:
 
 def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month, vol) -> dict:
     valid = [a["score"] for a in axes if a.get("score") is not None]
-    overall = round(sum(valid) / len(valid)) if valid else None
-    if overall is None:
-        label = "Insufficient"
-    elif overall >= 75:
-        label = "Strong"
-    elif overall >= 60:
-        label = "Watchlist"
-    elif overall >= 45:
-        label = "Neutral"
+    if mode == "equity" and any(a.get("key") == "business_quality" for a in axes):
+        weights = {
+            "business_quality": 0.22, "valuation": 0.20, "earnings_direction": 0.16,
+            "price_setup": 0.14, "risk_resilience": 0.18, "catalyst_strength": 0.10,
+        }
+        overall = _weighted_avg([(a.get("score"), weights.get(a.get("key"), 0)) for a in axes])
+        price_setup = next((a.get("score") for a in axes if a.get("key") == "price_setup"), None)
+        risk_resilience = next((a.get("score") for a in axes if a.get("key") == "risk_resilience"), None)
+        annual_vol = _num((metrics.get("_risk_stats") or {}).get("annual_volatility_pct"))
+        if overall is not None and ((price_setup is not None and price_setup < 60)
+                                    or (annual_vol is not None and annual_vol >= 45)):
+            overall = min(overall, 74)
+        if overall is not None and risk_resilience is not None and risk_resilience < 45:
+            overall = min(overall, 64)
+        liquidity = _num(metrics.get("liquidity_score"))
+        if overall is not None and liquidity is not None:
+            if liquidity < 25:
+                overall = min(overall, 59)
+            elif liquidity < 50:
+                overall = min(overall, 69)
     else:
-        label = "Weak"
+        overall = round(sum(valid) / len(valid)) if valid else None
     currency = metrics.get("currency") or ("USD" if mode == "crypto" else None)
     conv_note = metrics.get("_conversion_note") or ""
     converted = set(metrics.get("_converted_fields") or [])
@@ -1686,6 +1785,24 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
     input_valid = sum(1 for key in evidence_fields if _num(metrics.get(key)) is not None)
     input_coverage = round(input_valid / len(evidence_fields), 2) if evidence_fields else 0
     axis_coverage = round(len(valid) / len(axes), 2) if axes else 0
+    warnings = metrics.get("_data_warnings") or []
+    if mode == "equity":
+        source_depth = 50 if metrics.get("source") else 25
+        if metrics.get("quote_source") and metrics.get("source"):
+            source_depth = 60
+        validation = max(20, 100 - len(warnings) * 20)
+        normalization = 100 if metrics.get("_normalized_fundamentals") else 20
+        data_confidence = round(input_coverage * 35 + source_depth * .30
+                                + validation * .25 + normalization * .10)
+    elif mode == "idx_screen":
+        data_confidence = round(input_coverage * 55 + 40)
+    else:
+        data_confidence = round(input_coverage * 60 + 30)
+    data_confidence = max(0, min(100, data_confidence))
+    confidence_label = "High" if data_confidence >= 85 else "Medium" if data_confidence >= 65 else "Low"
+    if overall is not None and data_confidence < 65:
+        overall = min(overall, 64)
+    label = _score_label(overall, axes)
     return {
         "mode": mode,
         "schema_version": SCORE_SCHEMA_VERSION,
@@ -1694,7 +1811,14 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "coverage": input_coverage,
         "input_coverage": input_coverage,
         "axis_coverage": axis_coverage,
-        "confidence": "High" if input_coverage >= 0.75 else "Medium" if input_coverage >= 0.5 else "Low",
+        "confidence": confidence_label,
+        "data_confidence_pct": data_confidence,
+        "data_confidence_components": {
+            "completeness_pct": round(input_coverage * 100),
+            "provenance_pct": source_depth,
+            "validation_pct": validation,
+            "normalization_pct": normalization,
+        } if mode == "equity" else None,
         "axes": axes,
         "metrics": [m for m in metric_rows if m["value"] is not None],
         "valuation": valuation,
@@ -1704,7 +1828,7 @@ def _pack_score(mode: str, axes: list[dict], metrics: dict, one_month, six_month
         "source": metrics.get("source") or ("CoinGecko + price history" if mode == "crypto" else "Yahoo Finance"),
         "quote_source": metrics.get("quote_source"),
         "as_of": metrics.get("as_of") or _now_iso(),
-        "data_warnings": metrics.get("_data_warnings") or [],
+        "data_warnings": warnings,
     }
 
 

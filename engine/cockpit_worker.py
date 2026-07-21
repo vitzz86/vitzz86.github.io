@@ -115,9 +115,11 @@ def _score_summary(score: dict) -> dict:
         key: score.get(key)
         for key in (
             "mode", "schema_version", "score", "label", "coverage", "axes",
-            "input_coverage", "axis_coverage", "confidence",
+            "input_coverage", "axis_coverage", "confidence", "data_confidence_pct",
+            "data_confidence_components",
             "currency", "source", "as_of", "note", "screen_grade",
-            "quote_source", "screen_source", "data_warnings",
+            "quote_source", "screen_source", "data_warnings", "score_methodology",
+            "limitations", "screening_score_legacy",
         )
         if key in score and score.get(key) is not None
     }

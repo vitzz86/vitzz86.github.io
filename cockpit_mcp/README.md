@@ -52,6 +52,18 @@ It also publishes:
   candlestick patterns, or volume confirmation.
 - Score mode and warnings remain visible, so an IDX market screen cannot be
   confused with a full fundamental score.
+- Equity scores are opportunity screens, not recommendations. Business quality,
+  valuation, earnings direction, price setup, risk resilience, and forward
+  evidence are weighted separately; weak price setup, risk, data confidence, or
+  liquidity can cap the overall result.
+- Data confidence is separate from the opportunity score and decomposes field
+  completeness, source provenance, validation results, and statement
+  normalization. A complete provider payload is not automatically high
+  confidence.
+- Fair values are screening scenarios. Provider free cash flow is a cross-check,
+  not a direct valuation component unless statement-level normalization is
+  available. Contrary broker or source-linked research must be surfaced and
+  reconciled rather than forced to agree with Cockpit.
 - Tools are read-only and cap result sets at 50 items.
 - Every tool advertises `readOnlyHint`, `idempotentHint`, and
   `destructiveHint=false` to compatible clients.

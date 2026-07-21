@@ -63,6 +63,88 @@ class FinancialGuardrailTests(unittest.TestCase):
         self.assertLess(score["input_coverage"], 0.5)
         self.assertEqual(score["coverage"], score["input_coverage"])
 
+    def test_equity_score_separates_opportunity_from_data_confidence(self):
+        spark = ([1000 + i * 4 for i in range(30)]
+                 + [1500 - i * 8 for i in range(30)]
+                 + [1100 + i * 7 for i in range(38)]
+                 + [1320 - i * 3.4 for i in range(22)])
+        row = {
+            "ticker": "MAPI", "name": "Mitra Adiperkasa", "country": "ID",
+            "exchange": "IDX", "source_provider": "tradingview",
+            "sector_key": "entertainment", "value": 1250,
+            "market_cap_value": 25_000_000_000_000, "volume": 2_000_000,
+            "avg_volume_10d": 60_000_000, "turnover": 2_500_000_000,
+            "delta_pct": -0.33, "spark": spark,
+            "chart_quality": {"6M": "historical_close"},
+            "analyst_target_median": 1500, "recommend_all": -0.09,
+        }
+        metrics = {
+            "currency": "IDR", "quote_currency": "IDR", "financial_currency": "IDR",
+            "current_price": 1250, "pe": 10.49, "forward_pe": 10.91,
+            "ev_ebitda": 5.64, "pb": 1.7, "book_value": 735, "beta": 0.33,
+            "eps": 119.16, "roe_pct": 17.54, "debt_to_equity": 46.96,
+            "revenue_growth_pct": 32, "eps_growth_pct": 33,
+            "dividend_yield_pct": 0.66, "free_cash_flow": 3_800_000_000_000,
+            "fcf_yield_pct": 15.4, "market_cap": 25_000_000_000_000,
+            "source": "Yahoo Finance", "as_of": fundamentals._now_iso(),
+        }
+        score = fundamentals._score_equity(row, metrics, {
+            "risk_free_rate": 5.75, "risk_free_label": "BI Rate",
+            "hurdle_rate": 6.8, "hurdle_label": "Indonesia 10Y",
+        })
+        axes = {axis["key"]: axis["score"] for axis in score["axes"]}
+        self.assertEqual(score["score_methodology"], "opportunity_v2")
+        self.assertEqual(score["score"], 70)
+        self.assertEqual(score["label"], "Attractive / wait for confirmation")
+        self.assertEqual(score["confidence"], "Medium")
+        self.assertGreater(score["data_confidence_pct"], 65)
+        self.assertLess(score["data_confidence_pct"], 85)
+        self.assertLess(axes["price_setup"], 60)
+        self.assertLessEqual(axes["risk_resilience"], 65)
+        self.assertLess(score["score"], score["screening_score_legacy"])
+        self.assertEqual(score["data_confidence_components"]["normalization_pct"], 20)
+
+    def test_low_liquidity_caps_equity_opportunity_score(self):
+        row = {
+            "ticker": "TEST", "name": "Test Equity", "country": "ID",
+            "exchange": "IDX", "source_provider": "tradingview",
+            "sector_key": "consumer", "value": 1000,
+            "market_cap_value": 10_000_000_000_000, "volume": 10,
+            "avg_volume_10d": 10, "turnover": 100,
+            "delta_pct": 3, "spark": [500 + i * 5 for i in range(120)],
+            "chart_quality": {"6M": "historical_close"},
+            "analyst_target_median": 1500, "recommend_all": 0.5,
+        }
+        metrics = {
+            "currency": "IDR", "current_price": 1000, "pe": 8,
+            "forward_pe": 7, "pb": 1, "book_value": 1000, "beta": 0.7,
+            "eps": 125, "roe_pct": 20, "debt_to_equity": 20,
+            "revenue_growth_pct": 25, "eps_growth_pct": 30,
+            "fcf_yield_pct": 10, "market_cap": 10_000_000_000_000,
+            "liquidity_score": 20, "source": "Yahoo Finance",
+        }
+        score = fundamentals._score_equity(row, metrics, {})
+        self.assertLessEqual(score["score"], 59)
+        self.assertNotIn(score["label"], {"Attractive", "High-conviction screen"})
+
+    def test_unnormalized_fcf_does_not_drive_fair_value(self):
+        metrics = {
+            "current_price": 1500, "eps": 143.03, "pe": 10.49,
+            "forward_pe": 10.91, "book_value": 882.62, "pb": 1.7,
+            "roe_pct": 17.54, "debt_to_equity": 46.96,
+            "revenue_growth_pct": 32, "eps_growth_pct": 33,
+            "fcf_yield_pct": 15.4, "beta": 0.33,
+            "_ticker": "MAPI", "_sector_key": "entertainment", "_country": "ID",
+        }
+        valuation = fundamentals._valuation(metrics)
+        self.assertEqual(valuation["valuation_confidence"], "Medium")
+        self.assertLess(valuation["fair_pe"], 13)
+        self.assertLess(valuation["fair_value"], 1900)
+        self.assertFalse(any("FCF yield /" in item["method"] for item in valuation["components"]))
+
+    def test_market_cap_label_uses_current_numeric_value(self):
+        self.assertEqual(sectors._format_market_cap(25_140_212_187_500, "ID"), "IDR 25.1T")
+
     def test_checkpoint_history_does_not_produce_risk_ratios(self):
         row = {
             "spark": [100 + i for i in range(30)],

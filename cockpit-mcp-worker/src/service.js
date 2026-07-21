@@ -132,8 +132,10 @@ function scoreSummary(score) {
   if (!score || score.score === undefined || score.score === null) return null;
   return {
     score: score.score, label: score.label, mode: score.mode, confidence: score.confidence,
+    data_confidence_pct: score.data_confidence_pct, methodology: score.score_methodology,
+    data_confidence_components: score.data_confidence_components,
     coverage: score.input_coverage ?? score.coverage, axes: score.axes || [], as_of: score.as_of,
-    source: score.source, warnings: score.data_warnings || [],
+    source: score.source, warnings: score.data_warnings || [], limitations: score.limitations || [],
   };
 }
 
