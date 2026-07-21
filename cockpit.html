@@ -769,7 +769,7 @@ body{padding-bottom:40px;}
           <span class="ttab" data-m="growth">Growth &amp; Demand</span>
           <span class="ttab" data-m="prices">Prices &amp; Policy</span>
           <span class="ttab" data-m="stability">External &amp; Stability</span>
-          <span class="ttab" data-m="ratings">Ratings</span>
+          <span class="ttab" data-m="ratings">Ratings &amp; Country Risk</span>
         </div>
         <div class="macrometa" id="macroMeta">Loading source periods…</div>
       </div>
@@ -1705,7 +1705,7 @@ function drawMacroMonitor(){
     growth:all.filter(item=>['Growth','Households','Labour'].includes(item.pillar)),
     prices:all.filter(item=>['Prices','Monetary'].includes(item.pillar)),
     stability:all.filter(item=>['External','Fiscal','Financial System'].includes(item.pillar)),
-    ratings:Array.isArray(macro.ratings)?macro.ratings:[]
+    ratings:[...(Array.isArray(macro.ratings)?macro.ratings:[]),...(Array.isArray(macro.country_risk)?macro.country_risk:[])]
   };
   if(!Object.prototype.hasOwnProperty.call(modes,macroView))macroView='overview';
   const rows=modes[macroView];
@@ -1716,9 +1716,11 @@ function drawMacroMonitor(){
     counts.neutral?`<span>${counts.neutral} stable / mixed</span>`:'',
     counts.red?`<span class="red">${counts.red} deteriorating</span>`:''
   ].join('');
-  const labels={overview:'headline indicators',growth:'growth & demand',prices:'prices & policy',stability:'external & stability',ratings:'ratings & classification'};
+  const labels={overview:'headline indicators',growth:'growth & demand',prices:'prices & policy',stability:'external & stability',ratings:'ratings & country risk'};
   $('macroCount').textContent=`${rows.length} · ${labels[macroView]||'indicators'}`;
-  $('macroMeta').textContent=`Official data cut-off ${macro.data_cutoff||'—'} · actual vs prior / benchmark`;
+  $('macroMeta').textContent=macroView==='ratings'
+    ?`Official ratings + 30-minute market risk · actual vs prior / benchmark`
+    :`Official data cut-off ${macro.data_cutoff||'—'} · actual vs prior / benchmark`;
   $('macroGrid').innerHTML=rows.map(item=>{
     const risk=['green','red'].includes(item.risk)?item.risk:'neutral';
     const chips=(item.secondary||[]).map(value=>`<span>${esc(value)}</span>`).join('');
@@ -1729,13 +1731,14 @@ function drawMacroMonitor(){
       item.change_display?`<div class="mccell"><span class="mck">Change</span><span class="mcv">${esc(item.change_display)}</span></div>`:'',
       item.benchmark_display?`<div class="mccell"><span class="mck">Reference</span><span class="mcv">${esc(item.benchmark_display)}</span></div>`:''
     ].join('');
+    const releaseLabel=item.update_mode==='market_derived'?'market-derived':(item.update_mode==='market_snapshot'?'market snapshot':'official release');
     return `<article class="macrocard ${risk}"><div class="mcrow"><span class="mcpillar">${esc(item.pillar)}</span><span class="mcsignal">${esc(signal)}</span></div>`+
       `<div class="mclabel">${esc(item.label)}</div><div class="mcvalue">${esc(item.value_display||'—')}</div>`+
       (compare?`<div class="mccompare">${compare}</div>`:'')+
       (chips?`<div class="mcsecondary">${chips}</div>`:'')+
-      `<div class="mccomment">${esc(item.commentary||'')}</div><div class="mcfoot"><div class="mcperiod">${esc(macroPeriod(item))}<br>${esc(item.frequency||'')} · official release</div>${source}</div></article>`;
+      `<div class="mccomment">${esc(item.commentary||'')}</div><div class="mcfoot"><div class="mcperiod">${esc(macroPeriod(item))}<br>${esc(item.frequency||'')} · ${releaseLabel}</div>${source}</div></article>`;
   }).join('')||'<div class="researchempty">No verified macro indicators are available in this view.</div>';
-  $('macroNote').textContent=[macro.refresh_policy,macro.methodology_note].filter(Boolean).join(' ');
+  $('macroNote').textContent=[macro.refresh_policy,macro.methodology_note,macroView==='ratings'?macro.country_risk_note:''].filter(Boolean).join(' ');
 }
 
 /* ---- intelligence hub: Daily Brief · News · Videos · IPOs ---- */

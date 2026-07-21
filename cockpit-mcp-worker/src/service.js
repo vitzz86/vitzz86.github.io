@@ -309,11 +309,13 @@ export function createCockpitService(env) {
 
     async macroIndicators(view = "core", pillar = "") {
       const { data } = await loadContracts(); const macro = data.macro_indicators || {};
-      const key = String(view || "core").toLowerCase();
-      if (!["core", "detail", "ratings"].includes(key)) return { status: "invalid_view", allowed: ["core", "detail", "ratings"] };
+      const aliases = { risk: "country_risk", countryrisk: "country_risk", risk_premium: "country_risk" };
+      const raw = String(view || "core").toLowerCase().replace(/\s+/g, "_");
+      const key = aliases[raw] || raw;
+      if (!["core", "detail", "ratings", "country_risk"].includes(key)) return { status: "invalid_view", allowed: ["core", "detail", "ratings", "country_risk"] };
       const wanted = norm(pillar); let results = [...(macro[key] || [])];
       if (wanted) results = results.filter(item => norm(item.pillar).includes(wanted));
-      return { status: "ok", as_of: data.timestamp, data_cutoff: macro.data_cutoff, view: key, pillar: pillar || null, results, health: macro.health || {}, refresh_policy: macro.refresh_policy, methodology_note: macro.methodology_note };
+      return { status: "ok", as_of: data.timestamp, data_cutoff: macro.data_cutoff, view: key, pillar: pillar || null, results, health: macro.health || {}, refresh_policy: macro.refresh_policy, methodology_note: key === "country_risk" ? macro.country_risk_note : macro.methodology_note };
     },
 
     async heatmap(market = "id", sector = "", limit = 120) {

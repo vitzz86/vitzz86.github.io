@@ -73,6 +73,10 @@ class CockpitMCPServiceTests(unittest.TestCase):
         ratings = self.service.macro_indicators("ratings")
         self.assertEqual(ratings["status"], "ok")
         self.assertEqual(len(ratings["results"]), 5)
+        risk = self.service.macro_indicators("country_risk")
+        self.assertEqual(risk["status"], "ok")
+        self.assertGreaterEqual(len(risk["results"]), 4)
+        self.assertIn("not CDS or JPM EMBI", risk["methodology_note"])
 
     def test_exact_idx_asset_includes_provenance_and_score(self):
         result = self.service.get_asset("BBCA", "ID")

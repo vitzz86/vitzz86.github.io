@@ -175,6 +175,30 @@ class MacroIndicatorContractTests(unittest.TestCase):
         self.assertEqual(next(row for row in ratings if row["id"] == "id_rating_fitch")["direction"],
                          "deteriorating")
 
+    def test_country_risk_uses_market_history_without_inventing_spreads(self):
+        def row(symbol, values, value=None, previous=None):
+            return {
+                "symbol": symbol, "value": value if value is not None else values[-1],
+                "prev_close": previous if previous is not None else values[-2],
+                "spark": values, "url": f"https://example.com/{symbol}",
+                "source_name": "Test Market Source",
+            }
+
+        fx = [16000 + i * 7 for i in range(90)]
+        jci = [7000 + i * 8 for i in range(60)] + [7480 - i * 12 for i in range(30)]
+        payload = macro_indicators.collect([
+            row("ID10Y", [6.7, 6.8], 6.8, 6.7),
+            row("^TNX", [4.45, 4.5], 4.5, 4.45),
+            row("USDIDR=X", fx), row("^JKSE", jci),
+        ])
+        risk = payload["country_risk"]
+        self.assertGreaterEqual(len(risk), 6)
+        gap = next(item for item in risk if item["id"] == "id_risk_yield_gap")
+        self.assertEqual(gap["value_display"], "+230bp")
+        self.assertIn("not a pure sovereign default spread", gap["commentary"])
+        self.assertTrue(all(item["update_mode"] == "market_derived" for item in risk))
+        self.assertFalse(any("CDS" in item["label"] or "EMBI" in item["label"] for item in risk))
+
 
 class IpoContractTests(unittest.TestCase):
     def test_idx_universe_preserves_listing_timestamp(self):

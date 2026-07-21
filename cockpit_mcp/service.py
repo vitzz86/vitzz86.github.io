@@ -413,10 +413,11 @@ class CockpitService:
         aliases = {"indonesia": "core", "indonesia_core": "core",
                    "overview": "core", "headline": "core", "indonesia_detail": "detail",
                    "rating": "ratings", "credit_ratings": "ratings",
-                   "market_classification": "ratings"}
+                   "market_classification": "ratings", "risk": "country_risk",
+                   "countryrisk": "country_risk", "risk_premium": "country_risk"}
         key = aliases.get(_norm(view).replace(" ", "_"), _norm(view).replace(" ", "_")) or "core"
-        if key not in {"core", "detail", "ratings"}:
-            return {"status": "invalid_view", "allowed": ["core", "detail", "ratings"]}
+        if key not in {"core", "detail", "ratings", "country_risk"}:
+            return {"status": "invalid_view", "allowed": ["core", "detail", "ratings", "country_risk"]}
         rows = list(macro.get(key) or [])
         if pillar:
             wanted = _norm(pillar)
@@ -425,7 +426,8 @@ class CockpitService:
             "status": "ok", "as_of": data.get("timestamp"), "data_cutoff": macro.get("data_cutoff"),
             "view": key, "pillar": pillar or None, "results": rows,
             "health": macro.get("health") or {}, "refresh_policy": macro.get("refresh_policy"),
-            "methodology_note": macro.get("methodology_note"),
+            "methodology_note": (macro.get("country_risk_note") if key == "country_risk"
+                                 else macro.get("methodology_note")),
         }
 
     def heatmap(self, market: str = "id", sector: str = "", limit: int = 120) -> Dict[str, Any]:

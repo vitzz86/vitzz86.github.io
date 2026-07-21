@@ -90,7 +90,7 @@ def get_market_telemetry(symbol: str = "", include_chart: bool = False) -> dict:
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
 def get_macro_indicators(view: str = "core", pillar: str = "") -> dict:
-    """Get source-linked Indonesia macro releases; view is core, detail, or ratings."""
+    """Get source-linked Indonesia macro releases; view is core, detail, ratings, or country_risk."""
     return service.macro_indicators(view, pillar)
 
 

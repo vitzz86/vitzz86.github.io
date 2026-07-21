@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import copy
 import datetime as dt
+import math
+import statistics
 
 
 DATA_CUTOFF = "2026-07-21"
@@ -273,6 +275,186 @@ RATINGS = [
 ]
 
 
+def _number(value) -> float | None:
+    try:
+        number = float(value)
+        return number if math.isfinite(number) else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _series(row: dict | None) -> list[float]:
+    values = []
+    for raw in (row or {}).get("spark") or []:
+        value = _number(raw)
+        if value is not None and value > 0:
+            values.append(value)
+    return values
+
+
+def _period_move(values: list[float], sessions: int) -> float | None:
+    if len(values) < 2:
+        return None
+    start = values[max(0, len(values) - sessions - 1)]
+    return ((values[-1] / start) - 1) * 100 if start else None
+
+
+def _realized_vol(values: list[float], sessions: int) -> float | None:
+    sample = values[-(sessions + 1):]
+    if len(sample) < 10:
+        return None
+    returns = [math.log(sample[i] / sample[i - 1]) for i in range(1, len(sample))
+               if sample[i] > 0 and sample[i - 1] > 0]
+    if len(returns) < 9:
+        return None
+    return statistics.stdev(returns) * math.sqrt(252) * 100
+
+
+def _max_drawdown(values: list[float]) -> float | None:
+    if len(values) < 2:
+        return None
+    peak = values[0]
+    worst = 0.0
+    for value in values[1:]:
+        peak = max(peak, value)
+        worst = min(worst, ((value / peak) - 1) * 100)
+    return worst
+
+
+def _market_source(row: dict | None) -> tuple[str, str]:
+    row = row or {}
+    url = str(row.get("url") or "")
+    name = str(row.get("source_name") or "")
+    if not name:
+        name = "TradingView" if "tradingview" in url.lower() else "Yahoo Finance"
+    return name, url
+
+
+def _risk_card(identifier: str, pillar: str, label: str, value: str, period: str,
+               source_row: dict, signal: str, direction: str, commentary: str, *,
+               previous: str = "", comparison_label: str = "Reference",
+               change: str = "", benchmark: str = "", secondary: list[str] | None = None,
+               priority: int = 0) -> dict:
+    source_name, source_url = _market_source(source_row)
+    card = _indicator(
+        identifier, pillar, label, value, period, "30-minute snapshot",
+        source_name, source_url, signal, direction, commentary,
+        previous=previous, comparison_label=comparison_label, change=change,
+        benchmark=benchmark, secondary=secondary, priority=priority,
+    )
+    card.update({
+        "published": "",
+        "update_mode": "market_derived",
+        "verification": "derived_from_market_source",
+    })
+    return card
+
+
+def _country_risk(telemetry_by_symbol: dict[str, dict]) -> list[dict]:
+    """Build transparent market-priced risk measures without estimating CDS/EMBI."""
+    cards = []
+    id10 = telemetry_by_symbol.get("ID10Y")
+    us10 = telemetry_by_symbol.get("^TNX")
+    if id10 and _number(id10.get("value")) is not None:
+        value = _number(id10.get("value"))
+        prev = _number(id10.get("prev_close"))
+        move_bp = (value - prev) * 100 if prev is not None else None
+        direction = "deteriorating" if move_bp is not None and move_bp > 10 else (
+            "improving" if move_bp is not None and move_bp < -10 else "stable")
+        signal = "red" if direction == "deteriorating" else (
+            "green" if direction == "improving" else "neutral")
+        cards.append(_risk_card(
+            "id_risk_sbn10y", "Sovereign Funding", "Indonesia 10Y SBN Yield",
+            f"{value:.2f}%", "Latest market snapshot", id10, signal, direction,
+            "The benchmark rupiah sovereign yield is a funding-cost indicator, not a standalone default-risk measure.",
+            previous=f"{prev:.2f}%" if prev is not None else "",
+            change=f"{move_bp:+.1f}bp" if move_bp is not None else "", priority=10,
+        ))
+        if us10 and _number(us10.get("value")) is not None:
+            us_value = _number(us10.get("value"))
+            gap_bp = (value - us_value) * 100
+            prev_us = _number(us10.get("prev_close"))
+            previous_gap = ((prev - prev_us) * 100
+                            if prev is not None and prev_us is not None else None)
+            change_bp = gap_bp - previous_gap if previous_gap is not None else None
+            gap_direction = "deteriorating" if change_bp is not None and change_bp > 10 else (
+                "improving" if change_bp is not None and change_bp < -10 else "stable")
+            gap_signal = "red" if gap_direction == "deteriorating" else (
+                "green" if gap_direction == "improving" else "neutral")
+            cards.append(_risk_card(
+                "id_risk_yield_gap", "Risk Premium Proxy", "ID-US 10Y Yield Differential",
+                f"{gap_bp:+.0f}bp", "Latest market snapshot", id10,
+                gap_signal, gap_direction,
+                "This carry and funding differential includes inflation and FX compensation; it is not a pure sovereign default spread.",
+                previous=f"{previous_gap:+.0f}bp" if previous_gap is not None else "",
+                change=f"{change_bp:+.1f}bp" if change_bp is not None else "",
+                benchmark=f"US 10Y {us_value:.2f}%", secondary=["Not CDS or JPM EMBI"], priority=11,
+            ))
+
+    fx = telemetry_by_symbol.get("USDIDR=X")
+    fx_values = _series(fx)
+    fx_move_1m = _period_move(fx_values, 22)
+    fx_move_3m = _period_move(fx_values, 66)
+    if fx and fx_move_1m is not None:
+        direction = "deteriorating" if fx_move_1m > 2 else (
+            "improving" if fx_move_1m < -2 else "stable")
+        signal = "red" if direction == "deteriorating" else (
+            "green" if direction == "improving" else "neutral")
+        cards.append(_risk_card(
+            "id_risk_rupiah_move", "Currency Risk", "Rupiah 1M Move",
+            f"{fx_move_1m:+.2f}%", "22 trading sessions", fx, signal, direction,
+            "A positive USD/IDR move means rupiah depreciation; persistent weakening raises imported-inflation and foreign-flow risk.",
+            benchmark=f"3M {fx_move_3m:+.2f}%" if fx_move_3m is not None else "",
+            secondary=["Positive = IDR weaker"], priority=20,
+        ))
+    fx_vol_1m = _realized_vol(fx_values, 22)
+    fx_vol_3m = _realized_vol(fx_values, 66)
+    if fx and fx_vol_1m is not None:
+        ratio = fx_vol_1m / fx_vol_3m if fx_vol_3m else 1
+        direction = "deteriorating" if ratio > 1.15 else (
+            "improving" if ratio < .85 else "stable")
+        signal = "red" if direction == "deteriorating" else (
+            "green" if direction == "improving" else "neutral")
+        cards.append(_risk_card(
+            "id_risk_fx_vol", "Currency Risk", "USD/IDR Realized Volatility",
+            f"{fx_vol_1m:.2f}% ann.", "1M daily window", fx, signal, direction,
+            "Annualized daily volatility measures rupiah instability; it complements, but does not replace, sovereign-spread data.",
+            benchmark=f"3M {fx_vol_3m:.2f}% ann." if fx_vol_3m is not None else "",
+            priority=21,
+        ))
+
+    jci = telemetry_by_symbol.get("^JKSE")
+    jci_values = _series(jci)
+    jci_vol_1m = _realized_vol(jci_values, 22)
+    jci_vol_3m = _realized_vol(jci_values, 66)
+    if jci and jci_vol_1m is not None:
+        ratio = jci_vol_1m / jci_vol_3m if jci_vol_3m else 1
+        direction = "deteriorating" if ratio > 1.15 else (
+            "improving" if ratio < .85 else "stable")
+        signal = "red" if direction == "deteriorating" else (
+            "green" if direction == "improving" else "neutral")
+        cards.append(_risk_card(
+            "id_risk_jci_vol", "Equity Risk", "JCI Realized Volatility",
+            f"{jci_vol_1m:.2f}% ann.", "1M daily window", jci, signal, direction,
+            "Annualized JCI volatility tracks market stress and position-sizing risk rather than fundamental value.",
+            benchmark=f"3M {jci_vol_3m:.2f}% ann." if jci_vol_3m is not None else "",
+            priority=30,
+        ))
+    drawdown = _max_drawdown(jci_values)
+    if jci and drawdown is not None:
+        direction = "deteriorating" if drawdown <= -15 else (
+            "improving" if drawdown > -5 else "stable")
+        signal = "red" if direction == "deteriorating" else (
+            "green" if direction == "improving" else "neutral")
+        cards.append(_risk_card(
+            "id_risk_jci_drawdown", "Equity Risk", "JCI 6M Max Drawdown",
+            f"{drawdown:.2f}%", "6M daily window", jci, signal, direction,
+            "Peak-to-trough loss shows realized equity stress within the available six-month history.",
+            benchmark="Stress threshold -15%", priority=31,
+        ))
+    return cards
+
+
 def _mark_stale(rows: list[dict]) -> int:
     today = dt.datetime.now(dt.timezone.utc).date()
     stale_count = 0
@@ -295,6 +477,7 @@ def collect(telemetry: list, previous: dict | None = None) -> dict:
     detail = copy.deepcopy(DETAIL)
     ratings = copy.deepcopy(RATINGS)
     telemetry_by_symbol = {row.get("symbol"): row for row in telemetry or []}
+    country_risk = _country_risk(telemetry_by_symbol)
     bi = telemetry_by_symbol.get("BI_RATE")
     if bi:
         card = next((item for item in core if item["id"] == "id_bi_rate"), None)
@@ -313,10 +496,16 @@ def collect(telemetry: list, previous: dict | None = None) -> dict:
         "core": core,
         "detail": detail,
         "ratings": ratings,
+        "country_risk": country_risk,
         "health": {
             "official_indicator_count": len(all_official),
             "official_source_count": len({item["source_name"] for item in all_official}),
             "stale_official_count": stale_official,
+            "country_risk_measure_count": len(country_risk),
+            "country_risk_missing": [
+                name for symbol, name in (("ID10Y", "Indonesia 10Y SBN"),)
+                if symbol not in telemetry_by_symbol
+            ],
         },
         "refresh_policy": (
             "Markets refresh every 30 minutes. Official macro cards advance only after a newer "
@@ -325,5 +514,10 @@ def collect(telemetry: list, previous: dict | None = None) -> dict:
         "methodology_note": (
             "Direction compares only published periods or stated benchmarks. Green means improving, "
             "red means deteriorating, and grey means stable, mixed, or insufficient trend evidence."
+        ),
+        "country_risk_note": (
+            "Market-priced risk measures use transparent 30-minute telemetry and daily price history. "
+            "The ID-US yield differential is a carry/funding proxy, not CDS or JPM EMBI. Proprietary "
+            "sovereign spreads and unavailable flow data are omitted rather than estimated."
         ),
     }
