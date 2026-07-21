@@ -45,11 +45,11 @@ jobs:
         run: |
           git config user.name  "cockpit-bot"
           git config user.email "actions@github.com"
-          if [ -z "$(git status --porcelain data.json scores.json charts.json)" ]; then
+          if [ -z "$(git status --porcelain data.json scores.json charts.json mcp.json mcp-assets.json)" ]; then
             echo "data contracts unchanged — nothing to deploy"
             exit 0
           fi
-          git add data.json scores.json charts.json
+          git add data.json scores.json charts.json mcp.json mcp-assets.json
           git commit -m "cockpit: refresh intelligence payload"
           # Concurrent runs (cron + manual) both touch data.json/scores.json. Rebase with
           # "-X theirs" auto-resolves the conflict to OUR freshly-generated payload

@@ -25,6 +25,7 @@ try {
   const coverage = [
     ["get_market_telemetry", { symbol: "^JKSE" }],
     ["get_macro_indicators", { view: "core" }],
+    ["get_macro_indicators", { view: "country_risk" }],
     ["get_market_heatmap", { market: "ID", limit: 3 }],
     ["get_trending_assets", { market: "id", mode: "all" }],
     ["search_assets", { query: "bank", market: "ID", limit: 3 }],

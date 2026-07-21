@@ -1,4 +1,6 @@
-const CONTRACTS = ["data.json", "scores.json", "charts.json"];
+const CONTRACTS = ["mcp.json", "mcp-assets.json", "scores.json", "charts.json"];
+const CONTRACT_CACHE = new Map();
+const ASSET_CACHE = new WeakMap();
 const MARKET_ALIASES = {
   id: "ID", idx: "ID", indonesia: "ID",
   us: "US", usa: "US", sp500: "US", nasdaq: "US",
@@ -32,19 +34,28 @@ async function fetchJson(url, ttl = 30) {
   return data;
 }
 
+function cachedJson(url, ttl = 30) {
+  const now = Date.now();
+  const cached = CONTRACT_CACHE.get(url);
+  if (cached && cached.expires > now) return cached.promise;
+  const promise = fetchJson(url, ttl).catch(error => {
+    if (CONTRACT_CACHE.get(url)?.promise === promise) CONTRACT_CACHE.delete(url);
+    throw error;
+  });
+  CONTRACT_CACHE.set(url, { promise, expires: now + ttl * 1000 });
+  return promise;
+}
+
 function createContractLoader(env) {
   const base = String(env.COCKPIT_DATA_BASE_URL || "https://vitzz86.github.io").replace(/\/$/, "");
-  const pending = new Map();
-  const loadOne = name => {
-    if (!pending.has(name)) pending.set(name, fetchJson(`${base}/${name}`, 30));
-    return pending.get(name);
-  };
+  const loadOne = name => cachedJson(`${base}/${name}`, name === "mcp.json" ? 30 : 60);
   return async (needs = []) => {
-    const requested = [...new Set(["data.json", ...needs])];
+    const requested = [...new Set(["mcp.json", ...needs])];
     const values = await Promise.all(requested.map(loadOne));
     const loaded = Object.fromEntries(requested.map((name, index) => [name, values[index]]));
     return {
-      data: loaded["data.json"],
+      data: loaded["mcp.json"],
+      assets: loaded["mcp-assets.json"] || null,
       scores: loaded["scores.json"]?.scores || {},
       charts: loaded["charts.json"]?.charts || {},
       base,
@@ -53,21 +64,28 @@ function createContractLoader(env) {
 }
 
 function buildAssets(data, scores = {}, charts = {}) {
-  const rows = [];
-  const seen = new Set();
-  for (const sector of data.sectors || []) {
-    for (const original of sector.constituents || []) {
-      const row = { ...original };
-      row.sector_key ||= sector.key;
-      row.sector_name ||= sector.name;
-      const ref = row.score_ref || row.chart_ref || `${row.country}|${row.ticker}|${sector.key}`;
-      if (seen.has(ref)) continue;
-      seen.add(ref);
-      row._ref = ref;
-      row._score = scores[row.score_ref || ref] || row.fundamental_score || {};
-      row._chart = charts[row.chart_ref || ref] || {};
-      rows.push(row);
+  let rows = ASSET_CACHE.get(data);
+  if (!rows) {
+    rows = [];
+    const seen = new Set();
+    for (const sector of data.sectors || []) {
+      for (const row of sector.constituents || []) {
+        row.sector_key ||= sector.key;
+        row.sector_name ||= sector.name;
+        const ref = row.score_ref || row.chart_ref || `${row.country}|${row.ticker}|${sector.key}`;
+        if (seen.has(ref)) continue;
+        seen.add(ref);
+        row._ref = ref;
+        rows.push(row);
+      }
     }
+    ASSET_CACHE.set(data, rows);
+  }
+  const hasScores = scores && Object.keys(scores).length;
+  const hasCharts = charts && Object.keys(charts).length;
+  if (hasScores || hasCharts) for (const row of rows) {
+    if (hasScores) row._score = scores[row.score_ref || row._ref] || {};
+    if (hasCharts) row._chart = charts[row.chart_ref || row._ref] || {};
   }
   return rows;
 }
@@ -120,6 +138,7 @@ function scoreSummary(score) {
 }
 
 function assetView(row) {
+  const score = row._score || {};
   return {
     ticker: row.ticker, name: row.name, source_symbol: row.source_symbol,
     country: row.country, country_name: row.country_name, exchange: row.exchange,
@@ -130,7 +149,22 @@ function assetView(row) {
     live_overlay: Boolean(row._live_overlay), data_tier: row.data_tier,
     source: { name: row.source_name || row.source_provider, url: row.source_url || row.url },
     interactive_chart_url: row.source_url || row.url,
-    chart_quality: row.chart_quality || {}, score: scoreSummary(row._score), reference: row._ref,
+    chart_quality: row.chart_quality || {}, score: scoreSummary(score), reference: row._ref,
+    performance: {
+      "24h_pct": finite(row.delta_pct), "1w_pct": finite(row.perf_1w),
+      "1m_pct": finite(row.perf_1m), "3m_pct": finite(row.perf_3m),
+      "6m_pct": finite(row.perf_6m), "1y_pct": finite(row.perf_1y),
+      "ytd_pct": finite(row.perf_ytd),
+    },
+    liquidity: {
+      volume: finite(row.volume), average_volume_10d: finite(row.avg_volume_10d),
+      average_volume_30d: finite(row.avg_volume_30d), relative_volume_10d: finite(row.relative_volume_10d),
+      turnover: finite(row.turnover),
+    },
+    analyst_consensus: {
+      low: finite(row.analyst_target_low), median: finite(row.analyst_target_median),
+      high: finite(row.analyst_target_high), recommendation: row.recommend_all || null,
+    },
   };
 }
 
@@ -278,14 +312,13 @@ export function createCockpitService(env) {
 
     async status() {
       const { data, base } = await loadContracts();
-      const rows = buildAssets(data);
       const fast = await loadFastQuotes(data);
       const ageSeconds = data.timestamp ? Math.max(0, Math.floor((Date.now() - Date.parse(data.timestamp)) / 1000)) : null;
       return {
         service: "Project Cockpit MCP", mode: "read_only", transport: "streamable_http",
         payload_timestamp: data.timestamp, payload_age_seconds: ageSeconds,
         freshness: ageSeconds === null ? "unknown" : ageSeconds <= 3600 ? "fresh" : "stale",
-        asset_count: rows.length, news_count: (data.news || []).length, video_count: (data.videos || []).length,
+        asset_count: data.asset_count ?? (data.sectors || []).reduce((sum, row) => sum + (row.constituents || []).length, 0), news_count: (data.news || []).length, video_count: (data.videos || []).length,
         knowledge_count: (data.podcasts || []).length, research_count: (data.research?.reports || []).length, data_source: base,
         dashboard_url: env.COCKPIT_DASHBOARD_URL || `${base}/cockpit.html`,
         idx_fast_quotes: fast.health, contracts: CONTRACTS,
@@ -319,10 +352,10 @@ export function createCockpitService(env) {
     },
 
     async heatmap(market = "id", sector = "", limit = 120) {
-      const { data } = await loadContracts();
+      const { data, assets } = await loadContracts(["mcp-assets.json"]);
       const fast = await loadFastQuotes(data);
       const code = marketCode(market); const wantedSector = norm(sector).replace(/ /g, "_");
-      let rows = buildAssets(data).map(row => withFastQuote(row, fast.quotes)).filter(row => {
+      let rows = buildAssets(assets).map(row => withFastQuote(row, fast.quotes)).filter(row => {
         const marketOk = code === "ALL" || row.country === code || row.region === code || (code === "US" && row.country === "US");
         return marketOk && (!wantedSector || norm(row.sector_key).replace(/ /g, "_") === wantedSector);
       });
@@ -343,10 +376,10 @@ export function createCockpitService(env) {
     },
 
     async searchAssets(query = "", market = "all", sector = "", limit = 15) {
-      const { data, scores } = await loadContracts(["scores.json"]);
+      const { data, assets, scores } = await loadContracts(["mcp-assets.json", "scores.json"]);
       const fast = await loadFastQuotes(data); const code = marketCode(market);
       const wantedSector = norm(sector).replace(/ /g, "_"); const q = tokens(query);
-      let rows = buildAssets(data, scores).map(row => withFastQuote(row, fast.quotes)).filter(row => {
+      let rows = buildAssets(assets, scores).map(row => withFastQuote(row, fast.quotes)).filter(row => {
         if (code !== "ALL" && row.country !== code && row.region !== code) return false;
         if (wantedSector && norm(row.sector_key).replace(/ /g, "_") !== wantedSector) return false;
         const haystack = norm([row.ticker, row.name, row.industry, row.sector_name, row.country_name].join(" "));
@@ -357,16 +390,16 @@ export function createCockpitService(env) {
     },
 
     async asset(ticker, country = "") {
-      const { data, scores } = await loadContracts(["scores.json"]);
-      const fast = await loadFastQuotes(data); const rows = buildAssets(data, scores);
+      const { data, assets, scores } = await loadContracts(["mcp-assets.json", "scores.json"]);
+      const fast = await loadFastQuotes(data); const rows = buildAssets(assets, scores);
       const resolved = resolveAsset(rows, ticker, country);
       if (!resolved.row) return { status: "not_found", ticker, candidates: resolved.candidates.slice(0, 10).map(assetView) };
       return { status: "ok", as_of: data.timestamp, ...assetView(withFastQuote(resolved.row, fast.quotes)), idx_fast_quotes: fast.health };
     },
 
     async chart(ticker, timeframe = "1M", country = "") {
-      const { data, charts } = await loadContracts(["charts.json"]);
-      const fast = await loadFastQuotes(data); const rows = buildAssets(data, {}, charts);
+      const { data, assets, charts } = await loadContracts(["mcp-assets.json", "charts.json"]);
+      const fast = await loadFastQuotes(data); const rows = buildAssets(assets, {}, charts);
       const resolved = resolveAsset(rows, ticker, country);
       if (!resolved.row) return { status: "not_found", ticker };
       const row = withFastQuote(resolved.row, fast.quotes); let points = timeframePoints(row, timeframe);
@@ -386,8 +419,8 @@ export function createCockpitService(env) {
     },
 
     async score(ticker, country = "") {
-      const { data, scores } = await loadContracts(["scores.json"]);
-      const rows = buildAssets(data, scores); const resolved = resolveAsset(rows, ticker, country);
+      const { data, assets, scores } = await loadContracts(["mcp-assets.json", "scores.json"]);
+      const rows = buildAssets(assets, scores); const resolved = resolveAsset(rows, ticker, country);
       if (!resolved.row) return { status: "not_found", ticker };
       const score = resolved.row._score || {};
       if (!score.score && score.score !== 0) return { status: "unavailable", ticker: resolved.row.ticker, mode: "price_only", warnings: ["No validated score is available."] };
@@ -401,16 +434,16 @@ export function createCockpitService(env) {
     },
 
     async sectors() {
-      const { data } = await loadContracts();
-      return { as_of: data.timestamp, results: (data.sectors || []).map(item => ({ key: item.key, name: item.name, return_pct: item.change, indonesia_return_pct: item.idChange, us_return_pct: item.usChange, signal: item.signal, constituent_count: (item.constituents || []).length })) };
+      const { data, assets } = await loadContracts(["mcp-assets.json"]);
+      return { as_of: data.timestamp, results: (assets.sectors || []).map(item => ({ key: item.key, name: item.name, return_pct: item.change, indonesia_return_pct: item.idChange, us_return_pct: item.usChange, signal: item.signal, constituent_count: (item.constituents || []).length })) };
     },
 
     async sector(sector, market = "all", limit = 20) {
-      const { data, scores } = await loadContracts(["scores.json"]); const wanted = norm(sector).replace(/ /g, "_");
-      const match = (data.sectors || []).find(item => [item.key, item.name].map(v => norm(v).replace(/ /g, "_")).includes(wanted));
-      if (!match) return { status: "not_found", sector, available: (data.sectors || []).map(item => item.key) };
+      const { data, assets, scores } = await loadContracts(["mcp-assets.json", "scores.json"]); const wanted = norm(sector).replace(/ /g, "_");
+      const match = (assets.sectors || []).find(item => [item.key, item.name].map(v => norm(v).replace(/ /g, "_")).includes(wanted));
+      if (!match) return { status: "not_found", sector, available: (assets.sectors || []).map(item => item.key) };
       const code = marketCode(market); const fast = await loadFastQuotes(data);
-      const refs = new Map(buildAssets(data, scores).map(row => [row._ref, row]));
+      const refs = new Map(buildAssets(assets, scores).map(row => [row._ref, row]));
       const rows = (match.constituents || []).map(raw => refs.get(raw.score_ref || raw.chart_ref) || { ...raw, _score: raw.fundamental_score || {}, _ref: raw.score_ref || raw.chart_ref })
         .filter(row => code === "ALL" || row.country === code || row.region === code)
         .map(row => withFastQuote(row, fast.quotes)).sort((a, b) => (finite(b.market_cap_value) || 0) - (finite(a.market_cap_value) || 0));
@@ -418,8 +451,8 @@ export function createCockpitService(env) {
     },
 
     async movers(market = "id", mode = "gainers", limit = 8) {
-      const { data, scores } = await loadContracts(["scores.json"]); const fast = await loadFastQuotes(data); const code = marketCode(market);
-      let rows = buildAssets(data, scores).map(row => withFastQuote(row, fast.quotes)).filter(row => code === "ALL" || row.country === code || row.region === code);
+      const { data, assets, scores } = await loadContracts(["mcp-assets.json", "scores.json"]); const fast = await loadFastQuotes(data); const code = marketCode(market);
+      let rows = buildAssets(assets, scores).map(row => withFastQuote(row, fast.quotes)).filter(row => code === "ALL" || row.country === code || row.region === code);
       const requested = String(mode || "gainers").toLowerCase();
       if (requested === "top_score") rows = rows.filter(row => finite(row._score?.score) !== null).sort((a, b) => finite(b._score.score) - finite(a._score.score));
       else if (["best_risk_price", "best_value"].includes(requested)) rows = rows.filter(row => finite(row._score?.score) !== null).sort((a, b) => {
@@ -517,8 +550,8 @@ export function createCockpitService(env) {
     },
 
     async companyEvidence(ticker, market = "id", windowDays = 7) {
-      const [asset, score, chart, news, videos, research] = await Promise.all([
-        this.asset(ticker, market), this.score(ticker, market), this.chart(ticker, "6M", market),
+      const [asset, score, news, videos, research] = await Promise.all([
+        this.asset(ticker, market), this.score(ticker, market),
         this.news({ ticker, market, window_days: windowDays, limit: 10 }),
         this.videos({ query: ticker, market, window_days: windowDays, include_knowledge: true, limit: 8 }),
         this.research({ query: ticker, ticker, limit: 12 }),
@@ -532,7 +565,21 @@ export function createCockpitService(env) {
         if (!(context.results || []).length && geography) context = await this.research({ geography, limit: 6 });
         contextResearch = context.results || [];
       }
-      return { ticker: String(ticker).toUpperCase(), market: marketCode(market), asset, score, chart, news: news.results || [], videos: videos.results || [], research: research.results || [], context_research: contextResearch, provenance_rules: ["Provider data, Cockpit calculations, publisher research, and AI inference must be labelled separately.", "Broker opinions and target prices are evidence, not facts or personalized recommendations.", "Open the linked report before relying on a recommendation or valuation."] };
+      const chart = asset?.status === "ok" ? {
+        status: "available_on_demand", interactive_chart_url: asset.interactive_chart_url,
+        chart_quality: asset.chart_quality || {},
+        instruction: "Call get_asset_chart for auditable points in the required timeframe.",
+      } : { status: "unavailable" };
+      return {
+        ticker: String(ticker).toUpperCase(), market: marketCode(market), asset, score, chart,
+        news: news.results || [], videos: videos.results || [], research: research.results || [],
+        context_research: contextResearch,
+        research_framework: {
+          evidence_layers: ["market data", "deterministic score", "company and sector news", "video intelligence", "institutional research"],
+          required_analysis: ["business and industry context", "earnings and catalysts", "valuation", "liquidity and risk", "bull/base/bear cases", "data gaps"],
+        },
+        provenance_rules: ["Provider data, Cockpit calculations, publisher research, and AI inference must be labelled separately.", "Broker opinions and target prices are evidence, not facts or personalized recommendations.", "Open the linked report before relying on a recommendation or valuation.", "Never convert missing data into an estimate without explicit user authorization."],
+      };
     },
 
     async dailyBrief() { const { data } = await loadContracts(); return { ...data.daily_brief, payload_timestamp: data.timestamp, provenance: "Cockpit scheduled synthesis; linked cards remain the evidence of record." }; },
@@ -554,14 +601,14 @@ export function createCockpitService(env) {
 
     async intelligence(args = {}) {
       const query = args.topic || args.ticker || args.sector || "";
-      const [status, asset, news, videos, research, sentiment, macro, alerts, macroIndicators] = await Promise.all([
+      const [status, asset, news, videos, research, sentiment, macro, alerts, macroIndicators, countryRisk] = await Promise.all([
         this.status(), args.ticker ? this.asset(args.ticker, args.market) : null,
         this.news({ query, market: args.market, sector: args.sector, ticker: args.ticker, window_days: args.window_days, limit: 8 }),
         this.videos({ query, market: args.market, window_days: args.window_days, include_knowledge: true, limit: 8 }),
         this.research({ query, ticker: args.ticker, limit: 8 }),
-        this.sentiment(), this.macro(), this.alerts(), this.macroIndicators("core"),
+        this.sentiment(), this.macro(), this.alerts(), this.macroIndicators("core"), this.macroIndicators("country_risk"),
       ]);
-      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], research: research.results || [], macro_indicators: macroIndicators, macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "Broker research is attributed opinion, not fact.", "State missing or stale data; never estimate absent fundamentals."] };
+      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], research: research.results || [], macro_indicators: macroIndicators, country_risk: countryRisk, macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "Broker research is attributed opinion, not fact.", "State missing or stale data; never estimate absent fundamentals."] };
     },
   };
 }

@@ -234,6 +234,71 @@ def _extract_chart_payload(payload: dict) -> dict:
     }
 
 
+MCP_ASSET_KEYS = {
+    "ticker", "name", "source_symbol", "country", "country_name", "country_flag",
+    "exchange", "region", "industry", "sector_key", "sector_name", "tier",
+    "index_groups", "value", "delta_pct", "market_cap_value", "mktcap", "volume",
+    "volume_24h", "avg_volume_10d", "avg_volume_30d", "relative_volume_10d",
+    "turnover", "state", "quote_asof", "quote_mode", "chart_asof", "chart_quality",
+    "data_tier", "source_name", "source_provider", "source_url", "url",
+    "score_ref", "chart_ref", "perf_1w", "perf_1m", "perf_3m", "perf_6m",
+    "perf_1y", "perf_ytd", "analyst_target_low", "analyst_target_median",
+    "analyst_target_high", "recommend_all", "rsi", "volatility_1d",
+    "volatility_1w", "volatility_1m", "listing_ts",
+}
+
+
+def _extract_mcp_assets(payload: dict) -> dict:
+    """Compact asset universe loaded only by market and company MCP tools."""
+    sectors_out = []
+    asset_count = 0
+    for sector in payload.get("sectors", []) or []:
+        constituents = []
+        for row in sector.get("constituents", []) or []:
+            compact = {key: row.get(key) for key in MCP_ASSET_KEYS
+                       if row.get(key) is not None}
+            compact.setdefault("sector_key", sector.get("key"))
+            compact.setdefault("sector_name", sector.get("name"))
+            constituents.append(compact)
+        asset_count += len(constituents)
+        sectors_out.append({
+            key: sector.get(key)
+            for key in ("key", "name", "icon", "change", "idChange", "usChange",
+                        "signal", "themes", "themes_ai", "ai")
+            if sector.get(key) is not None
+        } | {"constituents": constituents})
+
+    return {
+        "timestamp": payload.get("timestamp"),
+        "schema": 1,
+        "contract": "project_cockpit_mcp_assets",
+        "asset_count": asset_count,
+        "sectors": sectors_out,
+    }
+
+
+def _extract_mcp_payload(payload: dict) -> dict:
+    """Compact intelligence contract for the public MCP Worker.
+
+    The dashboard keeps rich sector rows in data.json; the asset universe is a
+    separate lazy contract, and score/chart details remain independently lazy.
+    """
+    keep = (
+        "timestamp", "telemetry", "trending", "news", "ticker_news", "videos",
+        "podcasts", "daily_brief", "macro_analysis", "alerts", "arbiter_brief",
+        "ipo", "research", "macro_indicators", "intelligence_health",
+        "coverage_universe", "config",
+    )
+    out = {key: payload.get(key) for key in keep if key in payload}
+    out.update({
+        "schema": 1,
+        "contract": "project_cockpit_mcp",
+        "asset_count": sum(len(sector.get("constituents", []) or [])
+                           for sector in payload.get("sectors", []) or []),
+    })
+    return out
+
+
 def node_hunter(state: dict) -> dict:
     headlines = enterprise_osint.scan_feeds()
     if state["anomaly"]:
@@ -498,7 +563,7 @@ def validate(payload: dict) -> None:
     _validate_intelligence(payload)
 
 
-def compile_payload(state: dict) -> tuple[dict, dict, dict]:
+def compile_payload(state: dict) -> tuple[dict, dict, dict, dict, dict]:
     wx = env_context.weather()
     wx.pop("_rainy", False)
     previous_note, previous_pods = None, []
@@ -586,7 +651,9 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
     validate(payload)
     scores_payload = _extract_score_payload(payload)
     charts_payload = _extract_chart_payload(payload)
-    return payload, scores_payload, charts_payload
+    mcp_payload = _extract_mcp_payload(payload)
+    mcp_assets_payload = _extract_mcp_assets(payload)
+    return payload, scores_payload, charts_payload, mcp_payload, mcp_assets_payload
 
 
 def _deepseek_sector_intel(sectors_list: list, has_llm: bool,
@@ -656,13 +723,21 @@ def _write_json_atomic(path: str, payload: dict) -> None:
 
 
 def write_atomic(payload: dict, scores_payload: dict | None = None,
-                 charts_payload: dict | None = None) -> None:
+                 charts_payload: dict | None = None,
+                 mcp_payload: dict | None = None,
+                 mcp_assets_payload: dict | None = None) -> None:
     if scores_payload is not None:
         _write_json_atomic(settings.SCORES_JSON_PATH, scores_payload)
         print(f"[worker] score detail contract written -> {os.path.abspath(settings.SCORES_JSON_PATH)}")
     if charts_payload is not None:
         _write_json_atomic(settings.CHARTS_JSON_PATH, charts_payload)
         print(f"[worker] chart detail contract written -> {os.path.abspath(settings.CHARTS_JSON_PATH)}")
+    if mcp_payload is not None:
+        _write_json_atomic(settings.MCP_JSON_PATH, mcp_payload)
+        print(f"[worker] MCP contract written -> {os.path.abspath(settings.MCP_JSON_PATH)}")
+    if mcp_assets_payload is not None:
+        _write_json_atomic(settings.MCP_ASSETS_JSON_PATH, mcp_assets_payload)
+        print(f"[worker] MCP asset contract written -> {os.path.abspath(settings.MCP_ASSETS_JSON_PATH)}")
     _write_json_atomic(settings.DATA_JSON_PATH, payload)
     print(f"[worker] data contract written -> {os.path.abspath(settings.DATA_JSON_PATH)}")
 
@@ -670,8 +745,10 @@ def write_atomic(payload: dict, scores_payload: dict | None = None,
 def main() -> int:
     try:
         state = run_graph()
-        payload, scores_payload, charts_payload = compile_payload(state)
-        write_atomic(payload, scores_payload, charts_payload)
+        (payload, scores_payload, charts_payload, mcp_payload,
+         mcp_assets_payload) = compile_payload(state)
+        write_atomic(payload, scores_payload, charts_payload, mcp_payload,
+                     mcp_assets_payload)
         return 0
     except Exception as e:  # noqa: BLE001 — failover: keep last valid data.json
         print(f"[worker] FATAL — existing data.json left undisturbed: {e}")

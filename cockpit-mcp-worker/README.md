@@ -7,7 +7,7 @@ fast-quote gateway on current-price queries.
 
 ## Data behavior
 
-- `data.json`, `scores.json`, and `charts.json` come from
+- `mcp.json`, `mcp-assets.json`, `scores.json`, and `charts.json` come from
   `https://vitzz86.github.io` and are edge-cached for 30 seconds.
 - IDX asset, heatmap, sector, and mover queries call the configured TradingView
   snapshot Worker through a private Cloudflare service binding and use its
@@ -87,6 +87,7 @@ COCKPIT_MCP_TEST_URL=https://project-cockpit-mcp.samudravito4.workers.dev/mcp np
 ```
 
 The smoke test discovers all 27 tools and exercises current quotes, charts,
+country risk, institutional research evidence,
 scores, sectors, movers, news, videos, Knowledge Hub, Daily Brief, macro,
 alerts, IPO radar, source-linked research, company evidence, and the combined
 intelligence brief.

@@ -2,7 +2,8 @@
 
 Autonomous data-generation architecture behind [`/cockpit.html`](../cockpit.html).
 Agents run sequentially as a LangGraph state machine and compile three strict
-static contracts: `data.json` for the primary dashboard, `scores.json` for
+static contracts: `data.json` for the primary dashboard, `mcp.json` for the
+compact public AI evidence layer, `mcp-assets.json` for the lazy asset universe, `scores.json` for
 lazy-loaded score detail, and `charts.json` for lazy-loaded chart history. A
 Cloudflare Worker supplies the 60-second TradingView IDX snapshot; the static
 payload remains the fallback when that gateway or an upstream provider fails.
@@ -88,13 +89,13 @@ fallbacks (telemetry + raw headlines), so the dashboard never breaks.
 
 ```bash
 pip install -r engine/requirements.txt
-python engine/cockpit_worker.py        # writes data.json + scores.json + charts.json atomically
+python engine/cockpit_worker.py        # writes data.json + mcp.json + mcp-assets.json + scores.json + charts.json atomically
 PYTHONPATH=engine python -m unittest discover -s engine/tests -v
 ```
 
 ## Deploy
 
 `.github/workflows/cockpit_sync.yml` is triggered by cron-job.org via
-`workflow_dispatch` and commits `data.json`, `scores.json`, and `charts.json` back to the repo.
+`workflow_dispatch` and commits `data.json`, `mcp.json`, `mcp-assets.json`, `scores.json`, and `charts.json` back to the repo.
 Add the env vars above as repository **Secrets**. Failures leave the previous
 published payload untouched.

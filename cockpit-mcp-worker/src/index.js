@@ -12,7 +12,7 @@ function createServer(env) {
     name: "Project Cockpit",
     version: "1.0.0",
   }, {
-    instructions: "Read-only Indonesia-first market intelligence. Always state timestamp, market state, provider, score mode, confidence, and warnings when material. Cite source URLs. Distinguish provider facts, deterministic Cockpit calculations, attributed publisher opinions, and AI inference. Never invent missing fundamentals, targets, transcripts, or causal claims.",
+    instructions: "Read-only Indonesia-first institutional market intelligence for equity research and investment-banking context. Always state timestamp, market state, provider, score mode, confidence, and warnings when material. Cite source URLs. Distinguish provider facts, deterministic Cockpit calculations, attributed publisher opinions, and AI inference. For company work, organize evidence into business context, catalysts, valuation, liquidity/risk, bull/base/bear cases, and explicit data gaps. Never invent missing fundamentals, targets, transcripts, causal claims, transaction data, or recommendations.",
   });
   const service = createCockpitService(env);
   const tool = (name, description, schema, handler) => server.registerTool(name, {
@@ -41,7 +41,7 @@ function createServer(env) {
   tool("search_knowledge_hub", "Search Knowledge Hub episodes by category, show, title, host, or thesis.", { category: optionalString, query: optionalString, limit: optionalLimit }, ({ category, query, limit }) => service.knowledge(category, query, limit));
   tool("search_research", "Search source-linked research. category accepts Economics & Macro, Equity Research, Market Strategy, Fixed Income & Credit, Private Markets & Venture, or Industry & Thematic. geography accepts Global, SEA, APAC, or Indonesia.", { query: optionalString, category: optionalString, geography: optionalString, ticker: optionalString, publisher: optionalString, open_only: z.boolean().optional(), limit: optionalLimit }, input => service.research(input));
   tool("get_research_detail", "Get one exact research record with publisher, date, evidence basis, access status, and original report links.", { id_or_url_or_title: z.string().min(1) }, ({ id_or_url_or_title }) => service.researchDetail(id_or_url_or_title));
-  tool("get_company_evidence", "Assemble one ticker's quote, deterministic score, 6M chart, news, videos, and broker/institutional research for AI analysis.", { ticker: z.string().min(1), market: optionalString, window_days: z.number().int().min(1).max(7).optional() }, ({ ticker, market, window_days }) => service.companyEvidence(ticker, market, window_days));
+  tool("get_company_evidence", "Build an institutional equity-research evidence packet for one ticker: live quote, deterministic score, chart route, liquidity/risk, news, videos, and broker/institutional research. Raw chart points remain available through get_asset_chart.", { ticker: z.string().min(1), market: optionalString, window_days: z.number().int().min(1).max(7).optional() }, ({ ticker, market, window_days }) => service.companyEvidence(ticker, market, window_days));
   tool("get_daily_brief", "Get sentiment, synthesis, key themes, Must Read, Must Watch, and quality audit.", {}, () => service.dailyBrief());
   tool("get_market_sentiment", "Get Indonesia, US, global, and crypto sentiment plus news and video digests.", {}, () => service.sentiment());
   tool("get_macro_analysis", "Get source-linked macro analysis and cross-market context.", {}, () => service.macro());

@@ -1,6 +1,7 @@
 import time
 import unittest
 
+import cockpit_worker
 from tools import (fundamentals, idx_membership, ipos, macro_indicators,
                    news_router, research, sectors, universe)
 
@@ -198,6 +199,41 @@ class MacroIndicatorContractTests(unittest.TestCase):
         self.assertIn("not a pure sovereign default spread", gap["commentary"])
         self.assertTrue(all(item["update_mode"] == "market_derived" for item in risk))
         self.assertFalse(any("CDS" in item["label"] or "EMBI" in item["label"] for item in risk))
+
+
+class McpContractTests(unittest.TestCase):
+    def test_mcp_contract_keeps_evidence_and_removes_dashboard_weight(self):
+        payload = {
+            "timestamp": "2026-07-21T00:00:00Z",
+            "telemetry": [], "news": [{"title": "Source-linked news"}],
+            "ticker_news": {"BBCA": [{"title": "BBCA evidence"}]},
+            "videos": [], "podcasts": [], "daily_brief": {},
+            "macro_analysis": [], "alerts": [], "arbiter_brief": "",
+            "ipo": {}, "research": {"reports": [{"id": "r1"}]},
+            "macro_indicators": {"country_risk": [{"id": "risk"}]},
+            "intelligence_health": {}, "coverage_universe": {}, "config": {},
+            "trending": {},
+            "sectors": [{
+                "key": "financials", "name": "Financials", "change": 1.0,
+                "constituents": [{
+                    "ticker": "BBCA", "name": "Bank Central Asia", "country": "ID",
+                    "value": 9000, "perf_6m": 12.5, "score_ref": "ID|BBCA",
+                    "chart_ref": "ID|BBCA", "spark": list(range(190)),
+                    "fundamental_score": {"metrics": list(range(100))},
+                }],
+            }],
+        }
+        contract = cockpit_worker._extract_mcp_payload(payload)
+        assets = cockpit_worker._extract_mcp_assets(payload)
+        self.assertEqual(contract["asset_count"], 1)
+        self.assertEqual(contract["news"][0]["title"], "Source-linked news")
+        self.assertEqual(contract["research"]["reports"][0]["id"], "r1")
+        self.assertEqual(contract["macro_indicators"]["country_risk"][0]["id"], "risk")
+        self.assertNotIn("sectors", contract)
+        asset = assets["sectors"][0]["constituents"][0]
+        self.assertEqual(asset["perf_6m"], 12.5)
+        self.assertNotIn("spark", asset)
+        self.assertNotIn("fundamental_score", asset)
 
 
 class IpoContractTests(unittest.TestCase):
