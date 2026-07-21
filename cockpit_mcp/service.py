@@ -411,10 +411,12 @@ class CockpitService:
         data, _, _ = self._snapshot()
         macro = data.get("macro_indicators") or {}
         aliases = {"indonesia": "core", "indonesia_core": "core",
-                   "overview": "core", "headline": "core", "indonesia_detail": "detail"}
+                   "overview": "core", "headline": "core", "indonesia_detail": "detail",
+                   "rating": "ratings", "credit_ratings": "ratings",
+                   "market_classification": "ratings"}
         key = aliases.get(_norm(view).replace(" ", "_"), _norm(view).replace(" ", "_")) or "core"
-        if key not in {"core", "detail"}:
-            return {"status": "invalid_view", "allowed": ["core", "detail"]}
+        if key not in {"core", "detail", "ratings"}:
+            return {"status": "invalid_view", "allowed": ["core", "detail", "ratings"]}
         rows = list(macro.get(key) or [])
         if pillar:
             wanted = _norm(pillar)

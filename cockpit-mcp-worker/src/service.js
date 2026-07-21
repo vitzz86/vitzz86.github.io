@@ -310,7 +310,7 @@ export function createCockpitService(env) {
     async macroIndicators(view = "core", pillar = "") {
       const { data } = await loadContracts(); const macro = data.macro_indicators || {};
       const key = String(view || "core").toLowerCase();
-      if (!["core", "detail"].includes(key)) return { status: "invalid_view", allowed: ["core", "detail"] };
+      if (!["core", "detail", "ratings"].includes(key)) return { status: "invalid_view", allowed: ["core", "detail", "ratings"] };
       const wanted = norm(pillar); let results = [...(macro[key] || [])];
       if (wanted) results = results.filter(item => norm(item.pillar).includes(wanted));
       return { status: "ok", as_of: data.timestamp, data_cutoff: macro.data_cutoff, view: key, pillar: pillar || null, results, health: macro.health || {}, refresh_policy: macro.refresh_policy, methodology_note: macro.methodology_note };

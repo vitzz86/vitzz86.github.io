@@ -165,6 +165,16 @@ class MacroIndicatorContractTests(unittest.TestCase):
         payload = macro_indicators.collect([])
         self.assertNotIn("external", payload)
 
+    def test_ratings_separate_credit_from_market_classification(self):
+        payload = macro_indicators.collect([])
+        ratings = payload["ratings"]
+        self.assertEqual(len(ratings), 5)
+        self.assertEqual({row["pillar"] for row in ratings},
+                         {"Sovereign Credit", "Market Classification"})
+        self.assertTrue(all(row["source_url"].startswith("http") for row in ratings))
+        self.assertEqual(next(row for row in ratings if row["id"] == "id_rating_fitch")["direction"],
+                         "deteriorating")
+
 
 class IpoContractTests(unittest.TestCase):
     def test_idx_universe_preserves_listing_timestamp(self):

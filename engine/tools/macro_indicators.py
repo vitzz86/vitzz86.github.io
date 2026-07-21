@@ -12,7 +12,8 @@ import datetime as dt
 
 DATA_CUTOFF = "2026-07-21"
 STALE_DAYS = {"Daily": 4, "Monthly": 55, "Quarterly": 140,
-              "Semiannual": 230, "Per meeting": 75}
+              "Semiannual": 230, "Annual": 400, "Per review": 400,
+              "Per meeting": 75}
 
 
 def _indicator(identifier: str, pillar: str, label: str, value: str, period: str,
@@ -223,6 +224,55 @@ DETAIL = [
 ]
 
 
+RATINGS = [
+    _indicator(
+        "id_rating_sp", "Sovereign Credit", "S&P Global", "BBB / Stable", "13 Jul 2026",
+        "Per review", "Bank Indonesia / S&P Global",
+        "https://www.bi.go.id/en/iru/highlight-news/Pages/-S%26P-Affirmed-Indonesia%E2%80%99s-Sovereign-Credit-Rating-at-BBB-with-Stable-Outlook.aspx",
+        "neutral", "stable",
+        "Indonesia remains investment grade. S&P expects the recent weakening in fiscal and external indicators to be temporary.",
+        benchmark="Investment grade", comparison_label="Outlook", previous="Stable",
+        published="2026-07-13", priority=1,
+    ),
+    _indicator(
+        "id_rating_fitch", "Sovereign Credit", "Fitch Ratings", "BBB / Negative", "4 Mar 2026",
+        "Per review", "Bank Indonesia / Fitch Ratings",
+        "https://www.bi.go.id/en/iru/highlight-news/Pages/-Fitch-Affirms-the-Republic-of-Indonesia%E2%80%99s-Rating-at-BBB-and-Revises-Outlook-to-Negative.aspx",
+        "red", "deteriorating",
+        "The rating remains investment grade, but the negative outlook flags policy-consistency, fiscal, and external-buffer risks.",
+        benchmark="Investment grade", comparison_label="Prior outlook", previous="Stable",
+        change="Outlook cut to Negative", published="2026-03-04", priority=2,
+    ),
+    _indicator(
+        "id_rating_moodys", "Sovereign Credit", "Moody's", "Baa2 / Negative", "5 Feb 2026",
+        "Per review", "Bank Indonesia / Moody's",
+        "https://www.bi.go.id/en/publikasi/ruang-media/news-release/Pages/sp_282726.aspx",
+        "red", "deteriorating",
+        "Moody's kept Indonesia one notch above its investment-grade floor while highlighting lower policy predictability.",
+        benchmark="Investment grade", comparison_label="Prior outlook", previous="Stable",
+        change="Outlook cut to Negative", published="2026-02-05", priority=3,
+    ),
+    _indicator(
+        "id_classification_msci", "Market Classification", "MSCI Indonesia", "Emerging Market", "23 Jun 2026",
+        "Annual", "MSCI",
+        "https://ir.msci.com/news-releases/news-release-details/msci-announces-results-msci-2026-market-classification-review",
+        "neutral", "monitoring",
+        "Indonesia remains in MSCI's emerging-market universe, while shareholder transparency and coordinated-trading concerns remain under review.",
+        benchmark="MSCI EM universe", comparison_label="Index coverage", previous="Large & mid cap",
+        secondary=["Accessibility monitored"], published="2026-06-23", priority=4,
+    ),
+    _indicator(
+        "id_classification_ftse", "Market Classification", "FTSE Russell", "Secondary Emerging", "Apr 2026",
+        "Semiannual", "FTSE Russell",
+        "https://www.lseg.com/content/dam/ftse-russell/en_us/documents/country-classification/ftse-country-classification-update-latest.pdf",
+        "neutral", "monitoring",
+        "FTSE Russell kept Indonesia at Secondary Emerging while monitoring transparency, free-float, governance, and market-integrity reforms.",
+        benchmark="Classification unchanged", comparison_label="Watch list", previous="Not added",
+        secondary=["Reforms monitored"], published="2026-04-07", priority=5,
+    ),
+]
+
+
 def _mark_stale(rows: list[dict]) -> int:
     today = dt.datetime.now(dt.timezone.utc).date()
     stale_count = 0
@@ -243,6 +293,7 @@ def collect(telemetry: list, previous: dict | None = None) -> dict:
     """Return official macro cards with explicit provenance and comparisons."""
     core = copy.deepcopy(CORE)
     detail = copy.deepcopy(DETAIL)
+    ratings = copy.deepcopy(RATINGS)
     telemetry_by_symbol = {row.get("symbol"): row for row in telemetry or []}
     bi = telemetry_by_symbol.get("BI_RATE")
     if bi:
@@ -254,13 +305,14 @@ def collect(telemetry: list, previous: dict | None = None) -> dict:
             card["source_url"] = bi.get("url") or card["source_url"]
 
     now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    all_official = core + detail
+    all_official = core + detail + ratings
     stale_official = _mark_stale(all_official)
     return {
         "as_of": now,
         "data_cutoff": DATA_CUTOFF,
         "core": core,
         "detail": detail,
+        "ratings": ratings,
         "health": {
             "official_indicator_count": len(all_official),
             "official_source_count": len({item["source_name"] for item in all_official}),

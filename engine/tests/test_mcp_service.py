@@ -70,6 +70,9 @@ class CockpitMCPServiceTests(unittest.TestCase):
         prices = self.service.macro_indicators("core", "Prices")
         self.assertGreaterEqual(len(prices["results"]), 3)
         self.assertTrue(all(item["pillar"] == "Prices" for item in prices["results"]))
+        ratings = self.service.macro_indicators("ratings")
+        self.assertEqual(ratings["status"], "ok")
+        self.assertEqual(len(ratings["results"]), 5)
 
     def test_exact_idx_asset_includes_provenance_and_score(self):
         result = self.service.get_asset("BBCA", "ID")

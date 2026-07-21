@@ -147,10 +147,12 @@ a{color:inherit;text-decoration:none;}
 .assetempty{padding:15px 11px;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;}
 @media(max-width:640px){.assetresult{grid-template-columns:72px minmax(110px,1fr) 60px;}.assetresult .armeta{display:none;}.assetresults{max-height:330px;}}
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
-.marketfilters{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-.marketfilters .trendtabs{margin-bottom:0;flex-wrap:wrap;}
-.marketfilters .ttab{padding:5px 9px;}
-.marketfilters .marketcount{font-family:var(--mono);font-size:8px;color:var(--ink3);padding-top:6px;white-space:nowrap;}
+.marketfilters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:5px;}
+.marketfiltergroup{min-width:0;border:1px solid var(--line2);border-radius:7px;background:rgba(255,255,255,.018);padding:7px 8px;}
+.marketfilterlabel{font-family:var(--mono);font-size:6.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px;}
+.marketfilters .trendtabs{margin-bottom:0;overflow-x:auto;padding-bottom:2px;}
+.marketfilters .ttab{padding:5px 9px;flex:0 0 auto;}
+.marketcount{display:block;text-align:right;font-family:var(--mono);font-size:8px;color:var(--ink3);margin:0 0 8px;white-space:nowrap;}
 .idxcard{flex:0 0 168px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px;cursor:pointer;transition:border-color .15s,transform .12s;}
 .idxcard:hover{border-color:#3a3a46;transform:translateY(-2px);}
 .idxcard .badge{font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;display:inline-flex;}
@@ -609,15 +611,17 @@ footer .g{color:var(--green);}
 .researchempty{border:1px dashed var(--line);border-radius:8px;padding:13px;color:var(--ink3);font-size:10px;line-height:1.55;}
 
 /* official macro monitor */
-.macrotools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px;}
+.macrotools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.macrotools .trendtabs{max-width:100%;overflow-x:auto;margin-bottom:0;padding-bottom:2px;}
+.macrotools .ttab{flex:0 0 auto;}
 .macrometa{font-family:var(--mono);font-size:8.5px;line-height:1.5;color:var(--ink3);}
 .macrosummary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .macrosummary span{font-family:var(--mono);font-size:8px;border:1px solid var(--line);border-radius:999px;padding:4px 7px;color:var(--ink3);}
 .macrosummary .green{color:var(--green);border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.05);}
 .macrosummary .amber{color:var(--amber);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.05);}
 .macrosummary .red{color:var(--red);border-color:rgba(239,68,68,.28);background:rgba(239,68,68,.05);}
-.macrogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
-.macrocard{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ink3);border-radius:7px;padding:11px;transition:border-color .15s,background .15s;}
+.macrogrid{display:flex;gap:8px;overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity;}
+.macrocard{position:relative;flex:0 0 clamp(270px,32vw,330px);min-width:270px;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ink3);border-radius:7px;padding:11px;transition:border-color .15s,background .15s;scroll-snap-align:start;}
 .macrocard:hover{background:#121218;border-color:#393943;}
 .macrocard.green{border-left-color:var(--green);}.macrocard.amber{border-left-color:var(--amber);}.macrocard.red{border-left-color:var(--red);}.macrocard.neutral{border-left-color:var(--ink3);}
 .macrocard .mcrow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
@@ -638,8 +642,7 @@ footer .g{color:var(--green);}
 .macrocard .mcsource{font-family:var(--mono);font-size:7.5px;color:var(--cyan);text-decoration:none;text-align:right;}
 .macrocard .mcsource:hover{color:#66e8d9;}
 .macronote{border-left:2px solid var(--cyan);background:rgba(45,212,191,.035);padding:8px 10px;margin-top:10px;font-size:9px;line-height:1.55;color:var(--ink3);}
-@media(max-width:1100px){.macrogrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
-@media(max-width:640px){.macrogrid{grid-template-columns:1fr;}.macrotools{align-items:flex-start;}.macrocard .mcvalue{font-size:17px;}.marketfilters{display:block;}.marketfilters .marketcount{padding:2px 0 0;}}
+@media(max-width:640px){.macrotools{align-items:flex-start;}.macrocard{flex-basis:86vw;}.macrocard .mcvalue{font-size:17px;}.marketfilters{grid-template-columns:1fr;}.marketcount{text-align:left;}}
 .vcat.crypto{color:#f7931a;background:rgba(247,147,26,.14);}
 .vexp{display:none;margin-top:9px;}
 .vid.open .vexp{display:block;}
@@ -732,7 +735,8 @@ body{padding-bottom:40px;}
       </div>
       <div class="lbl" style="margin-bottom:9px;">Markets &amp; Rates · 30-minute snapshots · click any card to inspect chart</div>
       <div class="marketfilters">
-        <div>
+        <div class="marketfiltergroup">
+          <div class="marketfilterlabel">Asset type</div>
           <div class="trendtabs" id="marketKinds">
             <span class="ttab on" data-k="all">All assets</span>
             <span class="ttab" data-k="index">Indices</span>
@@ -741,6 +745,9 @@ body{padding-bottom:40px;}
             <span class="ttab" data-k="rates">Rates</span>
             <span class="ttab" data-k="crypto">Crypto</span>
           </div>
+        </div>
+        <div class="marketfiltergroup">
+          <div class="marketfilterlabel">Region</div>
           <div class="trendtabs" id="marketRegions">
             <span class="ttab on" data-r="all">All regions</span>
             <span class="ttab" data-r="Indonesia">🇮🇩 Indonesia</span>
@@ -749,8 +756,8 @@ body{padding-bottom:40px;}
             <span class="ttab" data-r="Global">🌐 Global</span>
           </div>
         </div>
-        <span class="marketcount" id="marketCount">—</span>
       </div>
+      <span class="marketcount" id="marketCount">—</span>
       <div class="idxscroll" id="idxScroll"></div>
       <div class="idxexp" id="idxExp"></div>
     </div>
@@ -758,8 +765,11 @@ body{padding-bottom:40px;}
       <div class="sechd"><h2>Indonesia Macro Monitor</h2><span class="tag" id="macroCount">OFFICIAL RELEASES</span></div>
       <div class="macrotools">
         <div class="trendtabs" id="macroViews">
-          <span class="ttab on" data-m="core">Headline Monitor</span>
-          <span class="ttab" data-m="detail">Domestic Detail</span>
+          <span class="ttab on" data-m="overview">Overview</span>
+          <span class="ttab" data-m="growth">Growth &amp; Demand</span>
+          <span class="ttab" data-m="prices">Prices &amp; Policy</span>
+          <span class="ttab" data-m="stability">External &amp; Stability</span>
+          <span class="ttab" data-m="ratings">Ratings</span>
         </div>
         <div class="macrometa" id="macroMeta">Loading source periods…</div>
       </div>
@@ -1023,7 +1033,7 @@ const SECTOR_ICON={
 let DATA=null;
 let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false,payloadSource='local';
 let heatGeo='id',heatScope='top',heatSector='';
-let macroView='core',macroMonitorInit=false;
+let macroView='overview',macroMonitorInit=false;
 let marketKind='all',marketRegion='all',marketRailInit=false;
 
 function tzLine(tz,label){
@@ -1688,8 +1698,17 @@ function buildMacroMonitor(macro){
 }
 function drawMacroMonitor(){
   const macro=(DATA&&DATA.macro_indicators)||{};
-  if(!['core','detail'].includes(macroView))macroView='core';
-  const rows=Array.isArray(macro[macroView])?macro[macroView]:[];
+  const core=Array.isArray(macro.core)?macro.core:[],detail=Array.isArray(macro.detail)?macro.detail:[];
+  const all=[...core,...detail].filter((item,index,rows)=>rows.findIndex(row=>row.id===item.id)===index);
+  const modes={
+    overview:all.filter(item=>['id_gdp','id_pmi','id_inflation','id_reserves','id_trade','id_apbn','id_credit_npl'].includes(item.id)),
+    growth:all.filter(item=>['Growth','Households','Labour'].includes(item.pillar)),
+    prices:all.filter(item=>['Prices','Monetary'].includes(item.pillar)),
+    stability:all.filter(item=>['External','Fiscal','Financial System'].includes(item.pillar)),
+    ratings:Array.isArray(macro.ratings)?macro.ratings:[]
+  };
+  if(!Object.prototype.hasOwnProperty.call(modes,macroView))macroView='overview';
+  const rows=modes[macroView];
   [...document.querySelectorAll('#macroViews .ttab')].forEach(tab=>tab.classList.toggle('on',tab.dataset.m===macroView));
   const counts=rows.reduce((acc,item)=>{const k=['green','red'].includes(item.risk)?item.risk:'neutral';acc[k]=(acc[k]||0)+1;return acc;},{});
   $('macroSummary').innerHTML=[
@@ -1697,7 +1716,7 @@ function drawMacroMonitor(){
     counts.neutral?`<span>${counts.neutral} stable / mixed</span>`:'',
     counts.red?`<span class="red">${counts.red} deteriorating</span>`:''
   ].join('');
-  const labels={core:'headline indicators',detail:'domestic detail'};
+  const labels={overview:'headline indicators',growth:'growth & demand',prices:'prices & policy',stability:'external & stability',ratings:'ratings & classification'};
   $('macroCount').textContent=`${rows.length} · ${labels[macroView]||'indicators'}`;
   $('macroMeta').textContent=`Official data cut-off ${macro.data_cutoff||'—'} · actual vs prior / benchmark`;
   $('macroGrid').innerHTML=rows.map(item=>{
@@ -3217,7 +3236,7 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.researchCategory)researchCategory=SS.researchCategory;
   if(SS.researchGeo)researchGeo=SS.researchGeo;
   if(SS.researchAccess)researchAccess=SS.researchAccess;
-  if(SS.macroView)macroView=SS.macroView;
+  if(SS.macroView)macroView=SS.macroView==='core'?'overview':(SS.macroView==='detail'?'growth':SS.macroView);
   if(SS.marketKind)marketKind=SS.marketKind;
   if(SS.marketRegion)marketRegion=SS.marketRegion;
 })();
