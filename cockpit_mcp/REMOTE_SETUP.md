@@ -89,7 +89,7 @@ tunnel; a static bearer secret is intended for clients that support custom
 headers and is not a replacement for multi-user OAuth.
 
 After a deployment changes tool definitions, refresh the connector so ChatGPT
-rescans the 23-tool contract.
+rescans the 28-tool contract.
 
 ## Codex
 

@@ -72,7 +72,12 @@ def _format_market_cap(value, country: str) -> str:
         return ""
     if n <= 0:
         return ""
-    currency = "IDR" if country == "ID" else "USD"
+    currency = {
+        "ID": "IDR", "US": "USD", "CR": "USD", "SG": "SGD", "JP": "JPY",
+        "KR": "KRW", "TW": "TWD", "HK": "HKD", "AU": "AUD", "IN": "INR",
+        "GB": "GBP", "DE": "EUR", "FR": "EUR", "NL": "EUR", "ES": "EUR",
+        "CH": "CHF", "DK": "DKK",
+    }.get(country, "USD")
     units = ((1e15, "Q"), (1e12, "T"), (1e9, "B"), (1e6, "M"))
     for scale, suffix in units:
         if n >= scale:
@@ -144,12 +149,17 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
 
     def priority(row: dict) -> tuple:
         cached = prior(row)
+        current = prices.get(row.get("source_symbol")) or {}
+        provider_outlier = (
+            abs(float(current.get("delta_pct") or 0.0)) >= 40.0
+            or abs(float(current.get("volatility_1d") or 0.0)) >= 100.0
+        )
         missing = 0 if len(cached.get("intraday") or []) <= 1 else 1
         try:
             asof = float(cached.get("chart_asof") or 0)
         except Exception:  # noqa: BLE001
             asof = 0.0
-        return (missing, asof, -_row_cap(row), row.get("ticker") or "")
+        return (0 if provider_outlier else 1, missing, asof, -_row_cap(row), row.get("ticker") or "")
 
     selected = sorted(rows, key=priority)[:limit]
     selected_symbols = {r.get("source_symbol") for r in selected}
@@ -186,6 +196,30 @@ def _idx_intraday_overlay(prices: dict, rows: list[dict], previous_sectors: list
             except Exception:  # noqa: BLE001
                 age_hours = max_age + 1
             quality["24h"] = "cached_intraday" if age_hours <= max_age else "stale_intraday"
+        # IDX daily price limits make a scanner move above 40% mechanically
+        # suspect. This normally follows a split or another corporate action.
+        # Prefer Yahoo's official previous-close move; if it is temporarily rate
+        # limited, use the already-observed intraday baseline and label it clearly.
+        current_move = abs(float(current.get("delta_pct") or 0.0))
+        fallback_move = live.get("delta_pct") if live else None
+        fallback_source = "Yahoo Finance previous close"
+        if fallback_move is None:
+            observed = source.get("intraday") or []
+            current_value = current.get("value")
+            if len(observed) > 1 and observed[0] and current_value is not None:
+                fallback_move = (float(current_value) - float(observed[0])) / float(observed[0]) * 100
+                fallback_source = "observed intraday baseline"
+        if (current_move >= 40.0 and fallback_move is not None
+                and abs(float(fallback_move)) < 40.0):
+            current["delta_pct"] = round(float(fallback_move), 2)
+            current["return_quality"] = "corporate_action_adjusted_fallback"
+            current["quote_return_source"] = fallback_source
+            current["market_data_warning"] = (
+                "TradingView daily return quarantined after a likely corporate action; "
+                f"24h return uses the {fallback_source}."
+            )
+            if abs(float(current.get("volatility_1d") or 0.0)) >= 100.0:
+                current["volatility_1d"] = None
         current["chart_quality"] = quality
         resolved += 1
     print(f"[sectors] IDX intraday routes: {resolved}/{len(rows)} cached; {len(fetched)}/{len(selected)} refreshed")
@@ -237,6 +271,13 @@ def _idx_daily_history_overlay(prices: dict, rows: list[dict], previous_sectors:
             "6M": "historical_close",
         })
         target["chart_quality"] = quality
+        # These fields must describe the same close series rendered by the UI.
+        # Replacing scanner checkpoints also removes split-driven discontinuities.
+        for field, points in (("perf_1w", 5), ("perf_1m", 22),
+                              ("perf_3m", 65), ("perf_6m", 130)):
+            view = target["spark"][-points:]
+            if len(view) > 1 and view[0]:
+                target[field] = (view[-1] - view[0]) / view[0] * 100
 
     candidates = []
     cached_count = 0
@@ -462,6 +503,9 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
                 "quote_mode": (_pick_price_field(p or {}, base, "quote_mode")
                                or ("near_realtime_24_7" if country == "CR"
                                    else "provider_snapshot")),
+                "return_quality": (p or {}).get("return_quality"),
+                "quote_return_source": (p or {}).get("quote_return_source"),
+                "market_data_warning": (p or {}).get("market_data_warning"),
             }
             fresh_cap = row.get("market_cap_value")
             if fresh_cap:

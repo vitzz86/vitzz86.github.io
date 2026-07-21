@@ -1446,7 +1446,7 @@ function capNumber(c){
 function capLabel(c){
   const n=finiteNum(c&&c.market_cap_value);
   if(n==null||n<=0)return String(c&&c.mktcap||'--');
-  const cur=c&&c.country==='ID'?'IDR':'USD';
+  const cur=({ID:'IDR',US:'USD',CR:'USD',SG:'SGD',JP:'JPY',KR:'KRW',TW:'TWD',HK:'HKD',AU:'AUD',IN:'INR',GB:'GBP',DE:'EUR',FR:'EUR',NL:'EUR',ES:'EUR',CH:'CHF',DK:'DKK'})[c&&c.country]||'USD';
   const units=[[1e15,'Q'],[1e12,'T'],[1e9,'B'],[1e6,'M']];
   for(const [scale,suffix] of units){if(n>=scale){const v=n/scale,d=v>=100?0:v>=10?1:2;return `${cur} ${v.toFixed(d)}${suffix}`;}}
   return `${cur} ${Math.round(n).toLocaleString()}`;
@@ -2970,6 +2970,7 @@ function openTicker(s,tk){
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
     `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(capLabel(c))} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
+    `${c.market_data_warning?`<div class="scorewarn" style="margin:0 0 8px"><b>Market-data guardrail</b><span>${esc(c.market_data_warning)}</span></div>`:''}`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
     `${view.length?`<div class="smchart">${spark(view,420,110,col)}</div>`:(waitingBundle?`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;">Loading chart history…</div></div>`:(tvFallback?tradingViewFallbackHTML(c,tk,tkTF):`<div class="smchart"><div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;padding:0 18px;">${waitingChart?'Loading CoinGecko chart…':(waitingEquity?'Loading market chart…':`${tkTF} chart ${esc(chartQualityLabel(td.quality))}.`)}</div></div>`))}`+
     scoreSummary(c)+

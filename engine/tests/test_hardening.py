@@ -1,5 +1,6 @@
 import time
 import unittest
+from unittest import mock
 
 import cockpit_worker
 from tools import (fundamentals, idx_membership, ipos, macro_indicators,
@@ -144,6 +145,68 @@ class FinancialGuardrailTests(unittest.TestCase):
 
     def test_market_cap_label_uses_current_numeric_value(self):
         self.assertEqual(sectors._format_market_cap(25_140_212_187_500, "ID"), "IDR 25.1T")
+
+    def test_market_cap_label_uses_native_global_currency(self):
+        self.assertEqual(sectors._format_market_cap(5_378_861_442_871, "TW"), "TWD 5.38T")
+
+    def test_idx_history_return_matches_rendered_chart(self):
+        prices = {"TEST.JK": {
+            "value": 130,
+            "delta_pct": 1.0,
+            "chart_quality": {"6M": "performance_checkpoint"},
+        }}
+        rows = [{
+            "ticker": "TEST", "source_symbol": "TEST.JK", "country": "ID",
+            "source_provider": "tradingview", "market_cap_value": 1_000_000,
+        }]
+        history = {"spark": list(range(1, 131)), "spark_ts": list(range(1, 131)),
+                   "history_asof": int(time.time()),
+                   "price_history_quality": "yahoo_historical_close",
+                   "chart_quality": {"6M": "historical_close"}}
+        with mock.patch("tools.yquote.fetch_history", return_value={"TEST.JK": history}):
+            with mock.patch.object(sectors.settings, "IDX_DAILY_HISTORY_LIMIT", 1):
+                sectors._idx_daily_history_overlay(prices, rows, [])
+        expected = (130 - 126) / 126 * 100
+        self.assertAlmostEqual(prices["TEST.JK"]["perf_1w"], expected)
+
+    def test_idx_corporate_action_return_uses_previous_close_fallback(self):
+        prices = {"TEST.JK": {
+            "value": 1_280, "delta_pct": -95.0, "volatility_1d": 2_300,
+            "chart_quality": {"24h": "unavailable"},
+        }}
+        rows = [{
+            "ticker": "TEST", "source_symbol": "TEST.JK", "country": "ID",
+            "market_cap_value": 1_000_000,
+        }]
+        quote = {"TEST.JK": {
+            "intraday": [1_300, 1_280], "delta_pct": -1.54,
+            "chart_asof": int(time.time()),
+        }}
+        with mock.patch("tools.yquote.fetch_intraday", return_value=quote):
+            with mock.patch.object(sectors.settings, "IDX_INTRADAY_BATCH_LIMIT", 1):
+                sectors._idx_intraday_overlay(prices, rows, [])
+        self.assertEqual(prices["TEST.JK"]["delta_pct"], -1.54)
+        self.assertIsNone(prices["TEST.JK"]["volatility_1d"])
+        self.assertEqual(prices["TEST.JK"]["return_quality"],
+                         "corporate_action_adjusted_fallback")
+
+    def test_idx_corporate_action_uses_cached_intraday_when_provider_is_limited(self):
+        now = int(time.time())
+        prices = {"TEST.JK": {
+            "value": 1_280, "delta_pct": -95.0, "volatility_1d": 2_300,
+            "chart_quality": {"24h": "unavailable"},
+        }}
+        rows = [{"ticker": "TEST", "source_symbol": "TEST.JK", "country": "ID"}]
+        previous = [{"constituents": [{
+            "ticker": "TEST", "source_symbol": "TEST.JK",
+            "intraday": [1_300, 1_265], "chart_asof": now,
+        }]}]
+        with mock.patch("tools.yquote.fetch_intraday", return_value={}):
+            with mock.patch.object(sectors.settings, "IDX_INTRADAY_BATCH_LIMIT", 1):
+                sectors._idx_intraday_overlay(prices, rows, previous)
+        self.assertEqual(prices["TEST.JK"]["delta_pct"], -1.54)
+        self.assertEqual(prices["TEST.JK"]["quote_return_source"],
+                         "observed intraday baseline")
 
     def test_checkpoint_history_does_not_produce_risk_ratios(self):
         row = {

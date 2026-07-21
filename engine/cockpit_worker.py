@@ -247,6 +247,7 @@ MCP_ASSET_KEYS = {
     "perf_1y", "perf_ytd", "analyst_target_low", "analyst_target_median",
     "analyst_target_high", "recommend_all", "rsi", "volatility_1d",
     "volatility_1w", "volatility_1m", "listing_ts",
+    "return_quality", "quote_return_source", "market_data_warning",
 }
 
 
