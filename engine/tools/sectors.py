@@ -95,6 +95,37 @@ def _pick_price_field(price: dict, base: dict, key: str):
     return price.get(key) if price.get(key) is not None else base.get(key)
 
 
+def _finalize_market_return(row: dict) -> dict:
+    """Fail closed on impossible IDX session moves at the payload boundary."""
+    if row.get("country") != "ID":
+        return row
+    try:
+        move = abs(float(row.get("delta_pct") or 0.0))
+    except Exception:  # noqa: BLE001
+        move = 0.0
+    try:
+        volatility = abs(float(row.get("volatility_1d") or 0.0))
+    except Exception:  # noqa: BLE001
+        volatility = 0.0
+
+    if move >= 40.0 and not row.get("return_quality"):
+        row["delta_pct"] = 0.0
+        row["return_quality"] = "corporate_action_quarantined"
+        row["quote_return_source"] = "unavailable pending provider normalization"
+        row["market_data_warning"] = (
+            "Provider daily return quarantined after a likely corporate action; "
+            "24h return is unavailable until a normalized previous close is observed."
+        )
+    if volatility >= 100.0:
+        row["volatility_1d"] = None
+        if not row.get("market_data_warning"):
+            row["market_data_warning"] = (
+                "One-day volatility was withheld because the provider series appears "
+                "unadjusted for a corporate action."
+            )
+    return row
+
+
 def _chart_cache_fresh(row: dict, max_age_hours: float) -> bool:
     asof = row.get("chart_asof")
     if not asof:
@@ -520,11 +551,12 @@ def collect(previous_sectors: list | None = None, telemetry: list | None = None)
             fresh_cap = row.get("market_cap_value")
             if fresh_cap:
                 row["mktcap"] = _format_market_cap(fresh_cap, country)
+            _finalize_market_return(row)
             rows.append(row)
             if country == "ID":
-                id_d.append(delta)
+                id_d.append(row["delta_pct"])
             elif country == "US":
-                us_d.append(delta)
+                us_d.append(row["delta_pct"])
 
         try:
             from tools import fundamentals

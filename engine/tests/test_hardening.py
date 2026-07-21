@@ -222,6 +222,27 @@ class FinancialGuardrailTests(unittest.TestCase):
         self.assertEqual(prices["TEST.JK"]["return_quality"],
                          "corporate_action_quarantined")
 
+    def test_idx_outlier_is_quarantined_at_final_payload_boundary(self):
+        row = {
+            "ticker": "TEST", "country": "ID", "delta_pct": -94.99,
+            "volatility_1d": 2313.95,
+        }
+        sectors._finalize_market_return(row)
+        self.assertEqual(row["delta_pct"], 0.0)
+        self.assertIsNone(row["volatility_1d"])
+        self.assertEqual(row["return_quality"], "corporate_action_quarantined")
+        self.assertIn("corporate action", row["market_data_warning"])
+
+    def test_final_payload_guard_preserves_valid_idx_return(self):
+        row = {
+            "ticker": "TEST", "country": "ID", "delta_pct": 4.5,
+            "volatility_1d": 3.2,
+        }
+        sectors._finalize_market_return(row)
+        self.assertEqual(row["delta_pct"], 4.5)
+        self.assertEqual(row["volatility_1d"], 3.2)
+        self.assertNotIn("market_data_warning", row)
+
     def test_checkpoint_history_does_not_produce_risk_ratios(self):
         row = {
             "spark": [100 + i for i in range(30)],
