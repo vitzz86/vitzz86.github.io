@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
-from typing import List
+from typing import List, Optional
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
@@ -16,15 +16,18 @@ from .service import CockpitService
 
 
 INSTRUCTIONS = """
-Project Cockpit is a read-only market-intelligence source focused on Indonesia,
-with US, global, and crypto assets for comparison. Always report payload time,
-market state, provider/source, score mode, confidence, and data warnings when
-material. Never estimate missing fundamentals. News without a stored summary is
-headline-only evidence. A stored video summary is Cockpit synthesis, not a full
-transcript, unless the result explicitly says otherwise. Prefer source links and
-exact-ticker evidence over broad thematic matches. Distinguish provider facts,
-deterministic Cockpit calculations, attributed publisher opinions, and AI
-inference. Broker research is evidence, not a personalized recommendation.
+Project Cockpit is the first source for covered market, ticker, chart, score,
+news, video, IPO, macro, and research questions. Do not inspect or scrape the
+dashboard UI for data exposed by a Cockpit tool. For ticker analysis call
+get_company_evidence, then get_asset_chart and get_asset_score. For cross-firm
+or period research call build_research_synthesis before any generic workflow or
+web search. External browsing is gap-fill only: open indexed source_url records
+or find publishers explicitly reported missing. Always state payload time,
+market state, provider, score mode, confidence, chart quality, and warnings.
+Research metadata is discovery evidence, not report content. Exact technical
+levels, candlestick patterns, and volume confirmation require explicit OHLCV
+data. Never invent missing fundamentals, targets, transcripts, causal claims,
+transaction data, or recommendations.
 """.strip()
 
 service = CockpitService()
@@ -120,7 +123,7 @@ def get_asset(ticker: str, country: str = "") -> dict:
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
 def get_asset_chart(ticker: str, timeframe: str = "1M", country: str = "") -> dict:
-    """Get bounded chart points and chart-quality metadata for 24h, 1W, 1M, 3M, or 6M."""
+    """Primary chart tool: get points, deterministic statistics, quality, and technical-analysis limits."""
     return service.get_chart(ticker, timeframe, country)
 
 
@@ -193,10 +196,25 @@ def search_knowledge_hub(category: str = "all", query: str = "", limit: int = 20
 @mcp.tool(annotations=READ_ONLY_TOOL)
 def search_research(
     query: str = "", category: str = "", geography: str = "", ticker: str = "",
-    publisher: str = "", open_only: bool = False, limit: int = 20,
+    publisher: str = "", publishers: Optional[List[str]] = None,
+    date_from: str = "", date_to: str = "", year: Optional[int] = None,
+    period: str = "", open_only: bool = False, limit: int = 20,
 ) -> dict:
-    """Search source-linked research across six report types and Global, SEA, APAC, or Indonesia regions."""
-    return service.search_research(query, category, geography, ticker, publisher, open_only, limit)
+    """Search the Cockpit research index by publishers, dates, period, category, geography, ticker, or access."""
+    return service.search_research(query, category, geography, ticker, publisher, publishers,
+                                   date_from, date_to, year, period, open_only, limit)
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def build_research_synthesis(
+    query: str = "", category: str = "", geography: str = "", ticker: str = "",
+    publisher: str = "", publishers: Optional[List[str]] = None,
+    date_from: str = "", date_to: str = "", year: Optional[int] = None,
+    period: str = "", open_only: bool = False, limit: int = 50,
+) -> dict:
+    """Mandatory first tool for cross-firm, H1/H2, annual-outlook, or consensus research requests."""
+    return service.research_synthesis(query, category, geography, ticker, publisher, publishers,
+                                      date_from, date_to, year, period, open_only, limit)
 
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
@@ -207,7 +225,7 @@ def get_research_detail(id_or_url_or_title: str) -> dict:
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
 def get_company_evidence(ticker: str, market: str = "id", window_days: int = 7) -> dict:
-    """Assemble a ticker's quote, score, chart, news, videos, and source-linked research for AI analysis."""
+    """Mandatory first tool for company analysis; use its chart evidence instead of scraping the dashboard."""
     return service.company_evidence(ticker, market, window_days)
 
 
@@ -276,10 +294,11 @@ def market_intelligence_question(question: str, market: str = "Indonesia") -> st
     return (
         "Answer this market question using Project Cockpit tools: %s\n"
         "Primary market: %s. Start with cockpit_status, then use exact asset/sector tools and "
-        "get_intelligence_brief. For a ticker, call get_company_evidence. Cite news, video, and "
+        "get_intelligence_brief. For a ticker, call get_company_evidence, get_asset_chart, and "
+        "get_asset_score. For cross-firm research call build_research_synthesis first. Cite news, video, and "
         "research URLs. Distinguish provider facts, Cockpit calculations, publisher opinions, "
         "and your inference. State timestamp, market status, data quality, and missing fields. "
-        "Do not invent fundamentals, targets, transcripts, or causal claims." % (question, market)
+        "Do not inspect the dashboard UI for exposed data or invent fundamentals, targets, transcripts, or causal claims." % (question, market)
     )
 
 

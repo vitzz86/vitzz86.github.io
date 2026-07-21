@@ -15,7 +15,7 @@ The server reads the same three files as the dashboard:
   valuation, liquidity, and risk statistics.
 - `charts.json`: 24h, 1W, 1M, 3M, and 6M chart points with quality labels.
 
-The server exposes 27 bounded tools:
+The server exposes 28 bounded tools:
 
 | Area | Tools |
 |---|---|
@@ -25,7 +25,7 @@ The server exposes 27 bounded tools:
 | Markets | `list_sector_flow`, `get_sector_detail`, `get_market_movers` |
 | Intelligence Hub | `search_news`, `get_news_detail`, `search_videos`, `get_video_detail`, `get_daily_brief`, `get_market_sentiment` |
 | Knowledge Hub | `search_knowledge_hub` |
-| Research | `search_research`, `get_research_detail`, `get_company_evidence` |
+| Research | `search_research`, `build_research_synthesis`, `get_research_detail`, `get_company_evidence` |
 | Analysis | `get_macro_analysis`, `get_active_alerts`, `get_intelligence_brief` |
 | Listings | `get_ipo_radar` |
 
@@ -44,6 +44,12 @@ It also publishes:
 - Research uses six report types and four regions (`Global`, `SEA`, `APAC`, and
   `Indonesia`), while preserving each publisher's original category and
   geography as detail metadata.
+- Cross-firm and period research starts with `build_research_synthesis`, which
+  audits publisher/date coverage and distinguishes discovery metadata from
+  report content that must be opened at its source.
+- Chart tools state which analysis is supported. Close-only data can support
+  broad trend and drawdown analysis, but not exact technical levels,
+  candlestick patterns, or volume confirmation.
 - Score mode and warnings remain visible, so an IDX market screen cannot be
   confused with a full fundamental score.
 - Tools are read-only and cap result sets at 50 items.
@@ -124,7 +130,7 @@ With the local HTTP server running, verify it from another terminal:
 
 ## Remote mode for Claude and ChatGPT
 
-The included `Dockerfile` runs the same 23 tools at `/mcp`, with `/health` for
+The included `Dockerfile` runs the same 28 tools at `/mcp`, with `/health` for
 monitoring. A hosted instance reads the newest published Cockpit contracts from
 `https://vitzz86.github.io`, refreshes its cache every 30 seconds, retains its
 last valid payload after a temporary fetch failure, and has a bundled local

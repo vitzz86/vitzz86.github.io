@@ -205,9 +205,12 @@ function publicVideo(item, mustWatch = false) {
 }
 
 function publicResearch(item) {
+  const basis = item.summary_basis || "source metadata only";
+  const hasContentEvidence = /excerpt|abstract|full text|full report/i.test(String(basis));
   return {
     id: item.id, title: clean(item.title), publisher: clean(item.publisher),
-    published: item.published || null, priority: item.priority, category: item.category,
+    published: item.published || null, published_ts: finite(item.published_ts),
+    priority: item.priority, category: item.category,
     report_type: item.report_type || item.category, category_detail: item.category_detail,
     subcategory: item.subcategory, geography: item.geography, geography_detail: item.geography_detail,
     coverage: clean(item.coverage),
@@ -216,7 +219,96 @@ function publicResearch(item) {
     direct_url: item.direct_url || null, landing_url: item.landing_url || null,
     source_url: item.source_url || item.direct_url || item.landing_url,
     source_type: item.source_type, verification: item.verification,
-    verified_on: item.verified_on, summary_basis: item.summary_basis || "source metadata only",
+    verified_on: item.verified_on, summary_basis: basis,
+    evidence_scope: hasContentEvidence ? "content_excerpt_available" : "discovery_metadata_only",
+    claim_use: hasContentEvidence
+      ? "May support bounded claims attributed to the publisher."
+      : "Use to discover the report; open source_url before claiming the report's conclusions.",
+  };
+}
+
+function researchDateBounds(args = {}) {
+  const parse = (value, end = false) => {
+    const raw = String(value || "").trim();
+    if (!raw) return null;
+    if (/^\d{4}$/.test(raw)) return Date.parse(`${raw}-${end ? "12-31T23:59:59Z" : "01-01T00:00:00Z"}`) / 1000;
+    if (/^\d{4}-\d{2}$/.test(raw)) {
+      const [year, month] = raw.split("-").map(Number);
+      return end ? Date.UTC(year, month, 1) / 1000 - 1 : Date.UTC(year, month - 1, 1) / 1000;
+    }
+    const parsed = Date.parse(raw.length === 10 ? `${raw}T${end ? "23:59:59" : "00:00:00"}Z` : raw);
+    return Number.isFinite(parsed) ? parsed / 1000 : null;
+  };
+  let from = parse(args.date_from); let to = parse(args.date_to, true);
+  const period = String(args.period || "").trim().toUpperCase();
+  const match = period.match(/(?:H([12])\s*(\d{4})|(\d{4})\s*H([12]))/);
+  const halfOnly = period.match(/\bH([12])\b/);
+  const year = Number(args.year) || Number(match?.[2] || match?.[3]);
+  const half = Number(match?.[1] || match?.[4] || halfOnly?.[1]);
+  if (year && !from) from = Date.UTC(year, half === 2 ? 6 : 0, 1) / 1000;
+  if (year && !to) to = Date.UTC(year, half === 1 ? 6 : 12, 1) / 1000 - 1;
+  return { from, to, date_from: from ? iso(from) : null, date_to: to ? iso(to) : null, period: period || null };
+}
+
+function researchCoverage(rows, requestedPublishers = []) {
+  const countBy = key => Object.fromEntries([...rows.reduce((map, item) => {
+    const value = clean(item[key]) || "Unknown"; map.set(value, (map.get(value) || 0) + 1); return map;
+  }, new Map())].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])));
+  const present = [...new Set(rows.map(item => clean(item.publisher)).filter(Boolean))];
+  const requested = requestedPublishers.map(clean).filter(Boolean);
+  const missing = requested.filter(wanted => !present.some(value => norm(value).includes(norm(wanted)) || norm(wanted).includes(norm(value))));
+  const metadataOnly = rows.filter(item => !/excerpt|abstract|full text|full report/i.test(String(item.summary_basis || ""))).length;
+  return {
+    requested_publishers: requested, present_publishers: present, missing_publishers: missing,
+    publisher_counts: countBy("publisher"), category_counts: countBy("category"),
+    geography_counts: countBy("geography"), access_counts: countBy("access"),
+    open_or_direct_count: rows.filter(item => /open|download|public/i.test(String(item.access || "")) || item.direct_url).length,
+    metadata_only_count: metadataOnly, content_evidence_count: rows.length - metadataOnly,
+    source_open_required_count: metadataOnly,
+  };
+}
+
+function chartAssessment(points, quality, timeframe, timestampBasis = "provider_timestamps") {
+  const valid = points.filter(point => finite(point.ts) !== null && finite(point.value) !== null);
+  const values = valid.map(point => finite(point.value));
+  const first = valid[0]; const last = valid[valid.length - 1];
+  let peak = null; let maxDrawdown = null;
+  for (const point of valid) {
+    const value = finite(point.value);
+    if (!peak || value > peak.value) peak = { value, ts: point.ts };
+    if (peak?.value > 0) {
+      const drawdown = (value / peak.value - 1) * 100;
+      if (!maxDrawdown || drawdown < maxDrawdown.pct) maxDrawdown = { pct: drawdown, peak_ts: peak.ts, trough_ts: point.ts };
+    }
+  }
+  const closeSeries = quality === "historical_close";
+  const trueIntraday = ["real_intraday", "cached_intraday", "stale_intraday"].includes(quality);
+  const checkpoint = quality === "performance_checkpoint";
+  const broadTrend = valid.length >= (String(timeframe).toUpperCase() === "6M" ? 40 : 10) && (closeSeries || trueIntraday);
+  return {
+    series_kind: closeSeries ? "daily_close" : trueIntraday ? "intraday_price" : checkpoint ? "performance_checkpoint" : "unknown",
+    timestamp_basis: timestampBasis,
+    statistics: valid.length ? {
+      start_at: iso(first.ts), end_at: iso(last.ts), start_price: first.value, end_price: last.value,
+      return_pct: first.value ? ((last.value / first.value) - 1) * 100 : null,
+      low: Math.min(...values), high: Math.max(...values),
+      max_drawdown_pct: maxDrawdown?.pct ?? null,
+      max_drawdown_peak_at: iso(maxDrawdown?.peak_ts), max_drawdown_trough_at: iso(maxDrawdown?.trough_ts),
+    } : null,
+    supported_analysis: {
+      broad_trend: broadTrend, close_to_close_momentum: closeSeries && valid.length >= 20,
+      observed_range: valid.length >= 2, drawdown: valid.length >= 2,
+      approximate_price_zones: closeSeries && valid.length >= 60,
+    },
+    unsupported_analysis: {
+      exact_support_resistance: true, candlestick_patterns: true,
+      volume_confirmation: true, intraday_execution_levels: !trueIntraday || valid.length < 30,
+    },
+    required_language: checkpoint
+      ? "Describe only provider performance checkpoints; do not call this a continuous historical chart."
+      : closeSeries
+        ? "Use broad trend, range, momentum, and drawdown language. Any price zone is approximate; exact technical levels require OHLCV candles."
+        : "State the limited series quality and avoid precise technical conclusions.",
   };
 }
 
@@ -407,14 +499,18 @@ export function createCockpitService(env) {
         const last = points[points.length - 1];
         if (finite(row.quote_asof) > finite(last.ts)) points.push({ ts: finite(row.quote_asof), value: finite(row.value) });
       }
-      const quality = row.chart_quality?.[String(timeframe || "1M").toUpperCase()] || (points.length ? "historical_points" : "unavailable");
+      const frame = String(timeframe || "1M").toUpperCase();
+      const qualityKey = frame === "24H" ? "24h" : frame;
+      const quality = row.chart_quality?.[qualityKey] || (points.length ? "historical_points" : "unavailable");
+      const timestampBasis = frame === "24H" ? "estimated_even_spacing_from_quote_time" : "provider_timestamps";
       return {
         status: points.length ? "ok" : "unavailable", as_of: data.timestamp, ticker: row.ticker,
-        timeframe: String(timeframe || "1M").toUpperCase(), point_count: points.length, points,
+        timeframe: frame, point_count: points.length, points,
         chart_quality: quality, quote_as_of: iso(row.quote_asof), quote_mode: row.quote_mode,
         current_price: row.value, source: row.source_name || row.source_provider,
         interactive_chart_url: row.source_url || row.url,
-        note: "Interactive charts open at the provider link; returned points are the auditable Cockpit chart contract.",
+        analysis_guardrails: chartAssessment(points, quality, frame, timestampBasis),
+        note: "Use these returned points instead of scraping the dashboard UI. Interactive provider charts are a visual fallback, not a substitute data source.",
       };
     },
 
@@ -529,18 +625,58 @@ export function createCockpitService(env) {
 
     async research(args = {}) {
       const { data } = await loadContracts(); const q = tokens(args.query); const ticker = String(args.ticker || "").toUpperCase();
-      const category = norm(args.category); const geography = norm(args.geography); const publisher = norm(args.publisher);
+      const category = norm(args.category); const geography = norm(args.geography);
+      const requestedPublishers = [...new Set([args.publisher, ...(args.publishers || [])].map(clean).filter(Boolean))];
+      const publisherKeys = requestedPublishers.map(norm); const bounds = researchDateBounds(args);
       const priorityRank = { essential: 0, high: 1, live: 2, supplementary: 3 };
       const rows = (data.research?.reports || []).filter(item => {
         if (category && !norm(item.category).includes(category)) return false;
         if (geography && !norm(item.geography).includes(geography)) return false;
-        if (publisher && !norm(item.publisher).includes(publisher)) return false;
+        if (publisherKeys.length && !publisherKeys.some(value => norm(item.publisher).includes(value) || value.includes(norm(item.publisher)))) return false;
         if (ticker && !(item.ticker_tags || []).map(value => String(value).toUpperCase()).includes(ticker)) return false;
         if (args.open_only && !(/open|download|public/i.test(String(item.access || "")) || item.direct_url)) return false;
+        const publishedTs = finite(item.published_ts) ?? (Date.parse(item.published || "") || 0) / 1000;
+        if (bounds.from && publishedTs < bounds.from) return false;
+        if (bounds.to && publishedTs > bounds.to) return false;
         const haystack = norm([item.title, item.publisher, item.category, item.subcategory, item.geography, item.why_useful, ...(item.ticker_tags || [])].join(" "));
         return !q.length || q.every(token => haystack.includes(token));
       }).sort((a, b) => (priorityRank[norm(a.priority)] ?? 4) - (priorityRank[norm(b.priority)] ?? 4) || (Date.parse(b.published || "") || 0) - (Date.parse(a.published || "") || 0));
-      return { status: "ok", as_of: data.timestamp, query: args, total_matches: rows.length, results: rows.slice(0, limitOf(args.limit, 20)).map(publicResearch), synthesis: data.research?.synthesis || {}, health: data.research?.health || {}, grounding_note: data.research?.provenance_note };
+      return {
+        status: "ok", as_of: data.timestamp, query: { ...args, publishers: requestedPublishers },
+        period: bounds, total_matches: rows.length,
+        results: rows.slice(0, limitOf(args.limit, 20)).map(publicResearch),
+        coverage_audit: researchCoverage(rows, requestedPublishers),
+        synthesis: data.research?.synthesis || {}, health: data.research?.health || {},
+        grounding_note: data.research?.provenance_note,
+      };
+    },
+
+    async researchSynthesis(args = {}) {
+      const result = await this.research({ ...args, limit: Math.min(50, Number(args.limit) || 50) });
+      const reports = result.results || []; const audit = result.coverage_audit || {};
+      return {
+        status: reports.length ? "ok" : "insufficient_evidence", as_of: result.as_of,
+        request: result.query, period: result.period, reports, coverage_audit: audit,
+        synthesis_readiness: {
+          inventory_ready: reports.length > 0,
+          content_summary_ready: (audit.content_evidence_count || 0) > 0,
+          source_open_required: (audit.source_open_required_count || 0) > 0,
+          reason: (audit.content_evidence_count || 0) > 0
+            ? "At least one indexed record includes bounded content evidence."
+            : "The index currently contains discovery metadata; open source_url before summarizing report conclusions.",
+        },
+        required_output: [
+          "Coverage audit: publishers found, missing publishers, dates, access, and evidence scope.",
+          "Observed-period findings and forward outlook must be separated.",
+          "Consensus, disagreements, Indonesia implications, and unresolved evidence gaps.",
+          "Every report-level claim must cite source_url and be attributed to its publisher.",
+        ],
+        routing_policy: {
+          first_source: "Project Cockpit research index",
+          external_search: "Use only to open indexed source_url records or fill publishers explicitly listed as missing.",
+          prohibition: "Do not replace this inventory with an unrelated generic research workflow or claim metadata is full-report content.",
+        },
+      };
     },
 
     async researchDetail(idOrUrlOrTitle) {
@@ -568,7 +704,8 @@ export function createCockpitService(env) {
       const chart = asset?.status === "ok" ? {
         status: "available_on_demand", interactive_chart_url: asset.interactive_chart_url,
         chart_quality: asset.chart_quality || {},
-        instruction: "Call get_asset_chart for auditable points in the required timeframe.",
+        required_tool_call: { name: "get_asset_chart", arguments: { ticker: String(ticker).toUpperCase(), country: marketCode(market), timeframe: "6M" } },
+        instruction: "Call get_asset_chart for auditable points. Do not inspect the dashboard UI or infer precise technical levels from the score panel.",
       } : { status: "unavailable" };
       return {
         ticker: String(ticker).toUpperCase(), market: marketCode(market), asset, score, chart,
@@ -577,6 +714,8 @@ export function createCockpitService(env) {
         research_framework: {
           evidence_layers: ["market data", "deterministic score", "company and sector news", "video intelligence", "institutional research"],
           required_analysis: ["business and industry context", "earnings and catalysts", "valuation", "liquidity and risk", "bull/base/bear cases", "data gaps"],
+          mandatory_tool_sequence: ["get_company_evidence", "get_asset_chart", "get_asset_score", "search_news", "search_research"],
+          chart_policy: "Use MCP chart points first. Exact support/resistance, candlestick patterns, and volume confirmation require explicit OHLCV fields.",
         },
         provenance_rules: ["Provider data, Cockpit calculations, publisher research, and AI inference must be labelled separately.", "Broker opinions and target prices are evidence, not facts or personalized recommendations.", "Open the linked report before relying on a recommendation or valuation.", "Never convert missing data into an estimate without explicit user authorization."],
       };

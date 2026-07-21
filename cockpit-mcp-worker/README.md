@@ -1,7 +1,7 @@
 # Project Cockpit Remote MCP
 
 Cloudflare Worker deployment of Project Cockpit's read-only MCP service. It
-uses Streamable HTTP at `/mcp`, exposes the same 27 tools as the local Python
+uses Streamable HTTP at `/mcp`, exposes the same 28 tools as the local Python
 server, reads the live GitHub Pages contracts, and overlays the existing IDX
 fast-quote gateway on current-price queries.
 
@@ -13,7 +13,8 @@ fast-quote gateway on current-price queries.
   snapshot Worker through a private Cloudflare service binding and use its
   newest quote when available.
 - Historical chart points remain the audited Cockpit contracts. Each chart
-  result includes the TradingView, Yahoo Finance, or CoinGecko interactive URL.
+  result includes deterministic range/drawdown statistics, technical-analysis
+  guardrails, and the TradingView, Yahoo Finance, or CoinGecko interactive URL.
 - Video results include YouTube watch and embed links plus the stored Cockpit
   synthesis when present.
 - Research results expose source-linked evidence across Economics & Macro,
@@ -22,6 +23,10 @@ fast-quote gateway on current-price queries.
   APAC, or Indonesia while original publisher labels remain available.
   Publisher conclusions and target prices remain attributed opinions, not
   Cockpit facts.
+- `build_research_synthesis` is the first route for cross-firm, H1/H2, annual
+  outlook, and consensus requests. It returns publisher/date coverage and
+  identifies which indexed sources must be opened before their conclusions can
+  be summarized.
 - The Worker is read-only. It cannot place trades or modify the repository.
 
 ## Local verification
@@ -72,7 +77,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 
 - ChatGPT custom connector: use
   `https://project-cockpit-mcp.samudravito4.workers.dev/mcp` with no
-  authentication, then refresh the connector to discover all 27 tools.
+  authentication, then refresh the connector to discover all 28 tools.
 - Claude custom connector: use the same production `/mcp` URL with no
   authentication.
 - Claude Desktop fallback:
@@ -86,7 +91,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 COCKPIT_MCP_TEST_URL=https://project-cockpit-mcp.samudravito4.workers.dev/mcp npm run smoke
 ```
 
-The smoke test discovers all 27 tools and exercises current quotes, charts,
+The smoke test discovers all 28 tools and exercises current quotes, charts,
 country risk, institutional research evidence,
 scores, sectors, movers, news, videos, Knowledge Hub, Daily Brief, macro,
 alerts, IPO radar, source-linked research, company evidence, and the combined

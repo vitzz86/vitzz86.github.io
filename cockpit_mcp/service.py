@@ -120,11 +120,14 @@ def _public_video(item: Dict[str, Any], must_watch: bool = False) -> Dict[str, A
 
 
 def _public_research(item: Dict[str, Any]) -> Dict[str, Any]:
+    basis = item.get("summary_basis") or "source metadata only"
+    has_content = bool(re.search(r"excerpt|abstract|full text|full report", str(basis), re.I))
     return {
         "id": item.get("id"),
         "title": _clean_text(item.get("title")),
         "publisher": _clean_text(item.get("publisher")),
         "published": item.get("published"),
+        "published_ts": _finite(item.get("published_ts")),
         "priority": item.get("priority"),
         "category": item.get("category"),
         "report_type": item.get("report_type") or item.get("category"),
@@ -144,7 +147,126 @@ def _public_research(item: Dict[str, Any]) -> Dict[str, Any]:
         "source_type": item.get("source_type"),
         "verification": item.get("verification"),
         "verified_on": item.get("verified_on"),
-        "summary_basis": item.get("summary_basis") or "source metadata only",
+        "summary_basis": basis,
+        "evidence_scope": "content_excerpt_available" if has_content else "discovery_metadata_only",
+        "claim_use": ("May support bounded claims attributed to the publisher." if has_content
+                      else "Use to discover the report; open source_url before claiming the report's conclusions."),
+    }
+
+
+def _parse_research_date(value: Any, end: bool = False) -> Optional[float]:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        if re.fullmatch(r"\d{4}", raw):
+            year = int(raw)
+            return datetime(year + 1, 1, 1, tzinfo=timezone.utc).timestamp() - 1 if end \
+                else datetime(year, 1, 1, tzinfo=timezone.utc).timestamp()
+        if re.fullmatch(r"\d{4}-\d{2}", raw):
+            year, month = map(int, raw.split("-"))
+            if end:
+                next_year, next_month = (year + 1, 1) if month == 12 else (year, month + 1)
+                return datetime(next_year, next_month, 1, tzinfo=timezone.utc).timestamp() - 1
+            return datetime(year, month, 1, tzinfo=timezone.utc).timestamp()
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        if end and re.fullmatch(r"\d{4}-\d{2}-\d{2}", raw):
+            return parsed.timestamp() + 86399
+        return parsed.timestamp()
+    except (ValueError, OverflowError):
+        return None
+
+
+def _research_date_bounds(date_from: str = "", date_to: str = "", year: Any = None,
+                          period: str = "") -> Dict[str, Any]:
+    start = _parse_research_date(date_from)
+    end = _parse_research_date(date_to, True)
+    match = re.search(r"(?:H([12])\s*(\d{4})|(\d{4})\s*H([12]))", str(period or "").upper())
+    half_only = re.search(r"\bH([12])\b", str(period or "").upper())
+    selected_year = int(year) if str(year or "").isdigit() else int(match.group(2) or match.group(3)) if match else 0
+    half = int((match.group(1) or match.group(4)) if match else (half_only.group(1) if half_only else 0))
+    if selected_year and start is None:
+        start = datetime(selected_year, 7 if half == 2 else 1, 1, tzinfo=timezone.utc).timestamp()
+    if selected_year and end is None:
+        end_month = 7 if half == 1 else 1
+        end_year = selected_year if half == 1 else selected_year + 1
+        end = datetime(end_year, end_month, 1, tzinfo=timezone.utc).timestamp() - 1
+    return {"from": start, "to": end, "date_from": _iso(start), "date_to": _iso(end),
+            "period": str(period or "").upper() or None}
+
+
+def _research_coverage(rows: Sequence[Dict[str, Any]], requested_publishers: Sequence[str]) -> Dict[str, Any]:
+    def count_by(key: str) -> Dict[str, int]:
+        counts: Dict[str, int] = {}
+        for item in rows:
+            value = _clean_text(item.get(key)) or "Unknown"
+            counts[value] = counts.get(value, 0) + 1
+        return dict(sorted(counts.items(), key=lambda pair: (-pair[1], pair[0])))
+
+    present = sorted({_clean_text(item.get("publisher")) for item in rows if item.get("publisher")})
+    requested = [_clean_text(value) for value in requested_publishers if _clean_text(value)]
+    missing = [wanted for wanted in requested if not any(
+        _norm(wanted) in _norm(value) or _norm(value) in _norm(wanted) for value in present)]
+    metadata_only = sum(not re.search(r"excerpt|abstract|full text|full report",
+                                     str(item.get("summary_basis") or ""), re.I) for item in rows)
+    return {
+        "requested_publishers": requested, "present_publishers": present,
+        "missing_publishers": missing, "publisher_counts": count_by("publisher"),
+        "category_counts": count_by("category"), "geography_counts": count_by("geography"),
+        "access_counts": count_by("access"),
+        "open_or_direct_count": sum(bool(re.search(r"open|download|public", str(item.get("access") or ""), re.I)
+                                         or item.get("direct_url")) for item in rows),
+        "metadata_only_count": metadata_only, "content_evidence_count": len(rows) - metadata_only,
+        "source_open_required_count": metadata_only,
+    }
+
+
+def _chart_assessment(points: Sequence[Dict[str, Any]], quality: str, timeframe: str,
+                      timestamp_basis: str) -> Dict[str, Any]:
+    valid = [( _finite(point.get("timestamp") or point.get("ts")), _finite(point.get("value")) ) for point in points]
+    valid = [(ts, value) for ts, value in valid if ts is not None and value is not None]
+    # Local chart points expose ISO timestamps, so parse those separately.
+    if not valid:
+        valid = [(_parse_research_date(point.get("timestamp")), _finite(point.get("value"))) for point in points]
+        valid = [(ts, value) for ts, value in valid if ts is not None and value is not None]
+    peak: Optional[Tuple[float, float]] = None
+    max_drawdown: Optional[Tuple[float, float, float]] = None
+    for ts, value in valid:
+        if peak is None or value > peak[1]:
+            peak = (ts, value)
+        if peak and peak[1] > 0:
+            drawdown = (value / peak[1] - 1) * 100
+            if max_drawdown is None or drawdown < max_drawdown[0]:
+                max_drawdown = (drawdown, peak[0], ts)
+    close_series = quality == "historical_close"
+    true_intraday = quality in {"real_intraday", "cached_intraday", "stale_intraday"}
+    checkpoint = quality == "performance_checkpoint"
+    broad_trend = len(valid) >= (40 if str(timeframe).upper() == "6M" else 10) and (close_series or true_intraday)
+    statistics = None
+    if valid:
+        statistics = {
+            "start_at": _iso(valid[0][0]), "end_at": _iso(valid[-1][0]),
+            "start_price": valid[0][1], "end_price": valid[-1][1],
+            "return_pct": ((valid[-1][1] / valid[0][1]) - 1) * 100 if valid[0][1] else None,
+            "low": min(value for _, value in valid), "high": max(value for _, value in valid),
+            "max_drawdown_pct": max_drawdown[0] if max_drawdown else None,
+            "max_drawdown_peak_at": _iso(max_drawdown[1]) if max_drawdown else None,
+            "max_drawdown_trough_at": _iso(max_drawdown[2]) if max_drawdown else None,
+        }
+    return {
+        "series_kind": "daily_close" if close_series else "intraday_price" if true_intraday else "performance_checkpoint" if checkpoint else "unknown",
+        "timestamp_basis": timestamp_basis, "statistics": statistics,
+        "supported_analysis": {"broad_trend": broad_trend, "close_to_close_momentum": close_series and len(valid) >= 20,
+                               "observed_range": len(valid) >= 2, "drawdown": len(valid) >= 2,
+                               "approximate_price_zones": close_series and len(valid) >= 60},
+        "unsupported_analysis": {"exact_support_resistance": True, "candlestick_patterns": True,
+                                 "volume_confirmation": True,
+                                 "intraday_execution_levels": not true_intraday or len(valid) < 30},
+        "required_language": ("Describe only provider performance checkpoints; do not call this a continuous historical chart."
+                              if checkpoint else "Use broad trend, range, momentum, and drawdown language. Any price zone is approximate; exact technical levels require OHLCV candles."
+                              if close_series else "State the limited series quality and avoid precise technical conclusions."),
     }
 
 
@@ -555,11 +677,17 @@ class CockpitService:
         chart = row.get("_chart") or {}
         quality = (row.get("chart_quality") or {}).get("24h" if frame == "24H" else frame)
         points: List[Dict[str, Any]] = []
+        timestamp_basis = "provider_timestamps"
         if frame == "24H":
             values = chart.get("intraday") or row.get("intraday") or []
             timestamps = chart.get("intraday_ts") or row.get("intraday_ts") or []
+            end_ts = (_finite(row.get("chart_asof")) or _finite(row.get("quote_asof"))
+                      or datetime.now(tz=timezone.utc).timestamp())
+            step = max(60, int(86400 / max(1, len(values) - 1)))
+            timestamp_basis = "provider_timestamps" if timestamps else "estimated_even_spacing_from_quote_time"
             for index, value in enumerate(values):
-                points.append({"timestamp": _iso(timestamps[index]) if index < len(timestamps) else None, "value": value})
+                ts = timestamps[index] if index < len(timestamps) else end_ts - step * (len(values) - 1 - index)
+                points.append({"timestamp": _iso(ts), "value": value})
         else:
             values = chart.get("spark") or []
             timestamps = chart.get("spark_ts") or []
@@ -580,8 +708,10 @@ class CockpitService:
             "chart_quality": quality or "unavailable",
             "point_count": len(points),
             "points": points,
+            "analysis_guardrails": _chart_assessment(points, quality or "unavailable", frame, timestamp_basis),
             "source": {"name": row.get("source_name") or row.get("source_provider"),
                        "url": row.get("source_url") or row.get("url")},
+            "note": "Use these returned points instead of scraping the dashboard UI. Interactive provider charts are a visual fallback, not a substitute data source.",
         }
 
     def get_score(self, ticker: str, country: str = "") -> Dict[str, Any]:
@@ -879,14 +1009,19 @@ class CockpitService:
 
     def search_research(
         self, query: str = "", category: str = "", geography: str = "", ticker: str = "",
-        publisher: str = "", open_only: bool = False, limit: int = 20,
+        publisher: str = "", publishers: Optional[Sequence[str]] = None,
+        date_from: str = "", date_to: str = "", year: Optional[int] = None,
+        period: str = "", open_only: bool = False, limit: int = 20,
     ) -> Dict[str, Any]:
         data, _, _ = self._snapshot()
         query_tokens = _tokens(query)
         wanted_category = _norm(category)
         wanted_geography = _norm(geography)
-        wanted_publisher = _norm(publisher)
+        requested_publishers = list(dict.fromkeys(
+            _clean_text(value) for value in ([publisher] + list(publishers or [])) if _clean_text(value)))
+        wanted_publishers = [_norm(value) for value in requested_publishers]
         wanted_ticker = str(ticker or "").strip().upper()
+        bounds = _research_date_bounds(date_from, date_to, year, period)
         priority_rank = {"essential": 0, "high": 1, "live": 2, "supplementary": 3}
         rows = []
         for item in (data.get("research") or {}).get("reports") or []:
@@ -894,12 +1029,19 @@ class CockpitService:
                 continue
             if wanted_geography and wanted_geography not in _norm(item.get("geography")):
                 continue
-            if wanted_publisher and wanted_publisher not in _norm(item.get("publisher")):
+            item_publisher = _norm(item.get("publisher"))
+            if wanted_publishers and not any(value in item_publisher or item_publisher in value
+                                             for value in wanted_publishers):
                 continue
             ticker_tags = {str(value).upper() for value in item.get("ticker_tags") or []}
             if wanted_ticker and wanted_ticker not in ticker_tags:
                 continue
             if open_only and not ("open" in _norm(item.get("access")) or item.get("direct_url")):
+                continue
+            published_ts = _finite(item.get("published_ts")) or _parse_research_date(item.get("published")) or 0
+            if bounds["from"] and published_ts < bounds["from"]:
+                continue
+            if bounds["to"] and published_ts > bounds["to"]:
                 continue
             haystack = _norm(" ".join(str(value or "") for value in (
                 item.get("title"), item.get("publisher"), item.get("category"), item.get("subcategory"),
@@ -918,11 +1060,50 @@ class CockpitService:
         return {
             "status": "ok", "as_of": data.get("timestamp"),
             "query": {"query": query, "category": category, "geography": geography,
-                      "ticker": ticker, "publisher": publisher, "open_only": open_only},
+                      "ticker": ticker, "publisher": publisher, "publishers": requested_publishers,
+                      "date_from": date_from, "date_to": date_to, "year": year,
+                      "period": period, "open_only": open_only},
+            "period": bounds,
             "total_matches": len(rows),
             "results": [_public_research(item) for item in rows[:_clamp_limit(limit, 20, 50)]],
+            "coverage_audit": _research_coverage(rows, requested_publishers),
             "synthesis": research.get("synthesis") or {}, "health": research.get("health") or {},
             "grounding_note": research.get("provenance_note"),
+        }
+
+    def research_synthesis(
+        self, query: str = "", category: str = "", geography: str = "", ticker: str = "",
+        publisher: str = "", publishers: Optional[Sequence[str]] = None,
+        date_from: str = "", date_to: str = "", year: Optional[int] = None,
+        period: str = "", open_only: bool = False, limit: int = 50,
+    ) -> Dict[str, Any]:
+        result = self.search_research(query, category, geography, ticker, publisher, publishers,
+                                      date_from, date_to, year, period, open_only, min(50, limit or 50))
+        reports = result.get("results") or []
+        audit = result.get("coverage_audit") or {}
+        return {
+            "status": "ok" if reports else "insufficient_evidence", "as_of": result.get("as_of"),
+            "request": result.get("query"), "period": result.get("period"),
+            "reports": reports, "coverage_audit": audit,
+            "synthesis_readiness": {
+                "inventory_ready": bool(reports),
+                "content_summary_ready": bool(audit.get("content_evidence_count")),
+                "source_open_required": bool(audit.get("source_open_required_count")),
+                "reason": ("At least one indexed record includes bounded content evidence."
+                           if audit.get("content_evidence_count") else
+                           "The index currently contains discovery metadata; open source_url before summarizing report conclusions."),
+            },
+            "required_output": [
+                "Coverage audit: publishers found, missing publishers, dates, access, and evidence scope.",
+                "Observed-period findings and forward outlook must be separated.",
+                "Consensus, disagreements, Indonesia implications, and unresolved evidence gaps.",
+                "Every report-level claim must cite source_url and be attributed to its publisher.",
+            ],
+            "routing_policy": {
+                "first_source": "Project Cockpit research index",
+                "external_search": "Use only to open indexed source_url records or fill publishers explicitly listed as missing.",
+                "prohibition": "Do not replace this inventory with an unrelated generic research workflow or claim metadata is full-report content.",
+            },
         }
 
     def get_research(self, id_or_url_or_title: str) -> Dict[str, Any]:
@@ -960,10 +1141,20 @@ class CockpitService:
             "asset": asset, "score": score, "chart": chart,
             "news": news.get("results") or [], "videos": videos.get("results") or [],
             "research": exact_research.get("results") or [], "context_research": context,
+            "research_framework": {
+                "evidence_layers": ["market data", "deterministic score", "company and sector news",
+                                    "video intelligence", "institutional research"],
+                "required_analysis": ["business and industry context", "earnings and catalysts", "valuation",
+                                      "liquidity and risk", "bull/base/bear cases", "data gaps"],
+                "mandatory_tool_sequence": ["get_company_evidence", "get_asset_chart", "get_asset_score",
+                                            "search_news", "search_research"],
+                "chart_policy": "Use MCP chart points first. Exact support/resistance, candlestick patterns, and volume confirmation require explicit OHLCV fields.",
+            },
             "provenance_rules": [
                 "Label provider facts, Cockpit calculations, publisher opinions, and AI inference separately.",
                 "Broker opinions and target prices are evidence, not facts or personalized recommendations.",
                 "Open the original report before relying on a recommendation, forecast, or valuation.",
+                "Never inspect the dashboard UI for data exposed by an MCP tool.",
             ],
         }
 

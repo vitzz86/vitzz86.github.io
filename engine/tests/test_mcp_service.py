@@ -96,6 +96,9 @@ class CockpitMCPServiceTests(unittest.TestCase):
         self.assertTrue(result["chart_quality"])
         self.assertGreater(result["point_count"], 1)
         self.assertLessEqual(result["point_count"], 40)
+        self.assertIn("analysis_guardrails", result)
+        self.assertTrue(result["analysis_guardrails"]["unsupported_analysis"]["exact_support_resistance"])
+        self.assertIn("dashboard UI", result["note"])
 
     def test_score_detail_exposes_real_metrics_and_warnings(self):
         result = self.service.get_score("BBCA", "ID")
@@ -143,9 +146,32 @@ class CockpitMCPServiceTests(unittest.TestCase):
             self.assertEqual(result["results"][0]["publisher"], "Test Broker")
             self.assertEqual(result["results"][0]["report_type"], "Equity Research")
             self.assertEqual(result["results"][0]["geography_detail"], "Indonesia / ASEAN")
+            self.assertEqual(result["results"][0]["evidence_scope"], "content_excerpt_available")
             detail = self.service.get_research("live-bbca")
             self.assertEqual(detail["status"], "ok")
             self.assertEqual(detail["research"]["source_url"], "https://example.com/bbca")
+
+    def test_research_synthesis_filters_period_and_audits_publishers(self):
+        reports = [
+            {"id": "blackrock-h1", "title": "2026 Midyear Outlook", "publisher": "BlackRock Investment Institute",
+             "published": "2026-06", "published_ts": 1780272000, "priority": "Essential",
+             "category": "Market Strategy", "geography": "Global", "access": "Open",
+             "source_url": "https://example.com/blackrock", "summary_basis": "curated index metadata"},
+            {"id": "old", "title": "2025 Outlook", "publisher": "Morgan Stanley",
+             "published": "2025-12", "published_ts": 1764547200, "priority": "Essential",
+             "category": "Market Strategy", "geography": "Global", "access": "Open",
+             "source_url": "https://example.com/old", "summary_basis": "curated index metadata"},
+        ]
+        payload = {"timestamp": "2026-07-20T00:00:00Z", "research": {
+            "reports": reports, "health": {}, "provenance_note": "Source-linked metadata."}}
+        with mock.patch.object(self.service, "_snapshot", return_value=(payload, {}, {})):
+            result = self.service.research_synthesis(
+                publishers=["BlackRock", "J.P. Morgan", "Morgan Stanley"], period="H1 2026")
+        self.assertEqual([item["id"] for item in result["reports"]], ["blackrock-h1"])
+        self.assertEqual(result["coverage_audit"]["present_publishers"], ["BlackRock Investment Institute"])
+        self.assertEqual(result["coverage_audit"]["missing_publishers"], ["J.P. Morgan", "Morgan Stanley"])
+        self.assertFalse(result["synthesis_readiness"]["content_summary_ready"])
+        self.assertTrue(result["synthesis_readiness"]["source_open_required"])
 
     def test_company_evidence_keeps_evidence_layers_separate(self):
         with mock.patch.object(self.service, "get_asset", return_value={"status": "ok", "sector": "financials"}), \
