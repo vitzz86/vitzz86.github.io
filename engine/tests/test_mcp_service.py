@@ -61,6 +61,16 @@ class CockpitMCPServiceTests(unittest.TestCase):
         trending = self.service.trending("id", "gainers")
         self.assertIsInstance(trending["results"], list)
 
+    def test_macro_indicators_preserve_release_periods_and_sources(self):
+        core = self.service.macro_indicators("core")
+        self.assertEqual(core["status"], "ok")
+        self.assertGreaterEqual(len(core["results"]), 12)
+        self.assertTrue(all(item["reference_period"] for item in core["results"]))
+        self.assertTrue(all(item["source_url"].startswith("http") for item in core["results"]))
+        prices = self.service.macro_indicators("core", "Prices")
+        self.assertGreaterEqual(len(prices["results"]), 3)
+        self.assertTrue(all(item["pillar"] == "Prices" for item in prices["results"]))
+
     def test_exact_idx_asset_includes_provenance_and_score(self):
         result = self.service.get_asset("BBCA", "ID")
         self.assertEqual(result["status"], "ok")
@@ -155,6 +165,7 @@ class CockpitMCPServiceTests(unittest.TestCase):
         self.assertIn("news", result)
         self.assertIn("videos", result)
         self.assertIn("research", result)
+        self.assertIn("macro_indicators", result)
         self.assertIn("grounding_rules", result)
 
     def test_ipo_radar_preserves_health_and_synthesis(self):

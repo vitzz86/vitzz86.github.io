@@ -15,12 +15,12 @@ The server reads the same three files as the dashboard:
   valuation, liquidity, and risk statistics.
 - `charts.json`: 24h, 1W, 1M, 3M, and 6M chart points with quality labels.
 
-The server exposes 26 bounded tools:
+The server exposes 27 bounded tools:
 
 | Area | Tools |
 |---|---|
 | Health | `cockpit_status` |
-| Overview | `get_market_telemetry`, `get_market_heatmap`, `get_trending_assets` |
+| Overview | `get_market_telemetry`, `get_macro_indicators`, `get_market_heatmap`, `get_trending_assets` |
 | Assets | `search_assets`, `get_asset`, `get_asset_chart`, `get_asset_score`, `compare_assets` |
 | Markets | `list_sector_flow`, `get_sector_detail`, `get_market_movers` |
 | Intelligence Hub | `search_news`, `get_news_detail`, `search_videos`, `get_video_detail`, `get_daily_brief`, `get_market_sentiment` |

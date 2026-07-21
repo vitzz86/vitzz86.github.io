@@ -44,10 +44,13 @@ def collect() -> dict:
             value_unit = "percent"
             delta_unit = "bp"
             delta = round((value - prev_close) * 100, 1)
+        region, country_code = settings.TELEMETRY_REGION.get(symbol, ("Global", "GL"))
         rows.append({
             "symbol": symbol,
             "label": label,
             "kind": kind,
+            "region": region,
+            "country_code": country_code,
             "value": round(value, 3 if value_unit == "percent" else 2),
             "value_unit": value_unit,
             "delta_pct": delta,
@@ -70,31 +73,35 @@ def collect() -> dict:
             direction = "drop" if delta < 0 else "spike"
             anomaly_bits.append(f"{label} {direction} of {delta:+.2f}%")
 
-        if symbol == "USDIDR=X":
-            for msym, mlabel, mkind in settings.MACRO_RATE_BENCHMARKS:
-                mr = quotes.get(msym)
-                if not mr:
-                    print(f"[market_telemetry] {msym} — no macro-rate quote this run")
-                    continue
-                rows.append({
-                    "symbol": msym,
-                    "label": mlabel,
-                    "kind": mkind,
-                    "value": round(float(mr["value"]), 3),
-                    "value_unit": mr.get("value_unit", "percent"),
-                    "delta_pct": float(mr.get("delta_pct") or 0.0),
-                    "delta_unit": mr.get("delta_unit", "bp"),
-                    "prev_close": round(float(mr.get("prev_close", mr["value"])), 3),
-                    "state": mr.get("state", "closed"),
-                    "mkt_start": mr.get("mkt_start"),
-                    "mkt_end": mr.get("mkt_end"),
-                    "spark": mr.get("spark", []),
-                    "spark_ts": mr.get("spark_ts", []),
-                    "intraday": mr.get("intraday", []),
-                    "url": mr.get("url"),
-                    "source_name": mr.get("source_name"),
-                    "asof": mr.get("asof"),
-                })
+    # Macro rates are independent feeds. A missing USD/IDR quote must not hide
+    # BI Rate or Indonesia's sovereign-yield benchmark from the payload.
+    for msym, mlabel, mkind in settings.MACRO_RATE_BENCHMARKS:
+        mr = quotes.get(msym)
+        if not mr:
+            print(f"[market_telemetry] {msym} — no macro-rate quote this run")
+            continue
+        region, country_code = settings.TELEMETRY_REGION.get(msym, ("Global", "GL"))
+        rows.append({
+            "symbol": msym,
+            "label": mlabel,
+            "kind": mkind,
+            "region": region,
+            "country_code": country_code,
+            "value": round(float(mr["value"]), 3),
+            "value_unit": mr.get("value_unit", "percent"),
+            "delta_pct": float(mr.get("delta_pct") or 0.0),
+            "delta_unit": mr.get("delta_unit", "bp"),
+            "prev_close": round(float(mr.get("prev_close", mr["value"])), 3),
+            "state": mr.get("state", "closed"),
+            "mkt_start": mr.get("mkt_start"),
+            "mkt_end": mr.get("mkt_end"),
+            "spark": mr.get("spark", []),
+            "spark_ts": mr.get("spark_ts", []),
+            "intraday": mr.get("intraday", []),
+            "url": mr.get("url"),
+            "source_name": mr.get("source_name"),
+            "asof": mr.get("asof"),
+        })
 
     return {
         "rows": rows,

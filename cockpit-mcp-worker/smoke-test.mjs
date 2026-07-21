@@ -11,7 +11,7 @@ const client = new Client({ name: "project-cockpit-smoke-test", version: "1.0.0"
 try {
   await client.connect(transport);
   const tools = await client.listTools();
-  if (tools.tools.length !== 26) throw new Error(`Expected 26 tools, received ${tools.tools.length}`);
+  if (tools.tools.length !== 27) throw new Error(`Expected 27 tools, received ${tools.tools.length}`);
   const status = await client.callTool({ name: "cockpit_status", arguments: {} });
   const asset = await client.callTool({ name: "get_asset", arguments: { ticker: "BBCA", country: "ID" } });
   const chart = await client.callTool({ name: "get_asset_chart", arguments: { ticker: "BBCA", country: "ID", timeframe: "1M" } });
@@ -24,6 +24,7 @@ try {
   if (!parsedVideos.results?.length) throw new Error("Video search failed");
   const coverage = [
     ["get_market_telemetry", { symbol: "^JKSE" }],
+    ["get_macro_indicators", { view: "core" }],
     ["get_market_heatmap", { market: "ID", limit: 3 }],
     ["get_trending_assets", { market: "id", mode: "all" }],
     ["search_assets", { query: "bank", market: "ID", limit: 3 }],

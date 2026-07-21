@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from config import settings                      # noqa: E402
 from templates import prompt_templates as pt     # noqa: E402
 from tools import (daily_brief, enterprise_osint, env_context, ipos,  # noqa: E402
-                   macro_alerts, market_telemetry, news_router, podcasts,
+                   macro_alerts, macro_indicators, market_telemetry, news_router, podcasts,
                    research, sectors, trending, universe, videos)
 
 
@@ -380,6 +380,7 @@ REQUIRED_SHAPE = {
     "intelligence_health": dict,
     "ipo": dict,
     "research": dict,
+    "macro_indicators": dict,
     "note_of_the_day": str,
 }
 
@@ -446,6 +447,17 @@ def _validate_intelligence(payload: dict) -> None:
     research_payload = payload.get("research") or {}
     _expect(isinstance(research_payload.get("reports"), list), "research.reports missing")
     _expect(isinstance(research_payload.get("health"), dict), "research.health missing")
+    macro_payload = payload.get("macro_indicators") or {}
+    for key in ("core", "detail"):
+        _expect(isinstance(macro_payload.get(key), list), f"macro_indicators.{key} missing")
+    _expect(len(macro_payload.get("core") or []) >= 12,
+            "macro_indicators.core must contain at least 12 headline indicators")
+    for group in ("core", "detail"):
+        for i, item in enumerate(macro_payload.get(group) or []):
+            _expect(isinstance(item.get("label"), str) and item.get("label").strip(),
+                    f"macro_indicators.{group}[{i}].label missing")
+            _expect(isinstance(item.get("source_url"), str) and item.get("source_url").startswith("http"),
+                    f"macro_indicators.{group}[{i}].source_url missing")
 
 
 def validate(payload: dict) -> None:
@@ -524,6 +536,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         state.get("signals", ""), summarize=summarize)
     ipo = ipos.collect(sec, previous=previous_ipo, news_wire=news["wire"], summarize=summarize)
     research_library = research.collect(sec, previous=previous_research)
+    macro_dashboard = macro_indicators.collect(state["telemetry"])
 
     payload = {
         "timestamp": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -556,6 +569,7 @@ def compile_payload(state: dict) -> tuple[dict, dict, dict]:
         "alerts": ma["alerts"],
         "ipo": ipo,
         "research": research_library,
+        "macro_indicators": macro_dashboard,
         "trending": trending.collect(sec),
         "podcasts": podcasts.collect(summarize=summarize, previous=previous_pods),
         "coverage_universe": _coverage_universe_summary(sec),

@@ -299,11 +299,21 @@ export function createCockpitService(env) {
       const results = (data.telemetry || []).filter(item => !wanted || [item.symbol, item.label].map(v => String(v || "").toUpperCase()).includes(wanted))
         .map(item => ({
           symbol: item.symbol, label: item.label, kind: item.kind, value: item.value, value_unit: item.value_unit,
+          region: item.region, country_code: item.country_code,
           return_24h_pct: item.delta_pct, previous_close: item.prev_close, market_state: item.state,
           quote_as_of: iso(item.quote_asof), quote_mode: item.quote_mode, source_url: item.url,
           chart_quality: item.chart_quality || {}, ...(includeChart ? { chart: item.spark || [], chart_timestamps: item.spark_ts || [], intraday: item.intraday || [] } : {}),
         }));
       return { as_of: data.timestamp, results };
+    },
+
+    async macroIndicators(view = "core", pillar = "") {
+      const { data } = await loadContracts(); const macro = data.macro_indicators || {};
+      const key = String(view || "core").toLowerCase();
+      if (!["core", "detail"].includes(key)) return { status: "invalid_view", allowed: ["core", "detail"] };
+      const wanted = norm(pillar); let results = [...(macro[key] || [])];
+      if (wanted) results = results.filter(item => norm(item.pillar).includes(wanted));
+      return { status: "ok", as_of: data.timestamp, data_cutoff: macro.data_cutoff, view: key, pillar: pillar || null, results, health: macro.health || {}, refresh_policy: macro.refresh_policy, methodology_note: macro.methodology_note };
     },
 
     async heatmap(market = "id", sector = "", limit = 120) {
@@ -542,14 +552,14 @@ export function createCockpitService(env) {
 
     async intelligence(args = {}) {
       const query = args.topic || args.ticker || args.sector || "";
-      const [status, asset, news, videos, research, sentiment, macro, alerts] = await Promise.all([
+      const [status, asset, news, videos, research, sentiment, macro, alerts, macroIndicators] = await Promise.all([
         this.status(), args.ticker ? this.asset(args.ticker, args.market) : null,
         this.news({ query, market: args.market, sector: args.sector, ticker: args.ticker, window_days: args.window_days, limit: 8 }),
         this.videos({ query, market: args.market, window_days: args.window_days, include_knowledge: true, limit: 8 }),
         this.research({ query, ticker: args.ticker, limit: 8 }),
-        this.sentiment(), this.macro(), this.alerts(),
+        this.sentiment(), this.macro(), this.alerts(), this.macroIndicators("core"),
       ]);
-      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], research: research.results || [], macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "Broker research is attributed opinion, not fact.", "State missing or stale data; never estimate absent fundamentals."] };
+      return { as_of: status.payload_timestamp, request: args, asset, sentiment, news: news.results || [], videos: videos.results || [], research: research.results || [], macro_indicators: macroIndicators, macro_analysis: macro.analysis || [], alerts: alerts.alerts || [], grounding_rules: ["Prefer exact ticker and source-linked evidence.", "News without summaries is headline-only evidence.", "Video summaries are Cockpit synthesis, not transcripts.", "Broker research is attributed opinion, not fact.", "State missing or stale data; never estimate absent fundamentals."] };
     },
   };
 }

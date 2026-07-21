@@ -89,6 +89,12 @@ def get_market_telemetry(symbol: str = "", include_chart: bool = False) -> dict:
 
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
+def get_macro_indicators(view: str = "core", pillar: str = "") -> dict:
+    """Get source-linked Indonesia macro releases; view is core or detail."""
+    return service.macro_indicators(view, pillar)
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def get_market_heatmap(market: str = "id", sector: str = "", limit: int = 120) -> dict:
     """Get market-cap-sized, return-colored heatmap assets grouped by sector for ID, S&P 500, Nasdaq 100, US, crypto, or others."""
     return service.heatmap(market, sector, limit)

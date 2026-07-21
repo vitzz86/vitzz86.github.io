@@ -390,6 +390,7 @@ class CockpitService:
                 continue
             row = {
                 "symbol": item.get("symbol"), "label": item.get("label"), "kind": item.get("kind"),
+                "region": item.get("region"), "country_code": item.get("country_code"),
                 "value": item.get("value"), "value_unit": item.get("value_unit"),
                 "return_24h_pct": item.get("delta_pct"), "previous_close": item.get("prev_close"),
                 "market_state": item.get("state"), "quote_as_of": _iso(item.get("quote_asof")),
@@ -404,6 +405,26 @@ class CockpitService:
                 }
             results.append(row)
         return {"as_of": data.get("timestamp"), "symbol": symbol or None, "results": results}
+
+    def macro_indicators(self, view: str = "core", pillar: str = "") -> Dict[str, Any]:
+        """Return source-linked official Indonesia macro releases."""
+        data, _, _ = self._snapshot()
+        macro = data.get("macro_indicators") or {}
+        aliases = {"indonesia": "core", "indonesia_core": "core",
+                   "overview": "core", "headline": "core", "indonesia_detail": "detail"}
+        key = aliases.get(_norm(view).replace(" ", "_"), _norm(view).replace(" ", "_")) or "core"
+        if key not in {"core", "detail"}:
+            return {"status": "invalid_view", "allowed": ["core", "detail"]}
+        rows = list(macro.get(key) or [])
+        if pillar:
+            wanted = _norm(pillar)
+            rows = [item for item in rows if wanted in _norm(item.get("pillar"))]
+        return {
+            "status": "ok", "as_of": data.get("timestamp"), "data_cutoff": macro.get("data_cutoff"),
+            "view": key, "pillar": pillar or None, "results": rows,
+            "health": macro.get("health") or {}, "refresh_policy": macro.get("refresh_policy"),
+            "methodology_note": macro.get("methodology_note"),
+        }
 
     def heatmap(self, market: str = "id", sector: str = "", limit: int = 120) -> Dict[str, Any]:
         data, _, _ = self._snapshot()
@@ -1009,6 +1030,7 @@ class CockpitService:
             "daily_synthesis": brief.get("synthesis"), "key_themes": brief.get("key_themes") or [],
             "news": news.get("results") or [], "videos": videos.get("results") or [],
             "research": research.get("results") or [],
+            "macro_indicators": self.macro_indicators("core"),
             "macro_analysis": data.get("macro_analysis") or [], "alerts": data.get("alerts") or [],
             "grounding_rules": [
                 "Prefer exact ticker and source-linked evidence.",

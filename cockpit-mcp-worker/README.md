@@ -1,7 +1,7 @@
 # Project Cockpit Remote MCP
 
 Cloudflare Worker deployment of Project Cockpit's read-only MCP service. It
-uses Streamable HTTP at `/mcp`, exposes the same 26 tools as the local Python
+uses Streamable HTTP at `/mcp`, exposes the same 27 tools as the local Python
 server, reads the live GitHub Pages contracts, and overlays the existing IDX
 fast-quote gateway on current-price queries.
 
@@ -72,7 +72,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 
 - ChatGPT custom connector: use
   `https://project-cockpit-mcp.samudravito4.workers.dev/mcp` with no
-  authentication, then refresh the connector to discover all 26 tools.
+  authentication, then refresh the connector to discover all 27 tools.
 - Claude custom connector: use the same production `/mcp` URL with no
   authentication.
 - Claude Desktop fallback:
@@ -86,7 +86,7 @@ Cloudflare Access OAuth can be added later for private multi-user access.
 COCKPIT_MCP_TEST_URL=https://project-cockpit-mcp.samudravito4.workers.dev/mcp npm run smoke
 ```
 
-The smoke test discovers all 26 tools and exercises current quotes, charts,
+The smoke test discovers all 27 tools and exercises current quotes, charts,
 scores, sectors, movers, news, videos, Knowledge Hub, Daily Brief, macro,
 alerts, IPO radar, source-linked research, company evidence, and the combined
 intelligence brief.

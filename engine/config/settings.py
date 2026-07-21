@@ -18,6 +18,15 @@ TICKERS = [
     ("^GSPC",    "S&P 500",             "index"),
     ("^N225",    "Nikkei 225",          "index"),
     ("^DJI",     "Dow Jones",           "index"),
+    ("^STI",     "Straits Times",        "index"),
+    ("^HSI",     "Hang Seng",            "index"),
+    ("^KS11",    "KOSPI",                "index"),
+    ("^NSEI",    "Nifty 50",             "index"),
+    ("^AXJO",    "ASX 200",              "index"),
+    ("000001.SS", "Shanghai Composite",  "index"),
+    ("^TWII",    "Taiwan Weighted",      "index"),
+    ("^KLSE",    "FTSE Bursa KLCI",      "index"),
+    ("^SET.BK",  "SET Thailand",         "index"),
     ("BTC-USD",  "Bitcoin / USD",       "crypto"),
     ("GC=F",     "Gold Spot",           "commodity"),
     ("BZ=F",     "Brent Crude",         "commodity"),
@@ -25,11 +34,40 @@ TICKERS = [
     ("ITMG.JK",  "Coal proxy (ITMG)",   "commodity"),
     ("INCO.JK",  "Nickel proxy (INCO)", "commodity"),
     ("USDIDR=X", "USD/IDR",             "fx"),
+    ("SGD=X",    "USD/SGD",             "fx"),
+    ("HKD=X",    "USD/HKD",             "fx"),
+    ("KRW=X",    "USD/KRW",             "fx"),
+    ("INR=X",    "USD/INR",             "fx"),
+    ("JPY=X",    "USD/JPY",             "fx"),
+    ("CNY=X",    "USD/CNY",             "fx"),
+    ("MYR=X",    "USD/MYR",             "fx"),
+    ("THB=X",    "USD/THB",             "fx"),
+    ("TWD=X",    "USD/TWD",             "fx"),
     ("DX-Y.NYB", "US Dollar Index",     "fx"),
     ("^IRX",     "US 3M T-Bill",        "rates"),
     ("^TNX",     "US 10Y Yield",        "rates"),
     ("^VIX",     "CBOE VIX",            "rates"),
 ]
+
+# Presentation metadata for the filterable Markets & Rates rail. These labels
+# do not change quote provenance or calculations.
+TELEMETRY_REGION = {
+    "^JKSE": ("Indonesia", "ID"), "ITMG.JK": ("Indonesia", "ID"),
+    "INCO.JK": ("Indonesia", "ID"), "USDIDR=X": ("Indonesia", "ID"),
+    "BI_RATE": ("Indonesia", "ID"), "ID10Y": ("Indonesia", "ID"),
+    "^IXIC": ("US", "US"), "^GSPC": ("US", "US"), "^DJI": ("US", "US"),
+    "^IRX": ("US", "US"), "^TNX": ("US", "US"), "^VIX": ("US", "US"),
+    "^N225": ("APAC", "JP"), "JPY=X": ("APAC", "JP"),
+    "^STI": ("APAC", "SG"), "SGD=X": ("APAC", "SG"),
+    "^HSI": ("APAC", "HK"), "HKD=X": ("APAC", "HK"),
+    "^KS11": ("APAC", "KR"), "KRW=X": ("APAC", "KR"),
+    "^NSEI": ("APAC", "IN"), "INR=X": ("APAC", "IN"),
+    "^AXJO": ("APAC", "AU"), "000001.SS": ("APAC", "CN"),
+    "CNY=X": ("APAC", "CN"), "^TWII": ("APAC", "TW"),
+    "TWD=X": ("APAC", "TW"), "^KLSE": ("APAC", "MY"),
+    "MYR=X": ("APAC", "MY"), "^SET.BK": ("APAC", "TH"),
+    "THB=X": ("APAC", "TH"),
+}
 YF_QUOTE = "https://finance.yahoo.com/quote/"
 
 # Non-Yahoo macro-rate benchmarks. These are fetched by tools.macro_rates and

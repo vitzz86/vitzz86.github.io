@@ -1,7 +1,8 @@
 import time
 import unittest
 
-from tools import fundamentals, idx_membership, ipos, news_router, research, sectors, universe
+from tools import (fundamentals, idx_membership, ipos, macro_indicators,
+                   news_router, research, sectors, universe)
 
 
 class FinancialGuardrailTests(unittest.TestCase):
@@ -142,6 +143,27 @@ class FinancialGuardrailTests(unittest.TestCase):
         self.assertIsNotNone(valuation)
         self.assertGreater(valuation["fair_value"], 30)
         self.assertEqual(valuation["valuation_confidence"], "Medium")
+
+
+class MacroIndicatorContractTests(unittest.TestCase):
+    def test_macro_monitor_has_at_least_twelve_official_headline_cards(self):
+        payload = macro_indicators.collect([])
+        self.assertGreaterEqual(len(payload["core"]), 12)
+        self.assertTrue(all(row["source_url"].startswith("http") for row in payload["core"]))
+        self.assertTrue(all(row["update_mode"] == "official_release" for row in payload["core"]))
+
+    def test_bi_rate_overlay_updates_only_official_policy_card(self):
+        payload = macro_indicators.collect([{
+            "symbol": "BI_RATE", "value": 6.0, "url": "https://example.com/bi",
+            "source_name": "Bank Indonesia", "asof": "21 Jul 2026",
+        }])
+        row = next(item for item in payload["core"] if item["id"] == "id_bi_rate")
+        self.assertEqual(row["value_display"], "6.00%")
+        self.assertEqual(row["source_name"], "Bank Indonesia")
+
+    def test_market_drivers_are_not_duplicated_in_macro_payload(self):
+        payload = macro_indicators.collect([])
+        self.assertNotIn("external", payload)
 
 
 class IpoContractTests(unittest.TestCase):

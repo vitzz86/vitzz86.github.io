@@ -147,6 +147,10 @@ a{color:inherit;text-decoration:none;}
 .assetempty{padding:15px 11px;color:var(--ink3);font-family:var(--mono);font-size:10px;text-align:center;}
 @media(max-width:640px){.assetresult{grid-template-columns:72px minmax(110px,1fr) 60px;}.assetresult .armeta{display:none;}.assetresults{max-height:330px;}}
 .idxscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
+.marketfilters{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.marketfilters .trendtabs{margin-bottom:0;flex-wrap:wrap;}
+.marketfilters .ttab{padding:5px 9px;}
+.marketfilters .marketcount{font-family:var(--mono);font-size:8px;color:var(--ink3);padding-top:6px;white-space:nowrap;}
 .idxcard{flex:0 0 168px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px;cursor:pointer;transition:border-color .15s,transform .12s;}
 .idxcard:hover{border-color:#3a3a46;transform:translateY(-2px);}
 .idxcard .badge{font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;color:var(--ink3);border:1px solid var(--line);border-radius:3px;padding:2px 5px;display:inline-flex;}
@@ -254,8 +258,8 @@ a{color:inherit;text-decoration:none;}
 .alert.blue{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.22);color:#86b5f5;}
 
 /* intelligence wire */
-#wsearch,#vsearch{width:100%;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 10px;margin-bottom:9px;}
-#wsearch:focus,#vsearch:focus{outline:none;border-color:var(--cyan);}
+#wsearch,#vsearch,#researchSearch{width:100%;background:#0b0b0e;border:1px solid var(--line);border-radius:6px;color:var(--ink);font-family:var(--mono);font-size:11px;padding:7px 10px;margin-bottom:9px;}
+#wsearch:focus,#vsearch:focus,#researchSearch:focus{outline:none;border-color:var(--cyan);}
 .digestbox{border-left:2px solid var(--amber);background:rgba(245,158,11,.045);border-radius:0 8px 8px 0;padding:9px 10px;margin-bottom:10px;}
 .digestbox .dh{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:var(--amber);margin-bottom:6px;}
 .digestbox .di{font-size:10.5px;line-height:1.55;color:#c9c9d2;margin-top:4px;}
@@ -592,10 +596,6 @@ footer .g{color:var(--green);}
 .researchhead{border-left:2px solid var(--cyan);padding:3px 0 3px 10px;margin:2px 0 12px;}
 .researchhead .rh{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--cyan);}
 .researchhead .rs{font-size:10px;color:var(--ink3);margin-top:4px;line-height:1.45;}
-.researchsearch{display:grid;grid-template-columns:minmax(0,1fr) 30px;gap:6px;margin-bottom:7px;}
-.researchsearch input{margin:0;min-width:0;}
-.researchclear{display:grid;place-items:center;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink3);font:16px var(--mono);cursor:pointer;}
-.researchclear:hover,.researchclear:focus-visible{color:var(--cyan);border-color:rgba(52,211,192,.45);outline:0;}
 .researchstatus{font:8px var(--mono);color:var(--ink3);margin:-1px 0 8px;line-height:1.45;}
 .researchfilters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px;}
 .researchfilters select{min-width:0;flex:1 1 110px;background:var(--panel2);border:1px solid var(--line);border-radius:5px;color:var(--ink2);font:9px var(--mono);padding:6px 7px;}
@@ -607,6 +607,39 @@ footer .g{color:var(--green);}
 .researchwhy:before{content:"▸ ";color:var(--cyan);}
 .researchopen{font:8px var(--mono);color:var(--cyan);margin-top:6px;}
 .researchempty{border:1px dashed var(--line);border-radius:8px;padding:13px;color:var(--ink3);font-size:10px;line-height:1.55;}
+
+/* official macro monitor */
+.macrotools{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:11px;}
+.macrometa{font-family:var(--mono);font-size:8.5px;line-height:1.5;color:var(--ink3);}
+.macrosummary{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.macrosummary span{font-family:var(--mono);font-size:8px;border:1px solid var(--line);border-radius:999px;padding:4px 7px;color:var(--ink3);}
+.macrosummary .green{color:var(--green);border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.05);}
+.macrosummary .amber{color:var(--amber);border-color:rgba(245,158,11,.28);background:rgba(245,158,11,.05);}
+.macrosummary .red{color:var(--red);border-color:rgba(239,68,68,.28);background:rgba(239,68,68,.05);}
+.macrogrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.macrocard{position:relative;min-width:0;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--ink3);border-radius:7px;padding:11px;transition:border-color .15s,background .15s;}
+.macrocard:hover{background:#121218;border-color:#393943;}
+.macrocard.green{border-left-color:var(--green);}.macrocard.amber{border-left-color:var(--amber);}.macrocard.red{border-left-color:var(--red);}.macrocard.neutral{border-left-color:var(--ink3);}
+.macrocard .mcrow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.macrocard .mcpillar{font-family:var(--mono);font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
+.macrocard .mcsignal{font-family:var(--mono);font-size:7px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;}
+.macrocard.green .mcsignal{color:var(--green);}.macrocard.amber .mcsignal{color:var(--amber);}.macrocard.red .mcsignal{color:var(--red);}.macrocard.neutral .mcsignal{color:var(--ink3);}
+.macrocard .mclabel{font-size:11.5px;font-weight:600;color:var(--ink);margin-top:7px;line-height:1.3;}
+.macrocard .mcvalue{font-family:var(--mono);font-size:18px;font-weight:600;color:#f0f0f4;margin-top:3px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+.macrocard .mcsecondary{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.macrocard .mcsecondary span{font-family:var(--mono);font-size:7.5px;color:var(--cyan);border:1px solid rgba(45,212,191,.2);border-radius:4px;padding:2px 5px;}
+.macrocard .mccompare{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-top:8px;}
+.macrocard .mccompare .mccell{min-width:0;background:#0b0b0e;border:1px solid var(--line2);border-radius:5px;padding:6px;}
+.macrocard .mccompare .mck{display:block;font-family:var(--mono);font-size:6.5px;line-height:1.2;color:var(--ink3);text-transform:uppercase;}
+.macrocard .mccompare .mcv{display:block;font-family:var(--mono);font-size:8.5px;line-height:1.35;color:var(--ink2);margin-top:3px;overflow-wrap:anywhere;}
+.macrocard .mccomment{font-size:9.5px;line-height:1.5;color:var(--ink2);margin-top:8px;}
+.macrocard .mcfoot{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;border-top:1px solid var(--line2);padding-top:7px;margin-top:8px;}
+.macrocard .mcperiod{font-family:var(--mono);font-size:7.5px;line-height:1.45;color:var(--ink3);}
+.macrocard .mcsource{font-family:var(--mono);font-size:7.5px;color:var(--cyan);text-decoration:none;text-align:right;}
+.macrocard .mcsource:hover{color:#66e8d9;}
+.macronote{border-left:2px solid var(--cyan);background:rgba(45,212,191,.035);padding:8px 10px;margin-top:10px;font-size:9px;line-height:1.55;color:var(--ink3);}
+@media(max-width:1100px){.macrogrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:640px){.macrogrid{grid-template-columns:1fr;}.macrotools{align-items:flex-start;}.macrocard .mcvalue{font-size:17px;}.marketfilters{display:block;}.marketfilters .marketcount{padding:2px 0 0;}}
 .vcat.crypto{color:#f7931a;background:rgba(247,147,26,.14);}
 .vexp{display:none;margin-top:9px;}
 .vid.open .vexp{display:block;}
@@ -697,9 +730,42 @@ body{padding-bottom:40px;}
         <div class="assetsearchbox"><span class="mag" aria-hidden="true">⌕</span><input id="assetSearch" type="search" autocomplete="off" spellcheck="false" aria-label="Search market assets" placeholder="Search tickers or companies"><button id="assetSearchClear" type="button" title="Clear search" aria-label="Clear search">×</button></div>
         <div class="assetresults" id="assetSearchResults" role="listbox" aria-label="Ticker search results"></div>
       </div>
-      <div class="lbl" style="margin-bottom:9px;">Global Indices &amp; Assets · click any card to inspect chart</div>
+      <div class="lbl" style="margin-bottom:9px;">Markets &amp; Rates · 30-minute snapshots · click any card to inspect chart</div>
+      <div class="marketfilters">
+        <div>
+          <div class="trendtabs" id="marketKinds">
+            <span class="ttab on" data-k="all">All assets</span>
+            <span class="ttab" data-k="index">Indices</span>
+            <span class="ttab" data-k="fx">FX</span>
+            <span class="ttab" data-k="commodity">Commodities</span>
+            <span class="ttab" data-k="rates">Rates</span>
+            <span class="ttab" data-k="crypto">Crypto</span>
+          </div>
+          <div class="trendtabs" id="marketRegions">
+            <span class="ttab on" data-r="all">All regions</span>
+            <span class="ttab" data-r="Indonesia">🇮🇩 Indonesia</span>
+            <span class="ttab" data-r="US">🇺🇸 US</span>
+            <span class="ttab" data-r="APAC">🌏 APAC</span>
+            <span class="ttab" data-r="Global">🌐 Global</span>
+          </div>
+        </div>
+        <span class="marketcount" id="marketCount">—</span>
+      </div>
       <div class="idxscroll" id="idxScroll"></div>
       <div class="idxexp" id="idxExp"></div>
+    </div>
+    <div class="sec">
+      <div class="sechd"><h2>Indonesia Macro Monitor</h2><span class="tag" id="macroCount">OFFICIAL RELEASES</span></div>
+      <div class="macrotools">
+        <div class="trendtabs" id="macroViews">
+          <span class="ttab on" data-m="core">Headline Monitor</span>
+          <span class="ttab" data-m="detail">Domestic Detail</span>
+        </div>
+        <div class="macrometa" id="macroMeta">Loading source periods…</div>
+      </div>
+      <div class="macrosummary" id="macroSummary"></div>
+      <div class="macrogrid" id="macroGrid"></div>
+      <div class="macronote" id="macroNote"></div>
     </div>
     <div class="sec">
       <div class="sechd"><h2>Market Heatmap</h2><span class="tag" id="heatCount">ACTIVE UNIVERSE</span></div>
@@ -794,7 +860,7 @@ body{padding-bottom:40px;}
     <div class="hubpane" id="paneResearch">
       <div class="researchhead"><div class="rh">RESEARCH LIBRARY</div><div class="rs">Broker · institutional · macro · public and private markets</div></div>
       <div id="researchDigest"></div>
-      <div class="researchsearch"><input id="researchSearch" type="search" placeholder="search title, publisher, topic, ticker…" autocomplete="off"><button class="researchclear" id="researchClear" type="button" title="Clear research search" aria-label="Clear research search">×</button></div>
+      <input id="researchSearch" type="search" placeholder="search reports…" autocomplete="off">
       <div class="researchfilters"><select id="researchCategory" aria-label="Research category"></select><select id="researchGeo" aria-label="Research geography"></select><select id="researchAccess" aria-label="Research access"></select></div>
       <div class="researchstatus" id="researchStatus"></div>
       <div id="researchList"></div>
@@ -892,7 +958,7 @@ function updateDataAge(){
   $('stamp').textContent=base+` · ${payloadSource}`+(payloadLastCheck?' · checked '+checkedAgo(payloadLastCheck):'');
 }
 const GBADGE={index:'EQUITY INDEX',crypto:'CRYPTO',commodity:'COMMODITY',fx:'FX',rates:'RATES',policy:'POLICY'};
-const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
+const FLAG={ID:'🇮🇩',US:'🇺🇸',CR:'₿',GL:'🌐',SG:'🇸🇬',JP:'🇯🇵',KR:'🇰🇷',TW:'🇹🇼',HK:'🇭🇰',CN:'🇨🇳',MY:'🇲🇾',TH:'🇹🇭',NL:'🇳🇱',DK:'🇩🇰',DE:'🇩🇪',CH:'🇨🇭',FR:'🇫🇷',GB:'🇬🇧',ES:'🇪🇸',AU:'🇦🇺',IN:'🇮🇳'};
 const REGION_LABEL={ID:'Indonesia',US:'US',OTHERS:'Others',CRYPTO:'Crypto'};
 function flagOf(c){return (c&&(c.country_flag||FLAG[c.country]))||'';}
 function regionOf(c){
@@ -957,6 +1023,8 @@ const SECTOR_ICON={
 let DATA=null;
 let payloadLastCheck=0,payloadLastOk=true,payloadRefreshBusy=false,payloadSource='local';
 let heatGeo='id',heatScope='top',heatSector='';
+let macroView='core',macroMonitorInit=false;
+let marketKind='all',marketRegion='all',marketRailInit=false;
 
 function tzLine(tz,label){
   const now=new Date();
@@ -1022,7 +1090,7 @@ function render(d){
       eb.slice(0,3).map((t,i)=>`<div class="alert ${i%2?'blue':'amber'}"><span>${i%2?'△':'⚠'}</span><span>${esc(t)}</span><span class="tm">${ago(d.timestamp)}</span></div>`).join('');
 
   /* marquee */
-  const mk=(d.telemetry||[]).map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${teleValue(r)}</b> <span style="color:${teleColor(r)}">${teleMove(r)}</span></span>`).join('');
+  const mk=(d.telemetry||[]).filter(r=>r.symbol!=='BI_RATE').map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${teleValue(r)}</b> <span style="color:${teleColor(r)}">${teleMove(r)}</span></span>`).join('');
   $('marq').innerHTML=mk+mk;
 
   /* market open/closed pill — driven by JCI (the Indonesia-focused primary index) */
@@ -1032,16 +1100,9 @@ function render(d){
     $('mktState').innerHTML=`<span class="d ${op?'dgreen':'dgray'}"></span>IDX <b style="color:${op?'var(--green)':'var(--ink3)'}">${op?'OPEN':'CLOSED'}</b>`;
   }
 
-  /* index cards — green dot = trading now, grey dot = market closed */
-  $('idxScroll').innerHTML=(d.telemetry||[]).map((r,i)=>{
-    const up=Number(r.delta_pct)>=0,op=mktOpen(r),col=teleSparkColor(r),arrow=(r.delta_unit==='note'?'•':(up?'↗':'↘'));
-    const dot=`<span class="mdot ${op?'live':'shut'}" title="${op?'Market open':'Market closed'}">●</span>`;
-    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${GBADGE[r.kind]||r.kind.toUpperCase()}</span><span class="tic">${dot}${arrow}</span></div>`+
-      `<div class="sym">${esc(r.label)}</div><div class="px">${teleValue(r)}</div>`+
-      `<div class="ch" style="color:${teleColor(r)}">${teleMove(r)}</div>`+
-      `<div class="sl">${spark(r.spark,150,30,col)}</div></div>`;
-  }).join('');
-  [...document.querySelectorAll('.idxcard')].forEach(c=>c.onclick=()=>expandIdx(+c.dataset.i));
+  buildMarketRail();
+
+  buildMacroMonitor(d.macro_indicators||{});
 
   drawSectors();
   drawHeatmap();
@@ -1573,6 +1634,91 @@ function expandIdx(i){
   $('idxExp').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+/* ---- filterable cross-asset market rail ---- */
+function buildMarketRail(){
+  if(!marketRailInit){
+    marketRailInit=true;
+    [...document.querySelectorAll('#marketKinds .ttab')].forEach(tab=>tab.onclick=()=>{
+      marketKind=tab.dataset.k;drawMarketRail();saveStateSoon();
+    });
+    [...document.querySelectorAll('#marketRegions .ttab')].forEach(tab=>tab.onclick=()=>{
+      marketRegion=tab.dataset.r;drawMarketRail();saveStateSoon();
+    });
+  }
+  drawMarketRail();
+}
+function drawMarketRail(){
+  if(!DATA)return;
+  [...document.querySelectorAll('#marketKinds .ttab')].forEach(tab=>tab.classList.toggle('on',tab.dataset.k===marketKind));
+  [...document.querySelectorAll('#marketRegions .ttab')].forEach(tab=>tab.classList.toggle('on',tab.dataset.r===marketRegion));
+  const all=(DATA.telemetry||[]).map((r,i)=>({r,i})).filter(({r})=>r.symbol!=='BI_RATE');
+  const rows=all.filter(({r})=>{
+    const kindOk=marketKind==='all'||r.kind===marketKind||(marketKind==='rates'&&r.kind==='policy');
+    const regionOk=marketRegion==='all'||(r.region||'Global')===marketRegion;
+    return kindOk&&regionOk;
+  });
+  $('marketCount').textContent=`${rows.length} of ${all.length} instruments`;
+  $('idxScroll').innerHTML=rows.map(({r,i})=>{
+    const up=Number(r.delta_pct)>=0,op=mktOpen(r),col=teleSparkColor(r),arrow=(r.delta_unit==='note'?'•':(up?'↗':'↘'));
+    const dot=`<span class="mdot ${op?'live':'shut'}" title="${op?'Market open':'Market closed'}">●</span>`;
+    const flag=FLAG[r.country_code]||'';
+    return `<div class="idxcard" data-i="${i}"><div class="top"><span class="badge">${flag} ${GBADGE[r.kind]||String(r.kind||'').toUpperCase()}</span><span class="tic">${dot}${arrow}</span></div>`+
+      `<div class="sym">${esc(r.label)}</div><div class="px">${teleValue(r)}</div>`+
+      `<div class="ch" style="color:${teleColor(r)}">${teleMove(r)}</div>`+
+      `<div class="sl">${spark(r.spark,150,30,col)}</div></div>`;
+  }).join('')||'<div class="researchempty" style="min-width:100%;">No instruments are available for this filter in the latest snapshot.</div>';
+  [...document.querySelectorAll('#idxScroll .idxcard')].forEach(c=>c.onclick=()=>expandIdx(+c.dataset.i));
+}
+
+/* ---- verified official Indonesia macro releases ---- */
+function macroPeriod(item){
+  const raw=item&&item.reference_period;
+  if(typeof raw==='number'&&raw>1e9)return wibStamp(raw*1000);
+  if(/^\d{10}$/.test(String(raw||'')))return wibStamp(Number(raw)*1000);
+  return raw||'Latest verified release';
+}
+function buildMacroMonitor(macro){
+  if(!macroMonitorInit){
+    macroMonitorInit=true;
+    [...document.querySelectorAll('#macroViews .ttab')].forEach(tab=>tab.onclick=()=>{
+      macroView=tab.dataset.m;drawMacroMonitor();saveStateSoon();
+    });
+  }
+  drawMacroMonitor();
+}
+function drawMacroMonitor(){
+  const macro=(DATA&&DATA.macro_indicators)||{};
+  if(!['core','detail'].includes(macroView))macroView='core';
+  const rows=Array.isArray(macro[macroView])?macro[macroView]:[];
+  [...document.querySelectorAll('#macroViews .ttab')].forEach(tab=>tab.classList.toggle('on',tab.dataset.m===macroView));
+  const counts=rows.reduce((acc,item)=>{const k=['green','red'].includes(item.risk)?item.risk:'neutral';acc[k]=(acc[k]||0)+1;return acc;},{});
+  $('macroSummary').innerHTML=[
+    counts.green?`<span class="green">${counts.green} improving</span>`:'',
+    counts.neutral?`<span>${counts.neutral} stable / mixed</span>`:'',
+    counts.red?`<span class="red">${counts.red} deteriorating</span>`:''
+  ].join('');
+  const labels={core:'headline indicators',detail:'domestic detail'};
+  $('macroCount').textContent=`${rows.length} · ${labels[macroView]||'indicators'}`;
+  $('macroMeta').textContent=`Official data cut-off ${macro.data_cutoff||'—'} · actual vs prior / benchmark`;
+  $('macroGrid').innerHTML=rows.map(item=>{
+    const risk=['green','red'].includes(item.risk)?item.risk:'neutral';
+    const chips=(item.secondary||[]).map(value=>`<span>${esc(value)}</span>`).join('');
+    const source=item.source_url?`<a class="mcsource" href="${encodeURI(item.source_url)}" target="_blank" rel="noopener">${esc(item.source_name||'Source')} ↗</a>`:'';
+    const signal=item.stale?'stale source':(item.direction||risk);
+    const compare=[
+      item.previous_display?`<div class="mccell"><span class="mck">${esc(item.comparison_label||'Previous')}</span><span class="mcv">${esc(item.previous_display)}</span></div>`:'',
+      item.change_display?`<div class="mccell"><span class="mck">Change</span><span class="mcv">${esc(item.change_display)}</span></div>`:'',
+      item.benchmark_display?`<div class="mccell"><span class="mck">Reference</span><span class="mcv">${esc(item.benchmark_display)}</span></div>`:''
+    ].join('');
+    return `<article class="macrocard ${risk}"><div class="mcrow"><span class="mcpillar">${esc(item.pillar)}</span><span class="mcsignal">${esc(signal)}</span></div>`+
+      `<div class="mclabel">${esc(item.label)}</div><div class="mcvalue">${esc(item.value_display||'—')}</div>`+
+      (compare?`<div class="mccompare">${compare}</div>`:'')+
+      (chips?`<div class="mcsecondary">${chips}</div>`:'')+
+      `<div class="mccomment">${esc(item.commentary||'')}</div><div class="mcfoot"><div class="mcperiod">${esc(macroPeriod(item))}<br>${esc(item.frequency||'')} · official release</div>${source}</div></article>`;
+  }).join('')||'<div class="researchempty">No verified macro indicators are available in this view.</div>';
+  $('macroNote').textContent=[macro.refresh_policy,macro.methodology_note].filter(Boolean).join(' ');
+}
+
 /* ---- intelligence hub: Daily Brief · News · Videos · IPOs ---- */
 let hubPane='brief',dateRange='1w',vidCat='ALL',BRIEF_VIDEOS=[];
 let wireFilter='ALL',wireGeo='ALL',wireQ='',vidQ='',WIRE=[],VIDEOS=[],BRIEF=null,IPO={},RESEARCH={};
@@ -2049,7 +2195,6 @@ function buildResearch(){
     $('researchSearch').dataset.bound='1';
     $('researchSearch').oninput=e=>{researchQ=e.target.value.trim();drawResearch();};
     $('researchSearch').onkeydown=e=>{if(e.key==='Escape'){$('researchSearch').value='';researchQ='';drawResearch();}};
-    $('researchClear').onclick=()=>{$('researchSearch').value='';researchQ='';drawResearch();$('researchSearch').focus();};
     $('researchCategory').onchange=e=>{researchCategory=e.target.value;drawResearch();saveStateSoon();};
     $('researchGeo').onchange=e=>{researchGeo=e.target.value;drawResearch();saveStateSoon();};
     $('researchAccess').onchange=e=>{researchAccess=e.target.value;drawResearch();saveStateSoon();};
@@ -2165,7 +2310,7 @@ function gatherState(){
   return {ytSource,vid:cur,vidTime:vt,vidPaused:ytPaused,speed:ytSpeed,
     panel:$('mbPanel').classList.contains('open'),
     podCat,hubPane,dateRange,vidCat,wireFilter,wireGeo,ipoView,ipoMarket,
-    researchCategory,researchGeo,researchAccess};
+    researchCategory,researchGeo,researchAccess,macroView,marketKind,marketRegion};
 }
 function saveState(){try{localStorage.setItem(PKEY,JSON.stringify(gatherState()));}catch(_){}}
 function saveStateSoon(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveState,1200);}
@@ -3072,6 +3217,9 @@ $('mbStop').onclick=()=>stopVideo();
   if(SS.researchCategory)researchCategory=SS.researchCategory;
   if(SS.researchGeo)researchGeo=SS.researchGeo;
   if(SS.researchAccess)researchAccess=SS.researchAccess;
+  if(SS.macroView)macroView=SS.macroView;
+  if(SS.marketKind)marketKind=SS.marketKind;
+  if(SS.marketRegion)marketRegion=SS.marketRegion;
 })();
 
 /* ---- boot + auto-refresh ----
