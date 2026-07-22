@@ -348,7 +348,8 @@ html[data-theme="dark"] .mood-face { background: linear-gradient(145deg, #2b2147
 .emoji-control { position: absolute; z-index: 5; bottom: 7px; left: 10px; }
 .emoji-button { display: inline-flex; min-height: 26px; align-items: center; gap: 5px; padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface-solid) 88%, transparent); color: var(--muted); cursor: pointer; font-size: 10px; }
 .emoji-button:hover, .emoji-button[aria-expanded="true"] { border-color: color-mix(in srgb, var(--purple) 55%, var(--line)); color: var(--purple); }
-.emoji-picker { position: absolute; z-index: 30; bottom: calc(100% + 8px); left: 0; display: grid; width: 250px; grid-template-columns: repeat(6, 1fr); gap: 4px; padding: 9px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); box-shadow: var(--shadow); }
+.composer-shell:has(.emoji-picker:not([hidden])) { z-index: 45; overflow: visible; }
+.emoji-picker { position: absolute; z-index: 30; top: calc(100% + 8px); bottom: auto; left: 0; display: grid; width: 280px; max-width: calc(100vw - 64px); grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding: 9px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); box-shadow: 0 18px 42px rgba(18, 15, 35, 0.2); transform-origin: top left; animation: emoji-pop 140ms ease-out; }
 .emoji-picker[hidden] { display: none; }
 .emoji-option { display: grid; width: 34px; height: 34px; place-items: center; padding: 0; border: 0; border-radius: 7px; background: transparent; cursor: pointer; font-size: 19px; }
 .emoji-option:hover { background: var(--purple-soft); transform: scale(1.08); }
@@ -746,6 +747,7 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
 @keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes heart-pop { 50% { transform: scale(1.35); } }
 @keyframes loading-pulse { 50% { opacity: 0.35; transform: scale(0.78) rotate(45deg); } }
+@keyframes emoji-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 @media (max-width: 1220px) {
   .composer-grid { grid-template-columns: minmax(360px, 1.35fr) minmax(210px, 0.72fr) minmax(280px, 1fr); }
@@ -781,6 +783,7 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
   .composer-toggle #composerToggleLabel { display: none; }
   .mood-face { width: 42px; height: 42px; flex-basis: 42px; font-size: 24px; }
   .message-wrap { margin-left: 0; }
+  .emoji-picker { width: 250px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .composer-grid { margin-top: 18px; row-gap: 24px; }
   .field-group legend { margin-bottom: 9px; }
   .composer-footer { align-items: stretch; }
