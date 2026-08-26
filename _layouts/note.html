@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#EBECE4">
+<title>{{ page.title }} — Vito Christian Samudra</title>
+<meta name="description" content="{{ page.summary | escape }}">
+<link rel="canonical" href="https://vitzz86.github.io{{ page.url }}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ page.title | escape }}">
+<meta property="og:description" content="{{ page.summary | escape }}">
+<meta property="og:url" content="https://vitzz86.github.io{{ page.url }}">
+<meta property="og:image" content="https://vitzz86.github.io{{ page.hero_image }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.title | escape }}">
+<meta name="twitter:description" content="{{ page.summary | escape }}">
+<meta name="twitter:image" content="https://vitzz86.github.io{{ page.hero_image }}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/portfolio.css">
+<link rel="stylesheet" href="/assets/css/notes.css">
+</head>
+<body class="notes-page">
+<div class="progress" id="progress"></div>
+<nav class="nav" id="nav"><div class="inner">
+  <a class="brand" href="/"><span class="dot"></span>Vito Christian Samudra</a>
+  <button class="navtoggle" id="navToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+  <div class="navlinks" id="navLinks">
+    <a href="/#work">Work</a><a href="/#experience">Experience</a><a href="/#background">Background</a><a href="/notes/" aria-current="page">Notes</a><a href="/#dna">Personality</a><a href="/#photos">Photos</a><a href="/cockpit.html">Cockpit</a><a href="/journey.html" target="_blank" rel="noopener">Journey</a><a class="hope-nav" href="/hope.html">Hope</a><a class="icobtn" href="https://www.linkedin.com/in/vito-christian-samudra" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.77 0 5-2.24 5-5v-14c0-2.76-2.23-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.11-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z"/></svg></a><a class="icobtn" href="mailto:samudravito4@gmail.com" aria-label="Email"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg></a>
+  </div>
+</div></nav>
+
+<header class="article-hero">
+  <div class="inner">
+    <a class="article-back" href="/notes/">&larr; All notes</a>
+    <span class="eyebrow">{{ page.category }}</span>
+    <h1>{{ page.title }}</h1>
+    <p class="article-deck">{{ page.summary }}</p>
+    <div class="article-meta"><span>By {{ page.author }}</span><span>{{ page.date | date: "%d %B %Y" }}</span><span>{{ page.reading_time }}</span></div>
+    <div class="article-tags">{% for tag in page.tags %}<span>{{ tag }}</span>{% endfor %}</div>
+  </div>
+</header>
+
+<main id="main" class="article-shell">
+  <article class="article-body">{{ content }}</article>
+  <div class="article-end">
+    <a href="/notes/">&larr; Back to all notes</a>
+    <div class="share-actions"><button type="button" data-share hidden>Share article</button><button type="button" data-copy-link>Copy link</button><span class="copy-status" data-copy-status aria-live="polite"></span></div>
+  </div>
+</main>
+
+<footer class="wrap"><span>&copy; 2026 Vito Christian Samudra</span><span>Notes on capital, technology and Southeast Asia</span></footer>
+<script src="/assets/js/notes.js" defer></script>
+</body>
+</html>

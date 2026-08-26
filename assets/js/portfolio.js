@@ -278,3 +278,13 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
 addEventListener('load',()=>document.getElementById('herorev').classList.add('reveal'));
 document.getElementById('herorev').classList.add('reveal');
+
+/* Keep published URLs clean while direct file previews still resolve index pages. */
+document.addEventListener('click',event=>{
+  const link=event.target.closest('a[data-local-index]');
+  if(location.protocol!=='file:'||!link||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  const href=link.getAttribute('href');
+  if(!href||!href.endsWith('/'))return;
+  event.preventDefault();
+  location.href=href+'index.html';
+});
