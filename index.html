@@ -113,6 +113,118 @@ section{padding:90px 0;}
 .press a{color:var(--ink2);border-bottom:1px dashed var(--line);padding-bottom:1px;transition:color .2s,border-color .2s;}
 .press a:hover{color:var(--accent-d);border-color:var(--accent);}
 
+/* counterparty intelligence demo */
+.nx-project{position:relative;}
+.nx-project:before{content:"Flagship build";position:absolute;right:0;top:2px;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent-d);border:1px solid rgba(15,91,80,.3);border-radius:999px;padding:5px 10px;background:rgba(252,252,248,.55);}
+.nx-disclosure{display:flex;align-items:flex-start;gap:10px;margin:0 0 18px;padding:12px 15px;border:1px solid rgba(15,91,80,.25);border-radius:11px;background:rgba(134,199,174,.12);color:var(--ink2);font-size:12.5px;line-height:1.5;}
+.nx-disclosure:before{content:"DEMO";flex:0 0 auto;font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.12em;color:#fff;background:var(--accent);padding:3px 7px;border-radius:999px;margin-top:1px;}
+.nx-shell{--nx-lp:#2E7898;--nx-vc:#B75A25;--nx-fund:#4A7D4B;--nx-port:#76558F;--nx-start:#178C87;background:#F4F5EF;border:1px solid #C9CCBE;border-radius:16px;overflow:hidden;box-shadow:0 30px 65px -34px rgba(20,24,16,.48);font-family:var(--sans);color:#20251E;}
+.nx-top{display:grid;grid-template-columns:minmax(220px,1.15fr) minmax(210px,1fr) repeat(3,minmax(92px,.5fr));align-items:stretch;border-bottom:1px solid #D5D8CB;background:#FBFCF7;}
+.nx-brand,.nx-search-wrap,.nx-metric{padding:17px 18px;border-right:1px solid #D5D8CB;min-width:0;}
+.nx-metric:last-child{border-right:none;}
+.nx-kicker{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#637065;margin-bottom:4px;}
+.nx-brand strong{display:block;font-family:var(--serif);font-size:20px;font-weight:600;line-height:1.05;letter-spacing:-.015em;}
+.nx-brand span{display:block;font-size:10.5px;color:#70776D;margin-top:5px;line-height:1.35;}
+.nx-search-wrap{position:relative;display:flex;align-items:center;}
+.nx-search{width:100%;border:1px solid #CDD1C5;border-radius:8px;background:#fff;color:#20251E;font:12px var(--sans);padding:10px 12px;outline:none;box-shadow:inset 0 1px 2px rgba(20,24,16,.04);}
+.nx-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(15,91,80,.12);}
+.nx-search-results{display:none;position:absolute;z-index:12;top:calc(50% + 22px);left:18px;right:18px;background:#fff;border:1px solid #CDD1C5;border-radius:9px;padding:5px;box-shadow:0 14px 30px rgba(20,24,16,.16);}
+.nx-search-results.open{display:block;}
+.nx-search-results button{display:block;width:100%;text-align:left;border:0;background:transparent;border-radius:6px;padding:7px 9px;color:#30362F;font:11px var(--sans);cursor:pointer;}
+.nx-search-results button:hover,.nx-search-results button:focus{background:#EDF2EA;outline:none;}
+.nx-search-results small{display:block;color:#7B8279;font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:.07em;margin-top:1px;}
+.nx-metric{display:flex;flex-direction:column;justify-content:center;}
+.nx-metric b{font:600 22px/1 var(--mono);letter-spacing:-.04em;font-variant-numeric:tabular-nums;}
+.nx-metric span{font:9px var(--mono);letter-spacing:.11em;text-transform:uppercase;color:#687068;margin-top:6px;white-space:nowrap;}
+.nx-toolbar{display:flex;align-items:center;justify-content:flex-start;gap:7px;padding:8px 12px;border-bottom:1px solid #D5D8CB;background:#F8F9F4;}
+.nx-toolbtn{border:1px solid #D1D5C9;background:#fff;color:#455048;border-radius:7px;padding:6px 9px;font:9.5px var(--mono);letter-spacing:.02em;cursor:pointer;transition:border-color .2s,color .2s,background .2s;}
+.nx-toolbtn:hover,.nx-toolbtn:focus-visible{border-color:var(--accent);color:var(--accent-d);outline:none;background:#F3F8F4;}
+#nxExpand{margin-left:auto;padding:7px 12px;background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600;box-shadow:0 6px 14px -7px rgba(15,91,80,.65);}
+#nxExpand:hover,#nxExpand:focus-visible{background:var(--accent-d);border-color:var(--accent-d);color:#fff;box-shadow:0 8px 18px -8px rgba(10,66,57,.8);}
+.nx-grid{display:grid;grid-template-columns:205px minmax(0,1fr) 238px;min-height:620px;}
+.nx-panel{background:#F8F9F4;min-width:0;}
+.nx-filters{border-right:1px solid #D5D8CB;padding:15px 14px;}
+.nx-insights{border-left:1px solid #D5D8CB;}
+.nx-filter-group{padding:0 0 15px;margin-bottom:15px;border-bottom:1px solid #DEE0D6;}
+.nx-filter-group:last-child{border-bottom:0;margin-bottom:0;}
+.nx-filter-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font:9.5px var(--mono);letter-spacing:.13em;text-transform:uppercase;color:#59635B;margin-bottom:10px;}
+.nx-filter-title button,.nx-help-dot{width:18px;height:18px;border:1px solid #D1D5C9;border-radius:50%;background:#fff;color:#677168;font:10px var(--mono);cursor:pointer;}
+.nx-check{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:7px;margin:8px 0;font-size:11px;color:#394039;cursor:pointer;}
+.nx-check input{appearance:none;width:15px;height:15px;border:1px solid #ADB5A9;border-radius:4px;background:#fff;display:grid;place-content:center;cursor:pointer;}
+.nx-check input:checked{background:var(--accent);border-color:var(--accent);}
+.nx-check input:checked:after{content:"";width:7px;height:4px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(-45deg) translateY(-1px);}
+.nx-node-icon{--node-color:#667;display:inline-block;flex:0 0 9px;width:9px;height:9px;background:var(--node-color);border-radius:50%;}
+.nx-shape-triangle{width:0;height:0;flex-basis:10px;background:transparent;border-radius:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid var(--node-color);}
+.nx-shape-circle{border-radius:50%;}
+.nx-shape-hexagon{border-radius:0;clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0 50%);}
+.nx-shape-square{border-radius:1px;}
+.nx-shape-diamond{border-radius:1px;transform:rotate(45deg) scale(.84);}
+.nx-check .nx-node-icon{margin-right:5px;vertical-align:-1px;}
+.nx-check small{font:9.5px var(--mono);color:#7A8279;font-variant-numeric:tabular-nums;}
+.nx-stage{position:relative;min-width:0;min-height:620px;background:#FCFDF9;overflow:hidden;touch-action:none;}
+#nxCanvas{display:block;width:100%;height:100%;min-height:620px;outline:none;cursor:grab;}
+#nxCanvas:focus-visible{box-shadow:inset 0 0 0 3px rgba(15,91,80,.55);}
+#nxCanvas.is-dragging{cursor:grabbing;}
+.nx-hint{position:absolute;left:13px;top:13px;pointer-events:none;background:rgba(255,255,255,.88);border:1px solid #D7DBD0;border-radius:7px;padding:6px 9px;font-size:9.5px;color:#687168;box-shadow:0 5px 15px rgba(20,24,16,.07);}
+.nx-tooltip{display:none;position:absolute;z-index:7;pointer-events:none;max-width:210px;padding:9px 11px;border-radius:8px;background:rgba(25,31,26,.94);color:#F5F7F1;box-shadow:0 10px 28px rgba(20,24,16,.24);font-size:10.5px;line-height:1.35;}
+.nx-tooltip.show{display:block;}
+.nx-tooltip strong{display:block;font-size:11px;margin-bottom:3px;}
+.nx-tooltip span{display:block;color:#BFC8BE;font-family:var(--mono);font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;}
+.nx-zoom{position:absolute;right:12px;bottom:50px;display:flex;flex-direction:column;gap:5px;}
+.nx-zoom button{width:30px;height:30px;border:1px solid #D1D5C9;border-radius:7px;background:rgba(255,255,255,.92);color:#334038;font:15px var(--mono);cursor:pointer;box-shadow:0 4px 12px rgba(20,24,16,.08);}
+.nx-zoom button:hover{border-color:var(--accent);color:var(--accent);}
+.nx-legend{position:absolute;left:12px;right:12px;bottom:10px;display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;padding:7px 10px;border:1px solid #D7DBD0;border-radius:8px;background:rgba(255,255,255,.9);box-shadow:0 5px 16px rgba(20,24,16,.06);font-size:8.5px;color:#626A62;pointer-events:none;}
+.nx-legend span{display:inline-flex;align-items:center;gap:5px;}
+.nx-legend .nx-node-icon{width:7px;height:7px;flex-basis:7px;}
+.nx-legend .nx-shape-triangle{width:0;height:0;flex-basis:8px;border-left-width:4px;border-right-width:4px;border-bottom-width:7px;}
+.nx-legend .nx-line{width:17px;height:0;border-radius:0;border-top:1px solid #AAB2AA;}
+.nx-legend .nx-dash{border-top-style:dashed;}
+.nx-tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #D5D8CB;}
+.nx-tab{border:0;border-bottom:2px solid transparent;background:#F8F9F4;color:#697169;padding:12px 6px;font:9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;}
+.nx-tab.on{color:var(--accent-d);border-bottom-color:var(--accent);background:#fff;}
+.nx-pane{display:none;padding:15px 14px;}
+.nx-pane.on{display:block;}
+.nx-pane h4{font-size:11.5px;line-height:1.3;margin-bottom:4px;}
+.nx-explain{font-size:9.5px;color:#737B72;line-height:1.45;margin-bottom:12px;}
+.nx-rank{list-style:none;margin:0 0 18px;}
+.nx-rank li{display:grid;grid-template-columns:11px 1fr auto;align-items:start;gap:7px;padding:7px 0;border-bottom:1px solid #E4E6DE;font-size:9.8px;line-height:1.25;cursor:pointer;}
+.nx-rank li:hover strong{color:var(--accent-d);}
+.nx-rank .nx-node-icon{margin-top:2px;}
+.nx-rank strong{font-weight:500;}
+.nx-rank b{font:9px var(--mono);color:#606A61;font-variant-numeric:tabular-nums;}
+.nx-empty{padding:26px 4px;text-align:center;color:#7A8279;font-size:10.5px;line-height:1.5;}
+.nx-selected-badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#E8EEE7;color:#49604F;padding:4px 8px;font:8.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;margin-bottom:9px;}
+.nx-selected h4{font-family:var(--serif);font-size:19px;font-weight:600;line-height:1.08;margin-bottom:6px;}
+.nx-selected p{font-size:10px;color:#657066;line-height:1.5;margin-bottom:12px;}
+.nx-detail{display:grid;grid-template-columns:1fr auto;gap:6px 9px;padding:7px 0;border-top:1px solid #E2E4DC;font-size:9.5px;}
+.nx-detail span{color:#747C74;}.nx-detail b{font:9px var(--mono);text-align:right;color:#39463D;}
+.nx-action{margin-top:13px;padding:9px 10px;border-radius:8px;background:#EDF3EC;border:1px solid #D3DED3;font-size:9.5px;line-height:1.45;color:#49604F;}
+.nx-action b{display:block;font:8px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d);margin-bottom:3px;}
+.nx-dialog{width:min(620px,calc(100vw - 30px));max-height:calc(100dvh - 24px);margin:auto;border:1px solid #C9CEC2;border-radius:16px;background:#FBFCF7;color:#242A24;padding:0;overflow:auto;box-shadow:0 30px 90px rgba(17,23,18,.35);}
+.nx-dialog::backdrop{background:rgba(15,20,16,.56);backdrop-filter:blur(8px);}
+.nx-dialog-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid #D9DCD2;}
+.nx-dialog-head h3{font-family:var(--serif);font-size:24px;font-weight:600;}
+.nx-dialog-head button{width:30px;height:30px;border:1px solid #D0D4C9;border-radius:50%;background:#fff;cursor:pointer;}
+.nx-dialog-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.nx-dialog-body h4{font-size:12px;margin-bottom:5px;}.nx-dialog-body p{font-size:11px;color:#687168;line-height:1.55;}
+.nx-dialog-note{grid-column:1/-1;padding:11px 12px;border-radius:8px;background:#EAF1E9;color:#4E6051;font-size:10.5px;line-height:1.5;}
+.nx-sr{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;}
+@media(max-width:1040px){
+  .nx-top{grid-template-columns:1.2fr 1fr repeat(3,.55fr);}.nx-brand span{display:none;}
+  .nx-grid{grid-template-columns:190px minmax(0,1fr);}.nx-insights{grid-column:1/-1;border-left:0;border-top:1px solid #D5D8CB;}.nx-tabs{max-width:330px;}.nx-pane{min-height:190px;}.nx-rank{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}.nx-selected{max-width:600px;}
+}
+@media(max-width:760px){
+  .nx-project:before{display:none;}.nx-top{grid-template-columns:1fr 1fr 1fr;}.nx-brand{grid-column:1/-1;border-right:0;border-bottom:1px solid #D5D8CB;}.nx-brand span{display:block;}.nx-search-wrap{grid-column:1/-1;border-right:0;border-bottom:1px solid #D5D8CB;}.nx-metric{padding:12px 10px;text-align:center;align-items:center;}.nx-metric b{font-size:18px;}.nx-metric span{font-size:7.5px;}.nx-grid{grid-template-columns:1fr;}.nx-filters{border-right:0;border-bottom:1px solid #D5D8CB;display:grid;grid-template-columns:1fr 1fr;gap:0 18px;}.nx-filter-group:nth-child(3){grid-column:1/-1;}.nx-stage,#nxCanvas{min-height:520px;}.nx-rank{grid-template-columns:1fr;}.nx-toolbar{justify-content:space-between;}.nx-dialog-body{grid-template-columns:1fr;}.nx-dialog-note{grid-column:auto;}
+}
+@media(max-width:480px){.nx-filters{grid-template-columns:1fr;}.nx-filter-group:nth-child(3){grid-column:auto;}.nx-legend{gap:8px;font-size:7.5px;}.nx-hint{max-width:210px;}.nx-stage,#nxCanvas{min-height:480px;}}
+.nx-shell:fullscreen,.nx-shell.nx-expanded{width:100vw;height:100dvh;max-width:none;border:0;border-radius:0;display:flex;flex-direction:column;background:#F4F5EF;}
+.nx-shell.nx-expanded{position:fixed;inset:0;z-index:120;}
+.nx-shell:fullscreen .nx-grid,.nx-shell.nx-expanded .nx-grid{flex:1;min-height:0;height:auto;}
+.nx-shell:fullscreen .nx-stage,.nx-shell:fullscreen #nxCanvas,.nx-shell.nx-expanded .nx-stage,.nx-shell.nx-expanded #nxCanvas{height:100%;min-height:0;}
+.nx-shell:fullscreen .nx-panel,.nx-shell.nx-expanded .nx-panel{overflow:auto;}
+.nx-shell:fullscreen .nx-brand span,.nx-shell.nx-expanded .nx-brand span{display:block;}
+body.nx-lock{overflow:hidden;}
+
 /* deck viewer */
 .deck{margin-top:6px;}
 .stagewrap{perspective:1500px;}
@@ -337,14 +449,87 @@ footer{padding:34px 0 50px;color:var(--ink3);font-family:var(--mono);font-size:1
 
 <main class="wrap">
 <section id="work">
-  <div class="sechead" data-reveal><div><span class="eyebrow">Selected work</span><h2 class="sec">Two tools, built end&#8209;to&#8209;end.</h2></div>
-  <p class="lead">I designed and shipped both of these &mdash; from investment logic to interface. Here they are as interactive walkthroughs: click through, autoplay, or expand any slide.</p></div>
+  <div class="sechead" data-reveal><div><span class="eyebrow">Selected work</span><h2 class="sec">Investment systems, built end&#8209;to&#8209;end.</h2></div>
+  <p class="lead">I designed and shipped these from investment logic to interface. Explore the live network below, then click through the narrated product and research walkthroughs.</p></div>
 
   <article class="project" data-reveal>
     <div class="phead"><div><div class="peyebrow">For founders</div><div class="ptitle">RaiseSEA</div></div><a class="plink mag" href="https://raisesea.com" target="_blank" rel="noopener">raisesea.com &nearr;</a></div>
     <p class="pdesc">A fundraising co-pilot for Southeast Asian founders: score your deck, drill your pitch against an AI investor, match with SEA-active funds, and track every conversation to term sheet. Hit <b>&#9658; Pitch</b> to hear the narrated walkthrough &mdash; the slides follow the audio.</p>
     <div class="ptags"><span class="tag">Deck analysis</span><span class="tag">Mock pitch</span><span class="tag">Investor matching</span><span class="tag">Investor CRM</span><span class="tag">Calculators</span><span class="tag">News intelligence</span></div>
     <div class="deck" data-deck="rs"></div>
+  </article>
+
+  <article class="project nx-project" data-reveal>
+    <div class="phead"><div><div class="peyebrow">Built at New Energy Nexus Ventures &middot; Sanitized public demo</div><div class="ptitle">Counterparty Intelligence Graph</div></div></div>
+    <p class="pdesc">I designed and built a relationship-intelligence platform that turns fragmented counterparty data into an explorable network of LPs, co-investors, funds, portfolio companies, and startup pipeline. It surfaces high-leverage introductions, relationship gaps, and paths for fundraising, deal sourcing, co-investment, and portfolio support. The embedded experience below is a scaled public replica.</p>
+    <div class="ptags"><span class="tag">Network intelligence</span><span class="tag">LP mapping</span><span class="tag">Warm-introduction paths</span><span class="tag">Two-hop reach</span><span class="tag">Fund fit</span><span class="tag">Portfolio support</span></div>
+    <div class="nx-disclosure" role="note"><span><strong>100% synthetic public demonstration.</strong> Every entity, description, score, and relationship below was created solely for this portfolio. No proprietary New Energy Nexus Ventures names, records, relationships, or investment data are shown.</span></div>
+
+    <div class="nx-shell" data-nx-demo>
+      <div class="nx-top">
+        <div class="nx-brand"><div class="nx-kicker">Network view</div><strong>Counterparty Graph</strong><span>Fictional allocators, investors, funds and climate ventures &mdash; who connects to whom</span></div>
+        <div class="nx-search-wrap"><input class="nx-search" id="nxSearch" type="search" placeholder="Search fictional stakeholders&hellip;" autocomplete="off" aria-label="Search fictional stakeholders" aria-controls="nxSearchResults"><div class="nx-search-results" id="nxSearchResults" role="listbox"></div></div>
+        <div class="nx-metric"><b id="nxInstitutionCount">100</b><span>Institutions</span></div>
+        <div class="nx-metric"><b id="nxRelationshipCount">0</b><span>Relationships</span></div>
+        <div class="nx-metric"><b id="nxUnconnectedCount">0</b><span>Unconnected</span></div>
+      </div>
+      <div class="nx-toolbar"><button class="nx-toolbtn" type="button" id="nxHelp">How to read this</button><button class="nx-toolbtn" type="button" id="nxReset">Reset view</button><button class="nx-toolbtn" type="button" id="nxExpand" aria-label="Open network in fullscreen"><span aria-hidden="true">&#x26F6;</span> Extend</button></div>
+
+      <div class="nx-grid">
+        <aside class="nx-panel nx-filters" aria-label="Network filters">
+          <div class="nx-filter-group">
+            <div class="nx-filter-title"><span>Show</span><button type="button" data-nx-help aria-label="Explain stakeholder filters">?</button></div>
+            <label class="nx-check"><input type="checkbox" checked data-nx-type="lp"><span><i class="nx-node-icon nx-shape-triangle" style="--node-color:var(--nx-lp)"></i>LP prospects</span><small data-nx-count="lp">20</small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-type="vc"><span><i class="nx-node-icon nx-shape-circle" style="--node-color:var(--nx-vc)"></i>Co-investors / VCs</span><small data-nx-count="vc">25</small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-type="fund"><span><i class="nx-node-icon nx-shape-hexagon" style="--node-color:var(--nx-fund)"></i>Funds</span><small data-nx-count="fund">15</small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-type="portfolio"><span><i class="nx-node-icon nx-shape-square" style="--node-color:var(--nx-port)"></i>Portfolio</span><small data-nx-count="portfolio">5</small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-type="startup"><span><i class="nx-node-icon nx-shape-diamond" style="--node-color:var(--nx-start)"></i>Startup pipeline</span><small data-nx-count="startup">35</small></label>
+          </div>
+          <div class="nx-filter-group">
+            <div class="nx-filter-title"><span>Demo fund fit</span><button type="button" data-nx-help aria-label="Explain fund fit">?</button></div>
+            <label class="nx-check"><input type="checkbox" checked data-nx-fit="Transition"><span>Transition</span><small data-nx-fit-count="Transition"></small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-fit="Resilience"><span>Resilience</span><small data-nx-fit-count="Resilience"></small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-fit="Infrastructure"><span>Infrastructure</span><small data-nx-fit-count="Infrastructure"></small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-fit="Circularity"><span>Circularity</span><small data-nx-fit-count="Circularity"></small></label>
+            <label class="nx-check"><input type="checkbox" checked data-nx-fit="Unclassified"><span>Not yet tagged</span><small data-nx-fit-count="Unclassified"></small></label>
+          </div>
+          <div class="nx-filter-group">
+            <div class="nx-filter-title"><span>Relationship overlays</span><button type="button" data-nx-help aria-label="Explain relationship overlays">?</button></div>
+            <label class="nx-check"><input type="checkbox" checked data-nx-edge="affiliated"><span>Affiliated</span><small data-nx-edge-count="affiliated"></small></label>
+            <label class="nx-check"><input type="checkbox" data-nx-edge="exploratory"><span>Exploratory</span><small data-nx-edge-count="exploratory"></small></label>
+          </div>
+        </aside>
+
+        <div class="nx-stage" id="nxStage">
+          <canvas id="nxCanvas" tabindex="0" aria-label="Interactive fictional counterparty network. Drag to pan, scroll to zoom, or select a node for details."></canvas>
+          <div class="nx-hint">Drag to pan &middot; scroll to zoom &middot; click a node for detail</div>
+          <div class="nx-tooltip" id="nxTooltip" role="tooltip"></div>
+          <div class="nx-zoom" aria-label="Graph zoom controls"><button type="button" id="nxZoomIn" aria-label="Zoom in">+</button><button type="button" id="nxZoomOut" aria-label="Zoom out">&minus;</button><button type="button" id="nxFit" aria-label="Fit graph to view">&#8962;</button></div>
+          <div class="nx-legend" aria-hidden="true"><span><i class="nx-node-icon nx-shape-triangle" style="--node-color:var(--nx-lp)"></i>LP prospect</span><span><i class="nx-node-icon nx-shape-circle" style="--node-color:var(--nx-vc)"></i>Co-investor</span><span><i class="nx-node-icon nx-shape-hexagon" style="--node-color:var(--nx-fund)"></i>Fund</span><span><i class="nx-node-icon nx-shape-square" style="--node-color:var(--nx-port)"></i>Portfolio</span><span><i class="nx-node-icon nx-shape-diamond" style="--node-color:var(--nx-start)"></i>Startup</span><span><i class="nx-line"></i>Active</span><span><i class="nx-line nx-dash"></i>Overlay</span></div>
+          <div class="nx-sr" id="nxLive" aria-live="polite"></div>
+        </div>
+
+        <aside class="nx-panel nx-insights" aria-label="Network intelligence">
+          <div class="nx-tabs" role="tablist"><button class="nx-tab on" id="nxPriorityTab" type="button" role="tab" aria-selected="true" aria-controls="nxPriorityPane">Priorities</button><button class="nx-tab" id="nxSelectionTab" type="button" role="tab" aria-selected="false" aria-controls="nxSelectionPane">Selection</button></div>
+          <div class="nx-pane on" id="nxPriorityPane" role="tabpanel" aria-labelledby="nxPriorityTab">
+            <h4>Highest-leverage bridges</h4><p class="nx-explain">Fictional stakeholders connecting otherwise separate clusters. One relationship here may open the most paths.</p><ol class="nx-rank" id="nxBridgeList"></ol>
+            <h4>Widest two-hop reach</h4><p class="nx-explain">How many stakeholders a single simulated introduction puts within two relationship steps.</p><ol class="nx-rank" id="nxReachList"></ol>
+          </div>
+          <div class="nx-pane" id="nxSelectionPane" role="tabpanel" aria-labelledby="nxSelectionTab"><div class="nx-selected" id="nxSelected"><div class="nx-empty">Select any node in the network to inspect its fictional profile, connections, and suggested next action.</div></div></div>
+        </aside>
+      </div>
+    </div>
+
+    <dialog class="nx-dialog" id="nxHelpDialog">
+      <div class="nx-dialog-head"><h3>How to read the network</h3><button type="button" id="nxHelpClose" aria-label="Close explanation">&times;</button></div>
+      <div class="nx-dialog-body">
+        <div><h4>Nodes</h4><p>Color and shape identify stakeholder type. Larger nodes have more visible relationships. Search, click, or drag a node to inspect it.</p></div>
+        <div><h4>Relationships</h4><p>Solid lines represent simulated active relationships. Dashed overlays represent fictional affiliations or exploratory conversations.</p></div>
+        <div><h4>Bridge score</h4><p>A generic network metric combining visible connections and the number of different clusters reached. It is calculated in the browser from demo data.</p></div>
+        <div><h4>Two-hop reach</h4><p>The number of unique fictional stakeholders reachable within two relationship steps, illustrating the potential value of one warm introduction.</p></div>
+        <div class="nx-dialog-note"><b>Privacy by design:</b> this public replica contains 100 invented entities and simulated relationships. It does not reproduce proprietary names, records, scoring formulas, or investment information from New Energy Nexus Ventures.</div>
+      </div>
+    </dialog>
   </article>
 
   <article class="project" data-reveal>
@@ -810,5 +995,6 @@ document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
 addEventListener('load',()=>document.getElementById('herorev').classList.add('reveal'));
 document.getElementById('herorev').classList.add('reveal');
 </script>
+<script src="assets/js/counterparty-demo.js"></script>
 </body>
 </html>
