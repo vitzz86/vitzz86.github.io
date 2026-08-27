@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project Cockpit v2.0 — Vito Christian Samudra</title>
-<meta name="description" content="Project Cockpit v2.0 — a terminal-style real-time intelligence dashboard: market telemetry, expanded IDX-first equity coverage, heatmaps, intelligence wire, and knowledge hub.">
+<title>Project Cockpit v2.0 | Vito Christian Samudra</title>
+<meta name="description" content="Project Cockpit v2.0 is a terminal-style real-time intelligence dashboard for market telemetry, expanded IDX-first equity coverage, heatmaps, intelligence wire and a knowledge hub.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -510,7 +510,7 @@ footer .g{color:var(--green);}
 .alert.col .asrc{font-family:var(--mono);font-size:9px;color:var(--ink3);}
 .alert.col .asrc a{color:var(--cyan);}
 
-/* intelligence hub — panes + filters */
+/* Intelligence hub panes and filters */
 .hubtabs{display:flex;gap:5px;margin-bottom:9px;}
 .hubtab{flex:1;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 4px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;}
 .hubtab:hover{border-color:rgba(245,158,11,.35);color:var(--ink);}
@@ -694,8 +694,8 @@ body{padding-bottom:40px;}
   <span class="alertbar"><span>⚠</span><span id="topAlert">Scanning telemetry&hellip;</span><span class="nx">next →</span></span>
   <span class="tright">
     <span class="spill" id="freshPill"><span class="d dgreen"></span>SYNCING</span>
-    <a class="ico lnk" href="https://www.linkedin.com/in/vito-christian-samudra/" target="_blank" rel="noopener" title="LinkedIn — Vito Christian Samudra" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.77 0 5-2.24 5-5v-14c0-2.76-2.23-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.11-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z"/></svg></a>
-    <a class="closebtn" href="index.html" title="Close — back to portfolio">✕ <span>Portfolio</span></a>
+    <a class="ico lnk" href="https://www.linkedin.com/in/vito-christian-samudra/" target="_blank" rel="noopener" title="LinkedIn: Vito Christian Samudra" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.77 0 5-2.24 5-5v-14c0-2.76-2.23-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.79-1.75-1.76s.78-1.76 1.75-1.76 1.75.79 1.75 1.76-.78 1.76-1.75 1.76zm13.5 12.27h-3v-5.6c0-3.37-4-3.11-4 0v5.6h-3v-11h3v1.77c1.4-2.59 7-2.78 7 2.48v6.75z"/></svg></a>
+    <a class="closebtn" href="index.html" title="Close and return to portfolio">✕ <span>Portfolio</span></a>
     <span class="avatar">V</span><span style="color:var(--ink2)">VCS</span>
   </span>
 </div>
@@ -757,7 +757,7 @@ body{padding-bottom:40px;}
           </div>
         </div>
       </div>
-      <span class="marketcount" id="marketCount">—</span>
+      <span class="marketcount" id="marketCount">N/A</span>
       <div class="idxscroll" id="idxScroll"></div>
       <div class="idxexp" id="idxExp"></div>
     </div>
@@ -1072,10 +1072,10 @@ function render(d){
     if(/cloud/.test(t))return '⛅';
     if(/clear|sunny/.test(t))return '☀️';
     return '🌡️';};
-  const condTxt=(s)=>(s||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'—';
+  const condTxt=(s)=>(s||'').replace(/,?\s*-?\d+°?C\.?/,'').trim()||'N/A';
   $('jktTmp').innerHTML=pt(wx.jakarta)+'&deg;';$('jktCond').textContent=condTxt(wx.jakarta);$('jktIco').textContent=wxIcon(wx.jakarta);
   $('bsdTmp').innerHTML=pt(wx.bsd)+'&deg;';$('bsdCond').textContent=condTxt(wx.bsd);$('bsdIco').textContent=wxIcon(wx.bsd);
-  const v=o.verse_of_the_day||'',dash=v.lastIndexOf('—');
+  const v=o.verse_of_the_day||'',dash=v.lastIndexOf('\u2014');
   $('verse').innerHTML=dash>0?`&ldquo;${esc(v.slice(0,dash).trim())}&rdquo;<span class="ref">${esc(v.slice(dash+1).trim())}</span>`:esc(v);
   updateDataAge();
   renderFreshness();
@@ -1084,12 +1084,12 @@ function render(d){
   const an=d.anomaly&&d.anomaly.active;
   const eb=d.executive_brief||[];
   const structured=Array.isArray(d.alerts)&&d.alerts.length>0;
-  // header ticker — cycles via "next →"
+  // Header ticker cycles via "next →"
   topAlerts=[];
-  if(an)topAlerts.push(d.anomaly.desc+' — ±1.5σ deviation detected');
+  if(an)topAlerts.push(d.anomaly.desc+': ±1.5σ deviation detected');
   (structured?d.alerts.map(a=>a.title):eb).forEach(t=>{if(t)topAlerts.push(t);});
   topAlertIdx=0;showTopAlert();
-  // active-alerts panel — structured (Title / Description / Sources) or legacy strings
+  // Active alerts panel supports structured fields or legacy strings
   $('alerts').innerHTML=structured
     ? d.alerts.slice(0,4).map((a,i)=>`<div class="alert col ${i%2?'blue':'amber'}">`+
         `<span class="atitle">${i%2?'△':'⚠'} ${esc(a.title)}</span>`+
@@ -1103,7 +1103,7 @@ function render(d){
   const mk=(d.telemetry||[]).filter(r=>r.symbol!=='BI_RATE').map(r=>`<span class="it"><span class="s">${esc(r.label.split(' ')[0])}</span><b>${teleValue(r)}</b> <span style="color:${teleColor(r)}">${teleMove(r)}</span></span>`).join('');
   $('marq').innerHTML=mk+mk;
 
-  /* market open/closed pill — driven by JCI (the Indonesia-focused primary index) */
+  /* Market open or closed pill driven by JCI, the Indonesia-focused primary index */
   const jci=(d.telemetry||[]).find(r=>r.symbol==='^JKSE')||(d.telemetry||[])[0];
   if($('mktState')&&jci){
     const op=mktOpen(jci);
@@ -1131,7 +1131,7 @@ function render(d){
     $('arbiter').textContent=d.arbiter_brief||(d.intelligence_quadrants||{}).market?.join(' ')||'Macro synthesis pending next cron cycle.';
   }
 
-  /* podcasts — tabbed diets (consistent with the Intelligence Hub) */
+  /* Podcast tabs consistent with the Intelligence Hub */
   const PODCATS=[['brain','Brain 💪🏼'],['techai','Tech & AI 🤖'],['economy','Economy 📊'],['vc','VC & Startup 💸']];
   const PODLABEL=Object.fromEntries(PODCATS);
   const pods=d.podcasts||[];
@@ -1170,7 +1170,7 @@ let TREND=null,moveType='gainers',moveGeo='id';
 function renderTrending(t){
   TREND=t;
   drawMovers();
-  $('socialTk').innerHTML=(t.social||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">—</span>';
+  $('socialTk').innerHTML=(t.social||[]).map(x=>`<a href="${encodeURI(x.url||'#')}" target="_blank" rel="noopener" title="${esc(x.name||'')}">${esc(x.symbol)}</a>`).join('')||'<span style="color:var(--ink3);font-size:10px;">N/A</span>';
   [...document.querySelectorAll('#moveType .ttab')].forEach(b=>b.onclick=()=>{moveType=b.dataset.t;[...document.querySelectorAll('#moveType .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
   [...document.querySelectorAll('#moveGeo .ttab')].forEach(b=>b.onclick=()=>{moveGeo=b.dataset.g;[...document.querySelectorAll('#moveGeo .ttab')].forEach(x=>x.classList.toggle('on',x===b));drawMovers();});
   if($('moverDetails'))$('moverDetails').onclick=()=>openMoverDetails();
@@ -1323,7 +1323,7 @@ function drawMovers(){
     `<span class="mtk">${esc(m.ticker)}</span><span class="mnm">${esc(m.name)}</span>`+
     `${moverScoreBadges(m)}`+
     `<span class="mcd" style="color:${COLP(m.delta_pct)}">${sign(m.delta_pct)}</span></button>`).join('')||
-    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveGeo==='others'&&(moveType==='top_score'||moveType==='best_value')?'Others is price-only for now; use gainers/losers until scoring is enabled.':moveGeo==='others'?'Others price coverage appears after the next bake.':moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk/price data pending next scored payload.':'—'}</div>`;
+    `<div style="color:var(--ink3);font-size:10px;padding:6px 0;">${moveGeo==='others'&&(moveType==='top_score'||moveType==='best_value')?'Others is price-only for now. Use gainers or losers until scoring is enabled.':moveGeo==='others'?'Others price coverage appears after the next bake.':moveType==='top_score'?'Score data pending next scored payload.':moveType==='best_value'?'Risk and price data pending next scored payload.':'N/A'}</div>`;
   [...document.querySelectorAll('#moveList .mv')].forEach(el=>el.onclick=()=>openMoverTicker(el.dataset.tk,el.dataset.country));
 }
 function moverGeoLabel(){
@@ -1361,7 +1361,7 @@ function openMoverDetails(){
         `<div class="stk">${flagOf(c)} ${esc(c.ticker)}</div><div class="snm">${esc(c.name)}</div><div class="muted hide-sm">${esc(c.sector_name||'')}</div>`+
         `<div class="metricval" style="color:${COLP(dp)}">${sign(dp)}</div><div class="metricval">${sc.score==null?(isPriceOnly(c)?'PX':'--'):Math.round(sc.score)}</div>`+
         `<div class="metricval hide-sm">${rp&&rp.score!=null?Math.round(rp.score):'--'}</div><div class="metricval muted hide-sm">${esc(capLabel(c))}</div></div>`;
-    }).join('')+`</div>`:`<div class="heatempty">Global leaders are mapped; activate the backend pricing pass to populate this table.</div>`;
+    }).join('')+`</div>`:`<div class="heatempty">Global leaders are mapped. Activate the backend pricing pass to populate this table.</div>`;
   $('moverDetail').innerHTML=header+body;
   $('moverModal').classList.add('open');
   const rb=$('moverRefreshSort');if(rb)rb.onclick=()=>openMoverDetails();
@@ -1562,7 +1562,7 @@ function drawHeatmap(){
   const rows=heatRows(heatGeo);
   $('heatCount').textContent=`${rows.length} / ${allRows.length} active assets`;
   if(!rows.length){
-    $('heatGrid').innerHTML=`<div class="heatempty">Global leaders are mapped; the next backend phase will activate prices and scores for this tab.</div>`;
+    $('heatGrid').innerHTML=`<div class="heatempty">Global leaders are mapped. The next backend phase will activate prices and scores for this tab.</div>`;
     return;
   }
   const el=$('heatGrid'),box=el.getBoundingClientRect();
@@ -1728,7 +1728,7 @@ function drawMacroMonitor(){
   $('macroCount').textContent=`${rows.length} · ${labels[macroView]||'indicators'}`;
   $('macroMeta').textContent=macroView==='ratings'
     ?`Official ratings + 30-minute market risk · actual vs prior / benchmark`
-    :`Official data cut-off ${macro.data_cutoff||'—'} · actual vs prior / benchmark`;
+    :`Official data cut-off ${macro.data_cutoff||'N/A'} · actual vs prior / benchmark`;
   $('macroGrid').innerHTML=rows.map(item=>{
     const risk=['green','red'].includes(item.risk)?item.risk:'neutral';
     const chips=(item.secondary||[]).map(value=>`<span>${esc(value)}</span>`).join('');
@@ -1741,7 +1741,7 @@ function drawMacroMonitor(){
     ].join('');
     const releaseLabel=item.update_mode==='market_derived'?'market-derived':(item.update_mode==='market_snapshot'?'market snapshot':'official release');
     return `<article class="macrocard ${risk}"><div class="mcrow"><span class="mcpillar">${esc(item.pillar)}</span><span class="mcsignal">${esc(signal)}</span></div>`+
-      `<div class="mclabel">${esc(item.label)}</div><div class="mcvalue">${esc(item.value_display||'—')}</div>`+
+      `<div class="mclabel">${esc(item.label)}</div><div class="mcvalue">${esc(item.value_display||'N/A')}</div>`+
       (compare?`<div class="mccompare">${compare}</div>`:'')+
       (chips?`<div class="mcsecondary">${chips}</div>`:'')+
       `<div class="mccomment">${esc(item.commentary||'')}</div><div class="mcfoot"><div class="mcperiod">${esc(macroPeriod(item))}<br>${esc(item.frequency||'')} · ${releaseLabel}</div>${source}</div></article>`;
@@ -1855,7 +1855,7 @@ function localDigest(kind){
     const topics=digestTopics(ranked);
     const [tone,indicators]=digestIndicators(label,topics);
     const prefix=`${label}: ${tone} tone${indicators.length?` with ${humanList(indicators)}`:''}`;
-    return topics.length?`${prefix}; coverage focuses on ${humanList(topics)}.`:`${prefix}; coverage is concentrated in the latest market and business headlines.`;
+    return topics.length?`${prefix}. Coverage focuses on ${humanList(topics)}.`:`${prefix}. Coverage is concentrated in the latest market and business headlines.`;
   };
   return {indonesia:one('Indonesia',rows.filter(x=>x.geo==='ID')),
           us:one('US/global',rows.filter(x=>x.geo!=='ID'))};
@@ -1989,7 +1989,7 @@ function buildHub(d){
 
 function buildBrief(){
   const b=BRIEF,el=$('paneBrief');
-  if(!b){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:10px 0;">Daily brief refreshes every 3 hours (WIB) — tracking both the Indonesia &amp; US sessions.</div>';return;}
+  if(!b){el.innerHTML='<div style="color:var(--ink3);font-size:11px;padding:10px 0;">Daily brief refreshes every 3 hours (WIB), tracking both the Indonesia and US sessions.</div>';return;}
   const s=b.sentiment||{};
   const col=v=>v>=60?'var(--green)':v<=40?'var(--red)':'var(--amber)';
   const bar=(k,v)=>`<div class="sbar"><span class="sk">${k}</span><span class="st"><i style="width:${v}%;background:${col(v)}"></i></span><span class="sv">${v}</span></div>`;
@@ -2005,7 +2005,7 @@ function buildBrief(){
   }).join('');
   el.innerHTML=
     `<div class="briefdate">INTELLIGENCE BRIEF · REFRESHES EVERY 3 HOURS</div><div class="briefwin">${esc(win)} WIB</div>`+
-    `<div class="bsec"><div class="bh">MARKET SENTIMENT SCORE</div><div class="sentbox"><div class="sentscore"><div class="sn" style="color:${col(s.score||50)}">${s.score!=null?s.score:'—'}</div><div class="sd">/ 100</div></div><div class="sentbars"><div class="sentlabel" style="color:${col(s.score||50)}">${esc((s.label||'').toUpperCase())}</div>${bar('Indonesia',s.indonesia||0)}${bar('US Markets',s.us||0)}${bar('Global',s.global||0)}${bar('Crypto',s.crypto||0)}</div></div></div>`+
+    `<div class="bsec"><div class="bh">MARKET SENTIMENT SCORE</div><div class="sentbox"><div class="sentscore"><div class="sn" style="color:${col(s.score||50)}">${s.score!=null?s.score:'N/A'}</div><div class="sd">/ 100</div></div><div class="sentbars"><div class="sentlabel" style="color:${col(s.score||50)}">${esc((s.label||'').toUpperCase())}</div>${bar('Indonesia',s.indonesia||0)}${bar('US Markets',s.us||0)}${bar('Global',s.global||0)}${bar('Crypto',s.crypto||0)}</div></div></div>`+
     (b.synthesis?`<div class="bsec"><div class="bh">DAILY SYNTHESIS</div><div class="synth">${esc(b.synthesis)}</div></div>`:'')+
     (ipoRadar?`<div class="bsec"><div class="bh">◇ NEAR-TERM IPO RADAR</div>${ipoRadar}</div>`:'')+
     (watch?`<div class="bsec"><div class="bh">▶ MUST-WATCH TODAY</div>${watch}</div>`:'')+
@@ -2089,7 +2089,7 @@ function localIpoSynthesis(rows,market){
     return ipoView==='changes'?value.split(/\s+-\s+S&P Global|;/i)[0].trim():value;
   }).filter(Boolean);
   const wording={upcoming:['verified scheduled listing','verified scheduled listings'],pipeline:['filed or reported pipeline candidate','filed or reported pipeline candidates'],recent:['listing in the past year','listings in the past year'],changes:['S&P 500 membership announcement','S&P 500 membership announcements']}[ipoView][regionRows.length===1?0:1];
-  return `${regionRows.length} ${wording} are currently tracked${names.length?`, led by ${humanList(names)}`:''}${industries.length?`; the most represented industries are ${humanList(industries)}`:''}.`;
+  return `${regionRows.length} ${wording} are currently tracked${names.length?`, led by ${humanList(names)}`:''}${industries.length?`. The most represented industries are ${humanList(industries)}`:''}.`;
 }
 function ipoSynthesisHTML(rows){
   const baked=((IPO.synthesis||{})[ipoView])||{};
@@ -2122,7 +2122,7 @@ function drawIpo(){
     ?'S&P 500 entries are official index-membership announcements, not IPOs.'
     :ipoView==='pipeline'
       ?`Pipeline separates official filings from reported candidates. Filing and publication dates are not confirmed listing dates. ${spacCount?`${spacCount} SPAC candidates hidden.`:''}${totalRows>rows.length?` Showing the newest ${rows.length} of ${totalRows} candidates.`:''}`
-      :`IDX recent dates use official e-IPO dates when available and TradingView first-observed bars as fallback; confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
+      :`IDX recent dates use official e-IPO dates when available and TradingView first-observed bars as fallback. Confirmed IDX schedules use e-IPO. US listings use Nasdaq’s calendar. ${spacCount?`${spacCount} SPAC listings hidden to reduce noise.`:''}`;
   const cards=rows.map((x,i)=>{const d=ipoDate(x.event_ts),usExchange=/nyse/i.test(x.exchange||'')?'NYSE':/nasdaq/i.test(x.exchange||'')?'NASDAQ':'US',market=x.market==='ID'?'🇮🇩 IDX':x.market==='US'?`🇺🇸 ${usExchange}`:'S&P 500';
     const key=ipoRowKey(x,i),open=ipoExpanded===key,hit=findIpoAsset(x);
     const price=x.price?`<span class="meta-chip priority">${esc(ipoPriceStatus(x))} ${esc(ipoPriceLabel(x))}</span>`:'';
@@ -2206,7 +2206,7 @@ function researchDigestHTML(){
   const d=RESEARCH.synthesis||{},health=RESEARCH.health||{};
   const rows=[d.indonesia?`<div class="di"><b>Indonesia / SEA / APAC</b> ${esc(d.indonesia)}</div>`:'',d.global?`<div class="di"><b>Global</b> ${esc(d.global)}</div>`:''].join('');
   const refreshed=RESEARCH.discovery_as_of?ago(new Date(Number(RESEARCH.discovery_as_of)*1000).toISOString()):'pending';
-  const audit=`<div class="iponote">${Number(health.report_count||0)} indexed · ${Number(health.live_count||0)} live discoveries · ${Number(health.ticker_tagged_count||0)} ticker-tagged · discovery ${esc(refreshed)} and checked by the scheduled bake every 6 hours. Source metadata only; open the original report for its full evidence and disclosures.</div>`;
+  const audit=`<div class="iponote">${Number(health.report_count||0)} indexed · ${Number(health.live_count||0)} live discoveries · ${Number(health.ticker_tagged_count||0)} ticker-tagged · discovery ${esc(refreshed)} and checked by the scheduled bake every 6 hours. Source metadata only. Open the original report for its full evidence and disclosures.</div>`;
   return rows?`<div class="digestbox"><div class="dh">RESEARCH COVERAGE</div>${rows}</div>${audit}`:audit;
 }
 function buildResearch(){
@@ -2249,7 +2249,7 @@ function drawResearch(){
     const ticks=(item.ticker_tags||[]).slice(0,6).map(t=>`<span class="meta-chip source">${esc(t)}</span>`).join('');
     return `<a class="researchcard" href="${encodeURI(url)}" target="_blank" rel="noopener"><div class="researchmeta"><span class="meta-chip ${item.priority==='Essential'?'priority':''}">${esc(item.priority||'Research')}</span><span class="meta-chip industry">${esc(item.category||'Research')}</span><span class="meta-chip source">${esc(item.geography||'Global')}</span><span class="meta-chip source">${esc(item.publisher||'Source')}</span><span class="meta-chip date">${esc(researchDate(item.published))}</span>${ticks}</div><div class="researchtitle">${esc(item.title||'Untitled report')}</div>${item.why_useful?`<div class="researchwhy">${esc(item.why_useful)}</div>`:''}<div class="researchopen">OPEN ${item.direct_url?'REPORT':'SOURCE'} ↗ · ${esc(item.summary_basis||'source metadata')}</div></a>`;
   }).join('')||'<div class="researchempty">No source-linked research matches these filters.</div>';
-  $('researchStatus').textContent=`${reports.length} of ${allReports.length} reports · search filters this library instantly; new research is added by the scheduled bake`;
+  $('researchStatus').textContent=`${reports.length} of ${allReports.length} reports · search filters this library instantly. New research is added by the scheduled bake`;
   if(hubPane==='research')$('wireCount').textContent=reports.length+' reports';
 }
 /* ---- footer media player: ONE YouTube player, News / Podcast queues ---- */
@@ -2448,12 +2448,12 @@ function scoreColor(sc){const n=Number(sc&&sc.score);if(!isFinite(n))return 'var
 function scoreConfidence(sc){const n=finiteNum(sc&&sc.data_confidence_pct);return n==null?`${esc(sc&&sc.confidence||'Low')} confidence`:`${Math.round(n)}% data confidence`;}
 function scorePill(c){
   const sc=invScore(c),n=sc.score;
-  if(isPriceOnly(c)&&n==null)return `<span class="scorepill priceonly" title="Price-only global leader coverage; scoring is not enabled yet">PX</span>`;
+  if(isPriceOnly(c)&&n==null)return `<span class="scorepill priceonly" title="Price-only global leader coverage. Scoring is not enabled yet">PX</span>`;
   return `<span class="scorepill ${scoreClass(sc)}" title="${esc(sc.label||'Insufficient')} ${esc(scoreModeLabel(sc).toLowerCase())} score">${n==null?'SC --':'SC '+Math.round(n)}</span>`;
 }
 function fmtMetric(m){
   const v=m&&m.value,fmt=m&&m.fmt;
-  if(v==null)return '—';
+  if(v==null)return 'N/A';
   const label=String(m&&m.label||'');
   const cur=m&&m.currency?String(m.currency).toUpperCase():'';
   const prefix=cur?cur+' ':'$';
@@ -2554,7 +2554,7 @@ function radarSvg(sc,big=false){
 function scorePanel(c){
   const sc=invScore(c),metrics=displayScoreMetrics(sc,c).slice(0,9),n=sc.score;
   const metricHtml=metrics.length?metrics.map(m=>`<div class="metric"><div class="mk">${esc(m.label)}</div><div class="mv">${fmtMetric(m)}</div>${metricPeriod(m)?`<div class="mp">${esc(metricPeriod(m))}</div>`:''}</div>`).join(''):'<div style="color:var(--ink3);font-family:var(--mono);font-size:10px;">Fundamental fields unavailable this cycle.</div>';
-  return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">OPPORTUNITY SCREEN · ${scoreConfidence(sc)} · provider-field coverage ${Math.round(scoreCoverage(sc)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Screening model only; missing metrics are not estimated.</div></div>`;
+  return `<div class="scorebox"><div><div class="scorehead"><div class="scorebig" style="color:${scoreColor(sc)}">${n==null?'--':Math.round(n)}</div><div><div class="scorelabel" style="color:${scoreColor(sc)}">${esc((sc.label||'Insufficient').toUpperCase())}</div><div class="scoremeta">OPPORTUNITY SCREEN · ${scoreConfidence(sc)} · provider-field coverage ${Math.round(scoreCoverage(sc)*100)}%</div></div></div><div class="radar">${radarSvg(sc)}</div></div><div class="metricsgrid">${metricHtml}</div><div class="scorefoot">Source: ${esc(sc.source||'Price history only')} · updated ${esc(sc.as_of?new Date(sc.as_of).toLocaleString('en-GB',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'this run')} WIB. Screening model only. Missing metrics are not estimated.</div></div>`;
 }
 function scoreSummary(c){
   const sc=invScore(c),n=sc.score,metrics=sc.metrics||[];
@@ -2642,7 +2642,7 @@ function ruleLine(sc,label,actual,dir,good,watch,why){
   const m=scoreMetric(sc,label);
   const period=metricPeriod(m||{label});
   const display=m?metricDisplay(sc,label):(actual==null?'n/a':fmtThreshold(label,actual,dir));
-  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold ${op} ${esc(fmtThreshold(label,good,dir))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}. Style threshold ${op} ${esc(fmtThreshold(label,good,dir))}. <span class="${cls}">${txt}</span>${why?` Reason: ${esc(why)}`:''}</li>`;
 }
 function ruleLineAbs(sc,label,actual,good,watch,why){
   const test=actual==null||!isFinite(Number(actual))?null:Math.abs(Number(actual));
@@ -2650,7 +2650,7 @@ function ruleLineAbs(sc,label,actual,good,watch,why){
   const m=scoreMetric(sc,label);
   const period=metricPeriod(m||{label});
   const display=m?metricDisplay(sc,label):(actual==null?'n/a':fmtThreshold(label,actual,'low'));
-  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}; style threshold <= ${esc(fmtThreshold(label,good,'low'))}. <span class="${cls}">${txt}</span>${why?` — ${esc(why)}`:''}</li>`;
+  return `<li><b>${esc(label)}</b>: actual ${esc(display)}${period?` <span class="watch">(${esc(period)})</span>`:''}. Style threshold <= ${esc(fmtThreshold(label,good,'low'))}. <span class="${cls}">${txt}</span>${why?` Reason: ${esc(why)}`:''}</li>`;
 }
 function valuationPrice(n,currency){
   if(n==null||!isFinite(Number(n)))return 'n/a';
@@ -2869,7 +2869,7 @@ function scoreAnalysisContent(c,key){
     const observed=((c.chart_quality||{})['6M'])==='historical_close';
     const sessions=(c.spark||[]).length;
     const why=observed&&sessions<12
-      ?`Risk ratios require at least 12 observed daily closes; this newly listed ticker currently has ${sessions}.`
+      ?`Risk ratios require at least 12 observed daily closes. This newly listed ticker currently has ${sessions}.`
       :'Observed daily price history is unavailable this cycle, so risk ratios are not estimated.';
     return riskBenchmarkBox(sc)||`<div class="riskbox"><div class="rh">RISK BENCHMARK</div><div class="scoremeta">${esc(why)}</div></div>`;
   }
@@ -2968,7 +2968,7 @@ function openTicker(s,tk){
   const t=$('smTicker');t.style.display='';
   t.dataset.tk=tk;
   t.innerHTML=`<span class="tkback" id="tkBack">← ${esc(s.name)} constituents</span>`+
-    `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'—'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
+    `<div class="tkhd"><span class="tk" style="font-size:15px">${flagOf(c)} ${esc(tk)}</span><span class="exch">${esc(c.exchange)}</span><span class="countrychip" title="${esc(countryLabel(c))}">${esc(c.country)}</span><span class="countrychip region">${esc(regionLabel(c))}</span><span class="tkpx">${qValue(c)?fmt(qValue(c)):'N/A'}</span><span class="mono" style="font-size:12.5px;color:${col}">${sign(tfPct)} · ${tkTF}</span>${stateBadge}${fallbackBadge}</div>`+
     `<div style="font-size:10px;color:var(--ink3);margin:2px 0 8px">${esc(c.name)} · Mkt cap ${esc(capLabel(c))} · <i class="tdot ${c.tier}"></i>${c.tier} · today <span style="color:${COLP(dp)}">${sign(dp)}</span> · ${esc(chartQualityLabel(td.quality))} · as of ${esc(quoteStamp(c,!!live))}</div>`+
     `${c.market_data_warning?`<div class="scorewarn" style="margin:0 0 8px"><b>Market-data guardrail</b><span>${esc(c.market_data_warning)}</span></div>`:''}`+
     `<div class="tabset" style="margin-bottom:8px;">${Object.keys(TF).map(tf=>`<span class="tab ${tf===tkTF?'on':''}" data-tf="${tf}">${tf}</span>`).join('')}</div>`+
@@ -2976,7 +2976,7 @@ function openTicker(s,tk){
     scoreSummary(c)+
     `<a class="ylink" href="${encodeURI(c.country==='CR'?cryptoUrl(tk,c.url):c.url||'#')}" target="_blank" rel="noopener">View ${esc(tk)} on ${esc(quoteSourceName(c))} ↗</a>`+
     `<div class="cttl" style="margin-top:13px;">⊳ ${esc(tk)} news</div>`+
-    `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle — see sector news below.</div>'}</div>`;
+    `<div>${news.length?news.map(n=>newsRow(n)).join(''):'<div style="color:var(--ink3);font-size:11px;">No ticker news this cycle. See sector news below.</div>'}</div>`;
   if(tvFallback)mountTradingViewChart(c,tk,tkTF);
   [...document.querySelectorAll('#smTicker .tab')].forEach(tab=>tab.onclick=()=>{tkTF=tab.dataset.tf;openTicker(s,tk);});
   const sb=$('scoreDetailBtn');if(sb)sb.onclick=()=>openScoreModal(c,s);
@@ -3222,7 +3222,7 @@ let topAlerts=[],topAlertIdx=0;
 function showTopAlert(){
   $('topAlert').textContent=topAlerts.length
     ?topAlerts[((topAlertIdx%topAlerts.length)+topAlerts.length)%topAlerts.length]
-    :'No anomalies — telemetry nominal';
+    :'No anomalies. Telemetry nominal.';
 }
 const _nx=document.querySelector('.alertbar .nx');
 if(_nx)_nx.onclick=()=>{topAlertIdx++;showTopAlert();};
@@ -3279,7 +3279,7 @@ function applyPayload(d,initial){
   const prev=DATA&&DATA.timestamp,next=d&&d.timestamp;
   render(d);
   if(!initial&&prev&&next&&prev!==next){
-    topAlerts.unshift('Dashboard data refreshed — '+wibStamp(next));
+    topAlerts.unshift('Dashboard data refreshed at '+wibStamp(next));
     topAlertIdx=0;showTopAlert();
   }
 }
@@ -3296,7 +3296,7 @@ function refreshPayload(opts={}){
     payloadLastCheck=Date.now();payloadLastOk=false;updateDataAge();
     console.warn('payload refresh failed',e);
     if(opts.initial){
-      $('topAlert').textContent='Payload unreachable — showing shell.';
+      $('topAlert').textContent='Payload unreachable. Showing shell.';
       $('freshPill').innerHTML='<span class="d dgray"></span>REFRESH ERROR';
     }
     return false;

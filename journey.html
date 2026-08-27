@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Vito's Journey — a pixel side-scroller</title>
-<meta name="description" content="From Kediri to the cap tables of Southeast Asia — Vito Christian Samudra's life as a playable 8-bit side-scroller.">
+<title>Vito's Journey | A Pixel Side-Scroller</title>
+<meta name="description" content="From Kediri to the cap tables of Southeast Asia, Vito Christian Samudra's life as a playable 8-bit side-scroller.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -63,7 +63,7 @@ canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rend
   <div class="ovl" id="start">
     <h1>VITO&rsquo;S JOURNEY</h1>
     <p>FROM WHERE IT ALL STARTED<br>TO WHERE I AM TODAY.</p>
-    <p class="keys">A D MOVE&nbsp;&nbsp;&nbsp;W JUMP (TAP TWICE = DOUBLE JUMP)<br>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br>BUMP ? BLOCKS · GRAB COINS · STOMP ENEMIES · DODGE SPIKES<br>EACH STAGE GETS HARDER — REACH THE FLAG</p>
+    <p class="keys">A D MOVE&nbsp;&nbsp;&nbsp;W JUMP (TAP TWICE = DOUBLE JUMP)<br>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br>BUMP ? BLOCKS · GRAB COINS · STOMP ENEMIES · DODGE SPIKES<br>EACH STAGE GETS HARDER. REACH THE FLAG</p>
     <button class="btn" id="startBtn">▶ PRESS ENTER TO START</button>
   </div>
 
@@ -113,42 +113,42 @@ const ZONES=[
  {x0:3980,x1:5400, name:'STAGE 5 · JAKARTA · VC',    sky:['#2b3a67','#7a6a9e'], top:'#5b6770'},
 ];
 const SIGNS=[
- {x:170, title:'STAGE 1: KEDIRI',  body:'Where it all began — born in Kediri, East Java, in the shadow of Mt. Kelud. Small town, big targets.', img:null},
- {x:1080,title:'STAGE 2: ITB BANDUNG', body:'Graduated in Information Systems & Technology, where I developed a strong interest in startups, entrepreneurship and product management — with hands-on product management internships along the way, plus an internship in Singapore and an exchange program in Japan that broadened my international exposure.', img:'assets/photos/graduation-itb.jpg'},
- {x:2230,title:'STAGE 3: SINGAPORE', body:'Selected for the NUS Overseas Colleges (NOC) Program — interned at Forte Biotech as a Business Development Intern while studying Venture Creation: Process and Mindset at the National University of Singapore (NUS).', img:'assets/photos/nus-business-school.jpg'},
- {x:3230,title:'STAGE 4: JAPAN', body:'Represented Indonesia in the Social Innovator Hub Program at Tohoku University, Sendai, Japan — where participants collaborated to address social challenges through entrepreneurship and innovation.', img:'assets/photos/social-innovator-hub.jpg'},
- {x:4280,title:'STAGE 5: JAKARTA — VENTURE CAPITAL', body:'Began my venture capital career at Living Lab Ventures, the Corporate Venture Capital arm of Sinar Mas Land — and currently serve as an Investment Associate at New Energy Nexus Ventures, focusing on climate and energy innovation investments.', img:'assets/photos/team-llv.jpg'},
+ {x:170, title:'STAGE 1: KEDIRI',  body:'It all began in Kediri, East Java, in the shadow of Mt. Kelud. Small town, big targets.', img:null},
+ {x:1080,title:'STAGE 2: ITB BANDUNG', body:'Graduated in Information Systems & Technology, where I developed a strong interest in startups, entrepreneurship and product management. Hands-on product management internships, an internship in Singapore and an exchange program in Japan broadened my international exposure.', img:'assets/photos/graduation-itb.jpg'},
+ {x:2230,title:'STAGE 3: SINGAPORE', body:'Selected for the NUS Overseas Colleges (NOC) Program. I interned at Forte Biotech as a Business Development Intern while studying Venture Creation: Process and Mindset at the National University of Singapore (NUS).', img:'assets/photos/nus-business-school.jpg'},
+ {x:3230,title:'STAGE 4: JAPAN', body:'Represented Indonesia in the Social Innovator Hub Program at Tohoku University in Sendai, Japan, where participants collaborated to address social challenges through entrepreneurship and innovation.', img:'assets/photos/social-innovator-hub.jpg'},
+ {x:4280,title:'STAGE 5: JAKARTA | VENTURE CAPITAL', body:'Began my venture capital career at Living Lab Ventures, the Corporate Venture Capital arm of Sinar Mas Land. I currently serve as an Investment Associate at New Energy Nexus Ventures, focusing on climate and energy innovation investments.', img:'assets/photos/team-llv.jpg'},
 ];
 const QBLOCKS=[
- {x:330, y:170,title:'KEDIRI FLAVORS',body:'Kediri, my hometown, is famous for its Nasi Pecel and Tahu Kuning. At night, Jalan Dhoho comes alive with its iconic Nasi Pecel culinary scene — a must-try local delicacy. (Photo: TripAdvisor)',img:'assets/game/ph-pecel.jpg',link:'https://www.tripadvisor.co.id/ShowUserReviews-g311297-d6924843-r458624006-Pecel_Pudakit-Kediri_East_Java_Java.html',lab:'PHOTO SOURCE'},
- {x:700, y:170,title:'SCHOOL DAYS',body:'Grew up and completed my schooling in Kediri. During high school I was active in academic and leadership activities — winning several national mathematics and physics competitions before gaining admission to Institut Teknologi Bandung (ITB).',img:'assets/game/ph-olympiad.jpg'},
- {x:1180,y:170,title:'LEADERSHIP · YLI',body:'Selected as a participant of Young Leaders for Indonesia (YLI) Batch 16 — collaborating with Pertamina on a Breakthrough Leadership Project focused on ESG maturity assessment and sustainability strategy execution.',img:'assets/game/ph-yli.jpg'},
- {x:1450,y:170,title:'MENTORSHIP',body:'Selected for the Maudy Ayunda Mentorship & Scholarship Program — with the opportunity to learn directly from Maudy Ayunda’s insights and experiences.',img:'assets/game/ph-maudy.jpg'},
- {x:1620,y:170,title:'HACK THE GLOBE 2024',body:'First Runner-Up by BCG and Global Spark — ranked 2nd among 300 participants from 30 countries after leading a cross-border team to build and pitch a precision-agriculture startup within 3 days.',img:'assets/game/ph-htg.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_global-hackathon-business-ugcPost-7176527056405454848-10va/',lab:'LINKEDIN POST'},
- {x:1790,y:170,title:'THESIS → IEEE',body:'Authored an undergraduate thesis on enhancing venture capital due-diligence efficiency using Large Language Models — startup-success prediction and business document extraction. Later accepted and published by the IEEE.',link:'https://ieeexplore.ieee.org/document/10763359',lab:'IEEE PAPER'},
- {x:2450,y:170,title:'FORTE BIOTECH · FUNDRAISING',body:'Supported the company’s fundraising efforts by developing investor pitch decks and fundraising materials — contributing to Forte Biotech’s success in winning the Net Zero Challenge organized by Touchstone Partners and the Temasek Foundation.',img:'assets/game/ph-forte.jpg'},
- {x:2700,y:170,title:'MARKET ENTRY · INDONESIA',body:'Beyond fundraising, I supported Forte Biotech’s market entry initiatives in Indonesia by identifying and engaging potential customers — leading to successful business development meetings with prospective clients, including JALA.',img:'assets/game/ph-jala.jpg'},
- {x:3480,y:170,title:'SENDAI FIELD VISIT',body:'Gained firsthand exposure to how government and industry collaborate to build a more sustainable future — including a visit to Sendai’s municipal waste-to-energy facility to explore technology-driven solutions for waste management.',img:'assets/game/ph-sendai.jpg'},
- {x:3620,y:170,title:'BEST TEAM & BEST PARTICIPANT',body:'At the end of the program, I was honored to be recognized as Best Participant, while my team received the Best Team award — for developing and presenting an innovative solution to convert incinerator ash into sustainable construction materials.',img:'assets/game/ph-sih.jpg'},
- {x:4500,y:170,title:'MID-YEAR 2025 OUTLOOK',body:'During my time at Living Lab Ventures, I had the opportunity to co-author the Mid-Year 2025 Market Outlook — analysis on macroeconomic trends, venture capital activity, and emerging investment opportunities.',img:'assets/game/ph-outlook.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_after-economic-headwinds-earlier-this-yearhave-ugcPost-7331610172957630464-VjcO/',lab:'LINKEDIN POST'},
- {x:4750,y:170,title:'NEW ENERGY NEXUS',body:'Currently working at New Energy Nexus Ventures — backing and supporting climate technology startups that are building a more sustainable future for the region.',img:'assets/game/ph-nexus.jpg'},
+ {x:330, y:170,title:'KEDIRI FLAVORS',body:'Kediri, my hometown, is famous for its Nasi Pecel and Tahu Kuning. At night, Jalan Dhoho comes alive with its iconic Nasi Pecel culinary scene, a must-try local delicacy. (Photo: TripAdvisor)',img:'assets/game/ph-pecel.jpg',link:'https://www.tripadvisor.co.id/ShowUserReviews-g311297-d6924843-r458624006-Pecel_Pudakit-Kediri_East_Java_Java.html',lab:'PHOTO SOURCE'},
+ {x:700, y:170,title:'SCHOOL DAYS',body:'Grew up and completed my schooling in Kediri. During high school I was active in academic and leadership activities, winning several national mathematics and physics competitions before gaining admission to Institut Teknologi Bandung (ITB).',img:'assets/game/ph-olympiad.jpg'},
+ {x:1180,y:170,title:'LEADERSHIP · YLI',body:'Selected as a participant of Young Leaders for Indonesia (YLI) Batch 16. I collaborated with Pertamina on a Breakthrough Leadership Project focused on ESG maturity assessment and sustainability strategy execution.',img:'assets/game/ph-yli.jpg'},
+ {x:1450,y:170,title:'MENTORSHIP',body:'Selected for the Maudy Ayunda Mentorship & Scholarship Program, with the opportunity to learn directly from Maudy Ayunda’s insights and experiences.',img:'assets/game/ph-maudy.jpg'},
+ {x:1620,y:170,title:'HACK THE GLOBE 2024',body:'First Runner-Up by BCG and Global Spark, ranking 2nd among 300 participants from 30 countries after leading a cross-border team to build and pitch a precision-agriculture startup within 3 days.',img:'assets/game/ph-htg.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_global-hackathon-business-ugcPost-7176527056405454848-10va/',lab:'LINKEDIN POST'},
+ {x:1790,y:170,title:'THESIS → IEEE',body:'Authored an undergraduate thesis on enhancing venture capital due-diligence efficiency using Large Language Models for startup-success prediction and business document extraction. It was later accepted and published by the IEEE.',link:'https://ieeexplore.ieee.org/document/10763359',lab:'IEEE PAPER'},
+ {x:2450,y:170,title:'FORTE BIOTECH · FUNDRAISING',body:'Supported the company’s fundraising efforts by developing investor pitch decks and fundraising materials, contributing to Forte Biotech’s success in winning the Net Zero Challenge organized by Touchstone Partners and the Temasek Foundation.',img:'assets/game/ph-forte.jpg'},
+ {x:2700,y:170,title:'MARKET ENTRY · INDONESIA',body:'Beyond fundraising, I supported Forte Biotech’s market entry initiatives in Indonesia by identifying and engaging potential customers. This led to successful business development meetings with prospective clients, including JALA.',img:'assets/game/ph-jala.jpg'},
+ {x:3480,y:170,title:'SENDAI FIELD VISIT',body:'Gained firsthand exposure to how government and industry collaborate to build a more sustainable future, including a visit to Sendai’s municipal waste-to-energy facility to explore technology-driven solutions for waste management.',img:'assets/game/ph-sendai.jpg'},
+ {x:3620,y:170,title:'BEST TEAM & BEST PARTICIPANT',body:'At the end of the program, I was honored to be recognized as Best Participant, while my team received the Best Team award for developing and presenting an innovative solution to convert incinerator ash into sustainable construction materials.',img:'assets/game/ph-sih.jpg'},
+ {x:4500,y:170,title:'MID-YEAR 2025 OUTLOOK',body:'During my time at Living Lab Ventures, I had the opportunity to co-author the Mid-Year 2025 Market Outlook, an analysis of macroeconomic trends, venture capital activity and emerging investment opportunities.',img:'assets/game/ph-outlook.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_after-economic-headwinds-earlier-this-yearhave-ugcPost-7331610172957630464-VjcO/',lab:'LINKEDIN POST'},
+ {x:4750,y:170,title:'NEW ENERGY NEXUS',body:'Currently working at New Energy Nexus Ventures, backing and supporting climate technology startups that are building a more sustainable future for the region.',img:'assets/game/ph-nexus.jpg'},
 ];
 const COINS=[];
 [[420,150],[450,140],[480,150],[900,185],[930,185],[1550,150],[1580,140],[1610,150],[2080,185],[2110,185],[2550,150],[2580,140],[2610,150],[3050,185],[3080,185],[3550,150],[3580,140],[3610,150],[4100,185],[4130,185],[4600,150],[4630,140],[4660,150],[4860,185],[4890,185]].forEach(c=>COINS.push({x:c[0],y:c[1],got:false,t:Math.random()*6}));
 const FLAG_X=5080,CASTLE_X=5190;
 const SPIKES=[560,1340,1840,2330,2830,3340,3740,4150,4650].map(x=>({x:x,w:28}));
-/* patrolling enemies — count + speed ramp up each stage (Kediri = none). Stomp
+/* Patrolling enemy count and speed ramp up each stage (Kediri = none). Stomp
    from above to defeat (+150); touch from the side and you lose a life. */
 const EW=14,EH=13;
 function mkEnemy(x0,x1,spd,col){return {x0,x1,x:(x0+x1)/2,y:GROUND-EH,dir:1,spd,col,alive:true};}
 const ENEMIES=[
- // Stage 2 · Bandung — 2 slow
+ // Stage 2 · Bandung: 2 slow
  mkEnemy(1090,1190,.55,'#b0452e'), mkEnemy(1480,1600,.6,'#b0452e'),
- // Stage 3 · Singapore — 3 medium
+ // Stage 3 · Singapore: 3 medium
  mkEnemy(2080,2200,.8,'#2f6db0'), mkEnemy(2460,2600,.85,'#2f6db0'), mkEnemy(2730,2900,.9,'#2f6db0'),
- // Stage 4 · Japan — 4 faster
+ // Stage 4 · Japan: 4 faster
  mkEnemy(3070,3200,1.0,'#7a4f9c'), mkEnemy(3400,3540,1.05,'#7a4f9c'), mkEnemy(3580,3700,1.1,'#7a4f9c'), mkEnemy(3800,3940,1.15,'#7a4f9c'),
- // Stage 5 · Jakarta — 5 fast
+ // Stage 5 · Jakarta: 5 fast
  mkEnemy(4040,4180,1.25,'#1f7a6a'), mkEnemy(4280,4440,1.3,'#1f7a6a'), mkEnemy(4500,4640,1.35,'#1f7a6a'), mkEnemy(4720,4880,1.4,'#1f7a6a'), mkEnemy(4920,5040,1.45,'#1f7a6a'),
 ];
 
@@ -396,10 +396,10 @@ function tick(){lastTick=performance.now();
  let n=0;while(accT>=16.7&&n<42){update();accT-=16.7;n++;}
  if(n){draw();tickCount++;}
  if(!slowChecked&&startT&&lastTick-startT>2500){slowChecked=true;
-  if(tickCount<30)showToast('THIS EMBEDDED VIEW IS THROTTLED — OPEN THIS PAGE IN A NORMAL BROWSER TAB FOR SMOOTH 60FPS.');}
+  if(tickCount<30)showToast('THIS EMBEDDED VIEW IS THROTTLED. OPEN THIS PAGE IN A NORMAL BROWSER TAB FOR SMOOTH 60FPS.');}
 }
 function loop(){tick();requestAnimationFrame(loop);}
-/* watchdog: some embedded webviews suspend rAF — fall back to a timer */
+/* Watchdog: some embedded webviews suspend rAF, so fall back to a timer */
 setInterval(()=>{if(performance.now()-lastTick>200)tick();},33);
 const stagebox=document.getElementById('stagebox');
 cv.addEventListener('click',()=>stagebox.focus());

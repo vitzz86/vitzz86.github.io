@@ -900,9 +900,9 @@
       el.board.replaceChildren();
       el.boardLoading.hidden = false;
       el.emptyState.hidden = true;
-      el.messageCount.textContent = "—";
-      el.playlistCount.textContent = "—";
-      el.youtubeCount.textContent = "—";
+      el.messageCount.textContent = "N/A";
+      el.playlistCount.textContent = "N/A";
+      el.youtubeCount.textContent = "N/A";
       el.boardSummary.textContent = "Loading the board…";
       return;
     }
@@ -1262,7 +1262,7 @@
     else if (message.length > 500) error = "Please keep your message to 500 characters.";
     else if (identity === "named" && name.length < 2) error = "Please enter a name or switch to Anonymous.";
     else if (identity === "named" && name.length > 40) error = "Please keep your name to 40 characters.";
-    else if (el.mediaUrl.value.trim() && !state.media) error = `Please attach a valid ${state.mediaProvider === "youtube" ? "YouTube" : "Spotify"} link—or remove it.`;
+    else if (el.mediaUrl.value.trim() && !state.media) error = `Please attach a valid ${state.mediaProvider === "youtube" ? "YouTube" : "Spotify"} link, or remove it.`;
     else error = moderationError(message) || (state.backendConfigured ? "" : rateLimitError());
     if (!error && state.backendConfigured && !state.backendReady) {
       error = "The shared Dream Board is still connecting. Please try again shortly.";

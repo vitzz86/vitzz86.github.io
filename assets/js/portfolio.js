@@ -1,5 +1,5 @@
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* narrated pitch audio per deck — playback drives the slides */
+/* Narrated pitch audio per deck. Playback drives the slides. */
 const DECK_AUDIO = { rs: 'assets/audio/raisesea-pitch.m4a', outlook: 'assets/audio/outlook-pitch.m4a', nexus: 'assets/audio/nexus-pitch.m4a' };
 /* Authored cue maps (from the narration timeline): [seconds, slideIndex].
    Cue times are scaled by audioDuration/total at runtime, so replacing an
@@ -107,7 +107,7 @@ function buildDeck(el){
   function startAuto(){ if(pitch&&!pitch.paused)pitch.pause(); timer=setInterval(()=>go(i+1),4200); auto.classList.add('on');auto.setAttribute('aria-pressed','true');auto.innerHTML='&#10074;&#10074; Auto'; }
   function stopAuto(){ if(timer){clearInterval(timer);timer=null;} auto.classList.remove('on');auto.setAttribute('aria-pressed','false');auto.innerHTML='&#9658; Auto'; }
   auto.onclick=()=>timer?stopAuto():startAuto();
-  // narrated pitch — audio playback drives the slides; slide nav seeks the audio
+  // Narrated pitch audio drives the slides. Slide navigation seeks the audio.
   const aSrc=DECK_AUDIO[el.dataset.deck];
   if(aSrc){
     const pBtn=document.createElement('button'); pBtn.className='auto pitch';
@@ -132,7 +132,7 @@ function buildDeck(el){
       fetch(aSrc).then(r=>{if(!r.ok)throw new Error(r.status);return r.blob();})
         .then(b=>{ // retype: dev servers mislabel .m4a (octet-stream / mp4a-latm)
           wire(new Audio(URL.createObjectURL(new Blob([b],{type:'audio/mp4'})))); })
-        .catch(e=>{ // file:// pages block fetch — play the file directly instead
+        .catch(e=>{ // file:// pages block fetch. Play the file directly instead.
           console.warn('blob route unavailable, using direct audio:',e);
           wire(new Audio(aSrc)); });
     };
@@ -179,23 +179,23 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
     'vc-networking-evening':[1400,787],'vc-networking-qapita':[1600,900],'with-sandiaga-uno':[1050,1400]
   };
   const PHOTOS=[
-    {s:'with-sandiaga-uno',k:'community',c:'With Sandiaga Uno — former Indonesian Minister of Tourism & Creative Economy'},
-    {s:'judge-startup-arena',k:'events',c:'Judging Startup Arena 2025 — Meet Ventures × SMU, Singapore'},
-    {s:'field-jala',k:'field',c:'Pond-side diligence with JALA and Forte Biotech — shrimp farms, coastal Java'},
-    {s:'midyear-outlook',k:'events',c:'Living Lab Ventures media briefing — Mid-Year 2025 VC Investment Outlook'},
-    {s:'graduation-itb',k:'milestones',c:'Graduating cum laude in Information Systems & Technology, ITB — October 2024'},
-    {s:'investor-speed-dating',k:'events',c:'Investor speed-dating — pitching a curated Asia-Pacific startup shortlist'},
-    {s:'field-efishery',k:'field',c:'At eFishery HQ — learning from Indonesia’s aquaculture unicorn'},
+    {s:'with-sandiaga-uno',k:'community',c:'With Sandiaga Uno, former Indonesian Minister of Tourism & Creative Economy'},
+    {s:'judge-startup-arena',k:'events',c:'Judging Startup Arena 2025 at Meet Ventures × SMU in Singapore'},
+    {s:'field-jala',k:'field',c:'Pond-side diligence with JALA and Forte Biotech across shrimp farms in coastal Java'},
+    {s:'midyear-outlook',k:'events',c:'Living Lab Ventures media briefing for the Mid-Year 2025 VC Investment Outlook'},
+    {s:'graduation-itb',k:'milestones',c:'Graduating cum laude in Information Systems & Technology at ITB in October 2024'},
+    {s:'investor-speed-dating',k:'events',c:'Investor speed-dating with a curated Asia-Pacific startup shortlist'},
+    {s:'field-efishery',k:'field',c:'At eFishery HQ, learning from Indonesia’s aquaculture unicorn'},
     {s:'team-llv',k:'milestones',c:'The Living Lab Ventures investment team'},
-    {s:'vc-networking-qapita',k:'events',c:'Jakarta’s venture community — equity & cap-table night with Qapita'},
+    {s:'vc-networking-qapita',k:'events',c:'Jakarta’s venture community at an equity and cap-table night with Qapita'},
     {s:'mentored-startup',k:'community',c:'With a founder I mentored through the Astranauts program'},
-    {s:'nus-business-school',k:'milestones',c:'NUS Overseas Colleges — venture creation year in Singapore'},
+    {s:'nus-business-school',k:'milestones',c:'NUS Overseas Colleges during a venture creation year in Singapore'},
     {s:'kadin-cofounders',k:'community',c:'Founder roundtable at KADIN Indonesia, Jakarta'},
     {s:'dex-connex',k:'events',c:'DEX Connex Indonesia 2025 with the Living Lab Ventures team'},
     {s:'llv-office',k:'milestones',c:'At the Living Lab Ventures office, BSD City'},
-    {s:'social-innovator-hub',k:'milestones',c:'Social Innovator Hub, Tohoku University — Best Team & Best Participant'},
-    {s:'founder-plus',k:'community',c:'Founder+ incubation batch — mentoring and judging'},
-    {s:'jewel-changi',k:'field',c:'Between meetings — Jewel Changi with co-workers on a business trip'},
+    {s:'social-innovator-hub',k:'milestones',c:'Social Innovator Hub at Tohoku University, Best Team and Best Participant'},
+    {s:'founder-plus',k:'community',c:'Founder+ incubation batch, mentoring and judging'},
+    {s:'jewel-changi',k:'field',c:'Between meetings at Jewel Changi with co-workers on a business trip'},
     {s:'nus-lift-off',k:'milestones',c:'NUS Lift-Off Day with the NOC cohort'},
     {s:'vc-networking-evening',k:'events',c:'An evening with Jakarta’s investor community'}
   ];
