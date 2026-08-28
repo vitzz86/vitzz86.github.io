@@ -1,5 +1,6 @@
 .notes-page{min-height:100vh;}
 .notes-page .nav{z-index:80;}
+.notes-page .navlinks a[href$="#photos"]{display:none;}
 .notes-page .icobtn[aria-label="LinkedIn"] svg{display:none;}
 .notes-page .icobtn[aria-label="LinkedIn"]:before{content:"in";display:block;font-family:var(--sans);font-size:14px;font-weight:700;line-height:1;letter-spacing:-.06em;transform:translateY(-.5px);}
 .notes-hero{padding:150px 0 74px;border-bottom:1px solid var(--line);position:relative;overflow:hidden;}
