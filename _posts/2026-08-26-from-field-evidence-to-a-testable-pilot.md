@@ -12,13 +12,13 @@ tags:
   - VENTURE BUILDING
   - BUSINESS MODEL
   - ARTIFICIAL INTELLIGENCE
-hero_image: /assets/notes/nomatech-cop17/bmc-nine-hypotheses.webp
+hero_image: /assets/notes/nomatech-cop17/field-evidence-pilot-cover-v2.png
 permalink: /notes/from-field-evidence-to-a-testable-pilot/
 ---
 
 <figure class="article-figure article-figure--cover">
-  <a href="/assets/notes/nomatech-cop17/bmc-nine-hypotheses.webp" target="_blank" rel="noopener"><img src="/assets/notes/nomatech-cop17/bmc-nine-hypotheses.webp" alt="Business Model Canvas arranged as nine testable hypotheses, with customer segments, value propositions, channels, relationships, activities, resources, partners, costs and revenue" width="2000" height="1125" decoding="async"></a>
-  <figcaption>The Business Model Canvas becomes more useful when every block is treated as a hypothesis that still needs evidence.</figcaption>
+  <a href="/assets/notes/nomatech-cop17/field-evidence-pilot-cover-v2.png" target="_blank" rel="noopener"><img src="/assets/notes/nomatech-cop17/field-evidence-pilot-cover-v2.png" alt="Mongolian climate-venture team gathering field evidence, reviewing assumptions and testing an environmental monitoring pilot" width="1672" height="941" decoding="async"></a>
+  <figcaption>A credible climate pilot connects field evidence to an explicit assumption, then tests whether the idea can work for people in a specific place.</figcaption>
 </figure>
 
 I joined the NomaTech Challenge for COP17 as a speaker and global mentor with a practical assignment: help early-stage teams move from an interesting climate idea to a pilot that somebody could actually test, fund and learn from.
@@ -52,6 +52,11 @@ This is why a narrow pilot can be more valuable than a broad concept. It forces 
 The Business Model Canvas is commonly presented through nine building blocks.<sup class="citation"><a href="https://www.strategyzer.com/business-models-the-toolkit-to-design-a-disruptive-company" target="_blank" rel="noopener noreferrer" aria-label="Open source 2 in a new tab">2</a></sup> It can look complete once every box contains text. That appearance can be misleading.
 
 At an early stage, the canvas is not a description of a proven business. It is a map of assumptions.
+
+<figure class="article-figure">
+  <a href="/assets/notes/nomatech-cop17/bmc-nine-hypotheses.webp" target="_blank" rel="noopener"><img src="/assets/notes/nomatech-cop17/bmc-nine-hypotheses.webp" alt="Business Model Canvas arranged as nine testable hypotheses, with customer segments, value propositions, channels, relationships, activities, resources, partners, costs and revenue" width="2000" height="1125" loading="lazy" decoding="async"></a>
+  <figcaption>The Business Model Canvas becomes more useful when every block is treated as a hypothesis that still needs evidence.</figcaption>
+</figure>
 
 The customer segment is a hypothesis about who experiences the problem. The value proposition is a hypothesis about what matters enough to change behaviour. Channels are hypotheses about how the team can reach and support users. Revenue and costs are hypotheses about whether value can be captured without breaking delivery.
 

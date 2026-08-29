@@ -12,9 +12,14 @@ tags:
   - Southeast Asia
   - Venture capital
   - Fundraising
-hero_image: /assets/notes/sea-ai-boom/sea-ai-opportunity-map.webp
+hero_image: /assets/notes/sea-ai-boom/sea-ai-boom-cover-v2.png
 permalink: /notes/where-southeast-asia-can-actually-win-in-the-ai-boom/
 ---
+
+<figure class="article-figure article-figure--cover">
+  <a href="/assets/notes/sea-ai-boom/sea-ai-boom-cover-v2.png" target="_blank" rel="noopener"><img src="/assets/notes/sea-ai-boom/sea-ai-boom-cover-v2.png" alt="Southeast Asian software founder, agritech operator, data-centre technician, semiconductor engineer and robotics engineer building across the AI value chain" width="1672" height="941" decoding="async"></a>
+  <figcaption>Southeast Asia does not have to compete only at the frontier-model layer. Its opportunity extends from local workflows and distribution to chips, data centres and physical AI.</figcaption>
+</figure>
 
 ## A boom and a funding winter at the same time
 
