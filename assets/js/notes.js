@@ -7,12 +7,13 @@
   const toggle=document.getElementById('navToggle');
   const links=document.getElementById('navLinks');
   const progress=document.getElementById('progress');
+  const isIndonesian=()=>document.documentElement.lang==='id';
 
   function setMenu(open){
     if(!nav||!toggle)return;
     nav.classList.toggle('menu-open',open);
     toggle.setAttribute('aria-expanded',String(open));
-    toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+    toggle.setAttribute('aria-label',open?(isIndonesian()?'Tutup navigasi':'Close navigation'):(isIndonesian()?'Buka navigasi':'Open navigation'));
   }
   if(toggle&&links){
     toggle.addEventListener('click',()=>setMenu(!nav.classList.contains('menu-open')));
@@ -55,9 +56,9 @@
       try{
         if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(location.href);
         else{const field=document.createElement('textarea');field.value=location.href;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();document.execCommand('copy');field.remove();}
-        if(copyStatus)copyStatus.textContent='Copied';
+        if(copyStatus)copyStatus.textContent=isIndonesian()?'Tersalin':'Copied';
       }
-      catch(error){if(copyStatus)copyStatus.textContent='Copy failed';}
+      catch(error){if(copyStatus)copyStatus.textContent=isIndonesian()?'Gagal menyalin':'Copy failed';}
       setTimeout(()=>{if(copyStatus)copyStatus.textContent='';},1800);
     });
   }
@@ -67,4 +68,7 @@
     shareButton.hidden=false;
     shareButton.addEventListener('click',()=>navigator.share({title:document.title,url:location.href}).catch(()=>{}));
   }
+  document.addEventListener('vito:languagechange',()=>{
+    if(toggle)setMenu(nav?.classList.contains('menu-open')||false);
+  });
 })();
