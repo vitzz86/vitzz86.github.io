@@ -1,5 +1,6 @@
 ---
 layout: note
+published: false
 type: note
 title: "From Field Evidence to a Testable Pilot"
 author: "Vito Christian Samudra"

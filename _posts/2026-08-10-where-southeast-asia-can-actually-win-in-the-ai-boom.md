@@ -1,5 +1,6 @@
 ---
 layout: note
+published: false
 type: note
 title: "Where Southeast Asia Can Actually Win in the AI Boom"
 author: "Vito Christian Samudra"

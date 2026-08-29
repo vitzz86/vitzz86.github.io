@@ -1,5 +1,6 @@
 ---
 layout: note
+published: false
 type: note
 title: "Can Southeast Asia Keep Its Workers Relevant in the Age of AI?"
 author: "Vito Christian Samudra"
