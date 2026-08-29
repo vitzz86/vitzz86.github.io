@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A public wall of hopes, dreams, gratitude, feedback, and music from visitors to Vito Christian Samudra's website.">
+  <meta name="description" content="A public wall of prayers, hopes, dreams, encouragement, feedback, and music from visitors to Vito Christian Samudra's website.">
   <meta name="theme-color" content="#f8f8fc">
-  <meta property="og:title" content="Dream Board | Vito Christian Samudra">
-  <meta property="og:description" content="Leave a hope, share some motivation, or add the Spotify music that keeps you going.">
-  <title>Dream Board | Vito Christian Samudra</title>
+  <meta property="og:title" content="Prayer &amp; Hope Board | Vito Christian Samudra">
+  <meta property="og:description" content="Leave a prayer, share some hope or encouragement, or add the music that keeps you going.">
+  <link rel="canonical" href="https://vitzz86.github.io/hope.html">
+  <title>Prayer &amp; Hope Board | Vito Christian Samudra</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/hope.css?v=20260722-1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="assets/hope-config.js?v=20260715-4" defer></script>
-  <script src="assets/hope.js?v=20260717-1" defer></script>
+  <script src="assets/hope.js?v=20260829-1" defer></script>
   <script src="https://open.spotify.com/embed/iframe-api/v1" defer></script>
   <script src="https://www.youtube.com/iframe_api" defer></script>
 </head>
@@ -22,24 +23,24 @@
   <a class="skip-link" href="#board">Skip to the board</a>
 
   <header class="topbar">
-    <a class="hope-brand" href="index.html" aria-label="Return to Vito's portfolio">
+    <a class="hope-brand" href="/" aria-label="Return to Vito's portfolio">
       <span class="brand-sparkles" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span>Vito's Dream Board</span>
+      <span>Vito's Prayer &amp; Hope Board</span>
     </a>
     <div class="top-actions">
       <div class="theme-switch" role="group" aria-label="Color theme">
         <button type="button" class="theme-option" data-theme-value="light" aria-label="Use light theme" aria-pressed="true">☼</button>
         <button type="button" class="theme-option" data-theme-value="dark" aria-label="Use dark theme" aria-pressed="false">☾</button>
       </div>
-      <a class="about-link" href="index.html">About Vito</a>
+      <a class="about-link" href="/">About Vito</a>
     </div>
   </header>
 
   <main>
     <section class="intro" aria-labelledby="page-title">
       <div>
-        <h1 id="page-title">Dream Board <span aria-hidden="true">✨</span></h1>
-        <p>Share your hopes, dreams, motivation, feedback, and everything in between.<br>Read. Inspire. Be inspired.</p>
+        <h1 id="page-title">Prayer &amp; Hope Board <span aria-hidden="true">✨</span></h1>
+        <p>Share a prayer, hope, dream, encouragement, or word of support.<br>Read. Encourage. Be encouraged.</p>
       </div>
       <div class="stats" aria-label="Board statistics">
         <article class="stat-card">
@@ -62,8 +63,8 @@
         <div class="composer-lead">
           <span class="mood-face" aria-hidden="true">😎</span>
           <div>
-            <h2 id="composer-title">What's on your mind?</h2>
-            <p>Share your hope, dream, or anything that matters to you.</p>
+            <h2 id="composer-title">Do you have a prayer, hope, or message for me?</h2>
+            <p>Write it here. You can post anonymously or add your name.</p>
           </div>
           <button class="composer-toggle" type="button" id="composerToggle" aria-label="Collapse form" aria-expanded="true" aria-controls="composerFields">
             <span id="composerToggleLabel">Collapse form</span><span class="composer-toggle-icon" id="composerToggleIcon" aria-hidden="true">⌃</span>
@@ -180,12 +181,12 @@
     <div class="empty-state" id="emptyState" hidden>
       <span aria-hidden="true">✦</span>
       <h2>Be the first to share</h2>
-      <p>Leave the first hope, dream, or message on Vito’s Dream Board.</p>
+      <p>Leave the first prayer, hope, or message on Vito’s Prayer &amp; Hope Board.</p>
       <button type="button" id="clearFilters" hidden>Clear search and filters</button>
     </div>
 
     <footer class="hope-footer">
-      <p>Made with hope by <a href="index.html">Vito Christian Samudra</a>.</p>
+      <p>Made with prayer and hope by <a href="/">Vito Christian Samudra</a>.</p>
       <p>Every message belongs to a real person.</p>
     </footer>
   </main>

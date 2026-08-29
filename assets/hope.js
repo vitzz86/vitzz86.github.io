@@ -945,7 +945,7 @@
       el.emptyState.querySelector("p").textContent = boardUnavailable
         ? "The shared board could not load. Please refresh and try again."
         : boardIsEmpty
-        ? "Leave the first hope, dream, or message on Vito’s Dream Board."
+        ? "Leave the first prayer, hope, or message on Vito’s Prayer & Hope Board."
         : state.search
           ? "No posts match your search."
           : "No messages match these filters.";
