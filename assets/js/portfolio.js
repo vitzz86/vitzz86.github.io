@@ -176,6 +176,7 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
 /* ---------- photo gallery ---------- */
 (function(){
   const CATS={events:'Deal flow & events',field:'In the field',community:'Community & mentoring',milestones:'Milestones'};
+  const CATS_ID={events:'Deal flow & acara',field:'Kegiatan lapangan',community:'Komunitas & mentoring',milestones:'Pencapaian'};
   const PHOTO_DIMS={
     'dex-connex':[1400,1050],'field-efishery':[1400,1050],'field-jala':[1400,1050],'founder-plus':[1280,720],
     'graduation-itb':[852,1280],'investor-speed-dating':[1600,1066],'jewel-changi':[1280,957],'judge-startup-arena':[1600,836],
@@ -184,33 +185,37 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
     'vc-networking-evening':[1400,787],'vc-networking-qapita':[1600,900],'with-sandiaga-uno':[1050,1400]
   };
   const PHOTOS=[
-    {s:'with-sandiaga-uno',k:'community',c:'With Sandiaga Uno, former Indonesian Minister of Tourism & Creative Economy'},
-    {s:'judge-startup-arena',k:'events',c:'Judging Startup Arena 2025 at Meet Ventures × SMU in Singapore'},
-    {s:'field-jala',k:'field',c:'Pond-side diligence with JALA and Forte Biotech across shrimp farms in coastal Java'},
-    {s:'midyear-outlook',k:'events',c:'Living Lab Ventures media briefing for the Mid-Year 2025 VC Investment Outlook'},
-    {s:'graduation-itb',k:'milestones',c:'Graduating cum laude in Information Systems & Technology at ITB in October 2024'},
-    {s:'investor-speed-dating',k:'events',c:'Investor speed-dating with a curated Asia-Pacific startup shortlist'},
-    {s:'field-efishery',k:'field',c:'At eFishery HQ, learning from Indonesia’s aquaculture unicorn'},
-    {s:'team-llv',k:'milestones',c:'The Living Lab Ventures investment team'},
-    {s:'vc-networking-qapita',k:'events',c:'Jakarta’s venture community at an equity and cap-table night with Qapita'},
-    {s:'mentored-startup',k:'community',c:'With a founder I mentored through the Astranauts program'},
-    {s:'nus-business-school',k:'milestones',c:'NUS Overseas Colleges during a venture creation year in Singapore'},
-    {s:'kadin-cofounders',k:'community',c:'Founder roundtable at KADIN Indonesia, Jakarta'},
-    {s:'dex-connex',k:'events',c:'DEX Connex Indonesia 2025 with the Living Lab Ventures team'},
-    {s:'llv-office',k:'milestones',c:'At the Living Lab Ventures office, BSD City'},
-    {s:'social-innovator-hub',k:'milestones',c:'Social Innovator Hub at Tohoku University, Best Team and Best Participant'},
-    {s:'founder-plus',k:'community',c:'Founder+ incubation batch, mentoring and judging'},
-    {s:'jewel-changi',k:'field',c:'Between meetings at Jewel Changi with co-workers on a business trip'},
-    {s:'nus-lift-off',k:'milestones',c:'NUS Lift-Off Day with the NOC cohort'},
-    {s:'vc-networking-evening',k:'events',c:'An evening with Jakarta’s investor community'}
+    {s:'with-sandiaga-uno',k:'community',c:'With Sandiaga Uno, former Indonesian Minister of Tourism & Creative Economy',ci:'Bersama Sandiaga Uno, mantan Menteri Pariwisata dan Ekonomi Kreatif Indonesia'},
+    {s:'judge-startup-arena',k:'events',c:'Judging Startup Arena 2025 at Meet Ventures × SMU in Singapore',ci:'Menjadi juri Startup Arena 2025 di Meet Ventures × SMU, Singapura'},
+    {s:'field-jala',k:'field',c:'Pond-side diligence with JALA and Forte Biotech across shrimp farms in coastal Java',ci:'Uji tuntas langsung di tambak bersama JALA dan Forte Biotech di pesisir Jawa'},
+    {s:'midyear-outlook',k:'events',c:'Living Lab Ventures media briefing for the Mid-Year 2025 VC Investment Outlook',ci:'Media briefing Living Lab Ventures untuk Mid-Year 2025 VC Investment Outlook'},
+    {s:'graduation-itb',k:'milestones',c:'Graduating cum laude in Information Systems & Technology at ITB in October 2024',ci:'Lulus cum laude dari Sistem dan Teknologi Informasi ITB pada Oktober 2024'},
+    {s:'investor-speed-dating',k:'events',c:'Investor speed-dating with a curated Asia-Pacific startup shortlist',ci:'Sesi pertemuan singkat investor dengan startup Asia Pasifik yang telah dikurasi'},
+    {s:'field-efishery',k:'field',c:'At eFishery HQ, learning from Indonesia’s aquaculture unicorn',ci:'Berkunjung ke kantor pusat eFishery untuk mempelajari perjalanan unicorn akuakultur Indonesia'},
+    {s:'team-llv',k:'milestones',c:'The Living Lab Ventures investment team',ci:'Tim investasi Living Lab Ventures'},
+    {s:'vc-networking-qapita',k:'events',c:'Jakarta’s venture community at an equity and cap-table night with Qapita',ci:'Komunitas modal ventura Jakarta dalam acara ekuitas dan cap table bersama Qapita'},
+    {s:'mentored-startup',k:'community',c:'With a founder I mentored through the Astranauts program',ci:'Bersama founder yang saya dampingi melalui program Astranauts'},
+    {s:'nus-business-school',k:'milestones',c:'NUS Overseas Colleges during a venture creation year in Singapore',ci:'NUS Overseas Colleges selama satu tahun mempelajari venture creation di Singapura'},
+    {s:'kadin-cofounders',k:'community',c:'Founder roundtable at KADIN Indonesia, Jakarta',ci:'Diskusi meja bundar founder di KADIN Indonesia, Jakarta'},
+    {s:'dex-connex',k:'events',c:'DEX Connex Indonesia 2025 with the Living Lab Ventures team',ci:'DEX Connex Indonesia 2025 bersama tim Living Lab Ventures'},
+    {s:'llv-office',k:'milestones',c:'At the Living Lab Ventures office, BSD City',ci:'Di kantor Living Lab Ventures, BSD City'},
+    {s:'social-innovator-hub',k:'milestones',c:'Social Innovator Hub at Tohoku University, Best Team and Best Participant',ci:'Social Innovator Hub di Tohoku University, meraih Tim Terbaik dan Peserta Terbaik'},
+    {s:'founder-plus',k:'community',c:'Founder+ incubation batch, mentoring and judging',ci:'Batch inkubasi Founder+, sebagai mentor dan juri'},
+    {s:'jewel-changi',k:'field',c:'Between meetings at Jewel Changi with co-workers on a business trip',ci:'Di sela pertemuan bisnis bersama rekan kerja di Jewel Changi'},
+    {s:'nus-lift-off',k:'milestones',c:'NUS Lift-Off Day with the NOC cohort',ci:'NUS Lift-Off Day bersama cohort NOC'},
+    {s:'vc-networking-evening',k:'events',c:'An evening with Jakarta’s investor community',ci:'Malam bersama komunitas investor Jakarta'}
   ];
   const gal=document.getElementById('gallery'),fl=document.getElementById('gfilters');
   if(!gal)return;
   let cur='all',shown=[];
-  const btns=[['all','Everything']].concat(Object.entries(CATS)).map(([k,label])=>{
+  const isID=()=>document.documentElement.lang==='id';
+  const catLabel=k=>k==='all'?(isID()?'Semua':'Everything'):(isID()?CATS_ID[k]:CATS[k]);
+  const caption=p=>isID()?p.ci:p.c;
+  const btns=[['all','Everything']].concat(Object.entries(CATS)).map(([k])=>{
     const n=k==='all'?PHOTOS.length:PHOTOS.filter(p=>p.k===k).length;
     const b=document.createElement('button'); b.className='gfilter'+(k==='all'?' on':'');
-    b.innerHTML=label+'<span class="gn">'+n+'</span>';
+    b.dataset.category=k;
+    b.innerHTML=catLabel(k)+'<span class="gn">'+n+'</span>';
     b.onclick=()=>{cur=k;btns.forEach(x=>x.classList.remove('on'));b.classList.add('on');render();};
     fl.appendChild(b); return b;
   });
@@ -220,16 +225,22 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
     shown.forEach((p,i)=>{
       const d=document.createElement('div'); d.className='gitem'; d.tabIndex=0;
       d.style.animationDelay=Math.min(i*45,500)+'ms';
-      d.setAttribute('role','button'); d.setAttribute('aria-label',p.c);
+      const cap=caption(p);
+      d.setAttribute('role','button'); d.setAttribute('aria-label',cap);
       const dims=PHOTO_DIMS[p.s];
-      d.innerHTML='<img src="assets/photos/'+p.s+'.jpg" alt="'+p.c.replace(/"/g,'&quot;')+'" width="'+dims[0]+'" height="'+dims[1]+'" loading="lazy" decoding="async"><div class="gcap"><span class="gtag">'+CATS[p.k]+'</span>'+p.c+'</div>';
-      const open=()=>openLB(shown.map(x=>'assets/photos/'+x.s+'.jpg'),i,null,shown.map(x=>x.c));
+      d.innerHTML='<img src="assets/photos/'+p.s+'.jpg" alt="'+cap.replace(/"/g,'&quot;')+'" width="'+dims[0]+'" height="'+dims[1]+'" loading="lazy" decoding="async"><div class="gcap"><span class="gtag">'+catLabel(p.k)+'</span>'+cap+'</div>';
+      const open=()=>openLB(shown.map(x=>'assets/photos/'+x.s+'.jpg'),i,null,shown.map(caption));
       d.onclick=open;
       d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
       gal.appendChild(d);
     });
   }
   render();
+  document.addEventListener('vito:languagechange',()=>{
+    btns.forEach(b=>{const n=b.querySelector('.gn')?.outerHTML||'';b.innerHTML=catLabel(b.dataset.category)+n;});
+    render();
+    if(lb.classList.contains('open')){lbC=shown.map(caption);renderLB();}
+  });
 })();
 
 /* ---------- big five radar ---------- */

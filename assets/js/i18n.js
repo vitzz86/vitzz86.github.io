@@ -55,8 +55,7 @@
     switcher.setAttribute('role','group');
     switcher.setAttribute('aria-label','Language / Bahasa');
     switcher.innerHTML='<button type="button" data-language="en" aria-pressed="false">EN</button><span aria-hidden="true">/</span><button type="button" data-language="id" aria-pressed="false">ID</button>';
-    const target=navLinks.querySelector('.hope-nav,.icobtn');
-    navLinks.insertBefore(switcher,target||null);
+    navLinks.appendChild(switcher);
   }
 
   function wireSwitches(){
