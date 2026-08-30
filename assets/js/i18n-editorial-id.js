@@ -48,7 +48,8 @@
     'home-183':'Riset · New Energy Nexus Ventures',
     'home-184':'Riset · Living Lab Ventures',
     'home-185':'Buka laporan lengkap (PDF) ↗',
-    'home-186':'Buka hasil lengkap (PDF) ↗'
+    'home-186':'Buka hasil lengkap (PDF) ↗',
+    'home-187':'Baca paper di IEEE ↗'
   });
 
   assign('notes',{
@@ -79,7 +80,8 @@
     'notes-025':'Di Mana Asia Tenggara Dapat Unggul dalam Gelombang AI?',
     'notes-026':'Modal global semakin terkonsentrasi pada kecerdasan buatan. Namun, Asia Tenggara tidak harus bersaing langsung dalam pengembangan model AI terdepan. Peluang terbesarnya mungkin terletak pada penerapan AI untuk alur kerja lokal, serta pembangunan infrastruktur, perangkat keras, dan distribusi yang membuat teknologi ini berguna dalam skala besar.',
     'notes-027':'Portofolio',
-    'notes-029':'Kontak'
+    'notes-029':'Kontak',
+    'notes-030':'Baca catatan ↗'
   });
 
   assign('sea-workers-ai',{
@@ -347,6 +349,19 @@
     'sea-workers-ai-058':'5. Menjangkau lebih jauh',
     'sea-workers-ai-059':'Menjangkau lebih jauh berarti melayani lebih banyak pelanggan atau memasuki pasar yang lebih besar tanpa harus pindah negara atau membuka kantor di luar negeri. Ukurannya dapat berupa jumlah pelanggan dan pasar yang dilayani, pendapatan ekspor, pendapatan per pekerja, serta proporsi penghasilan dari klien internasional. Desainer atau developer perangkat lunak di Filipina dapat menggunakan platform freelance, kolaborasi cloud, pembayaran digital, dan alat berbasis AI untuk bekerja bagi klien asing sambil tetap tinggal di negaranya. Teknologi dapat membantu riset, penerjemahan, dan produksi rutin, tetapi manusia tetap perlu memahami klien, bernegosiasi, dan membangun kepercayaan. Pekerja berpeluang memperoleh pendapatan lebih tinggi tanpa meninggalkan negara, keluarga, dan tempat yang mereka anggap rumah.',
     'sea-workers-ai-060':'Bagi pekerja Asia Tenggara, terutama mereka yang berada di ekonomi informal, AI dan teknologi digital tidak harus membuat peran mereka usang. Namun, teknologi akan mengubah cara nilai ekonomi diciptakan dan dihargai. Alat digital dapat meningkatkan produktivitas serta memperluas kemampuan manusia sambil tetap melengkapi pengalaman, pengetahuan lokal, pertimbangan, dan hubungan pribadi. Namun, pekerja tidak dapat menjalani transisi ini sendirian.'
+  });
+
+  assign('sea-workers-ai',{
+    'sea-workers-ai-100':'Tentang penulis',
+    'sea-workers-ai-101':'Vito Christian Samudra adalah seorang venture capitalist yang berfokus pada investasi teknologi, iklim, dan transisi energi di Asia Tenggara. Karyanya mencakup analisis investasi, penggalangan dana startup, pengembangan portofolio, serta riset tentang teknologi baru dan tren pasar privat. Ia juga membangun perangkat berbasis AI untuk meningkatkan proses penggalangan dana dan kesiapan investasi startup.'
+  });
+  assign('field-evidence',{
+    'field-evidence-083':'Tentang penulis',
+    'field-evidence-084':'Vito Christian Samudra adalah seorang venture capitalist yang berfokus pada investasi teknologi, iklim, dan transisi energi di Asia Tenggara. Ia bekerja dalam analisis investasi, penggalangan dana startup, pengembangan portofolio, serta pembangunan sistem venture. Ia juga mendampingi tim tahap awal dalam mengembangkan model bisnis, kesiapan investasi, dan pertumbuhan berbasis bukti.'
+  });
+  assign('sea-ai-boom',{
+    'sea-ai-boom-097':'Tentang penulis',
+    'sea-ai-boom-098':'Vito Christian Samudra adalah seorang venture capitalist yang berfokus pada investasi teknologi, iklim, dan transisi energi di Asia Tenggara. Karyanya mencakup analisis investasi, penggalangan dana startup, pengembangan portofolio, serta riset tentang teknologi baru dan tren pasar privat. Ia juga membangun perangkat berbasis AI untuk meningkatkan proses penggalangan dana dan kesiapan investasi startup.'
   });
 
   Object.entries(preservedCitations).forEach(([pageKey,strings])=>{

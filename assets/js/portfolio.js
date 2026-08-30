@@ -83,7 +83,7 @@ function buildDeck(el){
     const c=sync.cues.find(c=>c[1]===n); return c?c[0]*audioScale():null; }
   el.innerHTML=`
     <div class="stagewrap"><div class="stage" tabindex="0" aria-label="Presentation. Arrow keys to navigate, click to expand.">
-      <img alt="" loading="lazy" decoding="async" draggable="false"><div class="glow"></div>
+      <img alt="" loading="eager" decoding="async" fetchpriority="high" draggable="false"><div class="glow"></div>
       <button class="snav prev" aria-label="Previous">&lsaquo;</button>
       <button class="snav next" aria-label="Next">&rsaquo;</button>
       <button class="fs" aria-label="Fullscreen">&#10530;</button>
@@ -93,9 +93,13 @@ function buildDeck(el){
   const stage=el.querySelector('.stage'),img=el.querySelector('img'),ticks=el.querySelector('.ticks'),
         cur=el.querySelector('.cur'),strip=el.querySelector('.strip'),auto=el.querySelector('.auto');
   slides.forEach((s,k)=>{ const t=document.createElement('button');t.type='button';t.className='tick';t.setAttribute('aria-label',`Go to slide ${k+1}`);t.onclick=()=>go(k);ticks.appendChild(t);
-    const th=document.createElement('img');th.className='thumb';th.src=s;th.alt='';th.loading='lazy';th.decoding='async';th.draggable=false;th.tabIndex=0;th.setAttribute('role','button');th.setAttribute('aria-label',`Go to slide ${k+1}`);th.onclick=()=>go(k);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(k);}});strip.appendChild(th); });
+    const th=document.createElement('img');th.className='thumb';th.dataset.src=s;th.alt='';th.loading='lazy';th.decoding='async';th.fetchPriority='low';th.draggable=false;th.tabIndex=0;th.setAttribute('role','button');th.setAttribute('aria-label',`Go to slide ${k+1}`);th.onclick=()=>go(k);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(k);}});strip.appendChild(th); });
   const tk=[...ticks.children], th=[...strip.children];
-  function render(){ const token=++renderToken;img.style.opacity=0;setTimeout(()=>{if(token!==renderToken)return;img.src=slides[i];img.alt=`Presentation slide ${i+1} of ${slides.length}`;img.style.opacity=1;},120);cur.textContent=i+1;
+  if('IntersectionObserver' in window){
+    const thumbObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;const thumb=entry.target;thumb.src=thumb.dataset.src;delete thumb.dataset.src;thumbObserver.unobserve(thumb);}),{root:strip,rootMargin:'0px 180px'});
+    th.forEach(thumb=>thumbObserver.observe(thumb));
+  }else th.forEach(thumb=>{thumb.src=thumb.dataset.src;delete thumb.dataset.src;});
+  function render(){ const token=++renderToken;stage.classList.remove('has-image');img.style.opacity=0;setTimeout(()=>{if(token!==renderToken)return;img.onload=()=>stage.classList.add('has-image');img.src=slides[i];img.alt=`Presentation slide ${i+1} of ${slides.length}`;img.style.opacity=1;},120);cur.textContent=i+1;
     tk.forEach((t,k)=>{t.classList.toggle('on',k===i);t.toggleAttribute('aria-current',k===i);});th.forEach((t,k)=>{t.classList.toggle('on',k===i);t.setAttribute('aria-current',k===i?'true':'false');});
     strip.scrollTo({left:th[i].offsetLeft-strip.clientWidth/2+th[i].clientWidth/2,behavior:RM?'auto':'smooth'});
     [i+1,i-1].forEach(n=>{if(slides[n]){const p=new Image();p.src=slides[n];}}); }
@@ -154,11 +158,16 @@ function buildDeck(el){
   el.classList.add('is-ready');
   render();
 }
-const deckElements=[...document.querySelectorAll('.deck')];
-if('IntersectionObserver' in window){
-  const deckObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;deckObserver.unobserve(entry.target);buildDeck(entry.target);}),{rootMargin:'1200px 0px'});
-  deckElements.forEach(el=>deckObserver.observe(el));
-}else deckElements.forEach(buildDeck);
+function ensureDeck(el){if(!el||el.dataset.deckBuilt==='true')return;el.dataset.deckBuilt='true';buildDeck(el);}
+const workCarouselRoot=document.querySelector('[data-work-carousel]');
+let workDecksReady=false;
+if(workCarouselRoot&&'IntersectionObserver' in window){
+  const workDeckObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;workDecksReady=true;ensureDeck(workCarouselRoot.querySelector('.work-slide.on .deck'));workDeckObserver.unobserve(workCarouselRoot);}),{rootMargin:'650px 0px'});
+  workDeckObserver.observe(workCarouselRoot);
+}else{
+  workDecksReady=true;
+  ensureDeck(document.querySelector('.work-slide.on .deck'));
+}
 
 /* ---------- lightbox ---------- */
 const lb=document.getElementById('lb'),lbImg=document.getElementById('lbImg'),lbCount=document.getElementById('lbCount'),lbCap=document.getElementById('lbCap');
@@ -257,6 +266,7 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
     slides.forEach((slide,i)=>{const on=i===current;slide.classList.toggle('on',on);slide.setAttribute('aria-hidden',String(!on));slide.toggleAttribute('inert',!on);});
     steps.forEach((step,i)=>{const on=i===current;step.classList.toggle('on',on);step.setAttribute('aria-selected',String(on));step.tabIndex=on?0:-1;});
     status.textContent=statusText();
+    if(workDecksReady)ensureDeck(slides[current].querySelector('.deck'));
     if(initialized)steps[current].scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest',inline:'nearest'});
     if(focus)steps[current].focus();
     requestAnimationFrame(()=>dispatchEvent(new Event('resize')));
