@@ -3,6 +3,7 @@
 
   const pages=window.VITO_I18N&&window.VITO_I18N.pages;
   if(!pages)return;
+  const originalPages=JSON.parse(JSON.stringify(pages));
   const preservedCitations={};
   Object.entries(pages).forEach(([pageKey,strings])=>{
     preservedCitations[pageKey]={};
@@ -24,9 +25,30 @@
   }
 
   assign('home',{
+    'home-007':'Venture capitalist & builder · Asia Tenggara',
+    'home-160':'Doa, harapan, dan dukungan',
+    'home-161':'Apakah ada doa,<br/>harapan, atau pesan dukungan untuk saya?',
+    'home-162':'Bagikan melalui Papan Doa & Harapan saya. Anda dapat menulis secara anonim, memberikan semangat, atau menceritakan harapan yang sedang Anda perjuangkan.',
     'home-166':'Catatan lapangan',
     'home-167':'Karya di balik layar.',
-    'home-168':'Dunia venture tidak hanya berlangsung di depan layar. Ada proses sourcing, penjurian, mentoring, dan uji tuntas di ruang diskusi, di atas panggung, hingga langsung di lapangan, dari Indonesia dan Singapura hingga berbagai tempat lainnya. Klik setiap foto untuk membaca ceritanya dan memperbesar gambar.'
+    'home-168':'Dunia venture tidak hanya berlangsung di depan layar. Ada proses sourcing, penjurian, mentoring, dan uji tuntas di ruang diskusi, di atas panggung, hingga langsung di lapangan, dari Indonesia dan Singapura hingga berbagai tempat lainnya. Klik setiap foto untuk membaca ceritanya dan memperbesar gambar.',
+    'home-169':'Baca catatan ↗',
+    'home-170':'Lihat semua catatan <span aria-hidden="true">↗</span>',
+    'home-171':'Tulis di sini ↗',
+    'home-172':'Kirim email',
+    'home-173':'AI & Asia Tenggara · 29 Agustus 2026 · 23 menit membaca',
+    'home-174':'Membangun Venture Iklim · 26 Agustus 2026 · 10 menit membaca',
+    'home-175':'AI & Asia Tenggara · 10 Agustus 2026 · 13 menit membaca',
+    'home-176':'Laporan lengkap ↗',
+    'home-178':'← Sebelumnya',
+    'home-179':'Berikutnya →',
+    'home-180':'Untuk founder',
+    'home-181':'Dibangun di New Energy Nexus Ventures · Demo publik dengan data tersanitasi',
+    'home-182':'Internal · New Energy Nexus Ventures',
+    'home-183':'Riset · New Energy Nexus Ventures',
+    'home-184':'Riset · Living Lab Ventures',
+    'home-185':'Buka laporan lengkap (PDF) ↗',
+    'home-186':'Buka hasil lengkap (PDF) ↗'
   });
 
   assign('notes',{
@@ -306,6 +328,27 @@
     ['sea-ai-boom','sea-ai-boom-073','Bagi perusahaan perangkat lunak enterprise, putaran berikutnya mungkin perlu membuktikan bahwa pelanggan uji coba dapat dikonversi menjadi kontrak berulang. Platform regional perlu menunjukkan bahwa produk dapat berkembang dari satu pasar Asia Tenggara ke pasar lainnya. Perusahaan robotika perlu membuktikan keandalan penerapan dan unit economics. Perusahaan infrastruktur mungkin perlu mengamankan pasokan listrik, lokasi, atau komitmen pelanggan jangka panjang. Perusahaan semikonduktor mungkin perlu mencapai tonggak teknis atau komersial tertentu.']
   ].forEach(([page,key,value])=>replaceText(page,key,value));
 
+  for(let number=47;number<=92;number+=1){
+    const key=`sea-workers-ai-${String(number).padStart(3,'0')}`;
+    if(originalPages['sea-workers-ai'][key]!=null)pages['sea-workers-ai'][key]=originalPages['sea-workers-ai'][key];
+  }
+  assign('sea-workers-ai',{
+    'sea-workers-ai-047':'Singapura merupakan pengecualian yang jelas di kawasan. Output per pekerja adalah ukuran produktivitas dan tidak sama dengan gaji pekerja. Sumber: Lowy Institute Asia Power Index 2025, berdasarkan data ILO.',
+    'sea-workers-ai-048':'Menutup kesenjangan produktivitas bukan berarti meminta orang bekerja lebih lama atau mengganti sebanyak mungkin pekerja. Artinya adalah membantu pekerja dan pelaku usaha menciptakan nilai lebih besar dari sumber daya yang sudah mereka miliki. Banyak perbaikan dapat dimulai dari internet terjangkau, pembayaran digital, marketplace, perangkat lunak persediaan, atau akses informasi yang lebih baik. AI dapat memperkuat fondasi tersebut melalui analisis, prediksi, komunikasi, dan pengambilan keputusan. Dalam praktiknya, terdapat lima jalur menuju produktivitas yang lebih tinggi: menghasilkan lebih banyak, menggunakan lebih sedikit, meningkatkan kualitas, melayani lebih baik, dan menjangkau lebih jauh.',
+    'sea-workers-ai-049':'Lima jalur praktis menghubungkan penggunaan teknologi dengan hasil ekonomi yang terukur. Tujuannya adalah menciptakan nilai lebih besar, bukan menambah jam kerja.',
+    'sea-workers-ai-050':'1. Menghasilkan lebih banyak',
+    'sea-workers-ai-051':'Menghasilkan lebih banyak berarti meningkatkan output tanpa menambah lahan, tenaga kerja, waktu, atau modal secara sebanding. Ukurannya dapat berupa output per pekerja, output per jam kerja, atau hasil panen per hektare. Petani kecil dapat menggunakan prakiraan cuaca digital untuk merencanakan masa tanam, perangkat seluler untuk mendeteksi penyakit tanaman lebih awal, serta informasi pasar untuk menentukan komoditas dan waktu penjualan. Ketika lahan yang sama menghasilkan panen lebih besar dengan tenaga kerja dan sumber daya yang kurang lebih sama, produktivitas meningkat. Teknologi memperkuat keputusan petani, sementara pengetahuan lokal tetap menentukan hasil akhirnya.',
+    'sea-workers-ai-052':'2. Menggunakan lebih sedikit input',
+    'sea-workers-ai-053':'Menggunakan lebih sedikit berarti mempertahankan output sambil mengurangi bahan baku, energi, waktu, atau modal yang dibutuhkan. Ukurannya dapat berupa penggunaan bahan per unit, konsumsi energi, waktu produksi, limbah, dan jam henti mesin. Produsen garmen kecil dapat menggunakan pencatatan persediaan digital untuk menghindari pembelian kain berlebih, perangkat lunak perencanaan produksi untuk mengurangi waktu menganggur, serta peringatan pemeliharaan untuk mencegah kerusakan mesin. Memproduksi jumlah pakaian yang sama dengan limbah dan gangguan yang lebih sedikit meningkatkan produktivitas tanpa menambah jam kerja.',
+    'sea-workers-ai-054':'3. Meningkatkan kualitas',
+    'sea-workers-ai-055':'Meningkatkan kualitas berarti memperbaiki keandalan, kegunaan, atau nilai produk tanpa menambah sumber daya secara sebanding. Ukurannya dapat berupa penilaian pelanggan, tingkat cacat, keluhan, pengembalian barang, pengembalian dana, dan pembelian berulang. Penjual pakaian di e-commerce dapat menganalisis ulasan serta alasan pengembalian untuk menemukan masalah berulang pada ukuran, jahitan, atau kemasan. Jika spesifikasi yang lebih baik dan pemeriksaan mutu yang terarah dapat mengurangi pengembalian sekaligus meningkatkan penilaian serta pembelian berulang, penjual menciptakan nilai lebih besar dari persediaan, tenaga kerja, dan toko daring yang kurang lebih sama.',
+    'sea-workers-ai-056':'4. Melayani dengan lebih baik',
+    'sea-workers-ai-057':'Melayani dengan lebih baik berarti meningkatkan pengalaman pelanggan tanpa menambah staf, waktu, atau biaya operasional secara sebanding. Ukurannya dapat berupa penilaian pelanggan, waktu respons, pemesanan berulang, pengeluaran per wisatawan, dan jumlah pelanggan yang dilayani setiap pekerja. Hotel kecil atau operator tur dapat menggunakan pemesanan daring, pembayaran digital, alat penerjemahan, dan pesan otomatis untuk mengurangi pekerjaan administratif. Teknologi tersebut tidak menggantikan orang yang menyambut wisatawan, menjelaskan budaya lokal, menangani situasi tidak terduga, dan membangun hubungan manusia. Teknologi membantu tim yang sama menggunakan lebih banyak waktu untuk memberikan layanan yang hangat.',
+    'sea-workers-ai-058':'5. Menjangkau lebih jauh',
+    'sea-workers-ai-059':'Menjangkau lebih jauh berarti melayani lebih banyak pelanggan atau memasuki pasar yang lebih besar tanpa harus pindah negara atau membuka kantor di luar negeri. Ukurannya dapat berupa jumlah pelanggan dan pasar yang dilayani, pendapatan ekspor, pendapatan per pekerja, serta proporsi penghasilan dari klien internasional. Desainer atau developer perangkat lunak di Filipina dapat menggunakan platform freelance, kolaborasi cloud, pembayaran digital, dan alat berbasis AI untuk bekerja bagi klien asing sambil tetap tinggal di negaranya. Teknologi dapat membantu riset, penerjemahan, dan produksi rutin, tetapi manusia tetap perlu memahami klien, bernegosiasi, dan membangun kepercayaan. Pekerja berpeluang memperoleh pendapatan lebih tinggi tanpa meninggalkan negara, keluarga, dan tempat yang mereka anggap rumah.',
+    'sea-workers-ai-060':'Bagi pekerja Asia Tenggara, terutama mereka yang berada di ekonomi informal, AI dan teknologi digital tidak harus membuat peran mereka usang. Namun, teknologi akan mengubah cara nilai ekonomi diciptakan dan dihargai. Alat digital dapat meningkatkan produktivitas serta memperluas kemampuan manusia sambil tetap melengkapi pengalaman, pengetahuan lokal, pertimbangan, dan hubungan pribadi. Namun, pekerja tidak dapat menjalani transisi ini sendirian.'
+  });
+
   Object.entries(preservedCitations).forEach(([pageKey,strings])=>{
     Object.entries(strings).forEach(([key,citations])=>{
       if(pages[pageKey]&&pages[pageKey][key]&&!pages[pageKey][key].includes('<sup'))pages[pageKey][key]+=citations;
@@ -314,8 +357,8 @@
 
   const meta=window.VITO_I18N.meta||{};
   Object.assign(meta.home||{}, {
-    title:'Vito Christian Samudra | Investor & Builder Asia Tenggara',
-    description:'Portofolio Vito Christian Samudra, investor dan builder yang berfokus pada venture iklim tahap awal, teknologi, dan Asia Tenggara.'
+    title:'Vito Christian Samudra | Venture Capitalist & Builder Asia Tenggara',
+    description:'Portofolio Vito Christian Samudra, venture capitalist dan builder yang berfokus pada venture iklim tahap awal, teknologi, dan Asia Tenggara.'
   });
   Object.assign(meta.notes||{}, {
     title:'Catatan | Vito Christian Samudra',

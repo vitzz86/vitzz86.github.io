@@ -243,6 +243,37 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
   });
 })();
 
+/* ---------- selected work carousel ---------- */
+(function(){
+  const root=document.querySelector('[data-work-carousel]');
+  if(!root)return;
+  const slides=[...root.querySelectorAll('[data-work-slide]')];
+  const steps=[...root.querySelectorAll('[data-work-go]')];
+  const status=root.querySelector('[data-work-status]');
+  let current=0,startX=null,initialized=false;
+  const statusText=()=>document.documentElement.lang==='id'?`Proyek ${current+1} dari ${slides.length}`:`Project ${current+1} of ${slides.length}`;
+  function show(index,focus=false){
+    current=(index+slides.length)%slides.length;
+    slides.forEach((slide,i)=>{const on=i===current;slide.classList.toggle('on',on);slide.setAttribute('aria-hidden',String(!on));slide.toggleAttribute('inert',!on);});
+    steps.forEach((step,i)=>{const on=i===current;step.classList.toggle('on',on);step.setAttribute('aria-selected',String(on));step.tabIndex=on?0:-1;});
+    status.textContent=statusText();
+    if(initialized)steps[current].scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest',inline:'nearest'});
+    if(focus)steps[current].focus();
+    requestAnimationFrame(()=>dispatchEvent(new Event('resize')));
+    initialized=true;
+  }
+  steps.forEach((step,i)=>{
+    step.addEventListener('click',()=>show(i));
+    step.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();show(i+1,true);}if(e.key==='ArrowLeft'){e.preventDefault();show(i-1,true);}if(e.key==='Home'){e.preventDefault();show(0,true);}if(e.key==='End'){e.preventDefault();show(slides.length-1,true);}});
+  });
+  root.querySelector('[data-work-prev]').addEventListener('click',()=>show(current-1));
+  root.querySelector('[data-work-next]').addEventListener('click',()=>show(current+1));
+  root.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'&&!e.target.closest('.nx-shell,.deck,a,button,input'))startX=e.clientX;});
+  root.addEventListener('pointerup',e=>{if(startX==null)return;const delta=e.clientX-startX;startX=null;if(Math.abs(delta)>60)show(current+(delta<0?1:-1));});
+  document.addEventListener('vito:languagechange',()=>{status.textContent=statusText();});
+  show(0);
+})();
+
 /* ---------- big five radar ---------- */
 (function(){
   const svg=document.getElementById('radar'); if(!svg)return;
