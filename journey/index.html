@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, user-scalable=no" name="viewport"/>
+<title>Vito's Journey | A Pixel Side-Scroller</title>
+<link href="/assets/icons/vito-favicon-32.png?v=20260830-2" rel="icon" sizes="32x32" type="image/png"/>
+<link href="/assets/icons/vito-favicon-192.png?v=20260830-2" rel="icon" sizes="192x192" type="image/png"/>
+<link href="/assets/icons/apple-touch-icon.png?v=20260830-2" rel="apple-touch-icon" sizes="180x180"/>
+<link href="/site.webmanifest?v=20260830-2" rel="manifest"/>
+<meta content="From Kediri to the cap tables of Southeast Asia, Vito Christian Samudra's life as a playable 8-bit side-scroller." name="description"/>
+<meta content="noindex" name="robots"/>
+<link href="https://vitzz86.github.io/journey/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap" rel="stylesheet"/>
+<style>
+:root{--green:#0F5B50;--gold:#ffc233;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:#10131c;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Press Start 2P',monospace;-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+#stagebox{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;}
+canvas{width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;background:#7ec8ff;}
+/* HUD */
+#hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;font-size:clamp(7px,1.4vw,11px);color:#fff;text-shadow:2px 2px 0 rgba(0,0,0,.55);pointer-events:none;z-index:5;}
+#hud .grp{display:flex;gap:16px;flex-wrap:wrap;}
+#hud a{pointer-events:auto;color:#fff;text-decoration:none;background:rgba(0,0,0,.4);padding:6px 9px;border:2px solid rgba(255,255,255,.5);}
+#hud a:hover{background:var(--green);}
+.language-switch{pointer-events:auto;display:inline-flex;align-items:center;gap:2px;padding:3px;background:rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.5);}
+.language-switch button{font:inherit;color:#fff;background:transparent;border:0;padding:3px 4px;cursor:pointer;}
+.language-switch button.is-active{color:#10131c;background:var(--gold);}
+.language-switch span{color:rgba(255,255,255,.6);}
+/* overlays */
+.ovl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;z-index:10;background:rgba(8,10,16,.78);padding:20px;}
+.ovl.hide{display:none;}
+.ovl h1{font-size:clamp(16px,3.4vw,30px);color:#fff;text-shadow:3px 3px 0 var(--green);line-height:1.5;}
+.ovl p{font-size:clamp(7px,1.5vw,11px);color:#cfd6c8;line-height:1.9;max-width:560px;}
+.ovl .keys{font-size:clamp(6px,1.3vw,10px);color:#8fd4a8;line-height:2;}
+.btn{font-family:inherit;font-size:clamp(8px,1.6vw,12px);color:#10131c;background:var(--gold);border:none;border-bottom:4px solid #b07c00;padding:13px 22px;cursor:pointer;}
+.btn:active{transform:translateY(2px);border-bottom-width:2px;}
+.btn.alt{background:#e8e6da;border-bottom-color:#9a988c;}
+.blink{animation:bl 1.1s steps(2,end) infinite;}
+@keyframes bl{50%{opacity:0;}}
+/* stage card */
+#card{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);width:min(92%,640px);background:#181c14;border:4px solid #e8e6da;box-shadow:0 0 0 4px #10131c,0 18px 40px rgba(0,0,0,.5);padding:16px;display:none;z-index:9;}
+#card.show{display:flex;gap:14px;align-items:center;}
+#card .txt{flex:1;}
+#card h2{font-size:clamp(9px,1.8vw,14px);color:var(--gold);margin-bottom:10px;line-height:1.6;}
+#card p{font-size:clamp(7px,1.4vw,10px);color:#e8e6da;line-height:1.9;}
+#card img{width:clamp(80px,18vw,150px);aspect-ratio:1;object-fit:cover;border:3px solid #e8e6da;image-rendering:auto;}
+#card .cont{margin-top:12px;font-size:clamp(6px,1.2vw,9px);color:#8fd4a8;}
+.clink{display:inline-block;margin-top:10px;font-size:clamp(7px,1.3vw,10px);color:#10131c;background:var(--gold);padding:8px 12px;text-decoration:none;border-bottom:3px solid #b07c00;}
+.clink:active{transform:translateY(1px);}
+/* toast */
+#toast{position:absolute;top:16%;left:50%;transform:translateX(-50%);background:#181c14;color:#ffe9a8;border:3px solid var(--gold);padding:10px 16px;font-size:clamp(7px,1.4vw,10px);line-height:1.8;display:none;z-index:8;max-width:88%;text-align:center;}
+/* touch controls */
+#touch{position:absolute;inset:auto 0 0 0;display:none;justify-content:space-between;padding:0 4% 5%;z-index:7;pointer-events:none;}
+#touch div{display:flex;gap:12px;pointer-events:auto;}
+#touch button{width:58px;height:58px;border-radius:50%;border:3px solid rgba(255,255,255,.6);background:rgba(0,0,0,.35);color:#fff;font-family:inherit;font-size:16px;}
+#touch button:active{background:var(--green);}
+@media (pointer:coarse){#touch{display:flex;}}
+</style>
+</head>
+<body data-i18n-page="journey">
+<div id="stagebox" style="outline:none;" tabindex="0">
+<canvas height="270" id="game" width="480"></canvas>
+<div id="hud">
+<span class="grp"><span id="hScore">SCORE 000000</span><span id="hCoins">© x00</span><span id="hLives">♥x3</span></span>
+<span id="hStage">STAGE 1 · KEDIRI</span>
+<span class="grp"><span aria-label="Language / Bahasa" class="language-switch" data-language-switch="" role="group"><button aria-pressed="false" data-language="en" type="button">EN</button><span aria-hidden="true">/</span><button aria-pressed="false" data-language="id" type="button">ID</button></span><a href="#" id="muteBtn">♪ ON</a><a data-i18n="journey-012" href="/">EXIT ✕</a></span>
+</div>
+<div class="ovl" id="start">
+<h1 data-i18n="journey-001">VITO’S JOURNEY</h1>
+<p data-i18n="journey-002">FROM WHERE IT ALL STARTED<br/>TO WHERE I AM TODAY.</p>
+<p class="keys" data-i18n="journey-003">A D MOVE   W JUMP (TAP TWICE = DOUBLE JUMP)<br/>← → ↑ AND SPACE ALSO WORK IN MOST BROWSERS<br/>BUMP ? BLOCKS · GRAB COINS · STOMP ENEMIES · DODGE SPIKES<br/>EACH STAGE GETS HARDER. REACH THE FLAG</p>
+<button class="btn" data-i18n="journey-004" id="startBtn">▶ PRESS ENTER TO START</button>
+</div>
+<div id="card">
+<div class="txt"><h2 id="cTitle"></h2><p id="cBody"></p><a class="clink" href="#" id="cLink" rel="noopener" style="display:none" target="_blank"></a><p class="cont blink" data-i18n="journey-005">PRESS W / ENTER / TAP TO CONTINUE ▶</p></div>
+<img alt="" id="cImg" style="display:none"/>
+</div>
+<div id="toast"></div>
+<div class="ovl hide" id="end">
+<h1 data-i18n="journey-006">THE JOURNEY CONTINUES</h1>
+<p id="endStats"></p>
+<p data-i18n="journey-007">CURIOUS ABOUT WHAT THE NEXT CHAPTER HOLDS.<br/>ALWAYS HAPPY TO CONNECT, COLLABORATE, AND EXPLORE NEW OPPORTUNITIES.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+<button class="btn" data-i18n="journey-008" onclick="location.reload()">↻ REPLAY</button>
+<a class="btn alt" href="/" style="text-decoration:none;display:inline-block;">PORTFOLIO</a>
+<a class="btn alt" href="https://www.linkedin.com/in/vito-christian-samudra" rel="noopener" style="text-decoration:none;display:inline-block;" target="_blank">LINKEDIN</a>
+</div>
+</div>
+<div class="ovl hide" id="over">
+<h1 data-i18n="journey-009">GAME OVER</h1>
+<p data-i18n="journey-010">EVEN ACHIEVERS RESPAWN. THE REAL ONE NEVER QUIT.</p>
+<button class="btn" data-i18n="journey-011" onclick="location.reload()">↻ TRY AGAIN</button>
+</div>
+<div id="touch">
+<div><button id="tL">◀</button><button id="tR">▶</button></div>
+<div><button id="tJ">A</button></div>
+</div>
+</div>
+<script data-i18n-runtime="" defer="" src="/assets/js/i18n-data.js?v=20260830-1"></script><script data-i18n-runtime="" defer="" src="/assets/js/i18n-journey.js?v=20260830-1"></script><script data-i18n-runtime="" defer="" src="/assets/js/i18n.js?v=20260830-1"></script><script>
+'use strict';
+const cv=document.getElementById('game'),ctx=cv.getContext('2d');
+const W=480,H=270,GROUND=226,WORLD=5400;
+/* render at 3x internal resolution: HD backgrounds, crisp retro sprites */
+const K=3;cv.width=W*K;cv.height=H*K;ctx.setTransform(K,0,0,K,0,0);
+ctx.imageSmoothingEnabled=false;
+
+/* ------------------------------------------------ world data */
+const ZONES=[
+ {x0:0,   x1:980,  name:'STAGE 1 · KEDIRI',          sky:['#ffd9a0','#ffeccf'], top:'#3f9e4d'},
+ {x0:980, x1:1980, name:'STAGE 2 · BANDUNG · ITB',   sky:['#79c4ff','#cfeaff'], top:'#3f9e4d'},
+ {x0:1980,x1:2980, name:'STAGE 3 · SINGAPORE',       sky:['#6db9ff','#d6f0ff'], top:'#7c8894'},
+ {x0:2980,x1:3980, name:'STAGE 4 · JAPAN',           sky:['#a8c8f0','#ffe3ee'], top:'#d8a0b8'},
+ {x0:3980,x1:5400, name:'STAGE 5 · JAKARTA · VC',    sky:['#2b3a67','#7a6a9e'], top:'#5b6770'},
+];
+const SIGNS=[
+ {x:170, title:'STAGE 1: KEDIRI',  body:'It all began in Kediri, East Java, in the shadow of Mt. Kelud. Small town, big targets.', img:null},
+ {x:1080,title:'STAGE 2: ITB BANDUNG', body:'Graduated in Information Systems & Technology, where I developed a strong interest in startups, entrepreneurship and product management. Hands-on product management internships, an internship in Singapore and an exchange program in Japan broadened my international exposure.', img:'/assets/photos/graduation-itb.jpg'},
+ {x:2230,title:'STAGE 3: SINGAPORE', body:'Selected for the NUS Overseas Colleges (NOC) Program. I interned at Forte Biotech as a Business Development Intern while studying Venture Creation: Process and Mindset at the National University of Singapore (NUS).', img:'/assets/photos/nus-business-school.jpg'},
+ {x:3230,title:'STAGE 4: JAPAN', body:'Represented Indonesia in the Social Innovator Hub Program at Tohoku University in Sendai, Japan, where participants collaborated to address social challenges through entrepreneurship and innovation.', img:'/assets/photos/social-innovator-hub.jpg'},
+ {x:4280,title:'STAGE 5: JAKARTA | VENTURE CAPITAL', body:'Began my venture capital career at Living Lab Ventures, the Corporate Venture Capital arm of Sinar Mas Land. I currently serve as an Investment Associate at New Energy Nexus Ventures, focusing on climate and energy innovation investments.', img:'/assets/photos/team-llv.jpg'},
+];
+const QBLOCKS=[
+ {x:330, y:170,title:'KEDIRI FLAVORS',body:'Kediri, my hometown, is famous for its Nasi Pecel and Tahu Kuning. At night, Jalan Dhoho comes alive with its iconic Nasi Pecel culinary scene, a must-try local delicacy. (Photo: TripAdvisor)',img:'/assets/game/ph-pecel.jpg',link:'https://www.tripadvisor.co.id/ShowUserReviews-g311297-d6924843-r458624006-Pecel_Pudakit-Kediri_East_Java_Java.html',lab:'PHOTO SOURCE'},
+ {x:700, y:170,title:'SCHOOL DAYS',body:'Grew up and completed my schooling in Kediri. During high school I was active in academic and leadership activities, winning several national mathematics and physics competitions before gaining admission to Institut Teknologi Bandung (ITB).',img:'/assets/game/ph-olympiad.jpg'},
+ {x:1180,y:170,title:'LEADERSHIP · YLI',body:'Selected as a participant of Young Leaders for Indonesia (YLI) Batch 16. I collaborated with Pertamina on a Breakthrough Leadership Project focused on ESG maturity assessment and sustainability strategy execution.',img:'/assets/game/ph-yli.jpg'},
+ {x:1450,y:170,title:'MENTORSHIP',body:'Selected for the Maudy Ayunda Mentorship & Scholarship Program, with the opportunity to learn directly from Maudy Ayunda’s insights and experiences.',img:'/assets/game/ph-maudy.jpg'},
+ {x:1620,y:170,title:'HACK THE GLOBE 2024',body:'First Runner-Up by BCG and Global Spark, ranking 2nd among 300 participants from 30 countries after leading a cross-border team to build and pitch a precision-agriculture startup within 3 days.',img:'/assets/game/ph-htg.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_global-hackathon-business-ugcPost-7176527056405454848-10va/',lab:'LINKEDIN POST'},
+ {x:1790,y:170,title:'THESIS → IEEE',body:'Authored an undergraduate thesis on enhancing venture capital due-diligence efficiency using Large Language Models for startup-success prediction and business document extraction. It was later accepted and published by the IEEE.',link:'https://ieeexplore.ieee.org/document/10763359',lab:'IEEE PAPER'},
+ {x:2450,y:170,title:'FORTE BIOTECH · FUNDRAISING',body:'Supported the company’s fundraising efforts by developing investor pitch decks and fundraising materials, contributing to Forte Biotech’s success in winning the Net Zero Challenge organized by Touchstone Partners and the Temasek Foundation.',img:'/assets/game/ph-forte.jpg'},
+ {x:2700,y:170,title:'MARKET ENTRY · INDONESIA',body:'Beyond fundraising, I supported Forte Biotech’s market entry initiatives in Indonesia by identifying and engaging potential customers. This led to successful business development meetings with prospective clients, including JALA.',img:'/assets/game/ph-jala.jpg'},
+ {x:3480,y:170,title:'SENDAI FIELD VISIT',body:'Gained firsthand exposure to how government and industry collaborate to build a more sustainable future, including a visit to Sendai’s municipal waste-to-energy facility to explore technology-driven solutions for waste management.',img:'/assets/game/ph-sendai.jpg'},
+ {x:3620,y:170,title:'BEST TEAM & BEST PARTICIPANT',body:'At the end of the program, I was honored to be recognized as Best Participant, while my team received the Best Team award for developing and presenting an innovative solution to convert incinerator ash into sustainable construction materials.',img:'/assets/game/ph-sih.jpg'},
+ {x:4500,y:170,title:'MID-YEAR 2025 OUTLOOK',body:'During my time at Living Lab Ventures, I had the opportunity to co-author the Mid-Year 2025 Market Outlook, an analysis of macroeconomic trends, venture capital activity and emerging investment opportunities.',img:'/assets/game/ph-outlook.jpg',link:'https://www.linkedin.com/posts/vito-christian-samudra_after-economic-headwinds-earlier-this-yearhave-ugcPost-7331610172957630464-VjcO/',lab:'LINKEDIN POST'},
+ {x:4750,y:170,title:'NEW ENERGY NEXUS',body:'Currently working at New Energy Nexus Ventures, backing and supporting climate technology startups that are building a more sustainable future for the region.',img:'/assets/game/ph-nexus.jpg'},
+];
+const JOURNEY_STORIES=[...ZONES,...SIGNS,...QBLOCKS];
+JOURNEY_STORIES.forEach(item=>{
+  ['name','title','body','lab'].forEach(key=>{if(item[key])item['_en_'+key]=item[key];});
+});
+let journeyLanguage='en',activeStory=null;
+function journeyText(text){return journeyLanguage==='id'&&window.VITO_JOURNEY_ID&&window.VITO_JOURNEY_ID[text]||text;}
+function applyJourneyLanguage(language){
+  journeyLanguage=language==='id'?'id':'en';
+  JOURNEY_STORIES.forEach(item=>{
+    ['name','title','body','lab'].forEach(key=>{if(item['_en_'+key])item[key]=journeyText(item['_en_'+key]);});
+  });
+  if(activeStory)showCard(activeStory);
+}
+document.addEventListener('vito:languagechange',event=>applyJourneyLanguage(event.detail.language));
+const COINS=[];
+[[420,150],[450,140],[480,150],[900,185],[930,185],[1550,150],[1580,140],[1610,150],[2080,185],[2110,185],[2550,150],[2580,140],[2610,150],[3050,185],[3080,185],[3550,150],[3580,140],[3610,150],[4100,185],[4130,185],[4600,150],[4630,140],[4660,150],[4860,185],[4890,185]].forEach(c=>COINS.push({x:c[0],y:c[1],got:false,t:Math.random()*6}));
+const FLAG_X=5080,CASTLE_X=5190;
+const SPIKES=[560,1340,1840,2330,2830,3340,3740,4150,4650].map(x=>({x:x,w:28}));
+/* Patrolling enemy count and speed ramp up each stage (Kediri = none). Stomp
+   from above to defeat (+150); touch from the side and you lose a life. */
+const EW=14,EH=13;
+function mkEnemy(x0,x1,spd,col){return {x0,x1,x:(x0+x1)/2,y:GROUND-EH,dir:1,spd,col,alive:true};}
+const ENEMIES=[
+ // Stage 2 · Bandung: 2 slow
+ mkEnemy(1090,1190,.55,'#b0452e'), mkEnemy(1480,1600,.6,'#b0452e'),
+ // Stage 3 · Singapore: 3 medium
+ mkEnemy(2080,2200,.8,'#2f6db0'), mkEnemy(2460,2600,.85,'#2f6db0'), mkEnemy(2730,2900,.9,'#2f6db0'),
+ // Stage 4 · Japan: 4 faster
+ mkEnemy(3070,3200,1.0,'#7a4f9c'), mkEnemy(3400,3540,1.05,'#7a4f9c'), mkEnemy(3580,3700,1.1,'#7a4f9c'), mkEnemy(3800,3940,1.15,'#7a4f9c'),
+ // Stage 5 · Jakarta: 5 fast
+ mkEnemy(4040,4180,1.25,'#1f7a6a'), mkEnemy(4280,4440,1.3,'#1f7a6a'), mkEnemy(4500,4640,1.35,'#1f7a6a'), mkEnemy(4720,4880,1.4,'#1f7a6a'), mkEnemy(4920,5040,1.45,'#1f7a6a'),
+];
+
+/* ------------------------------------------------ sprites */
+const PAL={H:'#1d1d1f',S:'#e8b289',G:'#22313f',J:'#14532d',W:'#f2f1e6',P:'#26323f',E:'#3b2a22',R:'#c0392b'};
+const BODY=[ // 12 wide
+'..HHHHHHHH..',
+'.HHHHHHHHHH.',
+'.HHSSSSSSHH.',
+'.SGGSSSSGGS.',
+'.SSSSSSSSSS.',
+'..SSSRRSSS..',
+'..JJJWWJJJ..',
+'.JJJWWWWJJJ.',
+'JJJJWWWWJJJJ',
+'JSJJWWWWJJSJ',
+'.SJJJJJJJJS.',
+'..JJJJJJJJ..'];
+const LEGS={
+ stand:['..PPP..PPP..','..PPP..PPP..','.EEE....EEE.'],
+ walk: ['..PPPPPP....','.PPP..PPP...','EEE....EEE..'],
+ jump: ['..PPP..PPP..','..EPP..PPE..','...E....E...']};
+function drawPlayer(px,py,frame,flip){
+ const rows=BODY.concat(LEGS[frame]);
+ for(let r=0;r<rows.length;r++)for(let c=0;c<12;c++){
+   const ch=rows[r][flip?11-c:c]; if(ch&&PAL[ch]){ctx.fillStyle=PAL[ch];ctx.fillRect(px+c,py+r,1,1);}
+ }
+}
+
+/* ------------------------------------------------ helpers */
+function zoneAt(x){return ZONES.find(z=>x>=z.x0&&x<z.x1)||ZONES[ZONES.length-1];}
+function rect(x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h);}
+
+/* ------------------------------------------------ scenery */
+/* one pixel-art panorama per stage, panned across its zone + crossfaded */
+const BGS=[1,2,3,4,5].map(n=>{const im=new Image();im.src='/assets/game/bg'+n+'.jpg';return im;});
+function drawBgImg(i,t,alpha){const im=BGS[i];if(!im||!im.complete||!im.naturalWidth)return;
+ const iw=560,ih=Math.round(im.naturalHeight*iw/im.naturalWidth);
+ ctx.globalAlpha=alpha;ctx.imageSmoothingEnabled=true;
+ /* anchor TOP so buildings & sky stay framed; crop spills below the ground */
+ ctx.drawImage(im,-Math.round((iw-W)*t),0,iw,ih);
+ ctx.imageSmoothingEnabled=false;ctx.globalAlpha=1;}
+function drawScenery(cam){
+ rect(0,0,W,H,'#0e1118');
+ const cx=cam+W/2,z=zoneAt(cx),zi=ZONES.indexOf(z);
+ const t=Math.min(1,Math.max(0,(cx-z.x0)/(z.x1-z.x0)));
+ drawBgImg(zi,t,1);
+ if(zi<ZONES.length-1){const d=ZONES[zi+1].x0-cx;if(d>=0&&d<90)drawBgImg(zi+1,0,1-d/90);}
+}
+
+function drawDecor(cam){
+ const sx=x=>x-cam;
+ [978,1955,2978,3978].forEach(b=>pipeP(sx(b)));
+ SPIKES.forEach(s=>drawSpike(s,cam));
+ castle(sx(CASTLE_X));
+ flagpole(sx(FLAG_X));
+ SIGNS.forEach(s=>{signpost(sx(s.x));});
+}
+function pipeP(x){rect(x,GROUND-34,28,9,'#2f9e44');rect(x+3,GROUND-25,22,25,'#37b24d');rect(x+6,GROUND-25,4,25,'#69db7c');rect(x+3,GROUND-34,5,9,'#69db7c');}
+function drawEnemy(e,cam){if(!e.alive)return;const x=Math.round(e.x-cam),y=Math.round(e.y);if(x<-30||x>W+30)return;
+ const dk=e.col,top='rgba(0,0,0,.28)';
+ rect(x+2,y,10,3,dk);rect(x+1,y+2,12,8,dk);rect(x,y+4,14,6,dk);
+ // feet shuffle
+ const ph=(Math.floor(time/8)%2);
+ rect(x+2+ph,y+11,4,2,'#222');rect(x+8-ph,y+11,4,2,'#222');
+ // eyes (look toward travel dir)
+ const ed=e.dir>0?1:-1;
+ rect(x+3,y+4,3,3,'#fff');rect(x+8,y+4,3,3,'#fff');
+ rect(x+4+ed,y+5,1,2,'#111');rect(x+9+ed,y+5,1,2,'#111');
+ // angry brows
+ rect(x+3,y+3,3,1,'#111');rect(x+8,y+3,3,1,'#111');}
+function drawSpike(s,cam){const x=s.x-cam;if(x<-40||x>W+40)return;
+ for(let i=0;i<s.w;i+=7){ctx.fillStyle='#525c68';ctx.beginPath();ctx.moveTo(x+i,GROUND);ctx.lineTo(x+i+3.5,GROUND-9);ctx.lineTo(x+i+7,GROUND);ctx.fill();
+  ctx.fillStyle='#aab4c0';ctx.fillRect(x+i+3,GROUND-9,1,3);}}
+function castle(x){rect(x,GROUND-84,96,84,'#9aa3ad');for(let i=0;i<5;i++)rect(x+i*20,GROUND-92,12,8,'#9aa3ad');
+ rect(x+34,GROUND-36,28,36,'#10131c');rect(x+10,GROUND-66,14,16,'#10131c');rect(x+70,GROUND-66,14,16,'#10131c');
+ rect(x+30,GROUND-118,36,34,'#8a939d');rect(x+34,GROUND-126,8,8,'#8a939d');rect(x+52,GROUND-126,8,8,'#8a939d');
+ rect(x+44,GROUND-150,4,28,'#5a636d');ctx.fillStyle='#0F5B50';ctx.beginPath();ctx.moveTo(x+48,GROUND-150);ctx.lineTo(x+74,GROUND-143);ctx.lineTo(x+48,GROUND-136);ctx.fill();}
+function flagpole(x){rect(x,GROUND-120,4,120,'#3aa15a');rect(x-2,GROUND-124,8,6,'#ffe9a8');}
+function signpost(x){rect(x+10,GROUND-22,4,22,'#7c4a28');rect(x-4,GROUND-38,32,18,'#c89368');rect(x-2,GROUND-36,28,14,'#a06a3c');
+ ctx.fillStyle='#fff5d8';ctx.font='8px "Press Start 2P"';ctx.fillText('!',x+9,GROUND-25);}
+
+/* ------------------------------------------------ entities */
+function drawQBlock(b,cam){const x=b.x-cam,y=b.y+(b.bump?-Math.abs(Math.sin(b.bump*0.5))*5:0);
+ if(x<-20||x>W+20)return;
+ rect(x,y,16,16,b.hit?'#8a6a4a':'#e8a020');rect(x+1,y+1,14,14,b.hit?'#a07a54':'#ffc233');
+ rect(x,y,2,2,'#fff');rect(x+14,y,2,2,'#604018');rect(x,y+14,2,2,'#604018');rect(x+14,y+14,2,2,'#604018');
+ if(!b.hit){ctx.fillStyle='#7c3f00';ctx.font='9px "Press Start 2P"';ctx.fillText('?',x+4.5,y+12);}
+ if(b.bump)b.bump--;}
+function drawCoin(c,cam,t){if(c.got)return;const x=c.x-cam;if(x<-12||x>W+12)return;
+ const w=Math.abs(Math.cos((t/14)+c.t))*8+2;
+ rect(x+8-w/2,c.y,w,12,'#ffc233');rect(x+8-w/4,c.y+2,w/2,8,'#ffe9a8');}
+
+/* ------------------------------------------------ game state */
+const P={x:40,y:GROUND-15,vx:0,vy:0,w:11,h:15,onG:true,flip:false,anim:0};
+let cam=0,score=0,coins=0,time=0,running=false,finished=false,flagSlide=0;
+let lives=3,dying=0,inv=0,jumps=0,jHeld=false;
+const keys={};
+const seen=new Set();
+const hS=document.getElementById('hScore'),hC=document.getElementById('hCoins'),hSt=document.getElementById('hStage'),hL=document.getElementById('hLives');
+const card=document.getElementById('card'),cT=document.getElementById('cTitle'),cB=document.getElementById('cBody'),cI=document.getElementById('cImg');
+const toast=document.getElementById('toast');let toastT=null,cardOpen=false;
+
+const cL=document.getElementById('cLink');
+cL.addEventListener('click',e=>e.stopPropagation());
+/* preload every story photo so cards never flash a previous image */
+[...SIGNS,...QBLOCKS].forEach(s=>{if(s.img){const im=new Image();im.src=s.img;}});
+function showCard(s){cardOpen=true;activeStory=s;cT.textContent=s.title;cB.textContent=s.body;
+ if(s.img){cI.style.display='none';cI.onload=()=>{cI.style.display='block';};cI.src=s.img;
+  if(cI.complete&&cI.naturalWidth)cI.style.display='block';}
+ else{cI.style.display='none';cI.removeAttribute('src');}
+ if(s.link){cL.href=s.link;cL.textContent=(s.lab||journeyText('VIEW'))+' ↗';cL.style.display='inline-block';}else cL.style.display='none';
+ card.classList.add('show');}
+function hideCard(){cardOpen=false;card.classList.remove('show');}
+function showToast(msg){toast.textContent=msg;toast.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>toast.style.display='none',3600);}
+
+/* ------------------------------------------------ audio: bgm + chip sfx */
+const bgm=new Audio('/assets/audio/journey-bgm.m4a');bgm.loop=true;bgm.volume=.45;
+let muted=false,AC=null;
+function beep(seq){if(muted)return;try{
+ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+ const t0=AC.currentTime;
+ for(const n of seq){const o=AC.createOscillator(),g=AC.createGain();
+  o.type=n[3]||'square';o.frequency.value=n[0];
+  g.gain.setValueAtTime(.10,t0+n[2]);g.gain.exponentialRampToValueAtTime(.0001,t0+n[2]+n[1]);
+  o.connect(g);g.connect(AC.destination);o.start(t0+n[2]);o.stop(t0+n[2]+n[1]);}
+}catch(e){}}
+const sfxCoin =()=>beep([[988,.09,0],[1319,.22,.08]]);
+const sfxBlock=()=>beep([[659,.08,0],[880,.14,.07]]);
+const sfxJump =()=>beep([[523,.09,0,'triangle']]);
+const sfxDie  =()=>beep([[494,.14,0],[392,.14,.14],[330,.16,.28],[262,.4,.44]]);
+const sfxStomp=()=>beep([[392,.05,0],[196,.13,.05]]);
+const mB=document.getElementById('muteBtn');
+mB.onclick=e=>{e.preventDefault();muted=!muted;bgm.muted=muted;mB.textContent=muted?'♪ OFF':'♪ ON';};
+
+/* ------------------------------------------------ death & respawn */
+function die(){if(dying||inv||lives<=0)return;sfxDie();lives--;hL.textContent='♥x'+lives;dying=60;P.vy=-4.6;}
+function respawn(){const z=zoneAt(P.x);P.x=Math.max(40,z.x0+26);P.y=GROUND-P.h;P.vx=0;P.vy=0;P.onG=true;jumps=0;inv=90;}
+function gameOver(){running=false;try{bgm.pause();}catch(e){}document.getElementById('over').classList.remove('hide');}
+
+/* ------------------------------------------------ input */
+const KEYMAP={KeyA:'ArrowLeft',KeyD:'ArrowRight',KeyW:'Space'};
+function keyName(e){if(e.code&&KEYMAP[e.code])return KEYMAP[e.code];if(e.code)return e.code;
+ return ({' ':'Space','Left':'ArrowLeft','Right':'ArrowRight','Up':'ArrowUp'})[e.key]||e.key||'';}
+/* capture phase so host pages / embeds can't swallow the arrows first */
+addEventListener('keydown',e=>{const c=keyName(e);
+ if(c==='Enter'){
+  if(!document.getElementById('start').classList.contains('hide')){document.getElementById('startBtn').click();return;}
+  if(!document.getElementById('over').classList.contains('hide')||!document.getElementById('end').classList.contains('hide')){location.reload();return;}
+ }
+ if(['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(c))e.preventDefault();
+ if(cardOpen&&(c==='Space'||c==='Enter')){hideCard();return;}
+ keys[c]=true;},true);
+addEventListener('keyup',e=>{keys[keyName(e)]=false;},true);
+function bindTouch(id,code){const el=document.getElementById(id);
+ ['pointerdown','touchstart'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();if(cardOpen){hideCard();return;}keys[code]=true;}));
+ ['pointerup','pointerleave','touchend'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();keys[code]=false;}));}
+bindTouch('tL','ArrowLeft');bindTouch('tR','ArrowRight');bindTouch('tJ','Space');
+card.addEventListener('click',hideCard);
+
+/* ------------------------------------------------ update */
+function update(){
+ if(cardOpen)return;
+ time++;
+ if(dying){dying--;P.y+=P.vy;P.vy+=.3;
+  if(!dying){if(lives<=0)gameOver();else respawn();}
+  return;}
+ if(inv)inv--;
+ const acc=.22,max=1.7,fr=.82;
+ if(keys.ArrowLeft){P.vx-=acc;P.flip=true;}
+ if(keys.ArrowRight){P.vx+=acc;P.flip=false;}
+ if(!keys.ArrowLeft&&!keys.ArrowRight)P.vx*=fr;
+ P.vx=Math.max(-max,Math.min(max,P.vx));
+ const jp=!!(keys.Space||keys.ArrowUp);
+ if(jp&&!jHeld){
+  if(P.onG){P.vy=-5.6;P.onG=false;jumps=1;sfxJump();}
+  else if(jumps<2){P.vy=-5.3;jumps=2;sfxJump();}
+ }
+ jHeld=jp;
+ P.vy+=.32;P.x+=P.vx;P.y+=P.vy;
+ if(P.x<2)P.x=2; if(P.x>WORLD-20)P.x=WORLD-20;
+ if(P.y>=GROUND-P.h){P.y=GROUND-P.h;P.vy=0;P.onG=true;jumps=0;}
+ P.anim+=Math.abs(P.vx)*.35;
+ // enemies: patrol, stomp from above, hurt on side contact
+ for(const e of ENEMIES){
+  if(!e.alive)continue;
+  if(Math.abs(e.x-P.x)<W){e.x+=e.dir*e.spd;
+   if(e.x<=e.x0){e.x=e.x0;e.dir=1;}else if(e.x>=e.x1){e.x=e.x1;e.dir=-1;}}
+  if(P.x+P.w>e.x+1&&P.x<e.x+EW-1&&P.y+P.h>e.y&&P.y<e.y+EH){
+   if(P.vy>0&&P.y+P.h<e.y+9){e.alive=false;P.vy=-5.0;jumps=1;score+=150;sfxStomp();}
+   else if(!inv){die();return;}
+  }}
+ // spikes are lethal
+ if(!inv&&P.y+P.h>=GROUND-9){
+  for(const s of SPIKES){if(P.x+P.w>s.x+3&&P.x<s.x+s.w-3){die();return;}}}
+ // q blocks: bump from below + collide as solid from top
+ QBLOCKS.forEach(b=>{
+  if(P.x+P.w>b.x&&P.x<b.x+16){
+   if(P.vy<0&&P.y<=b.y+16&&P.y>b.y+2){P.y=b.y+16;P.vy=.5;b.bump=8;
+     if(!b.hit){b.hit=true;score+=200;coins++;sfxBlock();showCard(b);}}
+   else if(P.vy>0&&P.y+P.h>=b.y&&P.y+P.h<b.y+10){P.y=b.y-P.h;P.vy=0;P.onG=true;jumps=0;}
+  }});
+ // coins
+ COINS.forEach(c=>{if(!c.got&&P.x+P.w>c.x&&P.x<c.x+14&&P.y+P.h>c.y&&P.y<c.y+12){c.got=true;coins++;score+=100;sfxCoin();}});
+ // signs
+ SIGNS.forEach((s,i)=>{if(!seen.has(i)&&Math.abs((P.x+P.w/2)-(s.x+12))<14){seen.add(i);score+=500;showCard(s);}});
+ // flag
+ if(!finished&&P.x+P.w>=FLAG_X){finished=true;score+=1000;}
+ if(finished){flagSlide=Math.min(flagSlide+1.4,112);
+  if(P.x<CASTLE_X+38)P.x+=.9;else endGame();}
+ cam=Math.max(0,Math.min(WORLD-W,P.x-W*.38));
+ hS.textContent=journeyText('SCORE')+' '+String(score).padStart(6,'0');
+ hC.textContent='© x'+String(coins).padStart(2,'0');
+ hSt.textContent=zoneAt(P.x).name;
+}
+let ended=false;
+function endGame(){if(ended)return;ended=true;running=false;
+ document.getElementById('endStats').textContent=journeyText('SCORE')+' '+score+'  ·  '+journeyText('COINS')+' '+coins+'  ·  '+journeyText('ALL 5 STAGES');
+ document.getElementById('end').classList.remove('hide');}
+
+/* ------------------------------------------------ draw */
+function draw(){
+ drawScenery(cam);
+ // ground
+ const gz=zoneAt(cam+W/2);
+ rect(0,GROUND,W,H-GROUND,'#9c5a3c');
+ for(let gx=-((cam|0)%16);gx<W;gx+=16){rect(gx,GROUND,16,4,gz.top);rect(gx,GROUND+8,7,5,'#7c4226');rect(gx+9,GROUND+16,7,5,'#7c4226');}
+ drawDecor(cam);
+ ENEMIES.forEach(e=>drawEnemy(e,cam));
+ QBLOCKS.forEach(b=>drawQBlock(b,cam));
+ COINS.forEach(c=>drawCoin(c,cam,time));
+ // flag slides
+ const fx=FLAG_X-cam;if(fx>-30&&fx<W+30){ctx.fillStyle='#c0392b';ctx.beginPath();
+  ctx.moveTo(fx,GROUND-116+flagSlide);ctx.lineTo(fx-16,GROUND-109+flagSlide);ctx.lineTo(fx,GROUND-102+flagSlide);ctx.fill();}
+ // player
+ const frame=(!P.onG||dying)?'jump':(Math.abs(P.vx)>.3?(Math.floor(P.anim)%2?'walk':'stand'):'stand');
+ if(!(inv>0&&((time>>2)&1)))drawPlayer(Math.round(P.x-cam),Math.round(P.y),frame,P.flip);
+}
+/* fixed-step loop with delta-time catch-up: keeps real-time speed on any
+   refresh rate, and stays playable in webviews that throttle timers */
+let lastTick=0,lastT=0,accT=0,startT=0,tickCount=0,slowChecked=false;
+function tick(){lastTick=performance.now();
+ if(!running){lastT=lastTick;return;}
+ accT+=lastTick-lastT;lastT=lastTick;if(accT>700)accT=700;
+ let n=0;while(accT>=16.7&&n<42){update();accT-=16.7;n++;}
+ if(n){draw();tickCount++;}
+ if(!slowChecked&&startT&&lastTick-startT>2500){slowChecked=true;
+  if(tickCount<30)showToast(journeyText('THIS EMBEDDED VIEW IS THROTTLED. OPEN THIS PAGE IN A NORMAL BROWSER TAB FOR SMOOTH 60FPS.'));}
+}
+function loop(){tick();requestAnimationFrame(loop);}
+/* Watchdog: some embedded webviews suspend rAF, so fall back to a timer */
+setInterval(()=>{if(performance.now()-lastTick>200)tick();},33);
+const stagebox=document.getElementById('stagebox');
+cv.addEventListener('click',()=>stagebox.focus());
+document.getElementById('startBtn').onclick=()=>{document.getElementById('start').classList.add('hide');running=true;startT=lastT=performance.now();
+ stagebox.focus();
+ try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.resume)AC.resume();}catch(e){}
+ bgm.play().catch(()=>{});};
+draw();loop();
+</script>
+</body>
+</html>

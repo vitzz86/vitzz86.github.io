@@ -414,7 +414,7 @@ export function createCockpitService(env) {
         freshness: ageSeconds === null ? "unknown" : ageSeconds <= 3600 ? "fresh" : "stale",
         asset_count: data.asset_count ?? (data.sectors || []).reduce((sum, row) => sum + (row.constituents || []).length, 0), news_count: (data.news || []).length, video_count: (data.videos || []).length,
         knowledge_count: (data.podcasts || []).length, research_count: (data.research?.reports || []).length, data_source: base,
-        dashboard_url: env.COCKPIT_DASHBOARD_URL || `${base}/cockpit.html`,
+        dashboard_url: env.COCKPIT_DASHBOARD_URL || `${base}/cockpit/`,
         idx_fast_quotes: fast.health, contracts: CONTRACTS,
         ...boundedHealth(data),
       };

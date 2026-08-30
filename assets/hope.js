@@ -265,7 +265,7 @@
     document.querySelectorAll("[data-theme-value]").forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.themeValue === safeTheme));
     });
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", safeTheme === "dark" ? "#060a12" : "#f8f9fd");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", safeTheme === "dark" ? "#11150F" : "#EBECE4");
     if (persist) localStorage.setItem(STORAGE.theme, safeTheme);
   }
 
@@ -1192,7 +1192,7 @@
     }
     el.mediaPreview.hidden = false;
     el.mediaPreview.classList.toggle("youtube-preview", state.media.provider === "youtube");
-    el.mediaPreviewIcon.src = state.media.provider === "youtube" ? YOUTUBE_ICON_URL : "assets/spotify-logo.png";
+    el.mediaPreviewIcon.src = state.media.provider === "youtube" ? YOUTUBE_ICON_URL : "/assets/spotify-logo.png";
     const text = el.mediaPreview.querySelector("span");
     text.querySelector("strong").textContent = state.media.title;
     const labels = state.media.provider === "youtube" ? YOUTUBE_TYPES : SPOTIFY_TYPES;
@@ -1204,7 +1204,7 @@
     state.mediaProvider = provider === "youtube" ? "youtube" : "spotify";
     clearMedia();
     const isYouTube = state.mediaProvider === "youtube";
-    el.mediaProviderIcon.src = isYouTube ? YOUTUBE_ICON_URL : "assets/spotify-logo.png";
+    el.mediaProviderIcon.src = isYouTube ? YOUTUBE_ICON_URL : "/assets/spotify-logo.png";
     el.mediaProviderLink.href = isYouTube ? "https://www.youtube.com/" : "https://open.spotify.com/";
     el.mediaProviderLink.setAttribute("aria-label", `Open ${isYouTube ? "YouTube" : "Spotify"}`);
     el.mediaUrl.placeholder = isYouTube
