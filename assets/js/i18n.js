@@ -69,8 +69,22 @@
     });
   }
 
+  function openDerivativePagesSeparately(){
+    const derivativePaths=new Set(['/cockpit/','/journey/','/hope/']);
+    document.querySelectorAll('a[href]').forEach(link=>{
+      let url;
+      try{url=new URL(link.getAttribute('href'),location.href);}catch{return;}
+      if(url.origin!==location.origin||!derivativePaths.has(url.pathname))return;
+      link.target='_blank';
+      const rel=new Set((link.getAttribute('rel')||'').split(/\s+/).filter(Boolean));
+      rel.add('noopener');
+      link.setAttribute('rel',[...rel].join(' '));
+    });
+  }
+
   addSwitch();
   wireSwitches();
+  openDerivativePagesSeparately();
   setLanguage(preferredLanguage(),false);
   window.vitoSetLanguage=setLanguage;
 })();
