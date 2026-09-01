@@ -7,6 +7,10 @@
   <meta name="theme-color" content="#EBECE4">
   <meta property="og:title" content="Prayer &amp; Hope Board | Vito Christian Samudra">
   <meta property="og:description" content="Leave a prayer, share some hope or encouragement, or add the music that keeps you going.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vitzz86.github.io/hope/">
+  <meta property="og:image" content="https://vitzz86.github.io/assets/photos/portrait-vito-illustrated.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://vitzz86.github.io/hope/">
   <title>Prayer &amp; Hope Board | Vito Christian Samudra</title>
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/vito-favicon-32.png?v=20260830-2">
@@ -16,12 +20,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=Inter:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/hope.css?v=20260830-2">
+  <link rel="stylesheet" href="/assets/hope.css?v=20260901-1">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="/assets/hope-config.js?v=20260715-4" defer></script>
-  <script src="/assets/hope.js?v=20260830-2" defer></script>
-  <script src="https://open.spotify.com/embed/iframe-api/v1" defer></script>
-  <script src="https://www.youtube.com/iframe_api" defer></script>
+  <script src="/assets/hope.js?v=20260901-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#board">Skip to the board</a>
@@ -178,7 +180,10 @@
       <p id="boardSummary" aria-live="polite">Loading the board…</p>
     </div>
 
-    <section id="board" class="board" aria-label="Dream Board posts" aria-live="polite"></section>
+    <section id="board" class="board" aria-label="Dream Board posts"></section>
+    <div class="board-more" id="boardMore" hidden>
+      <button type="button" id="loadMorePosts">Show more messages</button>
+    </div>
     <div class="board-loading" id="boardLoading" role="status" aria-live="polite" hidden>
       <span aria-hidden="true">✦</span>
       <p>Loading the shared Dream Board…</p>

@@ -1027,6 +1027,8 @@ VERSES = [
 
 # ---------------------------------------------------------------- output contract
 DATA_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "data.json")
+COCKPIT_SHELL_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "cockpit-shell.json")
+COCKPIT_DETAIL_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "cockpit-detail.json")
 SCORES_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "scores.json")
 CHARTS_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "charts.json")
 MCP_JSON_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "mcp.json")

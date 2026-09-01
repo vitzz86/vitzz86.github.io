@@ -589,26 +589,6 @@ html[data-theme="dark"] .filter-chip { --choice-soft: color-mix(in srgb, var(--c
 
 .post-card:not(.has-media):hover { border-color: color-mix(in srgb, var(--type-color) 54%, var(--card-border)); box-shadow: 0 18px 40px color-mix(in srgb, var(--type-color) 14%, rgba(31, 26, 58, 0.09)), inset 0 1px rgba(255, 255, 255, 0.78); transform: translateY(-3px) rotate(-0.12deg); }
 
-/* Keep an active player reachable when its post does not match the current filter. */
-.post-card.is-playing-filtered {
-  position: fixed;
-  z-index: 30;
-  right: 16px;
-  bottom: 16px;
-  width: min(420px, calc(100vw - 32px));
-  height: auto;
-  min-height: 0;
-  padding: 8px;
-  overflow: visible;
-  border-color: color-mix(in srgb, var(--green) 45%, var(--card-border));
-  box-shadow: 0 20px 55px rgba(8, 10, 18, 0.28);
-  animation: none;
-}
-.post-card.is-playing-filtered > :not(.media-card) { display: none; }
-.post-card.is-playing-filtered .media-card { margin: 0; padding: 0; border: 0; background: transparent; }
-.post-card.is-playing-filtered .playlist-card iframe { height: 152px; }
-.post-card.is-playing-filtered .youtube-card iframe { height: auto; aspect-ratio: 16 / 9; }
-
 .post-card[data-type="hope"] { --card-bg: #fffdf4; --card-bg-2: #fff5ce; --card-border: #ecd990; --type-color: #c58a00; }
 .post-card[data-type="dream"] { --card-bg: #fff8fb; --card-bg-2: #ffe8f1; --card-border: #f0bfd2; --type-color: #e44780; }
 .post-card[data-type="motivation"] { --card-bg: #f8fff3; --card-bg-2: #e9f8df; --card-border: #bfdda9; --type-color: #55a02b; }
@@ -671,6 +651,15 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
 .post-card.has-media { grid-column: span 2; }
 .post-card.comments-open:not(.has-media) { grid-column: span 2; }
 .media-card { min-width: 0; margin: -2px 0 13px; padding: 8px 8px 6px; overflow: hidden; border: 1px solid color-mix(in srgb, var(--type-color) 24%, var(--card-border)); border-radius: 12px; background: color-mix(in srgb, var(--type-color) 8%, var(--surface-solid)); }
+.media-card .media-preview { display: grid; width: 100%; min-height: 96px; grid-template-columns: 72px minmax(0,1fr) 42px; align-items: center; gap: 12px; margin: 0; padding: 10px; border: 0; border-radius: 10px; background: color-mix(in srgb, var(--surface-solid) 76%, transparent); color: var(--text); cursor: pointer; text-align: left; }
+.media-card .media-preview:hover { background: color-mix(in srgb, var(--type-color) 12%, var(--surface-solid)); }
+.media-card .media-preview[hidden] { display: none; }
+.media-card .media-preview img { width: 72px; height: 72px; border-radius: 9px; object-fit: cover; }
+.media-preview-copy { display: grid; min-width: 0; gap: 4px; }
+.media-preview-copy small { color: var(--type-color); font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.media-preview-copy strong { overflow: hidden; font-family: var(--serif); font-size: 15px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+.media-preview-copy > span { overflow: hidden; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.media-preview-play { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: var(--type-color); color: #fff; font-size: 13px; }
 .playlist-card iframe { display: block; width: 100%; min-width: 0; height: 352px; overflow: hidden; border: 0; border-radius: 10px; background: #151515; }
 .playlist-card iframe.spotify-track-frame { height: 152px; }
 .playlist-card[data-spotify-type="track"] iframe { height: 152px; }
@@ -680,6 +669,11 @@ html[data-theme="dark"] .post-card[data-type="general"] { --card-bg: #281d14; --
 .player-actions { justify-content: flex-end; padding: 0 2px; }
 .player-actions a { border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 9px; text-decoration: none; }
 .player-actions a:hover { color: var(--green); }
+.board-more { display: flex; justify-content: center; margin: 22px 0 6px; }
+.board-more[hidden] { display: none; }
+.board-more button { min-height: 44px; padding: 10px 18px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface-solid); color: var(--text); cursor: pointer; font: 600 11px var(--sans); box-shadow: var(--soft-shadow); }
+.board-more button:hover { border-color: var(--green); color: var(--green); transform: translateY(-1px); }
+@media(max-width:520px){.media-card .media-preview{grid-template-columns:56px minmax(0,1fr) 38px;}.media-card .media-preview img{width:56px;height:56px;}}
 
 .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 9px; margin-top: auto; padding: 11px 2px 8px; color: var(--muted); font-size: 10px; }
 .author { display: inline-flex; min-width: 0; align-items: center; gap: 6px; }

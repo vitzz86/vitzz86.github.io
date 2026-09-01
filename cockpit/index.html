@@ -9,6 +9,12 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png?v=20260830-2">
 <link rel="manifest" href="/site.webmanifest?v=20260830-2">
 <meta name="description" content="Project Cockpit v2.0 is a terminal-style real-time intelligence dashboard for market telemetry, expanded IDX-first equity coverage, heatmaps, intelligence wire and a knowledge hub.">
+<meta property="og:title" content="Project Cockpit v2.0 | Vito Christian Samudra">
+<meta property="og:description" content="A live personal command centre for markets, macro intelligence and continuous learning.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vitzz86.github.io/cockpit/">
+<meta property="og:image" content="https://vitzz86.github.io/assets/photos/portrait-vito-illustrated.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="robots" content="noindex">
 <link rel="canonical" href="https://vitzz86.github.io/cockpit/">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -520,6 +526,7 @@ footer .g{color:var(--green);}
 .hubtab{flex:1;text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 4px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;}
 .hubtab:hover{border-color:rgba(245,158,11,.35);color:var(--ink);}
 .hubtab.on{background:var(--amber);color:#000;border-color:var(--amber);font-weight:700;}
+.hubtab:focus-visible,.ttab:focus-visible,.dchip:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
 .hubpane{display:none;}.hubpane.on{display:block;}
 .datefilter{display:flex;gap:6px;margin-bottom:10px;}
 .datefilter .dchip{font-family:var(--mono);font-size:9px;color:var(--ink2);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:5px 10px;cursor:pointer;transition:border-color .15s,color .15s,background .15s;}
@@ -812,7 +819,7 @@ body{padding-bottom:40px;}
         <span><i class="tdot mega"></i>MEGA</span><span><i class="tdot large"></i>LARGE</span>
         <span><i class="tdot mid"></i>MID</span><span><i class="tdot small"></i>SMALL</span>
       </div>
-      <div class="secgrid" id="secGrid"></div>
+      <div class="secgrid" id="secGrid"><div class="researchempty">Loading the market universe in the background…</div></div>
     </div>
     <div class="sec">
       <div class="sechd"><h2>▲ Market Movers <span class="tag" style="margin-left:6px;">SNAPSHOT UNIVERSE</span></h2><button class="mini act" id="moverDetails" type="button">Details →</button></div>
@@ -1422,6 +1429,11 @@ function sectorMetrics(s){
 function round2(n){return Math.round((Number(n)||0)*100)/100;}
 function drawSectors(){
   if(!DATA)return;
+  if(!(DATA.sectors||[]).length){
+    $('secCount').textContent=`${Number(DATA.asset_count||0).toLocaleString()} assets · loading details`;
+    $('secGrid').innerHTML='<div class="researchempty">The dashboard is ready. Detailed market coverage is loading in the background…</div>';
+    return;
+  }
   $('secCount').textContent=(DATA.sectors||[]).length+' sectors · click any card for deep dive';
   $('secGrid').innerHTML=(DATA.sectors||[]).map((s,i)=>{
     const m=sectorMetrics(s);
@@ -1970,7 +1982,10 @@ function syncHubUI(){
   if(hubPane==='videos')drawVideos();
   else if(hubPane==='news')drawWire();
   else if(hubPane==='ipo')drawIpo();
-  else if(hubPane==='research')drawResearch();
+  else if(hubPane==='research'){
+    if(!(RESEARCH.reports||[]).length)hydrateIntelligence().then(()=>drawResearch());
+    else drawResearch();
+  }
   else $('wireCount').textContent='BRIEF';
 }
 function buildHub(d){
@@ -3135,7 +3150,9 @@ async function ensureEquityChart(s,tk){
     EQUITY_CHART_LOADING[tk]=false;
   }
 }
+let cryptoPollStarted=false;
 function startCrypto(){
+  if(cryptoPollStarted)return;
   const cryptoRows=(cryptoSector()||{}).constituents||[];
   const pairs=[];
   Object.entries(CG_IDS).forEach(([t,i])=>{pairs.push([i,t]);(CG_ALIASES[t]||[]).forEach(a=>pairs.push([a,t]));});
@@ -3143,6 +3160,7 @@ function startCrypto(){
   const ids=[...new Set(pairs.map(p=>p[0]).filter(Boolean))].join(',');
   const idToTk=Object.fromEntries(pairs);
   if(!ids)return;
+  cryptoPollStarted=true;
   async function poll(){
     try{const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
       const d=await r.json();
@@ -3267,21 +3285,76 @@ $('mbStop').onclick=()=>stopVideo();
    poll every 5 min so a new payload (baked every 30 min) shows within ~5 min with
    no manual reload. Local file:// opens prefer the live GitHub Pages payload, then
    fall back to raw GitHub/local data so testing still works offline. */
-const LIVE_DATA_URL='https://vitzz86.github.io/data.json';
-const RAW_DATA_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/data.json';
+const LIVE_DATA_URL='https://vitzz86.github.io/cockpit-shell.json';
+const RAW_DATA_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/cockpit-shell.json';
+const LIVE_ASSETS_URL='https://vitzz86.github.io/mcp-assets.json';
+const RAW_ASSETS_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/mcp-assets.json';
+const LIVE_DETAIL_URL='https://vitzz86.github.io/cockpit-detail.json';
+const RAW_DETAIL_URL='https://raw.githubusercontent.com/vitzz86/vitzz86.github.io/main/cockpit-detail.json';
 function fetchJsonSource(url,label){
   const sep=url.includes('?')?'&':'?';
   return fetch(url+sep+'t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(label+' '+r.status);return r.json();})
     .then(d=>{payloadSource=label;return d;});
 }
+function fetchAssetSource(url,label){
+  const sep=url.includes('?')?'&':'?';
+  return fetch(url+sep+'t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(label+' '+r.status);return r.json();});
+}
 function fetchData(){
   const sources=location.protocol==='file:'
-    ?[[LIVE_DATA_URL,'live'],[RAW_DATA_URL,'raw'],['/data.json','local']]
-    :[['/data.json','site'],[LIVE_DATA_URL,'live'],[RAW_DATA_URL,'raw']];
+    ?[[LIVE_DATA_URL,'live shell'],[RAW_DATA_URL,'raw shell'],['/cockpit-shell.json','local shell']]
+    :[['/cockpit-shell.json','site shell'],[LIVE_DATA_URL,'live shell'],[RAW_DATA_URL,'raw shell']];
   return sources.reduce((chain,[url,label])=>chain.catch(()=>fetchJsonSource(url,label)),Promise.reject());
+}
+let assetHydrationPromise=null;
+function hydrateMarketUniverse(){
+  if((DATA&&DATA.sectors||[]).length)return Promise.resolve(true);
+  if(assetHydrationPromise)return assetHydrationPromise;
+  const sources=location.protocol==='file:'
+    ?[[LIVE_ASSETS_URL,'live assets'],[RAW_ASSETS_URL,'raw assets'],['/mcp-assets.json','local assets']]
+    :[['/mcp-assets.json','site assets'],[LIVE_ASSETS_URL,'live assets'],[RAW_ASSETS_URL,'raw assets']];
+  assetHydrationPromise=sources.reduce((chain,[url,label])=>chain.catch(()=>fetchAssetSource(url,label)),Promise.reject())
+    .then(payload=>{
+      if(!DATA)return false;
+      DATA.sectors=Array.isArray(payload.sectors)?payload.sectors:[];
+      drawSectors();
+      drawHeatmap();
+      assetSearchReady=false;
+      initAssetSearch();
+      startCrypto();
+      startIdxFastQuotes();
+      return true;
+    })
+    .catch(error=>{
+      console.warn('market universe unavailable',error);
+      $('secGrid').innerHTML='<div class="researchempty">Detailed market coverage is temporarily unavailable. The rest of Cockpit remains usable.</div>';
+      return false;
+    });
+  return assetHydrationPromise;
+}
+let intelligenceHydrationPromise=null;
+function hydrateIntelligence(){
+  if((DATA&&DATA.research&&DATA.research.reports||[]).length)return Promise.resolve(true);
+  if(intelligenceHydrationPromise)return intelligenceHydrationPromise;
+  const sources=location.protocol==='file:'
+    ?[[LIVE_DETAIL_URL,'live detail'],[RAW_DETAIL_URL,'raw detail'],['/cockpit-detail.json','local detail']]
+    :[['/cockpit-detail.json','site detail'],[LIVE_DETAIL_URL,'live detail'],[RAW_DETAIL_URL,'raw detail']];
+  intelligenceHydrationPromise=sources.reduce((chain,[url,label])=>chain.catch(()=>fetchAssetSource(url,label)),Promise.reject())
+    .then(payload=>{
+      if(!DATA)return false;
+      DATA.ticker_news=payload.ticker_news||{};
+      DATA.research=payload.research||{};
+      RESEARCH=DATA.research;
+      buildResearch();
+      refreshOpenSectorUI();
+      return true;
+    })
+    .catch(error=>{console.warn('detail intelligence unavailable',error);return false;});
+  return intelligenceHydrationPromise;
 }
 function applyPayload(d,initial){
   const prev=DATA&&DATA.timestamp,next=d&&d.timestamp;
+  if(DATA&&DATA.sectors&&DATA.sectors.length&&!(d.sectors||[]).length)d.sectors=DATA.sectors;
   render(d);
   if(!initial&&prev&&next&&prev!==next){
     topAlerts.unshift('Dashboard data refreshed at '+wibStamp(next));
@@ -3294,7 +3367,7 @@ function refreshPayload(opts={}){
   return fetchData().then(d=>{
     payloadLastCheck=Date.now();payloadLastOk=true;
     const changed=!DATA||!DATA.timestamp||d.timestamp!==DATA.timestamp;
-    if(changed||opts.force){applyPayload(d,!!opts.initial);startIdxFastQuotes();}
+    if(changed||opts.force){applyPayload(d,!!opts.initial);if((DATA.sectors||[]).length)startIdxFastQuotes();}
     else updateDataAge();
     return changed;
   }).catch(e=>{
@@ -3307,8 +3380,33 @@ function refreshPayload(opts={}){
     return false;
   }).finally(()=>{payloadRefreshBusy=false;});
 }
+const pseudoControlSelector='.hubtab,.ttab,.dchip';
+function enhancePseudoControls(root=document){
+  const controls=root.matches?.(pseudoControlSelector)?[root]:[...root.querySelectorAll?.(pseudoControlSelector)||[]];
+  controls.forEach(control=>{
+    control.setAttribute('role','button');
+    control.tabIndex=0;
+    control.setAttribute('aria-pressed',String(control.classList.contains('on')));
+  });
+}
+enhancePseudoControls();
+document.addEventListener('keydown',event=>{
+  const control=event.target.closest?.(pseudoControlSelector);
+  if(!control||(event.key!=='Enter'&&event.key!==' '))return;
+  event.preventDefault();
+  control.click();
+});
+new MutationObserver(records=>records.forEach(record=>{
+  if(record.type==='attributes')enhancePseudoControls(record.target);
+  else record.addedNodes.forEach(node=>{if(node.nodeType===1)enhancePseudoControls(node);});
+})).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+
 refreshPayload({initial:true,force:true}).then(()=>{
-  if(DATA){startClock();startCrypto();startIdxFastQuotes();startRealtimeFeed();restoreVideo();}
+  if(DATA){
+    startClock();startRealtimeFeed();restoreVideo();hydrateMarketUniverse();
+    if('requestIdleCallback' in window)requestIdleCallback(()=>hydrateIntelligence(),{timeout:5000});
+    else setTimeout(()=>hydrateIntelligence(),2500);
+  }
 });
 setInterval(()=>{refreshPayload();},5*60*1000);
 addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPayload();});

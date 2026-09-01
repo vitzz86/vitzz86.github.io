@@ -4,6 +4,7 @@ if(/^https?:$/.test(location.protocol)&&/\/index\.html$/i.test(location.pathname
 }
 
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const siteIsIndonesian=()=>document.documentElement.lang==='id';
 /* Narrated pitch audio per deck. Playback drives the slides. */
 const DECK_AUDIO = { rs: 'assets/audio/raisesea-pitch.m4a', outlook: 'assets/audio/outlook-pitch.m4a', nexus: 'assets/audio/nexus-pitch.m4a' };
 /* Authored cue maps (from the narration timeline): [seconds, slideIndex].
@@ -92,14 +93,31 @@ function buildDeck(el){
     <div class="strip"></div>`;
   const stage=el.querySelector('.stage'),img=el.querySelector('img'),ticks=el.querySelector('.ticks'),
         cur=el.querySelector('.cur'),strip=el.querySelector('.strip'),auto=el.querySelector('.auto');
+  const isID=()=>document.documentElement.lang==='id';
+  const deckLabel=()=>isID()?'Presentasi. Gunakan tombol panah untuk berpindah slide. Klik untuk memperbesar.':'Presentation. Arrow keys to navigate, click to expand.';
+  const autoLabel=()=>isID()?'Otomatis':'Auto';
+  const pitchLabel=()=>isID()?'Narasi':'Pitch';
+  function localizeDeck(){
+    stage.setAttribute('aria-label',deckLabel());
+    el.querySelector('.prev').setAttribute('aria-label',isID()?'Slide sebelumnya':'Previous slide');
+    el.querySelector('.next').setAttribute('aria-label',isID()?'Slide berikutnya':'Next slide');
+    el.querySelector('.fs').setAttribute('aria-label',isID()?'Buka layar penuh':'Open fullscreen');
+    auto.setAttribute('aria-label',isID()?'Putar slide otomatis':'Autoplay slides');
+    auto.innerHTML=timer?'&#10074;&#10074; '+autoLabel():'&#9658; '+autoLabel();
+    if(pBtn){
+      pBtn.setAttribute('aria-label',isID()?'Putar presentasi bernarasi':'Play narrated pitch');
+      if(!pBtn.disabled)pBtn.innerHTML=pitch&&!pitch.paused?'&#10074;&#10074; '+pitchLabel():'&#9658; '+pitchLabel();
+    }
+    img.alt=isID()?`Slide presentasi ${i+1} dari ${slides.length}`:`Presentation slide ${i+1} of ${slides.length}`;
+  }
   slides.forEach((s,k)=>{ const t=document.createElement('button');t.type='button';t.className='tick';t.setAttribute('aria-label',`Go to slide ${k+1}`);t.onclick=()=>go(k);ticks.appendChild(t);
-    const th=document.createElement('img');th.className='thumb';th.dataset.src=s;th.alt='';th.loading='lazy';th.decoding='async';th.fetchPriority='low';th.draggable=false;th.tabIndex=0;th.setAttribute('role','button');th.setAttribute('aria-label',`Go to slide ${k+1}`);th.onclick=()=>go(k);th.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(k);}});strip.appendChild(th); });
+    const th=document.createElement('img');th.className='thumb';th.dataset.src=s;th.alt='';th.loading='lazy';th.decoding='async';th.fetchPriority='low';th.draggable=false;th.setAttribute('aria-hidden','true');th.onclick=()=>go(k);strip.appendChild(th); });
   const tk=[...ticks.children], th=[...strip.children];
   if('IntersectionObserver' in window){
     const thumbObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)return;const thumb=entry.target;thumb.src=thumb.dataset.src;delete thumb.dataset.src;thumbObserver.unobserve(thumb);}),{root:strip,rootMargin:'0px 180px'});
     th.forEach(thumb=>thumbObserver.observe(thumb));
   }else th.forEach(thumb=>{thumb.src=thumb.dataset.src;delete thumb.dataset.src;});
-  function render(){ const token=++renderToken;stage.classList.remove('has-image');img.style.opacity=0;setTimeout(()=>{if(token!==renderToken)return;img.onload=()=>stage.classList.add('has-image');img.src=slides[i];img.alt=`Presentation slide ${i+1} of ${slides.length}`;img.style.opacity=1;},120);cur.textContent=i+1;
+  function render(){ const token=++renderToken;stage.classList.remove('has-image');img.style.opacity=0;setTimeout(()=>{if(token!==renderToken)return;img.onload=()=>stage.classList.add('has-image');img.src=slides[i];img.alt=isID()?`Slide presentasi ${i+1} dari ${slides.length}`:`Presentation slide ${i+1} of ${slides.length}`;img.style.opacity=1;},120);cur.textContent=i+1;
     tk.forEach((t,k)=>{t.classList.toggle('on',k===i);t.toggleAttribute('aria-current',k===i);});th.forEach((t,k)=>{t.classList.toggle('on',k===i);t.setAttribute('aria-current',k===i?'true':'false');});
     strip.scrollTo({left:th[i].offsetLeft-strip.clientWidth/2+th[i].clientWidth/2,behavior:RM?'auto':'smooth'});
     [i+1,i-1].forEach(n=>{if(slides[n]){const p=new Image();p.src=slides[n];}}); }
@@ -113,28 +131,29 @@ function buildDeck(el){
   img.onclick=()=>{openLB(slides,i,n=>{i=n;render();});};
   stage.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'){e.preventDefault();stopAuto();go(i+1);} if(e.key==='ArrowLeft'){e.preventDefault();stopAuto();go(i-1);} });
   // autoplay
-  function startAuto(){ if(pitch&&!pitch.paused)pitch.pause(); timer=setInterval(()=>go(i+1),4200); auto.classList.add('on');auto.setAttribute('aria-pressed','true');auto.innerHTML='&#10074;&#10074; Auto'; }
-  function stopAuto(){ if(timer){clearInterval(timer);timer=null;} auto.classList.remove('on');auto.setAttribute('aria-pressed','false');auto.innerHTML='&#9658; Auto'; }
+  function startAuto(){ if(pitch&&!pitch.paused)pitch.pause(); timer=setInterval(()=>go(i+1),4200); auto.classList.add('on');auto.setAttribute('aria-pressed','true');auto.innerHTML='&#10074;&#10074; '+autoLabel(); }
+  function stopAuto(){ if(timer){clearInterval(timer);timer=null;} auto.classList.remove('on');auto.setAttribute('aria-pressed','false');auto.innerHTML='&#9658; '+autoLabel(); }
   auto.onclick=()=>timer?stopAuto():startAuto();
   // Narrated pitch audio drives the slides. Slide navigation seeks the audio.
   const aSrc=DECK_AUDIO[el.dataset.deck];
+  let pBtn=null;
   if(aSrc){
-    const pBtn=document.createElement('button'); pBtn.className='auto pitch';
-    pBtn.innerHTML='&#9658; Pitch';pBtn.setAttribute('aria-label','Play narrated pitch');pBtn.setAttribute('aria-pressed','false');
+    pBtn=document.createElement('button'); pBtn.className='auto pitch';
+    pBtn.innerHTML='&#9658; '+pitchLabel();pBtn.setAttribute('aria-label',isID()?'Putar presentasi bernarasi':'Play narrated pitch');pBtn.setAttribute('aria-pressed','false');
     auto.parentNode.insertBefore(pBtn,auto);
     pBtn.onclick=()=>{
       if(pitch){ pitch.paused?pitch.play():pitch.pause(); return; }
-      pBtn.disabled=true; pBtn.innerHTML='&hellip; Pitch';
+      pBtn.disabled=true; pBtn.innerHTML='&hellip; '+pitchLabel();
       const wire=a=>{ pitch=a;
-        pitch.addEventListener('play',()=>{stopAuto();pBtn.classList.add('on');pBtn.setAttribute('aria-pressed','true');pBtn.innerHTML='&#10074;&#10074; Pitch';});
-        pitch.addEventListener('pause',()=>{pBtn.classList.remove('on');pBtn.setAttribute('aria-pressed','false');pBtn.innerHTML='&#9658; Pitch';});
+        pitch.addEventListener('play',()=>{stopAuto();pBtn.classList.add('on');pBtn.setAttribute('aria-pressed','true');pBtn.innerHTML='&#10074;&#10074; '+pitchLabel();});
+        pitch.addEventListener('pause',()=>{pBtn.classList.remove('on');pBtn.setAttribute('aria-pressed','false');pBtn.innerHTML='&#9658; '+pitchLabel();});
         pitch.addEventListener('ended',()=>{pitch.currentTime=0;go(0);});
         pitch.addEventListener('timeupdate',()=>{ if(!pitch.duration)return;
           const n=slideAtTime(pitch.currentTime);
           if(n!==i){ i=n; render(); } });
         pBtn.disabled=false;
         pitch.play().catch(err=>{ console.error('pitch playback blocked',err);
-          pBtn.classList.remove('on'); pBtn.innerHTML='&#9658; Pitch'; });
+          pBtn.classList.remove('on'); pBtn.innerHTML='&#9658; '+pitchLabel(); });
       };
       // preferred: blob-load so seeking never depends on server range-request
       // support; force an audio MIME for servers that send octet-stream (Safari)
@@ -146,6 +165,7 @@ function buildDeck(el){
           wire(new Audio(aSrc)); });
     };
   }
+  document.addEventListener('vito:languagechange',localizeDeck);
   // tilt + glow
   if(!RM){ stage.addEventListener('mousemove',e=>{ const r=stage.getBoundingClientRect(); const px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
       stage.style.transform=`rotateY(${(px-.5)*6}deg) rotateX(${(.5-py)*6}deg)`; stage.style.setProperty('--mx',px*100+'%'); stage.style.setProperty('--my',py*100+'%'); });
@@ -157,6 +177,7 @@ function buildDeck(el){
   stage.addEventListener('pointercancel',()=>{down=false;stage.classList.remove('drag');});
   el.classList.add('is-ready');
   render();
+  localizeDeck();
 }
 function ensureDeck(el){if(!el||el.dataset.deckBuilt==='true')return;el.dataset.deckBuilt='true';buildDeck(el);}
 const workCarouselRoot=document.querySelector('[data-work-carousel]');
@@ -237,7 +258,7 @@ document.addEventListener('keydown',e=>{if(!lb.classList.contains('open'))return
       const cap=caption(p);
       d.setAttribute('role','button'); d.setAttribute('aria-label',cap);
       const dims=PHOTO_DIMS[p.s];
-      d.innerHTML='<img src="assets/photos/'+p.s+'.jpg" alt="'+cap.replace(/"/g,'&quot;')+'" width="'+dims[0]+'" height="'+dims[1]+'" loading="lazy" decoding="async"><div class="gcap"><span class="gtag">'+catLabel(p.k)+'</span>'+cap+'</div>';
+      d.innerHTML='<picture><source srcset="assets/photos/thumbs/'+p.s+'.avif" type="image/avif"><img src="assets/photos/'+p.s+'.jpg" alt="'+cap.replace(/"/g,'&quot;')+'" width="'+dims[0]+'" height="'+dims[1]+'" loading="lazy" decoding="async" fetchpriority="low"></picture><div class="gcap"><span class="gtag">'+catLabel(p.k)+'</span>'+cap+'</div>';
       const open=()=>openLB(shown.map(x=>'assets/photos/'+x.s+'.jpg'),i,null,shown.map(caption));
       d.onclick=open;
       d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
@@ -322,7 +343,7 @@ if(!RM && !matchMedia('(pointer:coarse)').matches){
 /* ---------- nav + progress + reveal ---------- */
 const nav=document.getElementById('nav'),prog=document.getElementById('progress');
 const navToggle=document.getElementById('navToggle'),navLinks=document.getElementById('navLinks');
-function setMenu(open){nav.classList.toggle('menu-open',open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');}
+function setMenu(open){nav.classList.toggle('menu-open',open);navToggle.setAttribute('aria-expanded',String(open));navToggle.setAttribute('aria-label',open?(siteIsIndonesian()?'Tutup navigasi':'Close navigation'):(siteIsIndonesian()?'Buka navigasi':'Open navigation'));}
 navToggle.addEventListener('click',()=>setMenu(!nav.classList.contains('menu-open')));
 navLinks.addEventListener('click',e=>{if(e.target.closest('a'))setMenu(false);});
 document.addEventListener('click',e=>{if(nav.classList.contains('menu-open')&&!nav.contains(e.target))setMenu(false);});
@@ -333,5 +354,10 @@ let scrollTick=false;
 addEventListener('scroll',()=>{if(scrollTick)return;scrollTick=true;requestAnimationFrame(()=>{onScroll();scrollTick=false;});},{passive:true});onScroll();
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('seen');io.unobserve(e.target);}}),{threshold:.12});
 document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
+function revealVisible(){document.querySelectorAll('[data-reveal]:not(.seen)').forEach(el=>{const r=el.getBoundingClientRect();if(r.bottom>0&&r.top<innerHeight){el.classList.add('seen');io.unobserve(el);}});}
+addEventListener('load',()=>requestAnimationFrame(revealVisible));
+addEventListener('hashchange',()=>requestAnimationFrame(revealVisible));
 addEventListener('load',()=>document.getElementById('herorev').classList.add('reveal'));
 document.getElementById('herorev').classList.add('reveal');
+document.addEventListener('vito:languagechange',()=>setMenu(nav.classList.contains('menu-open')));
+setMenu(false);

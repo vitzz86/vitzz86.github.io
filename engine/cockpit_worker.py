@@ -741,6 +741,22 @@ def write_atomic(payload: dict, scores_payload: dict | None = None,
     if mcp_assets_payload is not None:
         _write_json_atomic(settings.MCP_ASSETS_JSON_PATH, mcp_assets_payload)
         print(f"[worker] MCP asset contract written -> {os.path.abspath(settings.MCP_ASSETS_JSON_PATH)}")
+    shell_payload = {
+        key: value for key, value in payload.items()
+        if key not in {"sectors", "ticker_news", "research"}
+    }
+    shell_payload["sectors"] = []
+    shell_payload["ticker_news"] = {}
+    shell_payload["research"] = {}
+    shell_payload["asset_count"] = sum(len(sector.get("constituents", [])) for sector in payload.get("sectors", []))
+    _write_json_atomic(settings.COCKPIT_SHELL_JSON_PATH, shell_payload)
+    print(f"[worker] cockpit shell written -> {os.path.abspath(settings.COCKPIT_SHELL_JSON_PATH)}")
+    _write_json_atomic(settings.COCKPIT_DETAIL_JSON_PATH, {
+        "timestamp": payload.get("timestamp"),
+        "ticker_news": payload.get("ticker_news") or {},
+        "research": payload.get("research") or {},
+    })
+    print(f"[worker] cockpit detail written -> {os.path.abspath(settings.COCKPIT_DETAIL_JSON_PATH)}")
     _write_json_atomic(settings.DATA_JSON_PATH, payload)
     print(f"[worker] data contract written -> {os.path.abspath(settings.DATA_JSON_PATH)}")
 
