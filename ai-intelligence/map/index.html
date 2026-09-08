@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#11150f" />
+  <title>AI Map | Vito Christian Samudra</title>
+  <meta name="description" content="Explore active AI companies across the world by headquarters, region and AI stack layer." />
+  <link rel="canonical" href="https://vitzz86.github.io/ai-intelligence/map/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="AI Map | Vito Christian Samudra" />
+  <meta property="og:description" content="Explore the companies building the AI economy across regions, stack layers, ownership types, and application verticals." />
+  <meta property="og:url" content="https://vitzz86.github.io/ai-intelligence/map/" />
+  <meta property="og:image" content="https://vitzz86.github.io/assets/ai-intelligence/ai-map-social-preview.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AI Map — a global view of the companies building the AI economy" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI Map | Vito Christian Samudra" />
+  <meta name="twitter:description" content="Explore the companies building the AI economy across regions, stack layers, ownership types, and application verticals." />
+  <meta name="twitter:image" content="https://vitzz86.github.io/assets/ai-intelligence/ai-map-social-preview.png" />
+  <link href="/assets/icons/vito-favicon-32.png?v=20260830-2" rel="icon" sizes="32x32" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/ai-intelligence/ai-intelligence.css?v=20260907-6" />
+</head>
+<body class="directory-page map-page flat-map-page">
+  <header class="site-header">
+    <a class="brand" href="/ai-intelligence/map/" aria-label="AI Map home"><span class="brand-mark" aria-hidden="true"></span><span>AI Map</span></a>
+    <nav aria-label="AI Map navigation"><a class="nav-home" href="/">Portfolio ↗</a></nav>
+  </header>
+
+  <main class="map-main">
+    <section class="map-workspace" id="world-map" aria-label="AI company world map">
+      <div class="flat-map-stage" id="companyMap"><div class="globe-loading" id="mapLoading"><span></span><p>Loading the ecosystem map</p></div></div>
+
+      <aside class="map-control-panel" id="mapControls" aria-label="Map controls">
+        <div class="map-panel-title"><div><span class="map-panel-mark">AI</span><div><strong>World Map</strong><small>497 organisations · 6 layers</small></div></div>
+          <div class="map-panel-actions"><button class="map-mobile-filter-toggle" id="mapFiltersToggle" type="button" aria-controls="mapControls" aria-expanded="false"><span>Filters</span><i aria-hidden="true">⌄</i></button><details class="product-help"><summary aria-label="About the AI Map">?</summary><div><button class="tooltip-close" type="button" data-close-help aria-label="Close help">×</button><strong>Where is the AI economy being built?</strong><p>Explore organisations by headquarters, region and stack layer. Country color and bubbles show directory concentration, not market share or exact office locations.</p><button class="map-guide-link" type="button" data-reopen-onboarding>View quick guide</button></div></details></div>
+        </div>
+        <label class="map-app-search"><span>Search</span><input id="mapSearch" type="search" placeholder="Company, capability or country" autocomplete="off" /></label>
+        <div class="map-control-grid"><label><span>Continent or region</span><select id="mapRegion"><option value="all">All regions</option><option value="North America">North America</option><option value="Europe">Europe</option><option value="apac">Asia Pacific</option><option value="sea">Southeast Asia</option><option value="Global">Global projects</option></select></label><label><span>Headquarters</span><select id="mapCountry"><option value="all">All locations</option></select></label><label><span>Ownership</span><select id="mapOwnership"><option value="all">All ownership</option><option value="public">Public</option><option value="private">Private</option></select></label><label><span>Stack layer</span><select id="mapLayer"><option value="all">All six layers</option><option value="6">6 · Applications</option><option value="5">5 · Software</option><option value="4">4 · AI models</option><option value="3">3 · Compute</option><option value="2">2 · Semiconductors</option><option value="1">1 · Energy</option></select></label><label class="map-vertical-filter"><span>Application vertical</span><select id="mapVertical"><option value="all">All application verticals</option></select></label></div>
+        <div class="map-compact-metrics" aria-live="polite"><div><strong id="mapVisibleCount">0</strong><span>organisations</span></div><div><strong id="mapCountryCount">0</strong><span>locations</span></div><div><strong id="mapTopHub">Loading</strong><span>largest hub</span></div></div>
+        <div class="map-layer-key"><span><i data-layer="6"></i>Applications</span><span><i data-layer="5"></i>Software</span><span><i data-layer="4"></i>Models</span><span><i data-layer="3"></i>Compute</span><span><i data-layer="2"></i>Chips</span><span><i data-layer="1"></i>Energy</span></div>
+        <button class="map-reset-button" id="mapReset" type="button">Reset all filters</button>
+      </aside>
+
+      <div class="map-floating-actions"><button id="mapDatabaseOpen" type="button" aria-label="Open company database">▤ <span>Database</span></button><button id="mapResetView" type="button" aria-label="Reset map view">↺ <span>Reset view</span></button><button id="mapFullscreen" type="button" aria-label="Open full-screen map">⛶ <span>Full screen</span></button></div>
+      <aside class="map-insight-rail" aria-label="AI ecosystem insights">
+        <section class="map-insight-card"><header><div><span>01</span><strong>Leading headquarters</strong></div><details class="insight-help"><summary aria-label="About leading headquarters">?</summary><div><button class="tooltip-close" type="button" data-close-help aria-label="Close help">×</button><p>Ranks headquarters locations among organisations matching the active filters. Counts describe directory coverage, not market share.</p></div></details></header><div id="mapHubInsights"></div></section>
+        <section class="map-insight-card"><header><div><span>02</span><strong>Stack composition</strong></div><details class="insight-help"><summary aria-label="About stack composition">?</summary><div><button class="tooltip-close" type="button" data-close-help aria-label="Close help">×</button><p>Shows every available AI stack layer under the other active filters. Select a layer to update the map, left filters and current view together.</p></div></details></header><div id="mapLayerInsights"></div></section>
+        <section class="map-insight-card"><header><div><span>03</span><strong>Application verticals</strong></div><details class="insight-help"><summary aria-label="About application verticals">?</summary><div><button class="tooltip-close" type="button" data-close-help aria-label="Close help">×</button><p>Shows every available industry and workflow category under the other active filters. Select one to update the whole workspace.</p></div></details></header><div id="mapVerticalInsights"></div></section>
+      </aside>
+      <aside class="map-app-context" id="mapContext" aria-label="Selected company" aria-live="polite"></aside>
+      <section class="map-result-tray" id="mapResultTray" aria-label="Companies in the current map view">
+        <div class="map-tray-heading"><div><span>Current view</span><strong id="mapTrayCount">0</strong></div><div class="map-tray-actions"><p id="mapTrayLabel">Select a country or search for a company</p></div></div>
+        <div class="map-company-tray" id="mapCompanyTray"></div>
+      </section>
+    </section>
+
+  </main>
+
+  <dialog class="map-onboarding" id="mapOnboarding" aria-labelledby="mapOnboardingTitle">
+    <div class="map-onboarding-card">
+      <button class="map-onboarding-close" type="button" data-dismiss-onboarding aria-label="Skip introduction">×</button>
+      <span class="map-onboarding-kicker">AI MAP · INITIAL RELEASE</span>
+      <h1 id="mapOnboardingTitle">Explore the companies building the AI economy.</h1>
+      <p class="map-onboarding-lead">Move from the global picture to a country, stack layer, application vertical, or individual organisation—without leaving the map.</p>
+      <div class="map-onboarding-steps">
+        <article><b>01</b><div><strong>Filter the ecosystem</strong><p>Combine geography, ownership, stack layer, and application vertical.</p></div></article>
+        <article><b>02</b><div><strong>Follow the current view</strong><p>The map, rankings, company tray, and database stay connected.</p></div></article>
+        <article><b>03</b><div><strong>Open the evidence</strong><p>Select a company for its profile; public listings also include market intelligence.</p></div></article>
+      </div>
+      <div class="map-onboarding-notice"><strong>Initial version</strong><p>Some organisation, location, leadership, logo, funding, or market information may still be incomplete or inaccurate. Please verify important details through the linked primary sources.</p></div>
+      <button class="map-onboarding-start" type="button" data-dismiss-onboarding>Start exploring <span aria-hidden="true">→</span></button>
+    </div>
+  </dialog>
+
+  <dialog class="map-database-dialog" id="mapDatabase" aria-labelledby="mapDatabaseTitle">
+    <div class="map-database-shell">
+      <header class="map-database-header"><div><span class="database-icon" aria-hidden="true">▤</span><div><h2 id="mapDatabaseTitle">Organisation database</h2><p><strong id="databaseCount">0</strong> organisations in this view</p></div></div><button id="mapDatabaseClose" type="button" aria-label="Close company database">×</button></header>
+      <div class="map-database-controls">
+        <label class="database-search"><span>Search</span><input id="databaseSearch" type="search" placeholder="Name, capability, location or type" autocomplete="off" /></label>
+        <label><span>Region</span><select id="databaseRegion"><option value="all">All regions</option><option value="North America">North America</option><option value="Europe">Europe</option><option value="apac">Asia Pacific</option><option value="sea">Southeast Asia</option><option value="Global">Global projects</option></select></label>
+        <label><span>Layer</span><select id="databaseLayer"><option value="all">All layers</option><option value="6">6 · Applications</option><option value="5">5 · Software</option><option value="4">4 · AI models</option><option value="3">3 · Compute</option><option value="2">2 · Semiconductors</option><option value="1">1 · Energy</option></select></label>
+        <label><span>Headquarters</span><select id="databaseCountry"><option value="all">All locations</option></select></label>
+        <label><span>Ownership</span><select id="databaseOwnership"><option value="all">All ownership</option><option value="public">Public</option><option value="private">Private</option></select></label>
+        <label><span>Application vertical</span><select id="databaseVertical"><option value="all">All application verticals</option></select></label>
+        <button id="databaseReset" type="button">Reset</button>
+      </div>
+      <div class="map-database-table-wrap">
+        <table class="map-database-table"><thead><tr><th>Organisation</th><th>Layer</th><th>Headquarters</th><th>Ownership</th><th>Status</th><th>Application vertical</th></tr></thead><tbody id="databaseRows"></tbody></table>
+      </div>
+      <footer class="map-database-footer"><p id="databaseRange">0 results</p></footer>
+    </div>
+  </dialog>
+  <noscript><p class="noscript">The interactive map needs JavaScript.</p></noscript>
+  <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js" crossorigin="anonymous" defer></script>
+  <script src="/assets/ai-intelligence/world-map.js?v=20260907-9" defer></script>
+</body>
+</html>
