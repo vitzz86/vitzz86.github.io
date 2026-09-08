@@ -1750,11 +1750,18 @@ dialog::backdrop { background: rgba(7, 18, 14, 0.62); backdrop-filter: blur(7px)
 .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 .map-profile-brand { align-items: center; }
 .map-profile-kicker { display: block; margin-bottom: 5px; color: #86c7ae; font-family: var(--mono); font-size: .49rem; letter-spacing: .08em; text-transform: uppercase; }
-.map-profile-tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 17px; }
-.map-profile-tag-cloud span { max-width: 100%; padding: 6px 8px; border: 1px solid rgba(134,199,174,.2); border-radius: 999px; background: rgba(134,199,174,.08); color: #bdc9bd; font-family: var(--mono); font-size: .48rem; line-height: 1.25; }
-.map-profile-tag-cloud span.is-status { border-color: rgba(134,199,174,.34); background: rgba(134,199,174,.16); color: #a1d8c3; }
-.map-profile-tag-cloud span.is-unicorn { border-color: rgba(222,177,64,.42); background: rgba(222,177,64,.13); color: #f0d77a; }
-.map-profile-tag-cloud span.is-funding,.map-profile-tag-cloud span.is-market { border-color: rgba(91,161,139,.36); color: #9ed8c1; }
+.map-profile-facts { margin: 17px 0 0; border: 1px solid rgba(134,199,174,.18); border-radius: 14px; background: rgba(9,15,10,.24); overflow: hidden; }
+.map-profile-facts > div { min-height: 40px; padding: 9px 11px; border-bottom: 1px solid rgba(134,199,174,.14); display: grid; grid-template-columns: minmax(112px,.72fr) minmax(0,1.28fr); align-items: start; gap: 12px; }
+.map-profile-facts > div:last-child { border-bottom: 0; }
+.map-profile-facts dt { color: #879185; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: .49rem; letter-spacing: .055em; line-height: 1.45; text-transform: uppercase; }
+.map-profile-facts dt i { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: #688075; box-shadow: 0 0 0 3px rgba(104,128,117,.09); }
+.map-profile-facts dd { min-width: 0; margin: 0; color: #d5dbd1; font-size: .65rem; font-weight: 500; line-height: 1.45; overflow-wrap: anywhere; }
+.map-profile-facts .is-status dt i { background: #86c7ae; }.map-profile-facts .is-status dd { color: #a1d8c3; }
+.map-profile-facts .is-funding dt i,.map-profile-facts .is-market dt i { background: #63af92; }
+.map-profile-facts .is-unicorn dt i { background: #dfb642; }.map-profile-facts .is-unicorn dd { color: #f0d77a; }
+.flat-map-page .map-app-context .map-profile-facts { display: block; margin: 17px 0 0; background: rgba(9,15,10,.24); }
+.flat-map-page .map-app-context .map-profile-facts > div { min-height: 40px; padding: 9px 11px; border-right: 0; border-bottom: 1px solid rgba(134,199,174,.14); display: grid; grid-template-columns: minmax(112px,.72fr) minmax(0,1.28fr); align-items: start; justify-content: initial; }
+.flat-map-page .map-app-context .map-profile-facts > div:last-child { border-bottom: 0; }
 .map-profile-offering { margin: 17px 0 0 !important; color: #c8cec2 !important; font-size: .74rem !important; line-height: 1.58 !important; }
 .map-profile-icon-row,.map-profile-link-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .map-profile-icon-row { margin-top: 15px; }
@@ -1900,7 +1907,8 @@ dialog::backdrop { background: rgba(7, 18, 14, 0.62); backdrop-filter: blur(7px)
   .map-onboarding-card { padding: 26px 20px 20px; }
   .map-onboarding h1 { font-size: 2.15rem; }
   .map-onboarding-lead { font-size: .76rem; }
-  .map-profile-tag-cloud { margin-top: 14px; }
+  .map-profile-facts { margin-top: 14px; }
+  .flat-map-page .map-app-context .map-profile-facts > div { grid-template-columns: minmax(100px,.75fr) minmax(0,1.25fr); }
   .map-public-chart { height: 270px; }
   .map-leader-card { grid-template-columns: 52px minmax(0,1fr) auto; }
   .map-leader-photo { width: 52px; height: 52px; }

@@ -73,6 +73,19 @@ function logoFor(record) { const host = domain(record.website || record.profile?
 function logoMarkup(record, className = "map-company-logo") { const url = logoFor(record); const letters = escapeHTML(initials(record.name)); return url ? `<span class="${className}"><img src="${escapeHTML(url)}" alt="" loading="lazy" decoding="async" data-map-logo /><span hidden>${letters}</span></span>` : `<span class="${className}"><span>${letters}</span></span>`; }
 function attachLogoFallbacks(root = document) { root.querySelectorAll("img[data-map-logo]").forEach((image) => { if (image.dataset.bound) return; image.dataset.bound = "1"; image.addEventListener("error", () => { image.hidden = true; if (image.nextElementSibling) image.nextElementSibling.hidden = false; }, { once: true }); }); }
 function meaningful(value) { return value !== null && value !== undefined && value !== "" && !/^(not |no |unknown|unavailable|research pending|not applicable)/i.test(String(value).trim()); }
+function cleanLocationPart(value) {
+  const part=String(value||"").trim();
+  return !part||/country[- ]level|location only|hq_location|not (publicly )?disclosed|unknown/i.test(part)?"":part;
+}
+function formatHeadquarters(record) {
+  const hq=record.profile?.headquarters||{};
+  const country=cleanLocationPart(hq.country)||cleanLocationPart(record.country);
+  const city=cleanLocationPart(hq.city);
+  if(city&&country&&city.localeCompare(country,undefined,{sensitivity:"accent"})!==0) return `${city}, ${country}`;
+  if(country) return country;
+  if(city) return city;
+  return cleanLocationPart(record.location)||"Location not verified";
+}
 function socialKind(url = "") { const host=domain(url); if(host.includes("linkedin")) return "linkedin"; if(host==="x.com"||host.includes("twitter")) return "x"; if(host.includes("instagram")) return "instagram"; if(host.includes("crunchbase")) return "crunchbase"; if(host.includes("yahoo")) return "market"; return "website"; }
 function socialLabel(url = "", fallback = "Open link") { const kind=socialKind(url); return ({linkedin:"LinkedIn",x:"X",instagram:"Instagram",crunchbase:"Crunchbase",market:"Yahoo Finance",website:fallback})[kind]; }
 function profileIcon(kind) {
@@ -112,7 +125,7 @@ function enrichRecord(record, profile) {
   record.companyId = profile.id || record.companyId;
   record.name = profile.name || record.name;
   record.country = hq.country || record.country;
-  record.location = [hq.city, hq.country].filter(Boolean).join(", ") || record.location;
+  record.location = formatHeadquarters(record);
   record.region = hq.region || record.region;
   record.organisationType = profile.entityType || record.organisationType;
   record.ownershipStatus = profile.ownershipStatus || "Ownership not classified";
@@ -157,7 +170,7 @@ function assignMapCoordinates(records) {
     const hub = ecosystemHubs[country];
     const centre = hub?.coordinates || coordinates[country];
     group.sort((a, b) => a.name.localeCompare(b.name)).forEach((record, index) => {
-      if (record.coordinates?.every(Number.isFinite)) { record.mapCoordinates = record.coordinates; record.coordinatePrecision = "verified"; record.mapLocation = record.location; return; }
+      if (record.coordinates?.every(Number.isFinite)) { record.mapCoordinates = record.coordinates; record.coordinatePrecision = "verified"; record.mapLocation = formatHeadquarters(record); return; }
       if (!centre) { record.mapCoordinates = null; record.coordinatePrecision = "unlocated"; record.mapLocation = "Not placed on map"; return; }
       const compact = ["Singapore", "Hong Kong"].includes(country);
       const radiusLimit = hub?.radius || (compact ? 0.34 : Math.min(3.2, 0.5 + Math.sqrt(group.length) * 0.18));
@@ -167,7 +180,7 @@ function assignMapCoordinates(records) {
       const longitudeScale = Math.max(0.35, Math.cos(centre[1] * Math.PI / 180));
       record.mapCoordinates = [centre[0] + Math.cos(angle) * radius / longitudeScale, centre[1] + Math.sin(angle) * radius * 0.62];
       record.coordinatePrecision = hub ? "hub" : "country";
-      record.mapLocation = hub?.name || `${country} country-level placement`;
+      record.mapLocation = formatHeadquarters(record);
     });
   });
   return records;
@@ -217,22 +230,28 @@ function leaderMarkup(record) {
   return `<article class="map-leader-card"><div class="map-leader-photo">${photo}</div><div><span>KEY LEADERSHIP</span><strong>${escapeHTML(name)}</strong>${position?`<p>${escapeHTML(position)}</p>`:""}</div>${links ? `<nav>${links}</nav>` : ""}</article>`;
 }
 
-function profileTags(record) {
+function profileFacts(record) {
   const market = record.profile?.market || {};
   const profile=record.profile||{}, ai=profile.aiPosition||{};
-  const tags=[
-    [profile.lifecycleStatus,"status"],
-    [profile.ownershipStatus||record.organisationType,"ownership"],
-    [`Layer ${record.primaryLayer} · ${layerMeta[record.primaryLayer]?.short||"AI"}`,`layer-${record.primaryLayer}`],
-    [record.location,"location"],
-    [meaningful(profile.foundedYear)?`Founded ${profile.foundedYear}`:null,"neutral"],
-    [meaningful(ai.aiIntensity)?ai.aiIntensity:null,"ai"],
-    ...record.verticals.slice(0,3).map((vertical)=>[vertical,"vertical"]),
+  const facts=[
+    ["Type",profile.ownershipStatus||market.type||record.organisationType,"type"],
+    ["Status",profile.lifecycleStatus,"status"],
+    ["Headquarters",formatHeadquarters(record),"location"],
+    ["Layer",`Layer ${record.primaryLayer} · ${layerMeta[record.primaryLayer]?.short||"AI"}`,`layer-${record.primaryLayer}`],
+    ["Focus",ai.primaryCapability,"focus"],
+    ["Founded",profile.foundedYear,"founded"],
+    ["AI classification",ai.aiIntensity,"ai"],
+    ["Application vertical",record.verticals.slice(0,3).join(" · "),"vertical"],
   ];
-  if(market.type==="public") tags.push([[market.ticker,market.exchange].filter(Boolean).join(" · "),"market"]);
-  if(market.type==="private"&&meaningful(market.latestRoundType)) tags.push([[market.latestRoundType,market.latestRoundDate].filter(Boolean).join(" · "),"funding"]);
-  if(/^(unicorn|decacorn)/i.test(String(market.unicornStatus||""))) tags.push([market.unicornStatus.split("—")[0].trim(),"unicorn"]);
-  return tags.filter(([label])=>meaningful(label)).map(([label,tone])=>`<span class="is-${escapeHTML(tone)}">${escapeHTML(label)}</span>`).join("");
+  if(market.type==="public") facts.push(["Market",[market.ticker,market.exchange].filter(meaningful).join(" · "),"market"]);
+  if(market.type==="private") {
+    const fundraising=[market.latestRoundType,meaningful(market.latestRoundAmountUsd)?formatUsd(market.latestRoundAmountUsd):null,market.latestRoundDate].filter(meaningful).join(" · ");
+    if(fundraising) facts.push(["Fundraising",fundraising,"funding"]);
+    if(meaningful(market.totalFundingUsd)) facts.push(["Total funding",formatUsd(market.totalFundingUsd),"funding"]);
+    if(meaningful(market.latestValuationUsd)) facts.push(["Latest valuation",`${formatUsd(market.latestValuationUsd)}${meaningful(market.valuationDate)?` · ${market.valuationDate}`:""}`,"unicorn"]);
+  }
+  if(/^(unicorn|decacorn)/i.test(String(market.unicornStatus||""))) facts.push(["Unicorn status",market.unicornStatus.split("—")[0].trim(),"unicorn"]);
+  return facts.filter(([,value])=>meaningful(value)).map(([label,value,tone])=>`<div class="is-${escapeHTML(tone)}"><dt><i aria-hidden="true"></i>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>`).join("");
 }
 
 function profileLinks(record) {
@@ -294,7 +313,7 @@ function mountPublicChart(record) {
 function renderProfile(record) {
   const profile = record.profile || {};
   const isPublic=profile.market?.type==="public";
-  const companyBody=`<div class="map-profile-tag-cloud">${profileTags(record)}</div><p class="map-profile-offering">${escapeHTML(profile.description || record.offering)}</p><nav class="map-profile-icon-row" aria-label="Company links">${profileLinks(record)}</nav>${leaderMarkup(record)}`;
+  const companyBody=`<dl class="map-profile-facts">${profileFacts(record)}</dl><p class="map-profile-offering">${escapeHTML(profile.description || record.offering)}</p><nav class="map-profile-icon-row" aria-label="Company links">${profileLinks(record)}</nav>${leaderMarkup(record)}`;
   const tabs=isPublic?`<div class="map-profile-tabs is-public" role="tablist" aria-label="Company and market views"><button type="button" role="tab" data-profile-tab="company" aria-selected="${state.profileTab==="company"}" class="${state.profileTab==="company"?"is-active":""}">Company</button><button type="button" role="tab" data-profile-tab="market" aria-selected="${state.profileTab==="market"}" class="${state.profileTab==="market"?"is-active":""}">Market</button></div>`:"";
   const content=isPublic?`<section class="map-profile-panel" data-profile-panel="company"${state.profileTab==="company"?"":" hidden"}>${companyBody}</section><section class="map-profile-panel" data-profile-panel="market"${state.profileTab==="market"?"":" hidden"}>${publicMarketPanel(record)}</section>`:`<section class="map-profile-panel map-profile-single">${companyBody}</section>`;
   el.context.innerHTML = `<button class="map-context-close" type="button" data-close-profile aria-label="Close company profile">×</button><div class="map-profile-brand">${logoMarkup(record, "map-profile-logo")}<div><span class="map-profile-kicker">${escapeHTML(profile.entityType||record.organisationType||"Organisation")}</span><h2>${escapeHTML(record.name)}</h2></div></div>${tabs}${content}`;
@@ -357,7 +376,7 @@ function renderDatabase() {
   const records = state.records.filter(databaseMatches).sort((a,b)=>a.name.localeCompare(b.name));
   el.databaseCount.textContent = records.length.toLocaleString("en-US");
   el.databaseRange.textContent = records.length ? `${records.length.toLocaleString("en-US")} results · scroll to explore all` : "0 results";
-  el.databaseRows.innerHTML = records.length ? records.map((record)=>`<tr data-database-company="${escapeHTML(record.id)}" tabindex="0"><td><span class="database-company-cell">${logoMarkup(record,"database-company-logo")}<span><strong>${escapeHTML(record.name)}</strong><small>${escapeHTML(record.profile?.description||record.offering)}</small></span></span></td><td><span class="database-layer-pill" style="--database-layer:${layerMeta[record.primaryLayer]?.color||"#0d665b"}">${record.primaryLayer} · ${escapeHTML(layerMeta[record.primaryLayer]?.short||"AI")}</span></td><td>${escapeHTML(record.location)}</td><td>${escapeHTML(displayValue(record.profile?.ownershipStatus,record.organisationType))}</td><td>${escapeHTML(displayValue(record.profile?.lifecycleStatus))}</td><td>${record.verticals.length?escapeHTML(record.verticals.slice(0,2).join(" · ")):"—"}</td></tr>`).join("") : `<tr><td class="database-empty" colspan="6">No organisations match these filters.</td></tr>`;
+  el.databaseRows.innerHTML = records.length ? records.map((record)=>`<tr data-database-company="${escapeHTML(record.id)}" tabindex="0"><td><span class="database-company-cell">${logoMarkup(record,"database-company-logo")}<span><strong>${escapeHTML(record.name)}</strong><small>${escapeHTML(record.profile?.description||record.offering)}</small></span></span></td><td><span class="database-layer-pill" style="--database-layer:${layerMeta[record.primaryLayer]?.color||"#0d665b"}">${record.primaryLayer} · ${escapeHTML(layerMeta[record.primaryLayer]?.short||"AI")}</span></td><td>${escapeHTML(formatHeadquarters(record))}</td><td>${escapeHTML(displayValue(record.profile?.ownershipStatus,record.organisationType))}</td><td>${escapeHTML(displayValue(record.profile?.lifecycleStatus))}</td><td>${record.verticals.length?escapeHTML(record.verticals.slice(0,2).join(" · ")):"—"}</td></tr>`).join("") : `<tr><td class="database-empty" colspan="6">No organisations match these filters.</td></tr>`;
   attachLogoFallbacks(el.databaseRows);
 }
 
