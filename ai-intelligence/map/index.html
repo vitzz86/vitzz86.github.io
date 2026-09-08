@@ -24,9 +24,30 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" crossorigin="anonymous" />
-  <link rel="stylesheet" href="/assets/ai-intelligence/ai-intelligence.css?v=20260908-1" />
+  <link rel="stylesheet" href="/assets/ai-intelligence/ai-intelligence.css?v=20260908-2" />
 </head>
 <body class="directory-page map-page flat-map-page">
+  <div class="map-opening" id="mapOpening" role="status" aria-live="polite" aria-label="Opening AI Map">
+    <button class="map-opening-skip" type="button" data-skip-opening>Skip intro <span aria-hidden="true">→</span></button>
+    <div class="map-opening-core">
+      <div class="map-opening-orbit" aria-hidden="true">
+        <span class="map-opening-ring"></span>
+        <span class="map-opening-ring"></span>
+        <span class="map-opening-ring"></span>
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+        <b></b>
+      </div>
+      <p>AI MAP · GLOBAL INTELLIGENCE</p>
+      <h1>Mapping the companies<br />building the AI economy.</h1>
+      <div class="map-opening-metrics" aria-label="Map coverage">
+        <span><strong>497</strong> organisations</span>
+        <span><strong>29</strong> locations</span>
+        <span><strong>6</strong> stack layers</span>
+      </div>
+      <div class="map-opening-progress" aria-hidden="true"><i></i></div>
+    </div>
+  </div>
+
   <header class="site-header">
     <a class="brand" href="/ai-intelligence/map/" aria-label="AI Map home"><span class="brand-mark" aria-hidden="true"></span><span>AI Map</span></a>
     <nav aria-label="AI Map navigation"><a class="nav-home" href="/">Portfolio ↗</a></nav>
@@ -98,6 +119,6 @@
   </dialog>
   <noscript><p class="noscript">The interactive map needs JavaScript.</p></noscript>
   <script src="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.js" crossorigin="anonymous" defer></script>
-  <script src="/assets/ai-intelligence/world-map.js?v=20260908-1" defer></script>
+  <script src="/assets/ai-intelligence/world-map.js?v=20260908-2" defer></script>
 </body>
 </html>

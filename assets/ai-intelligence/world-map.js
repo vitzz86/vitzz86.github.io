@@ -58,7 +58,7 @@ const el = {
   database: document.querySelector("#mapDatabase"), databaseOpen: document.querySelector("#mapDatabaseOpen"), databaseClose: document.querySelector("#mapDatabaseClose"),
   databaseSearch: document.querySelector("#databaseSearch"), databaseRegion: document.querySelector("#databaseRegion"), databaseLayer: document.querySelector("#databaseLayer"), databaseCountry: document.querySelector("#databaseCountry"), databaseOwnership: document.querySelector("#databaseOwnership"), databaseVertical: document.querySelector("#databaseVertical"),
   databaseCount: document.querySelector("#databaseCount"), databaseRows: document.querySelector("#databaseRows"), databaseRange: document.querySelector("#databaseRange"), databaseReset: document.querySelector("#databaseReset"),
-  onboarding: document.querySelector("#mapOnboarding"),
+  onboarding: document.querySelector("#mapOnboarding"), opening: document.querySelector("#mapOpening"),
   hubInsights: document.querySelector("#mapHubInsights"), layerInsights: document.querySelector("#mapLayerInsights"), verticalInsights: document.querySelector("#mapVerticalInsights"),
 };
 
@@ -477,6 +477,14 @@ function dismissOnboarding() {
   if (el.onboarding?.open) el.onboarding.close();
   try { localStorage.setItem("ai-map-onboarding-v1","seen"); } catch (_) {}
 }
+let openingFinished=false;
+function finishOpening() {
+  if (openingFinished) return;
+  openingFinished=true;
+  if (!el.opening) { openOnboarding(); return; }
+  el.opening.classList.add("is-leaving");
+  window.setTimeout(()=>{ el.opening.hidden=true; openOnboarding(); },650);
+}
 
 document.addEventListener("click", (event) => {
   const country=event.target.closest("[data-map-country]"); if (country) selectCountry(country.dataset.mapCountry);
@@ -490,6 +498,7 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("[data-close-context]")) el.context.classList.remove("is-open");
   if (event.target.closest("[data-close-help]")) event.target.closest("details")?.removeAttribute("open");
   if (event.target.closest("[data-dismiss-onboarding]")) dismissOnboarding();
+  if (event.target.closest("[data-skip-opening]")) finishOpening();
   if (event.target.closest("[data-reopen-onboarding]")) { event.target.closest("details")?.removeAttribute("open"); openOnboarding(true); }
 });
 
@@ -521,7 +530,8 @@ document.addEventListener("fullscreenchange",()=>{ el.workspace.classList.toggle
 const compactMapQuery=window.matchMedia("(max-width: 780px)");
 setMobileFilters(false);
 compactMapQuery.addEventListener?.("change",()=>setMobileFilters(false));
-window.setTimeout(()=>openOnboarding(),420);
+const openingDuration=window.matchMedia("(prefers-reduced-motion: reduce)").matches?450:4900;
+window.setTimeout(finishOpening,openingDuration);
 
 Promise.all([
   fetch(`${DATA_ROOT}/entities.json?v=20260904-2`,{cache:"no-store"}).then((response)=>response.json()),
