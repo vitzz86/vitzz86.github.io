@@ -226,7 +226,12 @@ function leaderMarkup(record) {
   const name = String(leader.name);
   const position = meaningful(leader.position) ? String(leader.position) : "";
   const photo = hasURL(leader.photo) ? `<img src="${escapeHTML(leader.photo)}" alt="${escapeHTML(name)}" loading="lazy" decoding="async" data-leader-photo />` : `<span>${escapeHTML(initials(name))}</span>`;
-  const links = [profileLink(leader.linkedin,"Leadership profile"),profileLink(leader.officialProfile,"Official leadership profile")].filter(Boolean).join("");
+  const seen = new Set();
+  const links = [
+    [leader.linkedin || leader.social, leader.socialPlatform ? `${leader.socialPlatform} profile` : "Leadership profile"],
+    [leader.officialProfile, "Official leadership profile"],
+    [leader.photoSource, "Photo source"],
+  ].filter(([url]) => hasURL(url) && !seen.has(url) && seen.add(url)).map(([url,label]) => profileLink(url,label)).join("");
   return `<article class="map-leader-card"><div class="map-leader-photo">${photo}</div><div><span>KEY LEADERSHIP</span><strong>${escapeHTML(name)}</strong>${position?`<p>${escapeHTML(position)}</p>`:""}</div>${links ? `<nav>${links}</nav>` : ""}</article>`;
 }
 
@@ -556,7 +561,7 @@ Promise.all([
   fetch(`${DATA_ROOT}/entities.json?v=20260904-2`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/application-companies.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/verticals.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
-  fetch(`${DATA_ROOT}/company-profiles.json?v=20260907-4`,{cache:"no-store"}).then((response)=>response.json()),
+  fetch(`${DATA_ROOT}/company-profiles.json?v=20260909-1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/public-market-snapshot.json?v=20260907-1`,{cache:"no-store"}).then((response)=>response.json()).catch(()=>({companies:{}})),
   fetch(WORLD_GEOJSON,{cache:"force-cache"}).then((response)=>response.json()),
 ]).then(([entities,applications,verticals,profiles,market,world])=>{ state.records=mergeDirectories(entities,applications,verticals,profiles,market); state.world=world.features||[]; populateCountries(); applyFilters(); initialiseMap(); }).catch((error)=>{ console.error(error); el.loading.innerHTML="<p>The interactive map background is unavailable. Directory filters remain available.</p>"; });
