@@ -1,0 +1,109 @@
+{
+  "reviewedAt": "2026-09-10",
+  "records": [
+    {
+      "companyId": "nvidia",
+      "scope": "company",
+      "url": "https://x.com/nvidia",
+      "handle": "nvidia",
+      "sourceType": "official_company_social_directory",
+      "sourceUrl": "https://www.nvidia.com/en-us/contact/social/",
+      "confidence": "High",
+      "reasons": [
+        "NVIDIA official social directory identifies @NVIDIA as the worldwide company account",
+        "X profile states that it is NVIDIA's official handle",
+        "X profile website matches nvidia.com"
+      ],
+      "profile": {
+        "name": "NVIDIA",
+        "bio": "The official handle for NVIDIA.",
+        "website": "https://www.nvidia.com",
+        "avatar": "https://pbs.twimg.com/profile_images/1828904711124078593/SRvCZSfQ_400x400.jpg"
+      }
+    },
+    {
+      "companyId": "xai",
+      "scope": "leader",
+      "url": "https://x.com/elonmusk",
+      "handle": "elonmusk",
+      "sourceType": "reviewed_leadership_identity",
+      "sourceUrl": "https://x.ai/news/onegov",
+      "secondaryEvidenceUrl": "https://x.com/elonmusk",
+      "confidence": "High",
+      "reasons": [
+        "xAI identifies Elon Musk as cofounder and CEO",
+        "XActions confirms the active X profile has the exact person identity",
+        "Handle supplied for editorial review by the database owner"
+      ],
+      "profile": {
+        "name": "Elon Musk",
+        "bio": "",
+        "website": "",
+        "avatar": "https://pbs.twimg.com/profile_images/2053244804520427520/m8mdWZCG_400x400.jpg"
+      }
+    },
+    {
+      "companyId": "amd",
+      "scope": "company",
+      "url": "https://x.com/AMD",
+      "handle": "AMD",
+      "sourceType": "reviewed_company_identity",
+      "sourceUrl": "https://x.com/AMD",
+      "secondaryEvidenceUrl": "https://www.amd.com/",
+      "confidence": "High",
+      "reasons": [
+        "Handle supplied for editorial review by the database owner",
+        "XActions confirms the active company profile",
+        "X profile website matches amd.com"
+      ],
+      "profile": {
+        "name": "AMD",
+        "bio": "together we advance_",
+        "website": "http://www.AMD.com",
+        "avatar": "https://pbs.twimg.com/profile_images/1534988679076368384/In8IVKDB_400x400.png"
+      }
+    },
+    {
+      "companyId": "amd",
+      "scope": "leader",
+      "url": "https://x.com/LisaSu",
+      "handle": "LisaSu",
+      "sourceType": "reviewed_leadership_identity",
+      "sourceUrl": "https://www.amd.com/en/corporate/leadership/lisa-su.html",
+      "secondaryEvidenceUrl": "https://x.com/LisaSu",
+      "confidence": "High",
+      "reasons": [
+        "AMD identifies Lisa Su as chair and chief executive officer",
+        "XActions confirms the exact person identity and AMD role",
+        "Handle supplied for editorial review by the database owner"
+      ],
+      "profile": {
+        "name": "Lisa Su",
+        "bio": "Chair and CEO of @AMD",
+        "website": "http://www.amd.com/LisaSu",
+        "avatar": "https://pbs.twimg.com/profile_images/836654735553777664/gWyrS-2a_400x400.jpg"
+      }
+    },
+    {
+      "companyId": "palantir",
+      "scope": "company",
+      "url": "https://x.com/PalantirTech",
+      "handle": "PalantirTech",
+      "sourceType": "reviewed_company_identity",
+      "sourceUrl": "https://x.com/PalantirTech",
+      "secondaryEvidenceUrl": "https://www.palantir.com/",
+      "confidence": "High",
+      "reasons": [
+        "Handle supplied for editorial review by the database owner",
+        "XActions confirms the active Palantir profile",
+        "X profile website matches palantir.com"
+      ],
+      "profile": {
+        "name": "Palantir",
+        "bio": "Own the means of production. Revolt with us.",
+        "website": "http://www.palantir.com",
+        "avatar": "https://pbs.twimg.com/profile_images/2084947722394804224/cv2WuFhb_400x400.jpg"
+      }
+    }
+  ]
+}

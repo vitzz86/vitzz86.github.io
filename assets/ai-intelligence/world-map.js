@@ -563,7 +563,7 @@ Promise.all([
   fetch(`${DATA_ROOT}/entities.json?v=20260904-2`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/application-companies.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/verticals.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
-  fetch(`${DATA_ROOT}/company-profiles.json?v=20260910-logo1`,{cache:"no-store"}).then((response)=>response.json()),
+  fetch(`${DATA_ROOT}/company-profiles.json?v=20260913-governed1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/public-market-snapshot.json?v=20260907-1`,{cache:"no-store"}).then((response)=>response.json()).catch(()=>({companies:{}})),
   fetch(WORLD_GEOJSON,{cache:"force-cache"}).then((response)=>response.json()),
 ]).then(([entities,applications,verticals,profiles,market,world])=>{ state.records=mergeDirectories(entities,applications,verticals,profiles,market); state.world=world.features||[]; populateCountries(); applyFilters(); initialiseMap(); }).catch((error)=>{ console.error(error); el.loading.innerHTML="<p>The interactive map background is unavailable. Directory filters remain available.</p>"; });

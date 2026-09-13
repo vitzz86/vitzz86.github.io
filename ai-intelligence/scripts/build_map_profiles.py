@@ -242,6 +242,12 @@ def main() -> None:
                 "socialStatus": leader.get("social_verification_status"),
                 "xStatus": leader.get("x_verification_status"),
                 "photoStatus": leader.get("photo_verification_status"),
+                "roleEvidenceGrade": leader.get("role_evidence_grade"),
+                "socialEvidenceGrade": leader.get("social_evidence_grade"),
+                "photoEvidenceGrade": leader.get("photo_evidence_grade"),
+                "socialDisposition": leader.get("social_disposition"),
+                "photoDisposition": leader.get("photo_disposition"),
+                "mediaReviewStatus": leader.get("media_review_status"),
             },
             "market": {
                 "type": "public" if is_public else "private" if is_private else "state-owned" if is_state_owned else "other",
@@ -259,6 +265,8 @@ def main() -> None:
                 "valuationDate": market.get("valuation_date"),
                 "unicornStatus": market.get("unicorn_status"),
                 "fundingStatus": market.get("funding_history_status"),
+                "evidenceGrade": market.get("market_evidence_grade"),
+                "reviewStatus": market.get("market_review_status"),
             },
             "verification": {
                 "status": company.get("verification_status"),
@@ -267,6 +275,11 @@ def main() -> None:
                 "notes": company.get("data_notes"),
                 "companySource": clean_url(company_source.get("source_url")) or clean_url(company.get("official_website")),
                 "leaderSource": clean_url(leader_source.get("source_url")) or clean_url(leader.get("official_profile_url")),
+                "evidenceGrade": company.get("evidence_grade"),
+                "publicationStatus": company.get("publication_status"),
+                "logoSourceType": company.get("logo_source_type"),
+                "logoSource": clean_url(company.get("logo_source_url")),
+                "qaLastReviewedAt": company.get("qa_last_reviewed_at"),
             },
         }
         deep_merge(profile, overrides.get(company_id, {}))
