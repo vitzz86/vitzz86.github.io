@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import date
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote, urlparse
+from urllib.parse import quote, unquote, urlparse
 
 from openpyxl import load_workbook
 
@@ -39,12 +40,58 @@ def clean_url(value: Any) -> str | None:
     return value if value.lower().startswith(("http://", "https://")) else None
 
 
+def platform_url(value: Any, hosts: tuple[str, ...]) -> str | None:
+    value = clean_url(value)
+    if not value:
+        return None
+    host = (urlparse(value).hostname or "").lower().removeprefix("www.")
+    return value if host in hosts else None
+
+
 def official_site_icon(website: Any) -> str | None:
     website = clean_url(website)
     if not website:
         return None
     host = urlparse(website).hostname
     return f"https://www.google.com/s2/favicons?domain={quote(host or '')}&sz=128" if host else None
+
+
+def renderable_media_url(value: Any) -> str | None:
+    """Convert Wikimedia file pages to image redirects usable by an img element."""
+    value = clean_url(value)
+    if not value:
+        return None
+    parsed = urlparse(value)
+    host = (parsed.hostname or "").lower()
+    fragment = unquote(parsed.fragment or "")
+    path = unquote(parsed.path or "")
+    candidate = fragment.removeprefix("/media/") if fragment.startswith("/media/") else path.rsplit("/", 1)[-1]
+    for prefix in ("File:", "Berkas:"):
+        if candidate.startswith(prefix):
+            filename = candidate[len(prefix) :]
+            special = "Istimewa:Redirect/file" if host == "id.wikipedia.org" else "Special:Redirect/file"
+            return f"https://{host}/wiki/{special}/{quote(filename)}"
+    return value
+
+
+def curated_logo_url(value: Any) -> str | None:
+    """Accept only independently curated brand assets with predictable identity."""
+    value = renderable_media_url(value)
+    if not value:
+        return None
+    parsed = urlparse(value)
+    host = (parsed.hostname or "").lower().removeprefix("www.")
+    if host in {"cdn.simpleicons.org", "api.iconify.design", "upload.wikimedia.org"}:
+        return value
+    return None
+
+
+def deep_merge(target: dict[str, Any], patch: dict[str, Any]) -> None:
+    for key, value in patch.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            deep_merge(target[key], value)
+        else:
+            target[key] = value
 
 
 def rows_by_key(workbook, sheet_name: str, key: str) -> dict[str, dict[str, Any]]:
@@ -69,6 +116,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workbook", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument(
+        "--overrides",
+        default=str(Path(__file__).resolve().parents[1] / "data" / "manual-profile-overrides.json"),
+    )
     args = parser.parse_args()
 
     workbook = load_workbook(args.workbook, read_only=True, data_only=True)
@@ -76,6 +127,8 @@ def main() -> None:
     leaders = rows_by_key(workbook, "Leadership DB", "company_id")
     markets = rows_by_key(workbook, "Market Data", "company_id")
     sources = rows_by_key(workbook, "Sources DB", "source_id")
+    overrides_path = Path(args.overrides)
+    overrides = json.loads(overrides_path.read_text(encoding="utf-8")) if overrides_path.exists() else {}
 
     profiles: list[dict[str, Any]] = []
     for company_id, company in companies.items():
@@ -154,7 +207,9 @@ def main() -> None:
             "foundedYear": company.get("founded_year"),
             "website": clean_url(company.get("official_website")),
             "linkedin": clean_url(company.get("company_linkedin")),
-            "logo": official_site_icon(company.get("official_website")),
+            "x": platform_url(company.get("company_x_url"), ("x.com", "twitter.com", "mobile.twitter.com")),
+            "xAvatar": clean_url(company.get("company_x_avatar_url")),
+            "logo": curated_logo_url(company.get("logo_url")) or official_site_icon(company.get("official_website")),
             "headquarters": {
                 "city": company.get("hq_city"),
                 "country": company.get("hq_country"),
@@ -177,11 +232,15 @@ def main() -> None:
             "leader": {
                 "name": leader.get("full_name") or company.get("current_leader_name"),
                 "position": leader.get("position") or company.get("current_leader_position"),
-                "linkedin": clean_url(leader.get("linkedin_url")) or clean_url(leader.get("social_url")),
-                "photo": clean_url(leader.get("photo_url")),
+                "linkedin": platform_url(leader.get("linkedin_url"), ("linkedin.com",)) or platform_url(leader.get("social_url"), ("linkedin.com",)),
+                "x": platform_url(leader.get("x_url"), ("x.com", "twitter.com", "mobile.twitter.com")),
+                "xAvatar": clean_url(leader.get("x_avatar_url")),
+                "photo": renderable_media_url(leader.get("photo_url")) or clean_url(leader.get("x_avatar_url")),
                 "officialProfile": clean_url(leader.get("official_profile_url")),
-                "roleSource": clean_url(leader_source.get("url")) or clean_url(leader.get("official_profile_url")),
+                "roleSource": clean_url(leader_source.get("source_url")) or clean_url(leader.get("official_profile_url")),
+                "photoSource": clean_url(leader.get("photo_source_url")) or (clean_url(leader.get("x_source_url")) if not clean_url(leader.get("photo_url")) else None),
                 "socialStatus": leader.get("social_verification_status"),
+                "xStatus": leader.get("x_verification_status"),
                 "photoStatus": leader.get("photo_verification_status"),
             },
             "market": {
@@ -206,16 +265,17 @@ def main() -> None:
                 "confidence": company.get("profile_confidence"),
                 "lastVerifiedAt": company.get("last_verified_at"),
                 "notes": company.get("data_notes"),
-                "companySource": clean_url(company_source.get("url")) or clean_url(company.get("official_website")),
-                "leaderSource": clean_url(leader_source.get("url")) or clean_url(leader.get("official_profile_url")),
+                "companySource": clean_url(company_source.get("source_url")) or clean_url(company.get("official_website")),
+                "leaderSource": clean_url(leader_source.get("source_url")) or clean_url(leader.get("official_profile_url")),
             },
         }
+        deep_merge(profile, overrides.get(company_id, {}))
         profiles.append(profile)
 
     profiles.sort(key=lambda item: (item.get("name") or "").lower())
     payload = {
         "meta": {
-            "generatedAt": "2026-09-07",
+            "generatedAt": date.today().isoformat(),
             "count": len(profiles),
             "methodology": "Only source-aware identity, leadership, location and market fields are published. Unverified media and inapplicable ownership links are omitted.",
         },

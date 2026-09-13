@@ -1772,6 +1772,8 @@ dialog::backdrop { background: rgba(7, 18, 14, 0.62); backdrop-filter: blur(7px)
 .map-profile-icon-link.is-linkedin { color: #80bfff; }
 .map-profile-icon-link.is-crunchbase { color: #65b4e8; }
 .map-profile-icon-link.is-market { color: #c3a7ff; }
+.map-profile-icon-link.is-investor { color: #e9bd62; }
+.map-profile-icon-link.is-directory { color: #72cbb0; }
 .map-profile-tabs.is-public { position: static; margin: 18px 0 0; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: #11170f; grid-template-columns: 1fr 1fr; }
 .map-profile-tabs.is-public button { min-height: 35px; color: #9ea79a; }
 .map-profile-tabs.is-public button:hover,.map-profile-tabs.is-public button.is-active { background: #253229; color: #a1d8c3; box-shadow: none; }

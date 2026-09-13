@@ -69,7 +69,7 @@ function hasURL(value) { return /^https?:\/\//i.test(String(value || "")); }
 function displayValue(value, fallback = "No verified record") { return value === null || value === undefined || value === "" ? fallback : String(value); }
 function externalLink(url, label, className = "") { return hasURL(url) ? `<a class="${className}" href="${escapeHTML(url)}" target="_blank" rel="noopener">${escapeHTML(label)} ↗</a>` : ""; }
 function formatUsd(value) { const amount = Number(value); if (!Number.isFinite(amount) || amount <= 0) return "No disclosed amount"; return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 }).format(amount); }
-function logoFor(record) { const host = domain(record.website || record.profile?.website || record.source); return host ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128` : ""; }
+function logoFor(record) { const curated=record.profile?.logo||record.logo?.url||record.logo; if(hasURL(curated)) return curated; const host = domain(record.website || record.profile?.website || record.source); return host ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128` : ""; }
 function logoMarkup(record, className = "map-company-logo") { const url = logoFor(record); const letters = escapeHTML(initials(record.name)); return url ? `<span class="${className}"><img src="${escapeHTML(url)}" alt="" loading="lazy" decoding="async" data-map-logo /><span hidden>${letters}</span></span>` : `<span class="${className}"><span>${letters}</span></span>`; }
 function attachLogoFallbacks(root = document) { root.querySelectorAll("img[data-map-logo]").forEach((image) => { if (image.dataset.bound) return; image.dataset.bound = "1"; image.addEventListener("error", () => { image.hidden = true; if (image.nextElementSibling) image.nextElementSibling.hidden = false; }, { once: true }); }); }
 function meaningful(value) { return value !== null && value !== undefined && value !== "" && !/^(not |no |unknown|unavailable|research pending|not applicable)/i.test(String(value).trim()); }
@@ -94,9 +94,11 @@ function profileIcon(kind) {
   if(kind==="instagram") return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm10.5 1.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>`;
   if(kind==="crunchbase") return `<strong aria-hidden="true">cb</strong>`;
   if(kind==="market") return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H2V3h2v16Zm3-3-1.5-1.3 4.2-5 3.1 2.5 4.7-6 1.6 1.2-6 7.7-3.2-2.6L7 16Z"/></svg>`;
+  if(kind==="investor") return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H4V2h2Zm8 2H6v16h12V8h-4V4Zm2 1.4V6h.6L16 5.4ZM8 10h8v2H8v-2Zm0 4h3v2H8v-2Zm5 0h3v2h-3v-2Z"/></svg>`;
+  if(kind==="directory") return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 4v12h16V7H4Zm2 3h5v2H6v-2Zm0 4h5v2H6v-2Zm7-4h5v6h-5v-6Z"/></svg>`;
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-3.1a15.8 15.8 0 0 0-1.4-3.3A8.1 8.1 0 0 1 18.9 8ZM12 4c.8 1 1.5 2.3 1.8 4h-3.6c.3-1.7 1-3 1.8-4ZM9.6 4.7A15.8 15.8 0 0 0 8.2 8H5.1a8.1 8.1 0 0 1 4.5-3.3ZM4 12c0-.7.1-1.4.3-2h3.6a18 18 0 0 0 0 4H4.3A8 8 0 0 1 4 12Zm1.1 4h3.1c.3 1.3.8 2.4 1.4 3.3A8.1 8.1 0 0 1 5.1 16Zm6.9 4c-.8-1-1.5-2.3-1.8-4h3.6c-.3 1.7-1 3-1.8 4Zm2.2-6H9.8a15.8 15.8 0 0 1 0-4h4.4a15.8 15.8 0 0 1 0 4Zm.2 5.3c.6-.9 1.1-2 1.4-3.3h3.1a8.1 8.1 0 0 1-4.5 3.3ZM16.1 14a18 18 0 0 0 0-4h3.6a8.2 8.2 0 0 1 0 4h-3.6Z"/></svg>`;
 }
-function profileLink(url, fallbackLabel = "Official source") { if(!hasURL(url)) return ""; const kind=socialKind(url),label=socialLabel(url,fallbackLabel); return `<a class="map-profile-icon-link is-${kind}" href="${escapeHTML(url)}" target="_blank" rel="noopener" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">${profileIcon(kind)}<span class="sr-only">${escapeHTML(label)}</span></a>`; }
+function profileLink(url, fallbackLabel = "Official source", forcedKind = "") { if(!hasURL(url)) return ""; const kind=forcedKind||socialKind(url),label=fallbackLabel||socialLabel(url); return `<a class="map-profile-icon-link is-${kind}" href="${escapeHTML(url)}" target="_blank" rel="noopener" aria-label="${escapeHTML(label)}" title="${escapeHTML(label)}">${profileIcon(kind)}<span class="sr-only">${escapeHTML(label)}</span></a>`; }
 function credibleDirectoryLink(url, record) {
   if (!hasURL(url)) return false;
   let slug=""; try { slug=new URL(url).pathname.split("/").filter(Boolean).pop()||""; } catch (_) { return false; }
@@ -138,6 +140,7 @@ function enrichRecord(record, profile) {
   record.source = profile.website || profile.verification?.companySource || record.source;
   record.website = profile.website || record.source;
   record.linkedin = profile.linkedin || "";
+  record.x = profile.x || "";
   if (!record.logo && profile.logo) record.logo = { url: profile.logo };
   if (hq.coordinatesVerified && [hq.longitude, hq.latitude].every((value) => Number.isFinite(Number(value)))) {
     record.coordinates = [Number(hq.longitude), Number(hq.latitude)];
@@ -228,9 +231,8 @@ function leaderMarkup(record) {
   const photo = hasURL(leader.photo) ? `<img src="${escapeHTML(leader.photo)}" alt="${escapeHTML(name)}" loading="lazy" decoding="async" data-leader-photo />` : `<span>${escapeHTML(initials(name))}</span>`;
   const seen = new Set();
   const links = [
-    [leader.linkedin || leader.social, leader.socialPlatform ? `${leader.socialPlatform} profile` : "Leadership profile"],
-    [leader.officialProfile, "Official leadership profile"],
-    [leader.photoSource, "Photo source"],
+    [leader.x, "Leadership X profile"],
+    [leader.linkedin, "Leadership LinkedIn profile"],
   ].filter(([url]) => hasURL(url) && !seen.has(url) && seen.add(url)).map(([url,label]) => profileLink(url,label)).join("");
   return `<article class="map-leader-card"><div class="map-leader-photo">${photo}</div><div><span>KEY LEADERSHIP</span><strong>${escapeHTML(name)}</strong>${position?`<p>${escapeHTML(position)}</p>`:""}</div>${links ? `<nav>${links}</nav>` : ""}</article>`;
 }
@@ -261,8 +263,8 @@ function profileFacts(record) {
 
 function profileLinks(record) {
   const market=record.profile?.market||{};
-  const directoryLinks=market.type!=="public"&&credibleDirectoryLink(market.crunchbase,record)?profileLink(market.crunchbase,"Crunchbase"):"";
-  const links=[profileLink(record.website||record.source,"Official website"),profileLink(record.linkedin,"Company social profile"),directoryLinks,profileLink(market.dealroom,"Dealroom"),profileLink(market.yahooFinance,"Yahoo Finance"),profileLink(market.investorRelations,"Investor information")];
+  const directoryLinks=market.type!=="public"&&credibleDirectoryLink(market.crunchbase,record)?profileLink(market.crunchbase,"Crunchbase","crunchbase"):"";
+  const links=[profileLink(record.website||record.source,"Official website","website"),profileLink(record.x,"Company X profile","x"),profileLink(record.linkedin,"Company LinkedIn profile","linkedin"),directoryLinks,profileLink(market.dealroom,"Dealroom","directory"),profileLink(market.yahooFinance,"Yahoo Finance","market"),profileLink(market.investorRelations,"Investor relations","investor")];
   return links.filter(Boolean).join("");
 }
 
@@ -304,7 +306,7 @@ function publicMarketPanel(record) {
   const currency=snapshot.fundamental_score?.currency||String(snapshot.mktcap||"").split(" ")[0]||"";
   const metrics=[marketMetric("Last price",formatMarketNumber(snapshot.value,currency)),marketMetric("Day move",formatPercent(snapshot.delta_pct),Number(snapshot.delta_pct)>=0?"is-positive":"is-negative"),marketMetric("Market cap",snapshot.mktcap||formatMarketNumber(snapshot.market_cap_value,currency)),marketMetric("6M return",formatPercent(snapshot.perf_6m),Number(snapshot.perf_6m)>=0?"is-positive":"is-negative")].join("");
   const observed=marketTimestamp(snapshot.quote_asof);
-  return `<section class="map-public-market"><div class="map-market-heading"><div><span>PUBLIC MARKET</span><strong>${escapeHTML([market.ticker,market.exchange].filter(Boolean).join(" · "))}</strong>${observed?`<small>Snapshot ${escapeHTML(observed)} WIB · ${escapeHTML(snapshot.source_name||"Project Cockpit")}</small>`:""}</div><div class="map-profile-link-row">${profileLink(market.yahooFinance,"Yahoo Finance")}${profileLink(market.investorRelations,"Investor relations")}</div></div>${metrics?`<div class="map-market-metrics">${metrics}</div>`:""}${scorePanel(snapshot)}${analystPanel(snapshot,currency)}${symbol?`<div class="map-public-chart" id="mapPublicChart" data-symbol="${escapeHTML(symbol)}"><span>Loading market chart…</span></div>`:`<p class="map-profile-empty">No chart symbol is available for this listing.</p>`}${marketNews(snapshot)}${snapshot.market_data_warning?`<p class="map-market-warning">${escapeHTML(snapshot.market_data_warning)}</p>`:""}<p class="map-market-method">Market observations may be delayed. Screening scores describe the available evidence and are not investment advice.</p></section>`;
+  return `<section class="map-public-market"><div class="map-market-heading"><div><span>PUBLIC MARKET</span><strong>${escapeHTML([market.ticker,market.exchange].filter(Boolean).join(" · "))}</strong>${observed?`<small>Snapshot ${escapeHTML(observed)} WIB · ${escapeHTML(snapshot.source_name||"Project Cockpit")}</small>`:""}</div><div class="map-profile-link-row">${profileLink(market.yahooFinance,"Yahoo Finance","market")}${profileLink(market.investorRelations,"Investor relations","investor")}</div></div>${metrics?`<div class="map-market-metrics">${metrics}</div>`:""}${scorePanel(snapshot)}${analystPanel(snapshot,currency)}${symbol?`<div class="map-public-chart" id="mapPublicChart" data-symbol="${escapeHTML(symbol)}"><span>Loading market chart…</span></div>`:`<p class="map-profile-empty">No chart symbol is available for this listing.</p>`}${marketNews(snapshot)}${snapshot.market_data_warning?`<p class="map-market-warning">${escapeHTML(snapshot.market_data_warning)}</p>`:""}<p class="map-market-method">Market observations may be delayed. Screening scores describe the available evidence and are not investment advice.</p></section>`;
 }
 
 function mountPublicChart(record) {
@@ -561,7 +563,7 @@ Promise.all([
   fetch(`${DATA_ROOT}/entities.json?v=20260904-2`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/application-companies.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/verticals.json?v=20260904-1`,{cache:"no-store"}).then((response)=>response.json()),
-  fetch(`${DATA_ROOT}/company-profiles.json?v=20260909-1`,{cache:"no-store"}).then((response)=>response.json()),
+  fetch(`${DATA_ROOT}/company-profiles.json?v=20260910-logo1`,{cache:"no-store"}).then((response)=>response.json()),
   fetch(`${DATA_ROOT}/public-market-snapshot.json?v=20260907-1`,{cache:"no-store"}).then((response)=>response.json()).catch(()=>({companies:{}})),
   fetch(WORLD_GEOJSON,{cache:"force-cache"}).then((response)=>response.json()),
 ]).then(([entities,applications,verticals,profiles,market,world])=>{ state.records=mergeDirectories(entities,applications,verticals,profiles,market); state.world=world.features||[]; populateCountries(); applyFilters(); initialiseMap(); }).catch((error)=>{ console.error(error); el.loading.innerHTML="<p>The interactive map background is unavailable. Directory filters remain available.</p>"; });
